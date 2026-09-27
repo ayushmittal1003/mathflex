@@ -21,7 +21,9 @@ export async function login(_: AuthState, form: FormData): Promise<AuthState> {
   if (!user || !(await verifyPassword(password, user.passwordHash))) return { error: "Wrong email or password." };
   if (user.isBlocked) return { error: "This account is suspended. Please contact support." };
   await createSession(user.id, user.role);
-  redirect(safeNext(form.get("next")));
+  const next = safeNext(form.get("next"));
+  // Admins signing in from the plain login page go straight to the admin panel.
+  redirect(user.role === "ADMIN" && next === "/" ? "/admin" : next);
 }
 
 const SignupSchema = z.object({
