@@ -7,6 +7,8 @@ import bcrypt from "bcryptjs";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { DEFAULT_BADGES } from "../src/lib/gamification";
 
+const DEMO = process.env.NODE_ENV !== "production" && process.env.SEED_DEMO !== "false";
+
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
 
 // Public sample clip so the player works before real lectures are uploaded.
@@ -111,14 +113,12 @@ async function main() {
   for (const b of DEFAULT_BADGES) await db.badge.upsert({ where: { code: b.code }, create: b, update: b });
 
   const pw = (p: string) => bcrypt.hash(p, 10);
+  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@mathflex.in";
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? (DEMO ? "admin12345" : null);
+  if (!adminPassword) throw new Error("Set SEED_ADMIN_PASSWORD when seeding production.");
   const admin = await db.user.upsert({
-    where: { email: "admin@mathflex.in" },
-    create: { name: "MathFlex Admin", email: "admin@mathflex.in", passwordHash: await pw("admin12345"), role: "ADMIN", avatarColor: "#8B5CF6" },
-    update: {},
-  });
-  const student = await db.user.upsert({
-    where: { email: "student@mathflex.in" },
-    create: { name: "Aarav Sharma", email: "student@mathflex.in", passwordHash: await pw("student12345"), classLevel: 11 },
+    where: { email: adminEmail },
+    create: { name: "MathFlex Admin", email: adminEmail, passwordHash: await pw(adminPassword), role: "ADMIN", avatarColor: "#8B5CF6" },
     update: {},
   });
 
@@ -223,14 +223,6 @@ async function main() {
   await bundle("class-12-complete", { title: "Class 12 Complete", subtitle: "All 15 Class 12 chapters.", price: 2999, mrp: 5999, from: "#6366F1", to: "#EC4899", ids: ids12, highlights: ["45+ hours of video", "DPPs + 15 years of PYQs", "Formula sheets & mind maps"], order: 2 });
   await bundle("class-11-and-12", { title: "Class 11 + 12 Combo", subtitle: "The full JEE maths syllabus.", price: 4999, mrp: 11998, from: "#F59E0B", to: "#DC2626", ids: [...ids11, ...ids12], highlights: ["Every chapter, both years", "Best value — save 58%", "Free 1:1 planning call"], order: 0 });
 
-  // Demo student owns Limits, with Part 1 done
-  const limitsId = chapterIds["limits-and-derivatives"];
-  if (!(await db.entitlement.findFirst({ where: { userId: student.id, chapterId: limitsId } }))) {
-    await db.entitlement.create({ data: { userId: student.id, chapterId: limitsId, source: "admin", expiresAt: new Date(Date.now() + 365 * 86_400_000) } });
-    const p1 = await db.part.findFirstOrThrow({ where: { chapterId: limitsId, order: 1 } });
-    await db.partProgress.create({ data: { userId: student.id, partId: p1.id, watchedSec: 3600, videoDone: true, practiceDone: true, completedAt: new Date() } });
-  }
-
   // Coupons
   await db.coupon.upsert({ where: { code: "WELCOME20" }, update: {}, create: { code: "WELCOME20", description: "20% off your first order (up to ₹200)", type: "PERCENT", value: 20, maxDiscount: 200, isPublic: true } });
   await db.coupon.upsert({ where: { code: "FLEX100" }, update: {}, create: { code: "FLEX100", description: "₹100 off orders above ₹499", type: "FLAT", value: 100, minAmount: 499, isPublic: true, perUserLimit: 3 } });
@@ -263,6 +255,28 @@ async function main() {
     });
   }
 
+  if (DEMO) await seedDemo(pw, chapterIds);
+
+  console.log(`Done. Admin: ${admin.email}${DEMO && !process.env.SEED_ADMIN_PASSWORD ? " / admin12345 · Student: student@mathflex.in / student12345" : ""}`);
+}
+
+// Demo data for local development only: a sample student with progress and a
+// populated leaderboard. Never runs in production (or with SEED_DEMO=false).
+async function seedDemo(pw: (p: string) => Promise<string>, chapterIds: Record<string, string>) {
+  const student = await db.user.upsert({
+    where: { email: "student@mathflex.in" },
+    create: { name: "Aarav Sharma", email: "student@mathflex.in", passwordHash: await pw("student12345"), classLevel: 11 },
+    update: {},
+  });
+
+  // Demo student owns Limits, with Part 1 done
+  const limitsId = chapterIds["limits-and-derivatives"];
+  if (!(await db.entitlement.findFirst({ where: { userId: student.id, chapterId: limitsId } }))) {
+    await db.entitlement.create({ data: { userId: student.id, chapterId: limitsId, source: "admin", expiresAt: new Date(Date.now() + 365 * 86_400_000) } });
+    const p1 = await db.part.findFirstOrThrow({ where: { chapterId: limitsId, order: 1 } });
+    await db.partProgress.create({ data: { userId: student.id, partId: p1.id, watchedSec: 3600, videoDone: true, practiceDone: true, completedAt: new Date() } });
+  }
+
   // Demo leaderboard students with XP spread over the last 30 days
   const names = ["Ishita Verma", "Rohan Mehta", "Ananya Iyer", "Kabir Singh", "Diya Patel", "Arjun Nair", "Saanvi Gupta", "Vihaan Reddy", "Myra Kapoor", "Aditya Joshi", "Tara Menon", "Reyansh Das"];
   const colors = ["#F43F5E", "#FB923C", "#8B5CF6", "#0EA5E9", "#10B981", "#EC4899"];
@@ -290,7 +304,6 @@ async function main() {
     await db.user.update({ where: { id: student.id }, data: { xp: total, streak: 5, bestStreak: 9, lastActiveOn: new Date(Date.now() - 86_400_000) } });
   }
 
-  console.log(`Done. Admin: ${admin.email} / admin12345 · Student: ${student.email} / student12345`);
 }
 
 main()

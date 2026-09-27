@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { saveSetting, getSettings, type Settings } from "@/lib/settings";
-import { saveFile, readStoredFile, keyFromUrl } from "@/lib/storage";
+import { saveFile, readStoredFile, keyFromUrl, urlForKey, deleteStoredFile } from "@/lib/storage";
 import { bunnyConfigured, bunnyVideoInfo, createBunnyUpload } from "@/lib/video";
 import { extractKnowledge } from "@/lib/flexcare";
 import { fulfilOrder } from "@/lib/orders";
@@ -204,34 +204,28 @@ export async function importQuestions(_: unknown, form: FormData) {
 
 /* ---------------- Resources (PDF notes, mind maps) ---------------- */
 
-export async function uploadResource(_: unknown, form: FormData) {
-  await requireAdmin();
-  const file = form.get("file");
-  if (!(file instanceof File) || file.size === 0) return { error: "Choose a PDF or image to upload." };
-  if (file.size > 30 * 1024 * 1024) return { error: "Max file size is 30 MB." };
-  const allowed = ["application/pdf", "image/png", "image/jpeg", "image/webp"];
-  if (!allowed.includes(file.type)) return { error: "Upload a PDF, PNG, JPG or WEBP." };
+const ALLOWED_RESOURCE_TYPES = ["application/pdf", "image/png", "image/jpeg", "image/webp"];
 
-  const stored = await saveFile(file, "resources");
-  const title = str(form, "title") || file.name.replace(/\.[^.]+$/, "");
+type ResourceMeta = { chapterId: string; type: string; title: string; requiresPurchase: boolean; includeInChatbot: boolean };
+
+// Shared by both upload paths: create the row, then teach FlexCare what's inside.
+async function registerResource(meta: ResourceMeta, stored: { url: string; mimeType: string; size: number }, bytes: () => Promise<Buffer>) {
   const res = await db.resource.create({
     data: {
-      chapterId: str(form, "chapterId") || null,
-      type: (str(form, "type") || "NOTES") as ResourceType,
-      title,
+      chapterId: meta.chapterId || null,
+      type: (meta.type || "NOTES") as ResourceType,
+      title: meta.title,
       fileUrl: stored.url,
       mimeType: stored.mimeType,
       sizeBytes: stored.size,
-      requiresPurchase: bool(form, "requiresPurchase"),
-      includeInChatbot: bool(form, "includeInChatbot"),
+      requiresPurchase: meta.requiresPurchase,
+      includeInChatbot: meta.includeInChatbot,
     },
   });
-
-  // Teach FlexCare what's inside the file.
   let extracted = false;
   if (res.includeInChatbot) {
     try {
-      const text = await extractKnowledge(Buffer.from(await file.arrayBuffer()), file.type, title);
+      const text = await extractKnowledge(await bytes(), stored.mimeType, meta.title);
       if (text) {
         await db.resource.update({ where: { id: res.id }, data: { knowledgeText: text } });
         extracted = true;
@@ -241,7 +235,37 @@ export async function uploadResource(_: unknown, form: FormData) {
     }
   }
   refreshSite();
-  return { ok: true, extracted };
+  return { ok: true as const, extracted };
+}
+
+// Local/dev path: the file comes through the server action.
+export async function uploadResource(_: unknown, form: FormData) {
+  await requireAdmin();
+  const file = form.get("file");
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose a PDF or image to upload." };
+  if (file.size > 30 * 1024 * 1024) return { error: "Max file size is 30 MB." };
+  if (!ALLOWED_RESOURCE_TYPES.includes(file.type)) return { error: "Upload a PDF, PNG, JPG or WEBP." };
+  const stored = await saveFile(file, "resources");
+  const meta = {
+    chapterId: str(form, "chapterId"),
+    type: str(form, "type"),
+    title: str(form, "title") || file.name.replace(/\.[^.]+$/, ""),
+    requiresPurchase: bool(form, "requiresPurchase"),
+    includeInChatbot: bool(form, "includeInChatbot"),
+  };
+  return registerResource(meta, stored, async () => Buffer.from(await file.arrayBuffer()));
+}
+
+// Vercel path: the browser already uploaded the file to Blob; we just record it.
+export async function registerUploadedResource(input: ResourceMeta & { key: string; mimeType: string; size: number }) {
+  await requireAdmin();
+  if (!/^resources\/[\w-]+\.(pdf|png|jpe?g|webp)$/.test(input.key)) return { error: "Bad upload." };
+  if (!ALLOWED_RESOURCE_TYPES.includes(input.mimeType)) return { error: "Upload a PDF, PNG, JPG or WEBP." };
+  return registerResource(
+    { ...input, title: input.title.trim() || "Notes" },
+    { url: urlForKey(input.key), mimeType: input.mimeType, size: input.size },
+    () => readStoredFile(input.key),
+  );
 }
 
 export async function updateResource(form: FormData) {
@@ -273,7 +297,9 @@ export async function reextractResource(id: string) {
 
 export async function deleteResource(id: string) {
   await requireAdmin();
-  await db.resource.delete({ where: { id } });
+  const r = await db.resource.delete({ where: { id } });
+  const key = keyFromUrl(r.fileUrl);
+  if (key) await deleteStoredFile(key).catch((e) => console.error("file delete failed", e));
   refreshSite();
 }
 

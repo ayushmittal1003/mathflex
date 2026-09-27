@@ -4,6 +4,7 @@ import { ChevronDown, ExternalLink, FileText } from "lucide-react";
 import { db } from "@/lib/db";
 import { bunnyConfigured } from "@/lib/video";
 import { claudeConfigured } from "@/lib/flexcare";
+import { blobEnabled } from "@/lib/storage";
 import { Card, Field, PageHeader, Toggle, SubmitButton, Badge } from "@/components/admin/ui";
 import { ConfirmButton, ActionButton } from "@/components/admin/ConfirmButton";
 import { VideoField } from "@/components/admin/VideoField";
@@ -14,6 +15,9 @@ import {
   saveChapter, deleteChapter, savePart, deletePart, saveQuestion, deleteQuestion, updateResource, deleteResource, reextractResource,
 } from "../../actions";
 import type { Chapter, Part, Question, Resource } from "@/generated/prisma/client";
+
+// Reading a long PDF with Claude can take a while.
+export const maxDuration = 300;
 
 export default async function ChapterEditor({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string; part?: string }> }) {
   const [{ id }, { tab = "details", part: partFilter }] = await Promise.all([params, searchParams]);
@@ -262,7 +266,7 @@ function NotesTab({ chapter, resources }: { chapter: Chapter; resources: Resourc
   return (
     <div className="space-y-4">
       <Card title="Upload short notes, formula sheets or mind maps">
-        <ResourceUploader chapterId={chapter.id} />
+        <ResourceUploader chapterId={chapter.id} direct={blobEnabled()} />
       </Card>
       {resources.map((r) => (
         <details key={r.id} className="card group overflow-hidden">

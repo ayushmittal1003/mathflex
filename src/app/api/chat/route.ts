@@ -18,6 +18,8 @@ const Body = z.object({
     .max(30),
 });
 
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   const settings = await getSettings();
   if (!settings.features.chatbot) return new Response("Chat is turned off", { status: 403 });
