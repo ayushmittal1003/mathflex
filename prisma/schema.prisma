@@ -1,0 +1,422 @@
+// MathFlex data model.
+// Everything a student sees (prices, chapters, videos, banners, feature toggles)
+// lives here so it can be controlled from the /admin panel without a deploy.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum VideoProvider {
+  BUNNY   // Bunny Stream (recommended) - token-signed private playback
+  YOUTUBE // Unlisted YouTube - cheap, but links can leak
+  URL     // Any direct MP4/HLS URL (S3/CloudFront, R2, local dev)
+}
+
+enum QuestionType {
+  DPP
+  PYQ
+}
+
+enum ResourceType {
+  NOTES
+  MINDMAP
+  FORMULA_SHEET
+  OTHER
+}
+
+enum BannerKind {
+  HERO    // big billboard at the top of home
+  MARQUEE // running ticker strip
+  POPUP   // modal on first visit
+  OFFER   // offer card row on home
+}
+
+enum CouponType {
+  PERCENT
+  FLAT
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum ItemType {
+  CHAPTER
+  COURSE
+  MENTORSHIP
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  phone        String?
+  passwordHash String
+  role         Role      @default(STUDENT)
+  classLevel   Int?      // 11, 12 or 13 (dropper)
+  avatarColor  String    @default("#F43F5E")
+  xp           Int       @default(0)
+  streak       Int       @default(0)
+  bestStreak   Int       @default(0)
+  lastActiveOn DateTime?
+  isBlocked    Boolean   @default(false)
+  referralCode String    @unique @default(cuid())
+  createdAt    DateTime  @default(now())
+
+  entitlements  Entitlement[]
+  orders        Order[]
+  progress      PartProgress[]
+  attempts      Attempt[]
+  bookmarks     Bookmark[]
+  xpEvents      XpEvent[]
+  badges        UserBadge[]
+  mentorships   MentorshipBooking[]
+  chatLogs      ChatLog[]
+  couponUses    CouponRedemption[]
+}
+
+model Chapter {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  classLevel   Int      // 11 or 12
+  tagline      String   @default("")
+  description  String   @default("")
+  price        Int      // rupees
+  mrp          Int      // struck-through price
+  validityDays Int      @default(365)
+  coverFrom    String   @default("#F43F5E") // gradient start for the poster
+  coverTo      String   @default("#7C3AED") // gradient end
+  coverImage   String?  // optional uploaded poster image
+  symbol       String   @default("∫")        // big glyph on the poster
+  jeeWeightage Float    @default(0)          // % of JEE Main paper
+  difficulty   Int      @default(2)          // 1 easy .. 3 hard
+  topTopics    String[] @default([])         // most asked JEE topics
+  testMapping  String[] @default([])         // chapter-to-test mapping
+  isPublished  Boolean  @default(true)
+  isFeatured   Boolean  @default(false)
+  isTrending   Boolean  @default(false)
+  isLowPriority Boolean @default(false)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  introVideoProvider VideoProvider?
+  introVideoRef      String?       // 30-sec intro by the mentor shown after purchase
+
+  parts        Part[]
+  questions    Question[]
+  resources    Resource[]
+  courses      CourseChapter[]
+  entitlements Entitlement[]
+}
+
+model Part {
+  id            String        @id @default(cuid())
+  chapterId     String
+  chapter       Chapter       @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  order         Int
+  title         String
+  summary       String        @default("")
+  topics        String[]      @default([])
+  videoProvider VideoProvider @default(URL)
+  videoRef      String        @default("") // Bunny video GUID, YouTube id, or URL
+  durationSec   Int           @default(0)
+  isFreePreview Boolean       @default(false)
+  xpReward      Int           @default(100)
+  // Share of the video a student must watch before the part counts as watched.
+  watchThreshold Float        @default(0.9)
+
+  questions Question[]
+  progress  PartProgress[]
+
+  @@unique([chapterId, order])
+}
+
+model Question {
+  id           String       @id @default(cuid())
+  chapterId    String
+  chapter      Chapter      @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  partId       String?
+  part         Part?        @relation(fields: [partId], references: [id], onDelete: SetNull)
+  type         QuestionType
+  year         Int?         // PYQ year
+  exam         String?      // "JEE Main", "JEE Advanced", "CBSE"
+  difficulty   Int          @default(2)
+  prompt       String
+  options      String[]
+  correctIndex Int
+  solution     String       @default("")
+  xp           Int          @default(10)
+  isPublished  Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+
+  attempts  Attempt[]
+  bookmarks Bookmark[]
+}
+
+model Resource {
+  id               String       @id @default(cuid())
+  chapterId        String?
+  chapter          Chapter?     @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  type             ResourceType
+  title            String
+  fileUrl          String
+  mimeType         String       @default("application/pdf")
+  sizeBytes        Int          @default(0)
+  // Text the FlexCare chatbot learns from. Auto-extracted on upload, editable in admin.
+  knowledgeText    String       @default("")
+  includeInChatbot Boolean      @default(true)
+  requiresPurchase Boolean      @default(true)
+  isPublished      Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+}
+
+model Course {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  subtitle     String   @default("")
+  description  String   @default("")
+  price        Int
+  mrp          Int
+  validityDays Int      @default(365)
+  coverFrom    String   @default("#F43F5E")
+  coverTo      String   @default("#F59E0B")
+  highlights   String[] @default([])
+  isPublished  Boolean  @default(true)
+  isFeatured   Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  chapters     CourseChapter[]
+  entitlements Entitlement[]
+}
+
+model CourseChapter {
+  courseId  String
+  chapterId String
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@id([courseId, chapterId])
+}
+
+// What a user can access. Created when an order is paid, or granted by an admin.
+model Entitlement {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapterId String?
+  chapter   Chapter?  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  courseId  String?
+  course    Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  orderId   String?
+  source    String    @default("purchase") // purchase | admin | free
+  expiresAt DateTime
+  introSeen Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model PartProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  partId      String
+  part        Part      @relation(fields: [partId], references: [id], onDelete: Cascade)
+  watchedSec  Int       @default(0)
+  videoDone   Boolean   @default(false)
+  practiceDone Boolean  @default(false)
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, partId])
+}
+
+model Attempt {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selected   Int?     // null = skipped
+  isCorrect  Boolean
+  timeMs     Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Bookmark {
+  userId     String
+  questionId String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@id([userId, questionId])
+}
+
+// Append-only XP ledger. Powers daily/weekly/monthly analytics and leaderboards.
+model XpEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Int
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  code        String      @unique
+  name        String
+  description String
+  emoji       String
+  color       String      @default("#FACC15")
+  users       UserBadge[]
+}
+
+model UserBadge {
+  userId    String
+  badgeId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  context   String   @default("")
+  createdAt DateTime @default(now())
+
+  @@id([userId, badgeId, context])
+}
+
+model Coupon {
+  id           String     @id @default(cuid())
+  code         String     @unique
+  description  String     @default("")
+  type         CouponType
+  value        Int        // percent (0-100) or flat rupees
+  maxDiscount  Int?       // cap for percent coupons
+  minAmount    Int        @default(0)
+  usageLimit   Int?       // total redemptions allowed
+  perUserLimit Int        @default(1)
+  usedCount    Int        @default(0)
+  startsAt     DateTime?
+  endsAt       DateTime?
+  isActive     Boolean    @default(true)
+  isPublic     Boolean    @default(false) // show in the offers strip / chatbot
+  createdAt    DateTime   @default(now())
+
+  redemptions CouponRedemption[]
+}
+
+model CouponRedemption {
+  id        String   @id @default(cuid())
+  couponId  String
+  coupon    Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId   String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderNo       String      @unique
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  status        OrderStatus @default(PENDING)
+  subtotal      Int
+  discount      Int         @default(0)
+  total         Int
+  couponCode    String?
+  gateway       String      @default("paytm")
+  gatewayTxnId  String?
+  gatewayRaw    Json?
+  paidAt        DateTime?
+  createdAt     DateTime    @default(now())
+
+  items OrderItem[]
+
+  @@index([status, createdAt])
+}
+
+model OrderItem {
+  id       String   @id @default(cuid())
+  orderId  String
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemType ItemType
+  itemId   String?
+  title    String
+  price    Int
+}
+
+model MentorshipBooking {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId     String?
+  status      String    @default("REQUESTED") // REQUESTED | SCHEDULED | DONE | CANCELLED
+  scheduledAt DateTime?
+  meetLink    String?
+  notes       String    @default("")
+  createdAt   DateTime  @default(now())
+}
+
+model Banner {
+  id        String     @id @default(cuid())
+  kind      BannerKind
+  title     String
+  subtitle  String     @default("")
+  ctaText   String     @default("")
+  ctaHref   String     @default("")
+  imageUrl  String?
+  colorFrom String     @default("#F43F5E")
+  colorTo   String     @default("#7C3AED")
+  isActive  Boolean    @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  sortOrder Int        @default(0)
+  createdAt DateTime   @default(now())
+}
+
+// Key/value store for every admin-tunable knob (feature flags, prices, contacts, XP rules).
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// Extra Q&A the admin wants FlexCare to know (refund policy, timings, ...).
+model KnowledgeEntry {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model ChatLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  question  String
+  answer    String
+  createdAt DateTime @default(now())
+}
