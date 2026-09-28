@@ -12,7 +12,7 @@ import { extractKnowledge } from "@/lib/flexcare";
 import { fulfilOrder } from "@/lib/orders";
 import { fetchOrderStatus, paytmConfigured } from "@/lib/paytm";
 import { bool, date, int, list, num, optInt, slugify, str } from "@/lib/form";
-import type { BannerKind, CouponType, QuestionType, ResourceType, VideoProvider } from "@/generated/prisma/enums";
+import type { AnswerFormat, BannerKind, CouponType, QuestionType, ResourceType, VideoProvider } from "@/generated/prisma/enums";
 
 const refreshSite = () => revalidatePath("/", "layout");
 
@@ -131,20 +131,44 @@ export async function syncBunnyDuration(partId: string) {
 
 /* ---------------- Questions ---------------- */
 
+// Filled options in order, plus a map from the form's A-D slot to the saved index,
+// so a blank slot (e.g. only A, B, D filled) doesn't shift the answer key.
+function packOptions(raw: string[]) {
+  const options: string[] = [];
+  const slot = new Map<number, number>();
+  raw.forEach((o, i) => {
+    if (!o) return;
+    slot.set(i, options.length);
+    options.push(o);
+  });
+  return { options, slot };
+}
+
 export async function saveQuestion(form: FormData) {
   await requireAdmin();
   const id = str(form, "id");
-  const options = [0, 1, 2, 3].map((i) => str(form, `option${i}`)).filter(Boolean);
+  const format = (["SINGLE", "MULTIPLE", "NUMERICAL"].includes(str(form, "format")) ? str(form, "format") : "SINGLE") as AnswerFormat;
+  const { options, slot } = packOptions([0, 1, 2, 3].map((i) => str(form, `option${i}`)));
+  const correctIndices = form.getAll("correctIndices").map((v) => slot.get(Number(v))).filter((v): v is number => v !== undefined);
+  const numericAnswer = format === "NUMERICAL" ? num(form, "numericAnswer", NaN) : NaN;
+  if (format === "MULTIPLE" && !correctIndices.length) throw new Error("Tick at least one correct option.");
+  if (format === "NUMERICAL" && !Number.isFinite(numericAnswer)) throw new Error("Enter the numerical answer.");
   const data = {
     chapterId: str(form, "chapterId"),
-    partId: str(form, "partId") || null,
+    // Part practice sets use the single-correct player, so other formats stay in the Q bank.
+    partId: format === "SINGLE" ? str(form, "partId") || null : null,
     type: (str(form, "type") || "DPP") as QuestionType,
+    format,
     exam: str(form, "exam") || null,
     year: optInt(form, "year"),
+    topic: str(form, "topic") || null,
     difficulty: int(form, "difficulty", 2),
     prompt: str(form, "prompt"),
-    options,
-    correctIndex: Math.min(options.length - 1, int(form, "correctIndex")),
+    options: format === "NUMERICAL" ? [] : options,
+    correctIndex: format === "SINGLE" ? slot.get(int(form, "correctIndex")) ?? 0 : 0,
+    correctIndices: format === "MULTIPLE" ? correctIndices.sort((a, b) => a - b) : [],
+    numericAnswer: format === "NUMERICAL" ? numericAnswer : null,
+    tolerance: format === "NUMERICAL" ? Math.abs(num(form, "tolerance")) : 0,
     solution: str(form, "solution"),
     xp: int(form, "xp", 10),
     isPublished: bool(form, "isPublished"),
@@ -152,16 +176,26 @@ export async function saveQuestion(form: FormData) {
   if (id) await db.question.update({ where: { id }, data });
   else await db.question.create({ data });
   revalidatePath(`/admin/chapters/${data.chapterId}`);
+  revalidatePath("/admin/questions");
 }
 
 export async function deleteQuestion(id: string) {
   await requireAdmin();
   const q = await db.question.delete({ where: { id } });
   revalidatePath(`/admin/chapters/${q.chapterId}`);
+  revalidatePath("/admin/questions");
+}
+
+export async function setQuestionPublished(id: string, isPublished: boolean) {
+  await requireAdmin();
+  const q = await db.question.update({ where: { id }, data: { isPublished } });
+  revalidatePath(`/admin/chapters/${q.chapterId}`);
+  revalidatePath("/admin/questions");
 }
 
 // Bulk import. One question per line, tab- or pipe-separated:
-// type | part | prompt | A | B | C | D | answer(A-D) | solution | exam | year | difficulty(1-3)
+// type | part | prompt | A | B | C | D | answer | solution | exam | year | difficulty(1-3) | topic
+// answer: "B" single correct · "A,C" (or "AC") multi-correct · "=2.5" or "=2.5~0.01" numerical (± tolerance)
 export async function importQuestions(_: unknown, form: FormData) {
   await requireAdmin();
   const chapterId = str(form, "chapterId");
@@ -176,29 +210,61 @@ export async function importQuestions(_: unknown, form: FormData) {
       errors.push(`Line ${n + 1}: expected at least 8 columns`);
       continue;
     }
-    const [type, partOrder, prompt, a, b, cc, d, answer, solution = "", exam = "", year = "", diff = "2"] = cols;
-    const correctIndex = "ABCD".indexOf(answer.toUpperCase());
-    if (correctIndex < 0) {
-      errors.push(`Line ${n + 1}: answer must be A, B, C or D`);
+    const [type, partOrder, prompt, a, b, cc, d, answer, solution = "", exam = "", year = "", diff = "2", topic = ""] = cols;
+    const { options, slot } = packOptions([a, b, cc, d]);
+    let format: AnswerFormat = "SINGLE";
+    let correctIndex = 0;
+    let correctIndices: number[] = [];
+    let numericAnswer: number | null = null;
+    let tolerance = 0;
+    const numeric = answer.match(/^=\s*(-?[\d.]+)(?:\s*~\s*([\d.]+))?$/);
+    const letters = answer.toUpperCase().replace(/[\s,]/g, "");
+    if (numeric) {
+      format = "NUMERICAL";
+      numericAnswer = Number(numeric[1]);
+      tolerance = numeric[2] ? Number(numeric[2]) : 0;
+      if (!Number.isFinite(numericAnswer)) {
+        errors.push(`Line ${n + 1}: numerical answer must look like =2.5`);
+        continue;
+      }
+    } else if (/^[A-D]+$/.test(letters)) {
+      const picks = [...new Set(letters.split("").map((l) => slot.get("ABCD".indexOf(l))))];
+      if (picks.some((p) => p === undefined)) {
+        errors.push(`Line ${n + 1}: answer points at an empty option`);
+        continue;
+      }
+      if (picks.length === 1) correctIndex = picks[0]!;
+      else {
+        format = "MULTIPLE";
+        correctIndices = (picks as number[]).sort((a, b) => a - b);
+      }
+    } else {
+      errors.push(`Line ${n + 1}: answer must be A-D, several letters like A,C, or =number`);
       continue;
     }
     await db.question.create({
       data: {
         chapterId,
-        partId: parts.find((p) => p.order === Number(partOrder))?.id ?? null,
+        partId: format === "SINGLE" ? parts.find((p) => p.order === Number(partOrder))?.id ?? null : null,
         type: type.toUpperCase() === "PYQ" ? "PYQ" : "DPP",
+        format,
         prompt,
-        options: [a, b, cc, d].filter(Boolean),
+        options: format === "NUMERICAL" ? [] : options,
         correctIndex,
+        correctIndices,
+        numericAnswer,
+        tolerance,
         solution,
         exam: exam || null,
         year: year ? Number(year) : null,
         difficulty: Math.min(3, Math.max(1, Number(diff) || 2)),
+        topic: topic || null,
       },
     });
     created++;
   }
   revalidatePath(`/admin/chapters/${chapterId}`);
+  revalidatePath("/admin/questions");
   return { created, errors };
 }
 
@@ -509,6 +575,7 @@ export async function saveSettings(form: FormData) {
   const cur = await getSettings();
   const features = Object.fromEntries(Object.keys(cur.features).map((k) => [k, bool(form, `features.${k}`)])) as Settings["features"];
   const xp = Object.fromEntries(Object.keys(cur.xp).map((k) => [k, int(form, `xp.${k}`, cur.xp[k as keyof Settings["xp"]])])) as Settings["xp"];
+  const marking = Object.fromEntries(Object.keys(cur.marking).map((k) => [k, num(form, `marking.${k}`, cur.marking[k as keyof Settings["marking"]])])) as Settings["marking"];
   await Promise.all([
     saveSetting("siteName", str(form, "siteName") || cur.siteName),
     saveSetting("tagline", str(form, "tagline")),
@@ -522,6 +589,7 @@ export async function saveSettings(form: FormData) {
     saveSetting("paymentMode", str(form, "paymentMode") === "paytm" ? "paytm" : "mock"),
     saveSetting("features", features),
     saveSetting("xp", xp),
+    saveSetting("marking", marking),
     saveSetting("chatbot", { name: str(form, "chatbot.name") || "FlexCare", greeting: str(form, "chatbot.greeting"), model: str(form, "chatbot.model") || cur.chatbot.model }),
   ]);
   refreshSite();

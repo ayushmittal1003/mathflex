@@ -33,7 +33,7 @@ export default async function LearnPage({ params, searchParams }: { params: Prom
   });
   if (states.get(part.id) === "locked") redirect(`/chapter/${slug}`);
 
-  const questions = await db.question.findMany({ where: { partId: part.id, isPublished: true }, orderBy: [{ type: "asc" }, { createdAt: "asc" }] });
+  const questions = await db.question.findMany({ where: { partId: part.id, isPublished: true, format: "SINGLE" }, orderBy: [{ type: "asc" }, { createdAt: "asc" }] });
   const [attempts, bookmarks] = user
     ? await Promise.all([
         db.attempt.findMany({ where: { userId: user.id, questionId: { in: questions.map((q) => q.id) } }, orderBy: { createdAt: "desc" } }),

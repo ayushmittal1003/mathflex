@@ -1,11 +1,11 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, PlayCircle, Trophy, ShoppingBag } from "lucide-react";
+import { Home, Search, PlayCircle, Target, Trophy, ShoppingBag } from "lucide-react";
 import { useCart } from "./cart-store";
 
 // Bottom tab bar for phones — thumb-reachable, like a native app.
-export function TabBar({ leaderboard }: { leaderboard: boolean }) {
+export function TabBar({ leaderboard, practice }: { leaderboard: boolean; practice: boolean }) {
   const pathname = usePathname();
   const count = useCart().length;
   if (pathname.startsWith("/learn/")) return null;
@@ -13,6 +13,7 @@ export function TabBar({ leaderboard }: { leaderboard: boolean }) {
     { href: "/", label: "Home", icon: Home },
     { href: "/browse", label: "Browse", icon: Search },
     { href: "/my-learning", label: "Learning", icon: PlayCircle },
+    ...(practice ? [{ href: "/practice", label: "Practice", icon: Target }] : []),
     ...(leaderboard ? [{ href: "/leaderboard", label: "Ranks", icon: Trophy }] : []),
     { href: "/cart", label: "Cart", icon: ShoppingBag, badge: count },
   ];

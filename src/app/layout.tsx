@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Plus_Jakarta_Sans, Sora } from "next/font/google";
 import "./globals.css";
 
@@ -29,10 +30,12 @@ const themeScript = `try{var t=localStorage.getItem("mf-theme");if(t!=="light")d
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${jakarta.variable} ${sora.variable}`}>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
-      <body className="min-h-dvh">{children}</body>
+      {/* Browser extensions (e.g. ClickUp) add classes to <body>; don't flag that as a mismatch. */}
+      <body className="min-h-dvh" suppressHydrationWarning>
+        {/* next/script injects this into the initial HTML; a raw <script> would warn on client renders. */}
+        <Script id="theme" strategy="beforeInteractive">{themeScript}</Script>
+        {children}
+      </body>
     </html>
   );
 }

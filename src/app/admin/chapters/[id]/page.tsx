@@ -11,6 +11,8 @@ import { VideoField } from "@/components/admin/VideoField";
 import { ResourceUploader } from "@/components/admin/ResourceUploader";
 import { QuestionImport } from "@/components/admin/QuestionImport";
 import { SyncDuration } from "@/components/admin/SyncDuration";
+import { AnswerFields } from "@/components/admin/AnswerFields";
+import { FORMAT_LABEL } from "@/lib/grading";
 import {
   saveChapter, deleteChapter, savePart, deletePart, saveQuestion, deleteQuestion, updateResource, deleteResource, reextractResource,
 } from "../../actions";
@@ -191,6 +193,8 @@ function PartForm({ chapterId, part: p, bunny, nextOrder }: { chapterId: string;
 function QuestionsTab({ chapter, parts, questions, partFilter }: { chapter: Chapter; parts: Part[]; questions: Question[]; partFilter?: string }) {
   const shown = partFilter ? questions.filter((q) => q.partId === partFilter) : questions;
   const partName = (id: string | null) => parts.find((p) => p.id === id)?.order;
+  // Suggestions for the topic field: the chapter's JEE topics, part topics, and topics already used.
+  const topics = [...new Set([...chapter.topTopics, ...parts.flatMap((p) => p.topics), ...questions.map((q) => q.topic ?? "")].filter(Boolean))];
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 text-sm font-semibold">
@@ -206,50 +210,51 @@ function QuestionsTab({ chapter, parts, questions, partFilter }: { chapter: Chap
           <summary className="flex cursor-pointer list-none items-center gap-3 p-4">
             <span className="w-6 text-sm font-bold text-muted">{i + 1}</span>
             <Badge tone={q.type === "PYQ" ? "gold" : "brand"}>{q.type}</Badge>
+            {q.format !== "SINGLE" && <Badge>{FORMAT_LABEL[q.format]}</Badge>}
             <span className="min-w-0 flex-1 truncate text-sm font-semibold">{q.prompt}</span>
+            {q.topic && <span className="hidden text-xs text-muted sm:inline">{q.topic}</span>}
             <span className="text-xs text-muted">Part {partName(q.partId) ?? "–"}</span>
             {!q.isPublished && <Badge>Hidden</Badge>}
             <ChevronDown className="size-5 transition group-open:rotate-180" />
           </summary>
           <div className="border-t border-border p-4">
-            <QuestionForm chapterId={chapter.id} parts={parts} q={q} />
+            <QuestionForm chapterId={chapter.id} parts={parts} q={q} topics={topics} />
             <div className="mt-3"><ConfirmButton action={deleteQuestion.bind(null, q.id)} message="Delete this question?">Delete question</ConfirmButton></div>
           </div>
         </details>
       ))}
-      <Card title="Add a question"><QuestionForm chapterId={chapter.id} parts={parts} q={null} defaultPart={partFilter} /></Card>
+      <Card title="Add a question"><QuestionForm chapterId={chapter.id} parts={parts} q={null} defaultPart={partFilter} topics={topics} /></Card>
       <Card title="Bulk import"><QuestionImport chapterId={chapter.id} /></Card>
     </div>
   );
 }
 
-function QuestionForm({ chapterId, parts, q, defaultPart }: { chapterId: string; parts: Part[]; q: Question | null; defaultPart?: string }) {
+function QuestionForm({ chapterId, parts, q, defaultPart, topics }: { chapterId: string; parts: Part[]; q: Question | null; defaultPart?: string; topics: string[] }) {
+  const listId = `topics-${q?.id ?? "new"}`;
   return (
     <form action={saveQuestion} className="space-y-4">
       <input type="hidden" name="chapterId" value={chapterId} />
       {q && <input type="hidden" name="id" value={q.id} />}
       <div className="grid gap-4 sm:grid-cols-4">
         <Field label="Type"><select name="type" defaultValue={q?.type ?? "DPP"} className="input"><option value="DPP">DPP</option><option value="PYQ">PYQ</option></select></Field>
-        <Field label="Part" hint="Unlocks after this part's video">
+        <Field label="Part" hint="Single-correct only; others go to the Q bank">
           <select name="partId" defaultValue={q?.partId ?? defaultPart ?? parts[0]?.id ?? ""} className="input">
             <option value="">No part</option>
             {parts.map((p) => <option key={p.id} value={p.id}>Part {p.order}</option>)}
           </select>
         </Field>
-        <Field label="Exam (PYQ)"><input name="exam" defaultValue={q?.exam ?? ""} placeholder="JEE Main" className="input" /></Field>
+        <Field label="Exam (PYQ)">
+          <input name="exam" list="exam-names" defaultValue={q?.exam ?? ""} placeholder="JEE Main" className="input" />
+          <datalist id="exam-names"><option value="JEE Main" /><option value="JEE Advanced" /><option value="JEE Main (Jan)" /><option value="JEE Main (Apr)" /></datalist>
+        </Field>
         <Field label="Year (PYQ)"><input name="year" type="number" defaultValue={q?.year ?? ""} className="input" /></Field>
       </div>
       <Field label="Question" hint="Plain text maths works well: x², √, ∫, π, ≤"><textarea name="prompt" rows={3} defaultValue={q?.prompt} required className="input" /></Field>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {[0, 1, 2, 3].map((i) => (
-          <label key={i} className="flex items-center gap-2">
-            <input type="radio" name="correctIndex" value={i} defaultChecked={(q?.correctIndex ?? 0) === i} className="size-4 accent-[var(--ok)]" aria-label={`Option ${"ABCD"[i]} is correct`} />
-            <span className="w-5 text-sm font-bold">{"ABCD"[i]}</span>
-            <input name={`option${i}`} defaultValue={q?.options[i] ?? ""} required={i < 2} className="input" />
-          </label>
-        ))}
-      </div>
-      <p className="-mt-2 text-xs text-muted">Select the radio button next to the correct option.</p>
+      <AnswerFields q={q} />
+      <Field label="Topic" hint="Sub-topic for the students' weak-topic analytics, e.g. L'Hôpital's rule">
+        <input name="topic" list={listId} defaultValue={q?.topic ?? ""} className="input" />
+        <datalist id={listId}>{topics.map((t) => <option key={t} value={t} />)}</datalist>
+      </Field>
       <Field label="Solution"><textarea name="solution" rows={3} defaultValue={q?.solution} className="input" /></Field>
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Difficulty"><select name="difficulty" defaultValue={q?.difficulty ?? 2} className="input"><option value={1}>Easy</option><option value={2}>Medium</option><option value={3}>Hard</option></select></Field>

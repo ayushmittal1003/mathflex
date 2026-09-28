@@ -10,7 +10,7 @@ import { MenuDrawer, type DrawerUser } from "./MenuDrawer";
 
 export type NavProps = {
   user: (DrawerUser & { xp: number; streak: number }) | null;
-  features: { leaderboard: boolean; referAndEarn: boolean };
+  features: { leaderboard: boolean; referAndEarn: boolean; practice: boolean };
   contact: { whatsapp: string; email: string };
 };
 
@@ -19,6 +19,7 @@ const links = [
   { href: "/browse", label: "Chapters" },
   { href: "/courses", label: "Courses" },
   { href: "/my-learning", label: "My Learning" },
+  { href: "/practice", label: "Practice", flag: "practice" as const },
   { href: "/leaderboard", label: "Leaderboard", flag: "leaderboard" as const },
 ];
 

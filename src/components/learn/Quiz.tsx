@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Bookmark, BookmarkCheck, Check, X, ChevronRight, Lock, RotateCcw, Zap } from "lucide-react";
 import { answerQuestion, toggleBookmark } from "@/app/actions/learn";
+import { tone } from "./tone";
 
 export type QuizQuestion = {
   id: string;
@@ -17,24 +18,6 @@ export type QuizQuestion = {
 };
 
 type Result = { selected: number | null; isCorrect: boolean; correctIndex: number; solution: string; xp: number };
-
-// Short "ding" / "bonk" feedback tones.
-function tone(ok: boolean) {
-  try {
-    const ctx = new AudioContext();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = ok ? "sine" : "square";
-    o.frequency.setValueAtTime(ok ? 880 : 180, ctx.currentTime);
-    if (ok) o.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.12);
-    g.gain.setValueAtTime(0.12, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-    o.connect(g).connect(ctx.destination);
-    o.start();
-    o.stop(ctx.currentTime + 0.3);
-    setTimeout(() => ctx.close(), 500);
-  } catch {}
-}
 
 export function Quiz({
   questions,
