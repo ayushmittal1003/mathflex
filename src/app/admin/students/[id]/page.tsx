@@ -4,6 +4,10 @@ import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { inr } from "@/lib/format";
 import { levelFromXp } from "@/lib/gamification";
+import { getSettings } from "@/lib/settings";
+import { getAccessibleChapterIds } from "@/lib/access";
+import { practiceAnalytics } from "@/lib/qbank";
+import { accuracyOf, fmtTime, strengthOf } from "@/lib/grading";
 import { Card, Field, PageHeader, Stat, Badge, SubmitButton } from "@/components/admin/ui";
 import { ConfirmButton, ActionButton } from "@/components/admin/ConfirmButton";
 import { grantAccess, revokeEntitlement, extendEntitlement, setBlocked, setRole } from "../../actions";
@@ -27,6 +31,10 @@ export default async function Student({ params }: { params: Promise<{ id: string
     db.attempt.count({ where: { userId: id, isCorrect: true } }),
     db.partProgress.count({ where: { userId: id, completedAt: { not: null } } }),
   ]);
+  const settings = await getSettings();
+  const pa = await practiceAnalytics(u.id, await getAccessibleChapterIds(u.id), settings.marking);
+  const chapterTitle = new Map(chapters.map((c) => [c.id, c.title]));
+  const practiced = [...pa.byChapter.entries()].filter(([, t]) => t.attempted > 0).sort((a, b) => accuracyOf(a[1]) - accuracyOf(b[1]));
   const lvl = levelFromXp(u.xp);
   const self = me.id === u.id;
   return (
@@ -51,6 +59,32 @@ export default async function Student({ params }: { params: Promise<{ id: string
         <Stat label="Accuracy" value={`${attempts ? Math.round((correct / attempts) * 100) : 0}%`} sub={`${attempts} attempts`} />
         <Stat label="Parts completed" value={`${partsDone}`} sub={`${u.badges.length} badges`} />
       </div>
+      <Card title="Practice" action={<span className="text-xs text-muted">First attempts · JEE marking</span>}>
+        <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+          <Mini label="Solved" value={`${pa.overall.attempted}/${pa.overall.total}`} />
+          <Mini label="Accuracy" value={pa.overall.attempted ? `${accuracyOf(pa.overall)}%` : "–"} />
+          <Mini label="Marks" value={pa.overall.attempted ? `${pa.overall.marks}/${pa.overall.maxMarks}` : "–"} />
+          <Mini label="Avg time" value={pa.overall.attempted ? fmtTime(pa.overall.timeMs / pa.overall.attempted) : "–"} />
+        </div>
+        {practiced.length > 0 && (
+          <ul className="mt-5 divide-y divide-border border-t border-border text-sm">
+            {practiced.map(([id, t]) => {
+              const st = strengthOf(t);
+              return (
+                <li key={id} className="flex items-center gap-3 py-2.5">
+                  <span className="min-w-0 flex-1 truncate font-semibold">{chapterTitle.get(id) ?? "Chapter"}</span>
+                  <span className="tabular-nums text-muted">{t.correct}/{t.attempted}</span>
+                  <span className="w-12 text-right font-bold tabular-nums">{accuracyOf(t)}%</span>
+                  <Badge tone={st === "strong" ? "ok" : st === "weak" ? "bad" : "gold"}>{st === "weak" ? "Needs work" : st === "strong" ? "Strong" : "Building"}</Badge>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        {pa.weakTopics.length > 0 && (
+          <p className="mt-4 text-sm"><span className="font-semibold">Weak topics:</span> <span className="text-muted">{pa.weakTopics.map((t) => `${t.topic} (${accuracyOf(t)}%)`).join(" · ")}</span></p>
+        )}
+      </Card>
       <Card title="Access">
         <ul className="divide-y divide-border text-sm">
           {u.entitlements.map((e) => {
@@ -96,6 +130,15 @@ export default async function Student({ params }: { params: Promise<{ id: string
           {!u.orders.length && <li className="py-2 text-muted">No orders.</li>}
         </ul>
       </Card>
+    </div>
+  );
+}
+
+function Mini({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl bg-surface-2 px-3 py-2.5">
+      <p className="text-xs text-muted">{label}</p>
+      <p className="font-display text-lg font-extrabold tabular-nums">{value}</p>
     </div>
   );
 }

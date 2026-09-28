@@ -17,6 +17,14 @@ const FEATURE_LABELS: Record<keyof typeof DEFAULT_SETTINGS.features, [string, st
   freePreviews: ["Free previews", "Parts marked as free preview are watchable without buying"],
   marquee: ["Running ticker", "Promo strip above the navbar"],
   signupOpen: ["New sign-ups", "Turn off to pause registrations"],
+  practice: ["Practice question bank", "Chapter-wise Q bank with accuracy & marks analytics"],
+};
+
+const MARKING_LABELS: Record<keyof typeof DEFAULT_SETTINGS.marking, [string, string]> = {
+  correct: ["Correct answer", "JEE: +4"],
+  wrong: ["Wrong (single / numerical)", "JEE Main: −1"],
+  multiWrong: ["Wrong (multi-correct)", "JEE Advanced: −2 if any wrong option is picked"],
+  multiPartial: ["Partial (multi-correct)", "JEE Advanced: +1 per correct option, none wrong"],
 };
 
 const XP_LABELS: Record<keyof typeof DEFAULT_SETTINGS.xp, string> = {
@@ -67,6 +75,14 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <div className="grid gap-4 sm:grid-cols-3">
           {(Object.keys(XP_LABELS) as (keyof typeof XP_LABELS)[]).map((k) => (
             <Field key={k} label={XP_LABELS[k]}><input name={`xp.${k}`} type="number" min={0} defaultValue={s.xp[k]} className="input" /></Field>
+          ))}
+        </div>
+      </Card>
+
+      <Card title="JEE marking scheme" action={<span className="text-xs text-muted">Used to score practice and show marks</span>}>
+        <div className="grid gap-4 sm:grid-cols-4">
+          {(Object.keys(MARKING_LABELS) as (keyof typeof MARKING_LABELS)[]).map((k) => (
+            <Field key={k} label={MARKING_LABELS[k][0]} hint={MARKING_LABELS[k][1]}><input name={`marking.${k}`} type="number" step="0.25" defaultValue={s.marking[k]} className="input" /></Field>
           ))}
         </div>
       </Card>

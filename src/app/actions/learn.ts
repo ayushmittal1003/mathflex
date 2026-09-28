@@ -69,7 +69,7 @@ export async function reportWatch(partId: string, watchedSec: number, durationSe
     return null;
   }
 
-  const questionCount = await db.question.count({ where: { partId, isPublished: true } });
+  const questionCount = await db.question.count({ where: { partId, isPublished: true, format: "SINGLE" } });
   const pp = await db.partProgress.upsert({
     where: { userId_partId: { userId: user.id, partId } },
     create: { userId: user.id, partId, watchedSec: best, videoDone: reached, practiceDone: questionCount === 0 },
@@ -113,7 +113,7 @@ export async function answerQuestion(questionId: string, selected: number | null
 export async function finishPractice(partId: string): Promise<(PartOutcome & { score: number; total: number }) | null> {
   const { user, part } = await requirePartAccess(partId);
   const settings = await getSettings();
-  const questions = await db.question.findMany({ where: { partId, isPublished: true }, select: { id: true } });
+  const questions = await db.question.findMany({ where: { partId, isPublished: true, format: "SINGLE" }, select: { id: true } });
   const ids = questions.map((q) => q.id);
   // Latest attempt per question decides the score for this run.
   const attempts = await db.attempt.findMany({ where: { userId: user.id, questionId: { in: ids } }, orderBy: { createdAt: "desc" } });

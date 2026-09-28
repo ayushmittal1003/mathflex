@@ -277,6 +277,18 @@ async function seedDemo(pw: (p: string) => Promise<string>, chapterIds: Record<s
     await db.partProgress.create({ data: { userId: student.id, partId: p1.id, watchedSec: 3600, videoDone: true, practiceDone: true, completedAt: new Date() } });
   }
 
+  // Question bank extras for Limits: JEE Advanced multi-correct + numerical, tagged by topic.
+  if ((await db.question.count({ where: { chapterId: limitsId, format: { not: "SINGLE" } } })) === 0) {
+    const bank = [
+      { format: "NUMERICAL" as const, type: "PYQ" as const, exam: "JEE Main", year: 2023, topic: "1^∞ form", difficulty: 2, prompt: "If lim (x→0) (1 + 3x)^(1/x) = e^k, find k.", options: [], numericAnswer: 3, tolerance: 0, solution: "1^∞ form: e^(lim 3x · 1/x) = e³, so k = 3." },
+      { format: "NUMERICAL" as const, type: "DPP" as const, topic: "L'Hôpital's rule", difficulty: 2, prompt: "Evaluate lim (x→0) (1 − cos 4x) / x².", options: [], numericAnswer: 8, tolerance: 0, solution: "1 − cos 4x ≈ (4x)²/2 = 8x², so the limit is 8." },
+      { format: "NUMERICAL" as const, type: "DPP" as const, topic: "Standard limits", difficulty: 3, prompt: "Evaluate lim (x→0) (e^x − 1 − x) / x², correct to two decimals.", options: [], numericAnswer: 0.5, tolerance: 0.01, solution: "e^x = 1 + x + x²/2 + …, so the limit is 1/2 = 0.50." },
+      { format: "MULTIPLE" as const, type: "PYQ" as const, exam: "JEE Advanced", year: 2021, topic: "Differentiability", difficulty: 3, prompt: "Let f(x) = |x| + |x − 1|. Which of the following are true?", options: ["f is continuous everywhere", "f is differentiable at x = 0", "f is not differentiable at x = 1", "f has a minimum value of 1"], correctIndices: [0, 2, 3], solution: "Sum of |·| terms is continuous; corners at x = 0 and x = 1 make it non-differentiable there; on [0, 1] f = 1, the minimum." },
+      { format: "MULTIPLE" as const, type: "DPP" as const, topic: "Standard limits", difficulty: 2, prompt: "Which of these limits (x → 0) equal 1?", options: ["sin x / x", "tan x / x", "(1 − cos x) / x", "ln(1 + x) / x"], correctIndices: [0, 1, 3], solution: "sin x/x, tan x/x and ln(1+x)/x all → 1; (1 − cos x)/x → 0." },
+    ];
+    for (const q of bank) await db.question.create({ data: { chapterId: limitsId, ...q } });
+  }
+
   // Demo leaderboard students with XP spread over the last 30 days
   const names = ["Ishita Verma", "Rohan Mehta", "Ananya Iyer", "Kabir Singh", "Diya Patel", "Arjun Nair", "Saanvi Gupta", "Vihaan Reddy", "Myra Kapoor", "Aditya Joshi", "Tara Menon", "Reyansh Das"];
   const colors = ["#F43F5E", "#FB923C", "#8B5CF6", "#0EA5E9", "#10B981", "#EC4899"];

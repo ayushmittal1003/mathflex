@@ -32,6 +32,15 @@ export const DEFAULT_SETTINGS = {
     freePreviews: true,
     marquee: true,
     signupOpen: true,
+    practice: true, // chapter-wise question bank + practice analytics
+  },
+
+  // JEE marking scheme used to score practice (defaults follow JEE Main / Advanced).
+  marking: {
+    correct: 4,
+    wrong: -1, // single-correct and numerical
+    multiWrong: -2, // multi-correct: any wrong option picked
+    multiPartial: 1, // multi-correct: per correct option when none are wrong
   },
 
   // Gamification rules

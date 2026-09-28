@@ -36,12 +36,12 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <NavBar
         ticker={<Marquee items={marquee.map((m) => ({ id: m.id, title: m.title, href: m.ctaHref }))} />}
         user={user ? { name: user.name, email: user.email, avatarColor: user.avatarColor, role: user.role, xp: user.xp, streak: user.streak, planSummary } : null}
-        features={{ leaderboard: f.leaderboard, referAndEarn: f.referAndEarn }}
+        features={{ leaderboard: f.leaderboard, referAndEarn: f.referAndEarn, practice: f.practice }}
         contact={contact}
       />
       <main className={`min-h-[70vh] ${marquee.length ? "[--nav-h:6.25rem]" : "[--nav-h:4rem]"}`}>{children}</main>
       <Footer email={contact.email} whatsapp={contact.whatsapp} />
-      <TabBar leaderboard={f.leaderboard} />
+      <TabBar leaderboard={f.leaderboard} practice={f.practice} />
       {f.chatbot && <ChatWidget name={settings.chatbot.name} greeting={settings.chatbot.greeting} />}
       <PromoPopup promo={popups[0] ?? null} />
     </CelebrateProvider>

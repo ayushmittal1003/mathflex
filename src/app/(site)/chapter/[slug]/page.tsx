@@ -81,9 +81,16 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
             <div className="mt-7 max-w-md">
               <div className="mb-2 flex justify-between text-sm font-semibold"><span>Your progress</span><span>{doneCount}/{chapter.parts.length} parts</span></div>
               <div className="h-2 overflow-hidden rounded-full bg-white/25"><div className="h-full rounded-full bg-white" style={{ width: `${(doneCount / Math.max(1, chapter.parts.length)) * 100}%` }} /></div>
-              <Link href={`/learn/${chapter.slug}?part=${resumePart?.order ?? 1}`} className="btn mt-5 bg-white !px-7 text-black">
-                <Play className="size-5 fill-current" /> {doneCount ? `Continue · Part ${resumePart?.order}` : "Start Part 1"}
-              </Link>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link href={`/learn/${chapter.slug}?part=${resumePart?.order ?? 1}`} className="btn bg-white !px-7 text-black">
+                  <Play className="size-5 fill-current" /> {doneCount ? `Continue · Part ${resumePart?.order}` : "Start Part 1"}
+                </Link>
+                {settings.features.practice && chapter.questions.length > 0 && (
+                  <Link href={`/practice/${chapter.slug}`} className="btn bg-white/20 text-white backdrop-blur">
+                    <Target className="size-5" /> Practice {chapter.questions.length} Qs
+                  </Link>
+                )}
+              </div>
             </div>
           ) : (
             <div className="mt-7">

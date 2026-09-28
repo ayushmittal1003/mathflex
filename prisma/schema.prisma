@@ -17,14 +17,21 @@ enum Role {
 }
 
 enum VideoProvider {
-  BUNNY   // Bunny Stream (recommended) - token-signed private playback
+  BUNNY // Bunny Stream (recommended) - token-signed private playback
   YOUTUBE // Unlisted YouTube - cheap, but links can leak
-  URL     // Any direct MP4/HLS URL (S3/CloudFront, R2, local dev)
+  URL // Any direct MP4/HLS URL (S3/CloudFront, R2, local dev)
 }
 
 enum QuestionType {
   DPP
   PYQ
+}
+
+// How a question is answered, following the JEE paper formats.
+enum AnswerFormat {
+  SINGLE // one correct option (JEE Main MCQ)
+  MULTIPLE // one or more correct options (JEE Advanced, partial marking)
+  NUMERICAL // typed numeric answer (JEE Main Section B / Advanced integer type)
 }
 
 enum ResourceType {
@@ -35,10 +42,10 @@ enum ResourceType {
 }
 
 enum BannerKind {
-  HERO    // big billboard at the top of home
+  HERO // big billboard at the top of home
   MARQUEE // running ticker strip
-  POPUP   // modal on first visit
-  OFFER   // offer card row on home
+  POPUP // modal on first visit
+  OFFER // offer card row on home
 }
 
 enum CouponType {
@@ -66,7 +73,7 @@ model User {
   phone        String?
   passwordHash String
   role         Role      @default(STUDENT)
-  classLevel   Int?      // 11, 12 or 13 (dropper)
+  classLevel   Int? // 11, 12 or 13 (dropper)
   avatarColor  String    @default("#F43F5E")
   xp           Int       @default(0)
   streak       Int       @default(0)
@@ -76,46 +83,46 @@ model User {
   referralCode String    @unique @default(cuid())
   createdAt    DateTime  @default(now())
 
-  entitlements  Entitlement[]
-  orders        Order[]
-  progress      PartProgress[]
-  attempts      Attempt[]
-  bookmarks     Bookmark[]
-  xpEvents      XpEvent[]
-  badges        UserBadge[]
-  mentorships   MentorshipBooking[]
-  chatLogs      ChatLog[]
-  couponUses    CouponRedemption[]
+  entitlements Entitlement[]
+  orders       Order[]
+  progress     PartProgress[]
+  attempts     Attempt[]
+  bookmarks    Bookmark[]
+  xpEvents     XpEvent[]
+  badges       UserBadge[]
+  mentorships  MentorshipBooking[]
+  chatLogs     ChatLog[]
+  couponUses   CouponRedemption[]
 }
 
 model Chapter {
-  id           String   @id @default(cuid())
-  slug         String   @unique
-  title        String
-  classLevel   Int      // 11 or 12
-  tagline      String   @default("")
-  description  String   @default("")
-  price        Int      // rupees
-  mrp          Int      // struck-through price
-  validityDays Int      @default(365)
-  coverFrom    String   @default("#F43F5E") // gradient start for the poster
-  coverTo      String   @default("#7C3AED") // gradient end
-  coverImage   String?  // optional uploaded poster image
-  symbol       String   @default("∫")        // big glyph on the poster
-  jeeWeightage Float    @default(0)          // % of JEE Main paper
-  difficulty   Int      @default(2)          // 1 easy .. 3 hard
-  topTopics    String[] @default([])         // most asked JEE topics
-  testMapping  String[] @default([])         // chapter-to-test mapping
-  isPublished  Boolean  @default(true)
-  isFeatured   Boolean  @default(false)
-  isTrending   Boolean  @default(false)
-  isLowPriority Boolean @default(false)
-  sortOrder    Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  classLevel    Int // 11 or 12
+  tagline       String   @default("")
+  description   String   @default("")
+  price         Int // rupees
+  mrp           Int // struck-through price
+  validityDays  Int      @default(365)
+  coverFrom     String   @default("#F43F5E") // gradient start for the poster
+  coverTo       String   @default("#7C3AED") // gradient end
+  coverImage    String? // optional uploaded poster image
+  symbol        String   @default("∫") // big glyph on the poster
+  jeeWeightage  Float    @default(0) // % of JEE Main paper
+  difficulty    Int      @default(2) // 1 easy .. 3 hard
+  topTopics     String[] @default([]) // most asked JEE topics
+  testMapping   String[] @default([]) // chapter-to-test mapping
+  isPublished   Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
+  isTrending    Boolean  @default(false)
+  isLowPriority Boolean  @default(false)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   introVideoProvider VideoProvider?
-  introVideoRef      String?       // 30-sec intro by the mentor shown after purchase
+  introVideoRef      String? // 30-sec intro by the mentor shown after purchase
 
   parts        Part[]
   questions    Question[]
@@ -125,20 +132,20 @@ model Chapter {
 }
 
 model Part {
-  id            String        @id @default(cuid())
-  chapterId     String
-  chapter       Chapter       @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-  order         Int
-  title         String
-  summary       String        @default("")
-  topics        String[]      @default([])
-  videoProvider VideoProvider @default(URL)
-  videoRef      String        @default("") // Bunny video GUID, YouTube id, or URL
-  durationSec   Int           @default(0)
-  isFreePreview Boolean       @default(false)
-  xpReward      Int           @default(100)
+  id             String        @id @default(cuid())
+  chapterId      String
+  chapter        Chapter       @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  order          Int
+  title          String
+  summary        String        @default("")
+  topics         String[]      @default([])
+  videoProvider  VideoProvider @default(URL)
+  videoRef       String        @default("") // Bunny video GUID, YouTube id, or URL
+  durationSec    Int           @default(0)
+  isFreePreview  Boolean       @default(false)
+  xpReward       Int           @default(100)
   // Share of the video a student must watch before the part counts as watched.
-  watchThreshold Float        @default(0.9)
+  watchThreshold Float         @default(0.9)
 
   questions Question[]
   progress  PartProgress[]
@@ -147,25 +154,32 @@ model Part {
 }
 
 model Question {
-  id           String       @id @default(cuid())
-  chapterId    String
-  chapter      Chapter      @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-  partId       String?
-  part         Part?        @relation(fields: [partId], references: [id], onDelete: SetNull)
-  type         QuestionType
-  year         Int?         // PYQ year
-  exam         String?      // "JEE Main", "JEE Advanced", "CBSE"
-  difficulty   Int          @default(2)
-  prompt       String
-  options      String[]
-  correctIndex Int
-  solution     String       @default("")
-  xp           Int          @default(10)
-  isPublished  Boolean      @default(true)
-  createdAt    DateTime     @default(now())
+  id             String       @id @default(cuid())
+  chapterId      String
+  chapter        Chapter      @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  partId         String?
+  part           Part?        @relation(fields: [partId], references: [id], onDelete: SetNull)
+  type           QuestionType
+  format         AnswerFormat @default(SINGLE)
+  year           Int? // PYQ year
+  exam           String? // "JEE Main", "JEE Advanced", "CBSE"
+  topic          String? // sub-topic, powers the weak-topic analytics
+  difficulty     Int          @default(2)
+  prompt         String
+  options        String[]
+  correctIndex   Int          @default(0) // SINGLE
+  correctIndices Int[]        @default([]) // MULTIPLE
+  numericAnswer  Float? // NUMERICAL
+  tolerance      Float        @default(0) // NUMERICAL: accepted +/- range
+  solution       String       @default("")
+  xp             Int          @default(10)
+  isPublished    Boolean      @default(true)
+  createdAt      DateTime     @default(now())
 
   attempts  Attempt[]
   bookmarks Bookmark[]
+
+  @@index([chapterId, isPublished])
 }
 
 model Resource {
@@ -217,49 +231,52 @@ model CourseChapter {
 
 // What a user can access. Created when an order is paid, or granted by an admin.
 model Entitlement {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   chapterId String?
-  chapter   Chapter?  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapter   Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   courseId  String?
-  course    Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
   orderId   String?
-  source    String    @default("purchase") // purchase | admin | free
+  source    String   @default("purchase") // purchase | admin | free
   expiresAt DateTime
-  introSeen Boolean   @default(false)
-  createdAt DateTime  @default(now())
+  introSeen Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   @@index([userId])
 }
 
 model PartProgress {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  partId      String
-  part        Part      @relation(fields: [partId], references: [id], onDelete: Cascade)
-  watchedSec  Int       @default(0)
-  videoDone   Boolean   @default(false)
-  practiceDone Boolean  @default(false)
-  completedAt DateTime?
-  updatedAt   DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  partId       String
+  part         Part      @relation(fields: [partId], references: [id], onDelete: Cascade)
+  watchedSec   Int       @default(0)
+  videoDone    Boolean   @default(false)
+  practiceDone Boolean   @default(false)
+  completedAt  DateTime?
+  updatedAt    DateTime  @updatedAt
 
   @@unique([userId, partId])
 }
 
 model Attempt {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  selected   Int?     // null = skipped
-  isCorrect  Boolean
-  timeMs     Int      @default(0)
-  createdAt  DateTime @default(now())
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId   String
+  question     Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selected     Int? // SINGLE pick; null = skipped
+  selectedMany Int[]    @default([]) // MULTIPLE picks
+  numericValue Float? // NUMERICAL answer
+  isCorrect    Boolean
+  timeMs       Int      @default(0)
+  createdAt    DateTime @default(now())
 
   @@index([userId, createdAt])
+  @@index([questionId])
 }
 
 model Bookmark {
@@ -311,10 +328,10 @@ model Coupon {
   code         String     @unique
   description  String     @default("")
   type         CouponType
-  value        Int        // percent (0-100) or flat rupees
-  maxDiscount  Int?       // cap for percent coupons
+  value        Int // percent (0-100) or flat rupees
+  maxDiscount  Int? // cap for percent coupons
   minAmount    Int        @default(0)
-  usageLimit   Int?       // total redemptions allowed
+  usageLimit   Int? // total redemptions allowed
   perUserLimit Int        @default(1)
   usedCount    Int        @default(0)
   startsAt     DateTime?
@@ -337,20 +354,20 @@ model CouponRedemption {
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  orderNo       String      @unique
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
-  status        OrderStatus @default(PENDING)
-  subtotal      Int
-  discount      Int         @default(0)
-  total         Int
-  couponCode    String?
-  gateway       String      @default("paytm")
-  gatewayTxnId  String?
-  gatewayRaw    Json?
-  paidAt        DateTime?
-  createdAt     DateTime    @default(now())
+  id           String      @id @default(cuid())
+  orderNo      String      @unique
+  userId       String
+  user         User        @relation(fields: [userId], references: [id])
+  status       OrderStatus @default(PENDING)
+  subtotal     Int
+  discount     Int         @default(0)
+  total        Int
+  couponCode   String?
+  gateway      String      @default("paytm")
+  gatewayTxnId String?
+  gatewayRaw   Json?
+  paidAt       DateTime?
+  createdAt    DateTime    @default(now())
 
   items OrderItem[]
 

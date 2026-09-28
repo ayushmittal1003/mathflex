@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect } from "react";
-import { X, User, CalendarClock, Gift, MessageCircle, Mail, LogIn, LogOut, Shield, BookOpen, Trophy, LayoutGrid, GraduationCap } from "lucide-react";
+import { X, User, CalendarClock, Gift, MessageCircle, Mail, LogIn, LogOut, Shield, BookOpen, Trophy, Target, LayoutGrid, GraduationCap } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { logout } from "@/app/actions/auth";
 
@@ -17,7 +17,7 @@ export function MenuDrawer({
   open: boolean;
   onClose: () => void;
   user: DrawerUser | null;
-  features: { leaderboard: boolean; referAndEarn: boolean };
+  features: { leaderboard: boolean; referAndEarn: boolean; practice: boolean };
   contact: { whatsapp: string; email: string };
 }) {
   useEffect(() => {
@@ -68,6 +68,7 @@ export function MenuDrawer({
           <Link href="/" className={item}><LayoutGrid className="size-5 text-muted" /> Home</Link>
           <Link href="/browse" className={item}><BookOpen className="size-5 text-muted" /> All chapters</Link>
           <Link href="/courses" className={item}><GraduationCap className="size-5 text-muted" /> Complete courses</Link>
+          {features.practice && <Link href="/practice" className={item}><Target className="size-5 text-muted" /> Practice Q bank</Link>}
           {features.leaderboard && <Link href="/leaderboard" className={item}><Trophy className="size-5 text-muted" /> Leaderboard</Link>}
           {user && (
             <>

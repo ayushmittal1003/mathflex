@@ -14,7 +14,7 @@ export default async function Dashboard() {
   const now = requestNow();
   const since30 = new Date(now - 30 * day);
   const startToday = new Date(new Date().setHours(0, 0, 0, 0));
-  const [paid30, students, newStudents, activeToday, pendingCalls, chats7, topItems, recent, settings] = await Promise.all([
+  const [paid30, students, newStudents, activeToday, pendingCalls, chats7, topItems, recent, settings, practice7, practiceToday, questionCount] = await Promise.all([
     db.order.findMany({ where: { status: "PAID", paidAt: { gte: since30 } }, select: { total: true, paidAt: true } }),
     db.user.count({ where: { role: "STUDENT" } }),
     db.user.count({ where: { role: "STUDENT", createdAt: { gte: new Date(now - 7 * day) } } }),
@@ -24,7 +24,12 @@ export default async function Dashboard() {
     db.orderItem.groupBy({ by: ["title"], where: { order: { status: "PAID" } }, _sum: { price: true }, _count: true, orderBy: { _sum: { price: "desc" } }, take: 8 }),
     db.order.findMany({ orderBy: { createdAt: "desc" }, take: 8, include: { user: { select: { name: true } } } }),
     getSettings(),
+    db.attempt.groupBy({ by: ["isCorrect"], where: { createdAt: { gte: new Date(now - 7 * day) } }, _count: true }),
+    db.attempt.count({ where: { createdAt: { gte: startToday } } }),
+    db.question.count({ where: { isPublished: true } }),
   ]);
+  const practiced7 = practice7.reduce((s, p) => s + p._count, 0);
+  const correct7 = practice7.find((p) => p.isCorrect)?._count ?? 0;
   const sum = (from: number) => paid30.filter((o) => o.paidAt!.getTime() >= from).reduce((s, o) => s + o.total, 0);
   const series = Array.from({ length: 30 }, (_, i) => {
     const d = new Date(startToday.getTime() - (29 - i) * day);
@@ -63,6 +68,12 @@ export default async function Dashboard() {
         <Stat label="Revenue · 30 days" value={inr(sum(now - 30 * day))} sub={`${paid30.length} paid orders`} />
         <Stat label="Students" value={students.toLocaleString("en-IN")} sub={`+${newStudents} this week · ${activeToday} active today`} />
       </div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Stat label="Practice answers today" value={practiceToday.toLocaleString("en-IN")} />
+        <Stat label="Practice answers · 7 days" value={practiced7.toLocaleString("en-IN")} />
+        <Stat label="Student success · 7 days" value={practiced7 ? `${Math.round((correct7 / practiced7) * 100)}%` : "–"} sub="share of answers correct" />
+        <Stat label="Questions in the bank" value={questionCount.toLocaleString("en-IN")} sub="published" />
+      </div>
       <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
         <Card title="Daily revenue · last 30 days"><Bars data={series} format="inr" /></Card>
         <Card title="Best sellers">
@@ -95,6 +106,7 @@ export default async function Dashboard() {
           <ul className="space-y-3 text-sm">
             <li><Link href="/admin/mentorship" className="flex justify-between"><span>Mentorship calls to schedule</span><Badge tone={pendingCalls ? "gold" : "muted"}>{pendingCalls}</Badge></Link></li>
             <li><Link href="/admin/flexcare" className="flex justify-between"><span>FlexCare questions this week</span><Badge>{chats7}</Badge></Link></li>
+            <li><Link href="/admin/questions?flag=key" className="flex justify-between"><span>Questions to review (answer key)</span><Badge tone="gold">Review</Badge></Link></li>
           </ul>
         </Card>
       </div>

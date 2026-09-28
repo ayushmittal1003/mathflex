@@ -3,6 +3,7 @@ import { Flame, Zap, Target, Trophy, Bookmark, Lock } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getCatalog } from "@/lib/catalog";
+import { getSettings } from "@/lib/settings";
 import { getAccessibleChapterIds } from "@/lib/access";
 import { levelFromXp } from "@/lib/gamification";
 import { activitySeries } from "@/lib/analytics";
@@ -14,7 +15,7 @@ export const metadata = { title: "My Learning" };
 export default async function MyLearning() {
   const user = await requireUser("/my-learning");
   const owned = await getAccessibleChapterIds(user.id);
-  const [catalog, series, badges, earned, attempts, bookmarks, ownedQuestionCount, rankAbove] = await Promise.all([
+  const [catalog, series, badges, earned, attempts, bookmarks, ownedQuestionCount, rankAbove, settings] = await Promise.all([
     getCatalog(user.id),
     activitySeries(user.id),
     db.badge.findMany({ orderBy: { code: "asc" } }),
@@ -23,6 +24,7 @@ export default async function MyLearning() {
     db.bookmark.findMany({ where: { userId: user.id }, include: { question: { include: { chapter: { select: { title: true, slug: true } }, part: { select: { order: true } } } } }, orderBy: { createdAt: "desc" }, take: 20 }),
     db.question.count({ where: { chapterId: { in: [...owned] }, isPublished: true } }),
     db.user.count({ where: { xp: { gt: user.xp }, role: "STUDENT" } }),
+    getSettings(),
   ]);
 
   // Latest attempt per question decides correct / incorrect.
@@ -85,6 +87,9 @@ export default async function MyLearning() {
             </>
           ) : (
             <p className="mt-6 text-sm text-muted">Buy a chapter to start practising.</p>
+          )}
+          {totalQ > 0 && settings.features.practice && (
+            <Link href="/practice" className="btn btn-ghost mt-5 w-full !py-2 text-sm"><Target className="size-4" /> Open practice analytics</Link>
           )}
         </div>
       </section>

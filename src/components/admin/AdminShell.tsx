@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
-  LayoutDashboard, BookOpen, Layers, Ticket, Megaphone, Receipt, Users, PhoneCall, Bot, Settings, Menu, X, ExternalLink, Video,
+  LayoutDashboard, BookOpen, ListChecks, Layers, Ticket, Megaphone, Receipt, Users, PhoneCall, Bot, Settings, Menu, X, ExternalLink, Video,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
@@ -11,6 +11,7 @@ import { ThemeToggle } from "@/components/site/ThemeToggle";
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/chapters", label: "Chapters & content", icon: BookOpen },
+  { href: "/admin/questions", label: "Question bank", icon: ListChecks },
   { href: "/admin/courses", label: "Courses (bundles)", icon: Layers },
   { href: "/admin/coupons", label: "Coupons", icon: Ticket },
   { href: "/admin/banners", label: "Banners & popups", icon: Megaphone },
