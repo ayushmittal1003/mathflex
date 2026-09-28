@@ -1,6 +1,8 @@
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, getImpersonator } from "@/lib/auth";
+import { accessSnapshot, activeEntitlements } from "@/lib/access";
+import { AccessWatcher } from "@/components/site/AccessWatcher";
+import { ImpersonationBanner } from "@/components/site/ImpersonationBanner";
 import { getSettings } from "@/lib/settings";
-import { db } from "@/lib/db";
 import { NavBar } from "@/components/site/NavBar";
 import { TabBar } from "@/components/site/TabBar";
 import { Footer } from "@/components/site/Footer";
@@ -11,17 +13,11 @@ import { CelebrateProvider } from "@/components/site/Celebrate";
 import { activeBanners } from "@/lib/banners";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const [user, settings] = await Promise.all([getCurrentUser(), getSettings()]);
+  const [user, settings, impersonator] = await Promise.all([getCurrentUser(), getSettings(), getImpersonator()]);
   const [marquee, popups, ents] = await Promise.all([
     settings.features.marquee ? activeBanners("MARQUEE") : Promise.resolve([]),
     activeBanners("POPUP"),
-    user
-      ? db.entitlement.findMany({
-          where: { userId: user.id, expiresAt: { gt: new Date() } },
-          orderBy: { expiresAt: "asc" },
-          include: { chapter: { select: { title: true } }, course: { select: { title: true } } },
-        })
-      : Promise.resolve([]),
+    user ? activeEntitlements(user.id) : Promise.resolve([]),
   ]);
 
   const planSummary = ents.length
@@ -33,6 +29,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   return (
     <CelebrateProvider sound={f.celebrationSound}>
+      {impersonator && user && <ImpersonationBanner student={user.name} admin={impersonator.name} />}
+      {user && <AccessWatcher initial={accessSnapshot(user.role, ents)} />}
       <NavBar
         ticker={<Marquee items={marquee.map((m) => ({ id: m.id, title: m.title, href: m.ctaHref }))} />}
         user={user ? { name: user.name, email: user.email, avatarColor: user.avatarColor, role: user.role, xp: user.xp, streak: user.streak, planSummary } : null}

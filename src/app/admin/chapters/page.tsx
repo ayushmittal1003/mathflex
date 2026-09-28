@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { inr } from "@/lib/format";
 import { PageHeader, Table, Td, Badge, LinkButton } from "@/components/admin/ui";
@@ -6,6 +7,7 @@ import { PageHeader, Table, Td, Badge, LinkButton } from "@/components/admin/ui"
 export const metadata = { title: "Chapters" };
 
 export default async function AdminChapters({ searchParams }: { searchParams: Promise<{ class?: string }> }) {
+  await requireStaff("content");
   const { class: cls } = await searchParams;
   const chapters = await db.chapter.findMany({
     where: cls ? { classLevel: Number(cls) } : undefined,

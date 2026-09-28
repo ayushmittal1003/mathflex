@@ -1,5 +1,6 @@
 "use server";
 import { redirect } from "next/navigation";
+import { isStaff } from "@/lib/permissions";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { createSession, destroySession, hashPassword, verifyPassword } from "@/lib/auth";
@@ -22,8 +23,8 @@ export async function login(_: AuthState, form: FormData): Promise<AuthState> {
   if (user.isBlocked) return { error: "This account is suspended. Please contact support." };
   await createSession(user.id, user.role);
   const next = safeNext(form.get("next"));
-  // Admins signing in from the plain login page go straight to the admin panel.
-  redirect(user.role === "ADMIN" && next === "/" ? "/admin" : next);
+  // Team members signing in from the plain login page go straight to the admin panel.
+  redirect(isStaff(user.role) && next === "/" ? "/admin" : next);
 }
 
 const SignupSchema = z.object({

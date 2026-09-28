@@ -1,4 +1,5 @@
 import { ChevronDown } from "lucide-react";
+import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Field, PageHeader, Toggle, SubmitButton, Badge } from "@/components/admin/ui";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
@@ -17,6 +18,7 @@ const KINDS = {
 const dt = (d: Date | null) => (d ? new Date(d.getTime() + 330 * 60_000).toISOString().slice(0, 16) : "");
 
 export default async function Banners() {
+  await requireStaff("banners");
   const banners = await db.banner.findMany({ orderBy: [{ kind: "asc" }, { sortOrder: "asc" }] });
   return (
     <div className="max-w-4xl space-y-8">

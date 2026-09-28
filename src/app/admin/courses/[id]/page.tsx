@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireStaff } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { inr } from "@/lib/format";
@@ -7,6 +8,7 @@ import { ConfirmButton } from "@/components/admin/ConfirmButton";
 import { saveCourse, deleteCourse } from "../../actions";
 
 export default async function CourseEditor({ params }: { params: Promise<{ id: string }> }) {
+  await requireStaff("courses");
   const { id } = await params;
   const c = id === "new" ? null : await db.course.findUnique({ where: { id }, include: { chapters: true } });
   if (id !== "new" && !c) notFound();

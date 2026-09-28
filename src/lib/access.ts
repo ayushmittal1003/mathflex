@@ -44,3 +44,21 @@ export function computePartStates(
   }
   return states;
 }
+
+type EntRow = { id: string; expiresAt: Date; chapter: { title: string } | null; course: { title: string } | null };
+
+// A cheap fingerprint of what the user can open right now. The browser polls it so a
+// grant or revoke made in the admin shows up on an already-open page.
+export function accessSnapshot(role: string, ents: EntRow[]) {
+  const titles = ents.map((e) => e.chapter?.title ?? e.course?.title ?? "").filter(Boolean);
+  const fp = [role, ...ents.map((e) => `${e.id}:${e.expiresAt.getTime()}`).sort()].join("|");
+  return { fp, titles };
+}
+
+export async function activeEntitlements(userId: string) {
+  return db.entitlement.findMany({
+    where: { userId, expiresAt: { gt: new Date() } },
+    orderBy: { expiresAt: "asc" },
+    include: { chapter: { select: { title: true } }, course: { select: { title: true } } },
+  });
+}

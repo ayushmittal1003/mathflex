@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { inr } from "@/lib/format";
 import { paytmConfigured } from "@/lib/paytm";
@@ -11,6 +12,7 @@ export const metadata = { title: "Orders" };
 const STATUSES: OrderStatus[] = ["PAID", "PENDING", "FAILED", "REFUNDED"];
 
 export default async function Orders({ searchParams }: { searchParams: Promise<{ status?: OrderStatus; q?: string }> }) {
+  await requireStaff("orders");
   const { status, q } = await searchParams;
   const orders = await db.order.findMany({
     where: {

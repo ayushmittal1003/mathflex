@@ -1,4 +1,5 @@
 import { bunnyConfigured } from "@/lib/video";
+import { requireStaff } from "@/lib/auth";
 import { Card, PageHeader, Badge } from "@/components/admin/ui";
 
 export const metadata = { title: "Video hosting" };
@@ -43,7 +44,8 @@ const OPTIONS = [
   },
 ];
 
-export default function VideoHosting() {
+export default async function VideoHosting() {
+  await requireStaff("video");
   const ok = bunnyConfigured();
   return (
     <div className="max-w-4xl space-y-6">

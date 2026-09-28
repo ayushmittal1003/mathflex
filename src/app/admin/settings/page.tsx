@@ -1,4 +1,5 @@
 import { getSettings, DEFAULT_SETTINGS } from "@/lib/settings";
+import { requireStaff } from "@/lib/auth";
 import { paytmConfigured } from "@/lib/paytm";
 import { Card, Field, PageHeader, Toggle, SubmitButton } from "@/components/admin/ui";
 import { saveSettings } from "../actions";
@@ -36,6 +37,7 @@ const XP_LABELS: Record<keyof typeof DEFAULT_SETTINGS.xp, string> = {
 };
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
+  await requireStaff("settings");
   const [s, { saved }] = await Promise.all([getSettings(), searchParams]);
   return (
     <form action={saveSettings} className="max-w-4xl space-y-6">

@@ -1,4 +1,5 @@
 import { ChevronDown } from "lucide-react";
+import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card, Field, PageHeader, Toggle, SubmitButton, Badge } from "@/components/admin/ui";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
@@ -10,6 +11,7 @@ export const metadata = { title: "Coupons" };
 const dt = (d: Date | null) => (d ? new Date(d.getTime() + 330 * 60_000).toISOString().slice(0, 16) : "");
 
 export default async function Coupons() {
+  await requireStaff("coupons");
   const coupons = await db.coupon.findMany({ orderBy: { createdAt: "desc" } });
   return (
     <div className="max-w-4xl space-y-4">

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { isStaff } from "@/lib/permissions";
 import { getCurrentUser } from "@/lib/auth";
 import { hasChapterAccess } from "@/lib/access";
 import { readStoredFile, signedDownloadUrl } from "@/lib/storage";
@@ -16,7 +17,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ key: strin
     const resource = await db.resource.findFirst({ where: { fileUrl: url } });
     if (!resource) return new Response("Not found", { status: 404 });
     const user = await getCurrentUser();
-    const isAdmin = user?.role === "ADMIN";
+    const isAdmin = isStaff(user?.role);
     const owns = !!resource.chapterId && (await hasChapterAccess(user?.id, resource.chapterId));
     if (!isAdmin && (!resource.isPublished || (resource.requiresPurchase && !owns))) {
       return new Response("Buy the chapter to open these notes.", { status: 403 });

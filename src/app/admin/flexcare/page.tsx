@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireStaff } from "@/lib/auth";
 import { ChevronDown } from "lucide-react";
 import { db } from "@/lib/db";
 import { claudeConfigured, buildPlatformKnowledge } from "@/lib/flexcare";
@@ -10,6 +11,7 @@ import { saveKnowledge, deleteKnowledge } from "../actions";
 export const metadata = { title: "FlexCare" };
 
 export default async function FlexCareAdmin() {
+  await requireStaff("flexcare");
   const [faqs, logs, resources, knowledge, settings] = await Promise.all([
     db.knowledgeEntry.findMany({ orderBy: { createdAt: "asc" } }),
     db.chatLog.findMany({ orderBy: { createdAt: "desc" }, take: 50, include: { user: { select: { name: true } } } }),

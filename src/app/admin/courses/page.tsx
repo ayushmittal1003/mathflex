@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { inr } from "@/lib/format";
 import { PageHeader, Table, Td, Badge, LinkButton } from "@/components/admin/ui";
@@ -6,6 +7,7 @@ import { PageHeader, Table, Td, Badge, LinkButton } from "@/components/admin/ui"
 export const metadata = { title: "Courses" };
 
 export default async function AdminCourses() {
+  await requireStaff("courses");
   const courses = await db.course.findMany({ orderBy: { sortOrder: "asc" }, include: { _count: { select: { chapters: true, entitlements: true } } } });
   return (
     <div>

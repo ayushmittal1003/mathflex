@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { requireStaff } from "@/lib/auth";
+import { can, type Permission } from "@/lib/permissions";
 import { requestNow } from "@/lib/time";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
@@ -10,11 +12,14 @@ import { Card, PageHeader, Stat, Badge } from "@/components/admin/ui";
 import { Bars } from "@/components/admin/Bars";
 
 export default async function Dashboard() {
+  const me = await requireStaff("dashboard");
+  const money = can(me.role, "revenue");
+  const allow = (p: Permission) => can(me.role, p);
   const day = 86_400_000;
   const now = requestNow();
   const since30 = new Date(now - 30 * day);
   const startToday = new Date(new Date().setHours(0, 0, 0, 0));
-  const [paid30, students, newStudents, activeToday, pendingCalls, chats7, topItems, recent, settings, practice7, practiceToday, questionCount] = await Promise.all([
+  const [paid30, students, newStudents, activeToday, pendingCalls, chats7, topItems, recent, settings, practice7, practiceToday, questionCount, changesToday] = await Promise.all([
     db.order.findMany({ where: { status: "PAID", paidAt: { gte: since30 } }, select: { total: true, paidAt: true } }),
     db.user.count({ where: { role: "STUDENT" } }),
     db.user.count({ where: { role: "STUDENT", createdAt: { gte: new Date(now - 7 * day) } } }),
@@ -27,6 +32,7 @@ export default async function Dashboard() {
     db.attempt.groupBy({ by: ["isCorrect"], where: { createdAt: { gte: new Date(now - 7 * day) } }, _count: true }),
     db.attempt.count({ where: { createdAt: { gte: startToday } } }),
     db.question.count({ where: { isPublished: true } }),
+    db.auditLog.count({ where: { createdAt: { gte: startToday } } }),
   ]);
   const practiced7 = practice7.reduce((s, p) => s + p._count, 0);
   const correct7 = practice7.find((p) => p.isCorrect)?._count ?? 0;
@@ -49,7 +55,7 @@ export default async function Dashboard() {
   return (
     <div className="space-y-6">
       <PageHeader title="Dashboard" subtitle="How MathFlex is doing today" />
-      {setup.some((s) => !s.ok) && (
+      {allow("settings") && setup.some((s) => !s.ok) && (
         <Card title="Finish setup">
           <ul className="space-y-2 text-sm">
             {setup.map((s) => (
@@ -63,9 +69,13 @@ export default async function Dashboard() {
         </Card>
       )}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Revenue today" value={inr(sum(startToday.getTime()))} />
-        <Stat label="Revenue · 7 days" value={inr(sum(now - 7 * day))} />
-        <Stat label="Revenue · 30 days" value={inr(sum(now - 30 * day))} sub={`${paid30.length} paid orders`} />
+        {money && (
+          <>
+            <Stat label="Revenue today" value={inr(sum(startToday.getTime()))} />
+            <Stat label="Revenue · 7 days" value={inr(sum(now - 7 * day))} />
+            <Stat label="Revenue · 30 days" value={inr(sum(now - 30 * day))} sub={`${paid30.length} paid orders`} />
+          </>
+        )}
         <Stat label="Students" value={students.toLocaleString("en-IN")} sub={`+${newStudents} this week · ${activeToday} active today`} />
       </div>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -74,7 +84,7 @@ export default async function Dashboard() {
         <Stat label="Student success · 7 days" value={practiced7 ? `${Math.round((correct7 / practiced7) * 100)}%` : "–"} sub="share of answers correct" />
         <Stat label="Questions in the bank" value={questionCount.toLocaleString("en-IN")} sub="published" />
       </div>
-      <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+      {money && <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
         <Card title="Daily revenue · last 30 days"><Bars data={series} format="inr" /></Card>
         <Card title="Best sellers">
           <ul className="space-y-3 text-sm">
@@ -88,9 +98,9 @@ export default async function Dashboard() {
             {!topItems.length && <p className="text-muted">No sales yet.</p>}
           </ul>
         </Card>
-      </div>
+      </div>}
       <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
-        <Card title="Recent orders" action={<Link href="/admin/orders" className="text-sm font-bold text-brand">All orders</Link>}>
+        {allow("orders") && <Card title="Recent orders" action={<Link href="/admin/orders" className="text-sm font-bold text-brand">All orders</Link>}>
           <ul className="divide-y divide-border text-sm">
             {recent.map((o) => (
               <li key={o.id} className="flex items-center gap-3 py-2.5">
@@ -101,12 +111,13 @@ export default async function Dashboard() {
             ))}
             {!recent.length && <p className="text-muted">No orders yet.</p>}
           </ul>
-        </Card>
+        </Card>}
         <Card title="Needs attention">
           <ul className="space-y-3 text-sm">
-            <li><Link href="/admin/mentorship" className="flex justify-between"><span>Mentorship calls to schedule</span><Badge tone={pendingCalls ? "gold" : "muted"}>{pendingCalls}</Badge></Link></li>
-            <li><Link href="/admin/flexcare" className="flex justify-between"><span>FlexCare questions this week</span><Badge>{chats7}</Badge></Link></li>
-            <li><Link href="/admin/questions?flag=key" className="flex justify-between"><span>Questions to review (answer key)</span><Badge tone="gold">Review</Badge></Link></li>
+            {allow("mentorship") && <li><Link href="/admin/mentorship" className="flex justify-between"><span>Mentorship calls to schedule</span><Badge tone={pendingCalls ? "gold" : "muted"}>{pendingCalls}</Badge></Link></li>}
+            {allow("flexcare") && <li><Link href="/admin/flexcare" className="flex justify-between"><span>FlexCare questions this week</span><Badge>{chats7}</Badge></Link></li>}
+            {allow("questions") && <li><Link href="/admin/questions?flag=key" className="flex justify-between"><span>Questions to review (answer key)</span><Badge tone="gold">Review</Badge></Link></li>}
+            {allow("audit") && <li><Link href="/admin/audit" className="flex justify-between"><span>Admin changes today</span><Badge>{changesToday}</Badge></Link></li>}
           </ul>
         </Card>
       </div>

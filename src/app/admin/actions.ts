@@ -4,7 +4,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { requireAdmin } from "@/lib/auth";
+import { requireStaff } from "@/lib/auth";
+import { audit } from "@/lib/audit";
+import { can, isStaff } from "@/lib/permissions";
 import { saveSetting, getSettings, type Settings } from "@/lib/settings";
 import { saveFile, readStoredFile, keyFromUrl, urlForKey, deleteStoredFile } from "@/lib/storage";
 import { bunnyConfigured, bunnyVideoInfo, createBunnyUpload } from "@/lib/video";
@@ -19,7 +21,7 @@ const refreshSite = () => revalidatePath("/", "layout");
 /* ---------------- Chapters ---------------- */
 
 export async function saveChapter(form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("content");
   const id = str(form, "id");
   const title = str(form, "title");
   const cover = form.get("coverFile");
@@ -53,18 +55,21 @@ export async function saveChapter(form: FormData) {
     ...(coverImage !== undefined ? { coverImage } : {}),
   };
   const saved = id ? await db.chapter.update({ where: { id }, data }) : await db.chapter.create({ data });
+  await audit(me, id ? "chapter.update" : "chapter.create", `${id ? "Updated" : "Created"} chapter “${saved.title}”`, { entity: "chapter", id: saved.id });
   refreshSite();
   if (!id) redirect(`/admin/chapters/${saved.id}`);
 }
 
 export async function deleteChapter(id: string) {
-  await requireAdmin();
+  const me = await requireStaff("content");
   const sold = await db.entitlement.count({ where: { chapterId: id } });
   if (sold) {
     // Keep purchased content reachable for students; just hide it from the store.
-    await db.chapter.update({ where: { id }, data: { isPublished: false } });
+    const c = await db.chapter.update({ where: { id }, data: { isPublished: false } });
+    await audit(me, "chapter.hide", `Hid chapter “${c.title}” (bought by students, so not deleted)`, { entity: "chapter", id });
   } else {
-    await db.chapter.delete({ where: { id } });
+    const c = await db.chapter.delete({ where: { id } });
+    await audit(me, "chapter.delete", `Deleted chapter “${c.title}”`, { entity: "chapter", id });
   }
   refreshSite();
   redirect("/admin/chapters");
@@ -73,7 +78,7 @@ export async function deleteChapter(id: string) {
 /* ---------------- Parts ---------------- */
 
 export async function savePart(form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("content");
   const id = str(form, "id");
   const chapterId = str(form, "chapterId");
   const order = int(form, "order", 1);
@@ -102,24 +107,26 @@ export async function savePart(form: FormData) {
       await tx.part.update({ where: { id: clash.id }, data: { order: free } });
     }
   });
+  await audit(me, id ? "part.update" : "part.create", `${id ? "Updated" : "Added"} Part ${order} “${data.title}”`, { entity: "chapter", id: chapterId });
   refreshSite();
 }
 
 export async function deletePart(id: string) {
-  await requireAdmin();
-  await db.part.delete({ where: { id } });
+  const me = await requireStaff("content");
+  const part = await db.part.delete({ where: { id } });
+  await audit(me, "part.delete", `Deleted Part ${part.order} “${part.title}”`, { entity: "chapter", id: part.chapterId });
   refreshSite();
 }
 
 // Admin browser uploads straight to Bunny with this signed ticket.
 export async function startVideoUpload(title: string) {
-  await requireAdmin();
+  await requireStaff("content");
   if (!bunnyConfigured()) throw new Error("Bunny Stream isn't configured. Add BUNNY_LIBRARY_ID and BUNNY_API_KEY to the environment.");
   return createBunnyUpload(title);
 }
 
 export async function syncBunnyDuration(partId: string) {
-  await requireAdmin();
+  await requireStaff("content");
   const part = await db.part.findUniqueOrThrow({ where: { id: partId } });
   if (part.videoProvider !== "BUNNY" || !part.videoRef) return { ok: false, message: "Not a Bunny video" };
   const info = await bunnyVideoInfo(part.videoRef);
@@ -145,7 +152,7 @@ function packOptions(raw: string[]) {
 }
 
 export async function saveQuestion(form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("questions");
   const id = str(form, "id");
   const format = (["SINGLE", "MULTIPLE", "NUMERICAL"].includes(str(form, "format")) ? str(form, "format") : "SINGLE") as AnswerFormat;
   const { options, slot } = packOptions([0, 1, 2, 3].map((i) => str(form, `option${i}`)));
@@ -173,22 +180,24 @@ export async function saveQuestion(form: FormData) {
     xp: int(form, "xp", 10),
     isPublished: bool(form, "isPublished"),
   };
-  if (id) await db.question.update({ where: { id }, data });
-  else await db.question.create({ data });
+  const q = id ? await db.question.update({ where: { id }, data }) : await db.question.create({ data });
+  await audit(me, id ? "question.update" : "question.create", `${id ? "Edited" : "Added"} ${q.type} question: “${q.prompt.slice(0, 80)}”`, { entity: "question", id: q.id, meta: { chapterId: q.chapterId } });
   revalidatePath(`/admin/chapters/${data.chapterId}`);
   revalidatePath("/admin/questions");
 }
 
 export async function deleteQuestion(id: string) {
-  await requireAdmin();
+  const me = await requireStaff("questions");
   const q = await db.question.delete({ where: { id } });
+  await audit(me, "question.delete", `Deleted question: “${q.prompt.slice(0, 80)}”`, { entity: "question", id, meta: { chapterId: q.chapterId } });
   revalidatePath(`/admin/chapters/${q.chapterId}`);
   revalidatePath("/admin/questions");
 }
 
 export async function setQuestionPublished(id: string, isPublished: boolean) {
-  await requireAdmin();
+  const me = await requireStaff("questions");
   const q = await db.question.update({ where: { id }, data: { isPublished } });
+  await audit(me, isPublished ? "question.publish" : "question.hide", `${isPublished ? "Published" : "Hid"} question: “${q.prompt.slice(0, 80)}”`, { entity: "question", id });
   revalidatePath(`/admin/chapters/${q.chapterId}`);
   revalidatePath("/admin/questions");
 }
@@ -197,7 +206,7 @@ export async function setQuestionPublished(id: string, isPublished: boolean) {
 // type | part | prompt | A | B | C | D | answer | solution | exam | year | difficulty(1-3) | topic
 // answer: "B" single correct · "A,C" (or "AC") multi-correct · "=2.5" or "=2.5~0.01" numerical (± tolerance)
 export async function importQuestions(_: unknown, form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("questions");
   const chapterId = str(form, "chapterId");
   const parts = await db.part.findMany({ where: { chapterId } });
   const lines = str(form, "rows").split("\n").map((l) => l.trim()).filter(Boolean);
@@ -263,6 +272,7 @@ export async function importQuestions(_: unknown, form: FormData) {
     });
     created++;
   }
+  if (created) await audit(me, "question.import", `Imported ${created} questions${errors.length ? ` (${errors.length} lines skipped)` : ""}`, { entity: "chapter", id: chapterId });
   revalidatePath(`/admin/chapters/${chapterId}`);
   revalidatePath("/admin/questions");
   return { created, errors };
@@ -275,7 +285,7 @@ const ALLOWED_RESOURCE_TYPES = ["application/pdf", "image/png", "image/jpeg", "i
 type ResourceMeta = { chapterId: string; type: string; title: string; requiresPurchase: boolean; includeInChatbot: boolean };
 
 // Shared by both upload paths: create the row, then teach FlexCare what's inside.
-async function registerResource(meta: ResourceMeta, stored: { url: string; mimeType: string; size: number }, bytes: () => Promise<Buffer>) {
+async function registerResource(me: { id: string; name: string; email: string }, meta: ResourceMeta, stored: { url: string; mimeType: string; size: number }, bytes: () => Promise<Buffer>) {
   const res = await db.resource.create({
     data: {
       chapterId: meta.chapterId || null,
@@ -300,13 +310,14 @@ async function registerResource(meta: ResourceMeta, stored: { url: string; mimeT
       console.error("Knowledge extraction failed", e);
     }
   }
+  await audit(me, "resource.upload", `Uploaded “${res.title}”`, { entity: "chapter", id: res.chapterId });
   refreshSite();
   return { ok: true as const, extracted };
 }
 
 // Local/dev path: the file comes through the server action.
 export async function uploadResource(_: unknown, form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("content");
   const file = form.get("file");
   if (!(file instanceof File) || file.size === 0) return { error: "Choose a PDF or image to upload." };
   if (file.size > 30 * 1024 * 1024) return { error: "Max file size is 30 MB." };
@@ -319,15 +330,16 @@ export async function uploadResource(_: unknown, form: FormData) {
     requiresPurchase: bool(form, "requiresPurchase"),
     includeInChatbot: bool(form, "includeInChatbot"),
   };
-  return registerResource(meta, stored, async () => Buffer.from(await file.arrayBuffer()));
+  return registerResource(me, meta, stored, async () => Buffer.from(await file.arrayBuffer()));
 }
 
 // Vercel path: the browser already uploaded the file to Blob; we just record it.
 export async function registerUploadedResource(input: ResourceMeta & { key: string; mimeType: string; size: number }) {
-  await requireAdmin();
+  const me = await requireStaff("content");
   if (!/^resources\/[\w-]+\.(pdf|png|jpe?g|webp)$/.test(input.key)) return { error: "Bad upload." };
   if (!ALLOWED_RESOURCE_TYPES.includes(input.mimeType)) return { error: "Upload a PDF, PNG, JPG or WEBP." };
   return registerResource(
+    me,
     { ...input, title: input.title.trim() || "Notes" },
     { url: urlForKey(input.key), mimeType: input.mimeType, size: input.size },
     () => readStoredFile(input.key),
@@ -335,8 +347,8 @@ export async function registerUploadedResource(input: ResourceMeta & { key: stri
 }
 
 export async function updateResource(form: FormData) {
-  await requireAdmin();
-  await db.resource.update({
+  const me = await requireStaff("content");
+  const r = await db.resource.update({
     where: { id: str(form, "id") },
     data: {
       title: str(form, "title"),
@@ -347,11 +359,12 @@ export async function updateResource(form: FormData) {
       isPublished: bool(form, "isPublished"),
     },
   });
+  await audit(me, "resource.update", `Edited notes “${r.title}”`, { entity: "chapter", id: r.chapterId });
   refreshSite();
 }
 
 export async function reextractResource(id: string) {
-  await requireAdmin();
+  await requireStaff("content");
   const r = await db.resource.findUniqueOrThrow({ where: { id } });
   const key = keyFromUrl(r.fileUrl);
   if (!key) return { ok: false };
@@ -362,8 +375,9 @@ export async function reextractResource(id: string) {
 }
 
 export async function deleteResource(id: string) {
-  await requireAdmin();
+  const me = await requireStaff("content");
   const r = await db.resource.delete({ where: { id } });
+  await audit(me, "resource.delete", `Deleted notes “${r.title}”`, { entity: "chapter", id: r.chapterId });
   const key = keyFromUrl(r.fileUrl);
   if (key) await deleteStoredFile(key).catch((e) => console.error("file delete failed", e));
   refreshSite();
@@ -372,7 +386,7 @@ export async function deleteResource(id: string) {
 /* ---------------- Courses ---------------- */
 
 export async function saveCourse(form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("courses");
   const id = str(form, "id");
   const title = str(form, "title");
   const chapterIds = form.getAll("chapterIds").map(String);
@@ -396,14 +410,16 @@ export async function saveCourse(form: FormData) {
     await tx.courseChapter.deleteMany({ where: { courseId: c.id } });
     await tx.courseChapter.createMany({ data: chapterIds.map((chapterId) => ({ courseId: c.id, chapterId })) });
   });
+  await audit(me, id ? "course.update" : "course.create", `${id ? "Updated" : "Created"} course “${title}” (${chapterIds.length} chapters)`, { entity: "course", id: id || null });
   refreshSite();
   redirect("/admin/courses");
 }
 
 export async function deleteCourse(id: string) {
-  await requireAdmin();
-  if (await db.entitlement.count({ where: { courseId: id } })) await db.course.update({ where: { id }, data: { isPublished: false } });
-  else await db.course.delete({ where: { id } });
+  const me = await requireStaff("courses");
+  const sold = await db.entitlement.count({ where: { courseId: id } });
+  const c = sold ? await db.course.update({ where: { id }, data: { isPublished: false } }) : await db.course.delete({ where: { id } });
+  await audit(me, sold ? "course.hide" : "course.delete", `${sold ? "Hid" : "Deleted"} course “${c.title}”`, { entity: "course", id });
   refreshSite();
   redirect("/admin/courses");
 }
@@ -411,7 +427,7 @@ export async function deleteCourse(id: string) {
 /* ---------------- Coupons ---------------- */
 
 export async function saveCoupon(form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("coupons");
   const id = str(form, "id");
   const data = {
     code: str(form, "code").toUpperCase().replace(/\s+/g, ""),
@@ -427,21 +443,22 @@ export async function saveCoupon(form: FormData) {
     isActive: bool(form, "isActive"),
     isPublic: bool(form, "isPublic"),
   };
-  if (id) await db.coupon.update({ where: { id }, data });
-  else await db.coupon.create({ data });
+  const c = id ? await db.coupon.update({ where: { id }, data }) : await db.coupon.create({ data });
+  await audit(me, id ? "coupon.update" : "coupon.create", `${id ? "Updated" : "Created"} coupon ${c.code} (${c.type === "PERCENT" ? `${c.value}%` : `₹${c.value}`}${c.isActive ? "" : ", inactive"})`, { entity: "coupon", id: c.id });
   revalidatePath("/admin/coupons");
 }
 
 export async function deleteCoupon(id: string) {
-  await requireAdmin();
-  await db.coupon.delete({ where: { id } });
+  const me = await requireStaff("coupons");
+  const c = await db.coupon.delete({ where: { id } });
+  await audit(me, "coupon.delete", `Deleted coupon ${c.code}`, { entity: "coupon", id });
   revalidatePath("/admin/coupons");
 }
 
 /* ---------------- Banners ---------------- */
 
 export async function saveBanner(form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("banners");
   const id = str(form, "id");
   const img = form.get("imageFile");
   let imageUrl: string | null | undefined;
@@ -460,36 +477,40 @@ export async function saveBanner(form: FormData) {
     sortOrder: int(form, "sortOrder"),
     ...(imageUrl !== undefined ? { imageUrl } : {}),
   };
-  if (id) await db.banner.update({ where: { id }, data });
-  else await db.banner.create({ data });
+  const b = id ? await db.banner.update({ where: { id }, data }) : await db.banner.create({ data });
+  await audit(me, id ? "banner.update" : "banner.create", `${id ? "Updated" : "Created"} ${b.kind.toLowerCase()} banner “${b.title}”${b.isActive ? "" : " (inactive)"}`, { entity: "banner", id: b.id });
   refreshSite();
 }
 
 export async function deleteBanner(id: string) {
-  await requireAdmin();
-  await db.banner.delete({ where: { id } });
+  const me = await requireStaff("banners");
+  const b = await db.banner.delete({ where: { id } });
+  await audit(me, "banner.delete", `Deleted banner “${b.title}”`, { entity: "banner", id });
   refreshSite();
 }
 
 /* ---------------- Orders ---------------- */
 
 export async function markOrderPaid(id: string) {
-  await requireAdmin();
-  await fulfilOrder(id, { txnId: "MANUAL", raw: { manual: true, at: new Date().toISOString() } });
+  const me = await requireStaff("orders");
+  await fulfilOrder(id, { txnId: "MANUAL", raw: { manual: true, at: new Date().toISOString(), by: me.email } });
+  const o = await db.order.findUniqueOrThrow({ where: { id } });
+  await audit(me, "order.markPaid", `Marked order ${o.orderNo} as paid (₹${o.total})`, { entity: "user", id: o.userId, meta: { orderId: id } });
   revalidatePath("/admin/orders");
 }
 
 export async function refundOrder(id: string) {
-  await requireAdmin();
-  await db.$transaction([
+  const me = await requireStaff("orders");
+  const [, o] = await db.$transaction([
     db.entitlement.deleteMany({ where: { orderId: id } }),
     db.order.update({ where: { id }, data: { status: "REFUNDED" } }),
   ]);
+  await audit(me, "order.refund", `Refunded order ${o.orderNo} (₹${o.total}) and removed its access`, { entity: "user", id: o.userId, meta: { orderId: id } });
   revalidatePath("/admin/orders");
 }
 
 export async function recheckPaytm(id: string) {
-  await requireAdmin();
+  await requireStaff("orders");
   if (!paytmConfigured()) return;
   const order = await db.order.findUniqueOrThrow({ where: { id } });
   const s = await fetchOrderStatus(order.orderNo);
@@ -501,77 +522,103 @@ export async function recheckPaytm(id: string) {
 /* ---------------- Students ---------------- */
 
 export async function setBlocked(userId: string, blocked: boolean) {
-  const admin = await requireAdmin();
-  if (admin.id === userId) return;
+  const me = await requireStaff("students");
+  if (me.id === userId) return;
+  const target = await db.user.findUniqueOrThrow({ where: { id: userId } });
+  // Blocking a team member is a team decision, not a support one.
+  if (isStaff(target.role) && !can(me.role, "team")) throw new Error("Only a super admin can block a team member.");
   await db.user.update({ where: { id: userId }, data: { isBlocked: blocked } });
+  await audit(me, blocked ? "user.block" : "user.unblock", `${blocked ? "Blocked" : "Unblocked"} ${target.name} (${target.email})`, { entity: "user", id: userId });
   revalidatePath(`/admin/students/${userId}`);
 }
 
-export async function setRole(userId: string, role: "STUDENT" | "ADMIN") {
-  const admin = await requireAdmin();
-  if (admin.id === userId) return;
-  await db.user.update({ where: { id: userId }, data: { role } });
-  revalidatePath(`/admin/students/${userId}`);
+// Shared by the single and bulk grant forms. Returns the entitlements created.
+async function grant(me: { id: string; name: string; email: string }, userIds: string[], target: string, days: number, note: string) {
+  const [kind, id] = target.split(":");
+  const item = kind === "course" ? await db.course.findUnique({ where: { id }, select: { title: true } }) : await db.chapter.findUnique({ where: { id }, select: { title: true } });
+  if (!item || !userIds.length) return 0;
+  const expiresAt = new Date(Date.now() + Math.max(1, days) * 86_400_000);
+  await db.entitlement.createMany({
+    data: userIds.map((userId) => ({ userId, source: "admin", grantedById: me.id, note, expiresAt, ...(kind === "course" ? { courseId: id } : { chapterId: id }) })),
+  });
+  for (const userId of userIds) {
+    await audit(me, "access.grant", `Granted “${item.title}” for ${days} days${note ? ` · ${note}` : ""}`, { entity: "user", id: userId, meta: { target, days } });
+  }
+  return userIds.length;
 }
 
 export async function grantAccess(form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("access");
   const userId = str(form, "userId");
-  const target = str(form, "target"); // "chapter:<id>" | "course:<id>"
-  const [kind, id] = target.split(":");
-  const days = int(form, "days", 365);
-  await db.entitlement.create({
-    data: { userId, source: "admin", expiresAt: new Date(Date.now() + days * 86_400_000), ...(kind === "course" ? { courseId: id } : { chapterId: id }) },
-  });
+  await grant(me, [userId], str(form, "target"), int(form, "days", 365), str(form, "note"));
   revalidatePath(`/admin/students/${userId}`);
 }
 
+// Paste a list of emails (one per line, or comma-separated) and grant them all at once.
+export async function bulkGrantAccess(_: unknown, form: FormData) {
+  const me = await requireStaff("access");
+  const emails = [...new Set(str(form, "emails").toLowerCase().split(/[\s,;]+/).filter((e) => e.includes("@")))];
+  if (!emails.length) return { granted: [] as string[], missing: [] as string[], error: "Paste at least one email." };
+  if (emails.length > 500) return { granted: [], missing: [], error: "Up to 500 emails at a time." };
+  const users = await db.user.findMany({ where: { email: { in: emails } }, select: { id: true, email: true } });
+  const found = new Set(users.map((u) => u.email));
+  await grant(me, users.map((u) => u.id), str(form, "target"), int(form, "days", 365), str(form, "note"));
+  revalidatePath("/admin/access");
+  return { granted: users.map((u) => u.email), missing: emails.filter((e) => !found.has(e)), error: "" };
+}
+
 export async function revokeEntitlement(id: string) {
-  await requireAdmin();
-  const e = await db.entitlement.delete({ where: { id } });
+  const me = await requireStaff("access");
+  const e = await db.entitlement.delete({ where: { id }, include: { chapter: { select: { title: true } }, course: { select: { title: true } } } });
+  await audit(me, "access.revoke", `Revoked “${e.chapter?.title ?? e.course?.title}”`, { entity: "user", id: e.userId });
   revalidatePath(`/admin/students/${e.userId}`);
+  revalidatePath("/admin/access");
 }
 
 export async function extendEntitlement(id: string, days: number) {
-  await requireAdmin();
-  const e = await db.entitlement.findUniqueOrThrow({ where: { id } });
+  const me = await requireStaff("access");
+  const e = await db.entitlement.findUniqueOrThrow({ where: { id }, include: { chapter: { select: { title: true } }, course: { select: { title: true } } } });
   const base = Math.max(Date.now(), e.expiresAt.getTime());
-  await db.entitlement.update({ where: { id }, data: { expiresAt: new Date(base + days * 86_400_000) } });
+  const expiresAt = new Date(base + days * 86_400_000);
+  await db.entitlement.update({ where: { id }, data: { expiresAt } });
+  await audit(me, "access.extend", `Extended “${e.chapter?.title ?? e.course?.title}” by ${days} days (now until ${expiresAt.toLocaleDateString("en-IN")})`, { entity: "user", id: e.userId });
   revalidatePath(`/admin/students/${e.userId}`);
 }
 
 /* ---------------- Mentorship ---------------- */
 
 export async function updateBooking(form: FormData) {
-  await requireAdmin();
-  await db.mentorshipBooking.update({
+  const me = await requireStaff("mentorship");
+  const b = await db.mentorshipBooking.update({
     where: { id: str(form, "id") },
     data: { status: str(form, "status"), scheduledAt: date(form, "scheduledAt"), meetLink: str(form, "meetLink") || null, notes: str(form, "notes") },
   });
+  await audit(me, "mentorship.update", `Mentorship call set to ${b.status}${b.scheduledAt ? ` for ${b.scheduledAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}` : ""}`, { entity: "user", id: b.userId });
   revalidatePath("/admin/mentorship");
 }
 
 /* ---------------- FlexCare knowledge ---------------- */
 
 export async function saveKnowledge(form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("flexcare");
   const id = str(form, "id");
   const data = { question: str(form, "question"), answer: str(form, "answer"), isActive: bool(form, "isActive") };
-  if (id) await db.knowledgeEntry.update({ where: { id }, data });
-  else await db.knowledgeEntry.create({ data });
+  const k = id ? await db.knowledgeEntry.update({ where: { id }, data }) : await db.knowledgeEntry.create({ data });
+  await audit(me, id ? "flexcare.update" : "flexcare.create", `${id ? "Edited" : "Added"} FlexCare answer: “${k.question.slice(0, 80)}”`, { entity: "flexcare", id: k.id });
   revalidatePath("/admin/flexcare");
 }
 
 export async function deleteKnowledge(id: string) {
-  await requireAdmin();
-  await db.knowledgeEntry.delete({ where: { id } });
+  const me = await requireStaff("flexcare");
+  const k = await db.knowledgeEntry.delete({ where: { id } });
+  await audit(me, "flexcare.delete", `Deleted FlexCare answer: “${k.question.slice(0, 80)}”`, { entity: "flexcare", id });
   revalidatePath("/admin/flexcare");
 }
 
 /* ---------------- Settings ---------------- */
 
 export async function saveSettings(form: FormData) {
-  await requireAdmin();
+  const me = await requireStaff("settings");
   const cur = await getSettings();
   const features = Object.fromEntries(Object.keys(cur.features).map((k) => [k, bool(form, `features.${k}`)])) as Settings["features"];
   const xp = Object.fromEntries(Object.keys(cur.xp).map((k) => [k, int(form, `xp.${k}`, cur.xp[k as keyof Settings["xp"]])])) as Settings["xp"];
@@ -592,6 +639,8 @@ export async function saveSettings(form: FormData) {
     saveSetting("marking", marking),
     saveSetting("chatbot", { name: str(form, "chatbot.name") || "FlexCare", greeting: str(form, "chatbot.greeting"), model: str(form, "chatbot.model") || cur.chatbot.model }),
   ]);
+  const flipped = (Object.keys(features) as (keyof Settings["features"])[]).filter((k) => features[k] !== cur.features[k]).map((k) => `${k} ${features[k] ? "on" : "off"}`);
+  await audit(me, "settings.update", `Saved settings${flipped.length ? `: ${flipped.join(", ")}` : ""}`, { entity: "settings" });
   refreshSite();
   redirect("/admin/settings?saved=1");
 }

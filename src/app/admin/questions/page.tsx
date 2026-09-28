@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { FORMAT_LABEL, DIFFICULTY_LABEL } from "@/lib/grading";
 import { PageHeader, Stat, Badge, Table, Td } from "@/components/admin/ui";
@@ -25,6 +26,7 @@ function flagsFor(q: { solution: string; topic: string | null; difficulty: numbe
 }
 
 export default async function QuestionBank({ searchParams }: { searchParams: Promise<Search> }) {
+  await requireStaff("questions");
   const sp = await searchParams;
   const view = sp.view === "coverage" ? "coverage" : "questions";
   const where: Prisma.QuestionWhereInput = {

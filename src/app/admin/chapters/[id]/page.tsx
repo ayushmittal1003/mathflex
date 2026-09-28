@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireStaff } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { ChevronDown, ExternalLink, FileText } from "lucide-react";
 import { db } from "@/lib/db";
@@ -22,6 +23,7 @@ import type { Chapter, Part, Question, Resource } from "@/generated/prisma/clien
 export const maxDuration = 300;
 
 export default async function ChapterEditor({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string; part?: string }> }) {
+  await requireStaff("content");
   const [{ id }, { tab = "details", part: partFilter }] = await Promise.all([params, searchParams]);
   const isNew = id === "new";
   const chapter = isNew

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Field, PageHeader, SubmitButton, Badge } from "@/components/admin/ui";
 import { updateBooking } from "../actions";
@@ -7,6 +8,7 @@ export const metadata = { title: "Mentorship" };
 const dt = (d: Date | null) => (d ? new Date(d.getTime() + 330 * 60_000).toISOString().slice(0, 16) : "");
 
 export default async function Mentorship() {
+  await requireStaff("mentorship");
   const bookings = await db.mentorshipBooking.findMany({ orderBy: [{ status: "desc" }, { createdAt: "desc" }], include: { user: true } });
   return (
     <div className="max-w-4xl space-y-4">

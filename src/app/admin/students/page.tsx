@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { isStaff, ROLE_LABEL, STAFF_ROLES } from "@/lib/permissions";
+import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { requestNow } from "@/lib/time";
 import { PageHeader, Table, Td, Badge } from "@/components/admin/ui";
@@ -11,6 +13,7 @@ type Search = { q?: string; cls?: string; plan?: string; status?: string; page?:
 const PER_PAGE = [25, 50, 100];
 
 export default async function Students({ searchParams }: { searchParams: Promise<Search> }) {
+  await requireStaff("students");
   const sp = await searchParams;
   const now = requestNow();
   const active7 = new Date(now - 7 * 86_400_000);
@@ -20,7 +23,7 @@ export default async function Students({ searchParams }: { searchParams: Promise
     ...(sp.q ? { OR: [{ name: { contains: sp.q, mode: "insensitive" } }, { email: { contains: sp.q, mode: "insensitive" } }, { phone: { contains: sp.q } }] } : {}),
     ...(sp.cls ? { classLevel: Number(sp.cls) } : {}),
     ...(sp.plan === "paid" ? paid : sp.plan === "free" ? { NOT: paid } : {}),
-    ...(sp.status === "blocked" ? { isBlocked: true } : sp.status === "active" ? { lastActiveOn: { gte: active7 } } : sp.status === "admin" ? { role: "ADMIN" } : {}),
+    ...(sp.status === "blocked" ? { isBlocked: true } : sp.status === "active" ? { lastActiveOn: { gte: active7 } } : sp.status === "team" ? { role: { in: STAFF_ROLES } } : {}),
   };
   const per = PER_PAGE.includes(Number(sp.per)) ? Number(sp.per) : 25;
   const page = Math.max(1, Number(sp.page) || 1);
@@ -86,7 +89,7 @@ export default async function Students({ searchParams }: { searchParams: Promise
         <input name="q" defaultValue={sp.q} placeholder="Search name, email or phone" className="input" />
         <select name="cls" defaultValue={sp.cls ?? ""} className="input"><option value="">Any class</option><option value="11">Class 11</option><option value="12">Class 12</option><option value="13">Dropper</option></select>
         <select name="plan" defaultValue={sp.plan ?? ""} className="input"><option value="">Any plan</option><option value="paid">Paid</option><option value="free">Free</option></select>
-        <select name="status" defaultValue={sp.status ?? ""} className="input"><option value="">Any status</option><option value="active">Active in 7 days</option><option value="blocked">Blocked</option><option value="admin">Admins</option></select>
+        <select name="status" defaultValue={sp.status ?? ""} className="input"><option value="">Any status</option><option value="active">Active in 7 days</option><option value="blocked">Blocked</option><option value="team">Team members</option></select>
         <button className="btn btn-primary !py-2 text-sm">Filter</button>
       </form>
 
@@ -101,7 +104,7 @@ export default async function Students({ searchParams }: { searchParams: Promise
                 <Link href={`/admin/students/${u.id}`} className="flex items-center gap-3">
                   <span className="grid size-9 shrink-0 place-items-center rounded-full text-sm font-bold text-white" style={{ background: u.avatarColor }}>{u.name[0]}</span>
                   <span className="min-w-0"><span className="block font-semibold hover:text-brand">{u.name}</span><span className="text-xs text-muted">{u.email}{u.phone ? ` · ${u.phone}` : ""}</span></span>
-                  {u.role === "ADMIN" && <Badge tone="brand">Admin</Badge>}
+                  {isStaff(u.role) && <Badge tone="brand">{ROLE_LABEL[u.role]}</Badge>}
                   {u.isBlocked && <Badge tone="bad">Blocked</Badge>}
                 </Link>
               </Td>

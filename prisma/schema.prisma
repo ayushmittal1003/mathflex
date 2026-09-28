@@ -13,7 +13,9 @@ datasource db {
 
 enum Role {
   STUDENT
-  ADMIN
+  ADMIN // Super admin: everything, including team, settings and impersonation
+  EDITOR // Content: chapters, questions, courses, banners, FlexCare, video
+  SUPPORT // Students, access grants, orders, mentorship, FlexCare
 }
 
 enum VideoProvider {
@@ -93,6 +95,8 @@ model User {
   mentorships  MentorshipBooking[]
   chatLogs     ChatLog[]
   couponUses   CouponRedemption[]
+  auditLogs    AuditLog[]
+  invitesSent  StaffInvite[]
 }
 
 model Chapter {
@@ -231,18 +235,20 @@ model CourseChapter {
 
 // What a user can access. Created when an order is paid, or granted by an admin.
 model Entitlement {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  chapterId String?
-  chapter   Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-  courseId  String?
-  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  orderId   String?
-  source    String   @default("purchase") // purchase | admin | free
-  expiresAt DateTime
-  introSeen Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapterId   String?
+  chapter     Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  courseId    String?
+  course      Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  orderId     String?
+  source      String   @default("purchase") // purchase | admin | free
+  grantedById String? // staff member who granted it (source = admin)
+  note        String   @default("") // why it was granted, e.g. "Scholarship batch"
+  expiresAt   DateTime
+  introSeen   Boolean  @default(false)
+  createdAt   DateTime @default(now())
 
   @@index([userId])
 }
@@ -436,4 +442,39 @@ model ChatLog {
   question  String
   answer    String
   createdAt DateTime @default(now())
+}
+
+// Every change made from the admin panel: who, what, when, and to which record.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actorName  String // kept even if the staff account is later removed
+  actorEmail String
+  action     String // e.g. "access.grant", "question.update", "team.role"
+  entity     String // e.g. "user", "chapter", "question", "settings"
+  entityId   String?
+  summary    String
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([actorId, createdAt])
+  @@index([entity, entityId])
+}
+
+// Invitation for someone without an account to join the admin team.
+model StaffInvite {
+  id          String    @id @default(cuid())
+  email       String
+  role        Role
+  token       String    @unique
+  invitedById String?
+  invitedBy   User?     @relation(fields: [invitedById], references: [id], onDelete: SetNull)
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([email])
 }

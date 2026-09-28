@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isStaff } from "@/lib/permissions";
 import { notFound } from "next/navigation";
 import { Play, Lock, CheckCircle2, Clock, FileText, Target, BarChart3, Brain, ListChecks, Map as MapIcon, Sparkles } from "lucide-react";
 import { db } from "@/lib/db";
@@ -32,7 +33,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
     }),
     getSettings(),
   ]);
-  if (!chapter || (!chapter.isPublished && user?.role !== "ADMIN")) notFound();
+  if (!chapter || (!chapter.isPublished && !isStaff(user?.role))) notFound();
 
   const owned = await hasChapterAccess(user?.id, chapter.id);
   const progress = user

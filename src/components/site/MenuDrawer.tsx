@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { isStaff } from "@/lib/permissions";
 import { useEffect } from "react";
 import { X, User, CalendarClock, Gift, MessageCircle, Mail, LogIn, LogOut, Shield, BookOpen, Trophy, Target, LayoutGrid, GraduationCap } from "lucide-react";
 import { Logo } from "@/components/Logo";
@@ -83,7 +84,7 @@ export function MenuDrawer({
             <MessageCircle className="size-5 text-green-500" /> WhatsApp us
           </a>
           <a href={`mailto:${contact.email}`} className={item}><Mail className="size-5 text-muted" /> {contact.email}</a>
-          {user?.role === "ADMIN" && <Link href="/admin" className={item}><Shield className="size-5 text-brand" /> Admin panel</Link>}
+          {isStaff(user?.role) && <Link href="/admin" className={item}><Shield className="size-5 text-brand" /> Admin panel</Link>}
         </nav>
 
         <div className="mt-auto p-4">
