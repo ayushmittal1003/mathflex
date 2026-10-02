@@ -12,14 +12,14 @@ export function Row({ title, subtitle, href, children }: { title: string; subtit
       <div className="mx-auto flex max-w-[1500px] items-end justify-between px-4 md:px-8">
         <div>
           <h2 className="font-display text-xl font-extrabold sm:text-2xl">{title}</h2>
-          {subtitle && <p className="text-sm text-muted">{subtitle}</p>}
+          {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
         </div>
-        {href && <Link href={href} className="text-sm font-bold text-brand">See all</Link>}
+        {href && <Link href={href} className="text-sm font-bold text-primary">See all</Link>}
       </div>
       <div className="relative mx-auto max-w-[1500px]">
         <button
           onClick={() => scroll(-1)}
-          className="absolute left-0 top-0 z-10 hidden h-full w-12 place-items-center bg-gradient-to-r from-bg to-transparent opacity-0 transition group-hover/row:opacity-100 md:grid"
+          className="absolute left-0 top-0 z-10 hidden h-full w-12 place-items-center bg-gradient-to-r from-background to-transparent opacity-0 transition group-hover/row:opacity-100 md:grid"
           aria-label="Scroll left"
         >
           <ChevronLeft className="size-8" />
@@ -29,7 +29,7 @@ export function Row({ title, subtitle, href, children }: { title: string; subtit
         </div>
         <button
           onClick={() => scroll(1)}
-          className="absolute right-0 top-0 z-10 hidden h-full w-12 place-items-center bg-gradient-to-l from-bg to-transparent opacity-0 transition group-hover/row:opacity-100 md:grid"
+          className="absolute right-0 top-0 z-10 hidden h-full w-12 place-items-center bg-gradient-to-l from-background to-transparent opacity-0 transition group-hover/row:opacity-100 md:grid"
           aria-label="Scroll right"
         >
           <ChevronRight className="size-8" />

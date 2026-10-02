@@ -38,10 +38,10 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
   return (
     <div className="mx-auto max-w-3xl px-4 pt-[calc(var(--nav-h)+2rem)]">
       <h1 className="font-display text-3xl font-extrabold sm:text-4xl">Leaderboard</h1>
-      <p className="text-muted">Earn XP by finishing parts and solving questions.</p>
+      <p className="text-muted-foreground">Earn XP by finishing parts and solving questions.</p>
       <div className="mt-5 flex gap-1 rounded-full bg-surface-2 p-1 text-sm font-semibold">
         {(Object.keys(PERIODS) as (keyof typeof PERIODS)[]).map((k) => (
-          <Link key={k} href={`/leaderboard?p=${k}`} className={`flex-1 rounded-full py-2 text-center ${p === k ? "bg-surface shadow" : "text-muted"}`}>{PERIODS[k]}</Link>
+          <Link key={k} href={`/leaderboard?p=${k}`} className={`flex-1 rounded-full py-2 text-center ${p === k ? "bg-card shadow" : "text-muted-foreground"}`}>{PERIODS[k]}</Link>
         ))}
       </div>
 
@@ -67,23 +67,23 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
           const rank = i + (rows.length >= 3 ? 4 : 1);
           return <LbRow key={r.id} rank={rank} r={r} me={r.id === me?.id} />;
         })}
-        {!rows.length && <li className="p-8 text-center text-muted">No XP earned in this period yet. Be the first!</li>}
+        {!rows.length && <li className="p-8 text-center text-muted-foreground">No XP earned in this period yet. Be the first!</li>}
       </ol>
-      {me && myIndex === -1 && <p className="mt-4 text-center text-sm text-muted">You&apos;re not in the top 50 yet — solve a practice set to climb.</p>}
+      {me && myIndex === -1 && <p className="mt-4 text-center text-sm text-muted-foreground">You&apos;re not in the top 50 yet — solve a practice set to climb.</p>}
     </div>
   );
 }
 
 function LbRow({ rank, r, me }: { rank: number; r: { name: string; avatarColor: string; streak: number; xp: number; totalXp: number }; me: boolean }) {
   return (
-    <li className={`flex items-center gap-3 px-4 py-3 ${me ? "bg-brand/10" : ""}`}>
-      <span className="w-7 text-center font-display font-extrabold text-muted">{rank}</span>
+    <li className={`flex items-center gap-3 px-4 py-3 ${me ? "bg-primary/10" : ""}`}>
+      <span className="w-7 text-center font-display font-extrabold text-muted-foreground">{rank}</span>
       <span className="grid size-10 shrink-0 place-items-center rounded-full font-bold text-white" style={{ background: r.avatarColor }}>{r.name[0]}</span>
       <span className="min-w-0 flex-1">
         <span className="block truncate font-bold">{r.name}{me && " (you)"}</span>
-        <span className="text-xs text-muted">Level {levelFromXp(r.totalXp).level}</span>
+        <span className="text-xs text-muted-foreground">Level {levelFromXp(r.totalXp).level}</span>
       </span>
-      {r.streak > 0 && <span className="flex items-center gap-0.5 text-sm font-bold text-orange-500"><Flame className="size-4" />{r.streak}</span>}
+      {r.streak > 0 && <span className="flex items-center gap-0.5 text-sm font-bold text-brand-2"><Flame className="size-4" />{r.streak}</span>}
       <span className="w-20 text-right font-bold text-xp">{r.xp.toLocaleString("en-IN")}</span>
     </li>
   );

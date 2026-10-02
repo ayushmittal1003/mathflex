@@ -39,7 +39,7 @@ export default async function Profile() {
               <div key={e.id} className="flex items-center gap-3 p-4">
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold">{title}</p>
-                  <p className={`text-sm ${expired ? "text-bad" : left < 30 ? "text-gold" : "text-muted"}`}>
+                  <p className={`text-sm ${expired ? "text-bad" : left < 30 ? "text-gold" : "text-muted-foreground"}`}>
                     {expired ? "Expired" : `${left} days left`} · till {e.expiresAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                   </p>
                 </div>
@@ -49,7 +49,7 @@ export default async function Profile() {
               </div>
             );
           })}
-          {!ents.length && <p className="p-4 text-sm text-muted">No plans yet.</p>}
+          {!ents.length && <p className="p-4 text-sm text-muted-foreground">No plans yet.</p>}
         </div>
       </section>
 
@@ -69,8 +69,8 @@ export default async function Profile() {
             {mentorships.map((m) => (
               <div key={m.id} className="flex items-center justify-between p-4 text-sm">
                 <span className="font-semibold">{settings.mentorshipTitle}</span>
-                <span className="text-muted">{m.scheduledAt ? m.scheduledAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }) : m.status.toLowerCase()}</span>
-                {m.meetLink && <a href={m.meetLink} className="font-bold text-brand">Join</a>}
+                <span className="text-muted-foreground">{m.scheduledAt ? m.scheduledAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }) : m.status.toLowerCase()}</span>
+                {m.meetLink && <a href={m.meetLink} className="font-bold text-primary">Join</a>}
               </div>
             ))}
           </div>
@@ -84,13 +84,13 @@ export default async function Profile() {
             <div key={o.id} className="flex items-center gap-3 p-4 text-sm">
               <div className="min-w-0 flex-1">
                 <p className="truncate font-bold">{o.items.map((i) => i.title).join(", ")}</p>
-                <p className="text-muted">{o.orderNo} · {o.createdAt.toLocaleDateString("en-IN")}</p>
+                <p className="text-muted-foreground">{o.orderNo} · {o.createdAt.toLocaleDateString("en-IN")}</p>
               </div>
               <span className={`rounded-md px-2 py-0.5 text-xs font-bold ${o.status === "PAID" ? "bg-ok/15 text-ok" : o.status === "PENDING" ? "bg-gold/15 text-gold" : "bg-bad/10 text-bad"}`}>{o.status}</span>
               <span className="w-16 text-right font-bold">{inr(o.total)}</span>
             </div>
           ))}
-          {!orders.length && <p className="p-4 text-sm text-muted">No orders yet.</p>}
+          {!orders.length && <p className="p-4 text-sm text-muted-foreground">No orders yet.</p>}
         </div>
       </section>
     </div>

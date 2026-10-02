@@ -131,15 +131,15 @@ export default async function Home() {
               <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-brand-gradient text-white"><PhoneCall className="size-8" /></div>
               <div className="flex-1">
                 <h3 className="font-display text-2xl font-extrabold">{settings.mentorshipTitle}</h3>
-                <p className="mt-1 text-muted">{settings.mentorshipBlurb}</p>
+                <p className="mt-1 text-muted-foreground">{settings.mentorshipBlurb}</p>
               </div>
               <Link href="/cart?mentorship=1" className="btn btn-primary">Book for {inr(settings.mentorshipPrice)}</Link>
             </div>
           </section>
         )}
         {owned.size === 0 && !user && (
-          <p className="mt-10 text-center text-sm text-muted">
-            <Link href="/signup" className="font-bold text-brand">Create a free account</Link> to track XP and streaks.
+          <p className="mt-10 text-center text-sm text-muted-foreground">
+            <Link href="/signup" className="font-bold text-primary">Create a free account</Link> to track XP and streaks.
           </p>
         )}
       </div>
@@ -159,10 +159,10 @@ function HowItWorks() {
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         {steps.map(({ icon: Icon, title, body }, i) => (
           <div key={title} className="card relative overflow-hidden p-6">
-            <span className="absolute right-4 top-2 font-display text-7xl font-extrabold text-fg/5">{i + 1}</span>
-            <Icon className="size-8 text-brand" />
+            <span className="absolute right-4 top-2 font-display text-7xl font-extrabold text-foreground/5">{i + 1}</span>
+            <Icon className="size-8 text-primary" />
             <h3 className="mt-4 text-lg font-bold">{title}</h3>
-            <p className="mt-1 text-sm text-muted">{body}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{body}</p>
           </div>
         ))}
       </div>

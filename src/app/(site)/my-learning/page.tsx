@@ -62,7 +62,7 @@ export default async function MyLearning() {
       {/* Stat tiles */}
       <section className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat icon={Zap} color="text-xp" label="Total XP" value={user.xp.toLocaleString("en-IN")} />
-        <Stat icon={Flame} color="text-orange-500" label="Day streak" value={`${user.streak}`} sub={`Best ${user.bestStreak}`} />
+        <Stat icon={Flame} color="text-brand-2" label="Day streak" value={`${user.streak}`} sub={`Best ${user.bestStreak}`} />
         <Stat icon={Target} color="text-ok" label="Accuracy" value={`${accuracy}%`} sub={`${correct + incorrect} answered`} />
         <Stat icon={Trophy} color="text-gold" label="Badges" value={`${earned.length}`} sub={`of ${badges.length} types`} />
       </section>
@@ -71,7 +71,7 @@ export default async function MyLearning() {
         <ActivityChart {...series} />
         <div className="card p-5">
           <h3 className="font-bold">Questions in your chapters</h3>
-          <p className="text-sm text-muted">{totalQ} total across {owned.size} chapter{owned.size === 1 ? "" : "s"}</p>
+          <p className="text-sm text-muted-foreground">{totalQ} total across {owned.size} chapter{owned.size === 1 ? "" : "s"}</p>
           {totalQ > 0 ? (
             <>
               <div className="mt-6 flex h-4 gap-[2px] overflow-hidden rounded-full" role="img" aria-label={`${correct} correct, ${incorrect} incorrect, ${unattempted} unattempted`}>
@@ -86,7 +86,7 @@ export default async function MyLearning() {
               </ul>
             </>
           ) : (
-            <p className="mt-6 text-sm text-muted">Buy a chapter to start practising.</p>
+            <p className="mt-6 text-sm text-muted-foreground">Buy a chapter to start practising.</p>
           )}
           {totalQ > 0 && settings.features.practice && (
             <Link href="/practice" className="btn btn-ghost mt-5 w-full !py-2 text-sm"><Target className="size-4" /> Open practice analytics</Link>
@@ -103,7 +103,7 @@ export default async function MyLearning() {
         ) : (
           <div className="card mt-4 p-8 text-center">
             <p className="font-bold">Nothing here yet</p>
-            <p className="mt-1 text-sm text-muted">Every chapter has a free preview. Start one now.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Every chapter has a free preview. Start one now.</p>
             <Link href="/browse" className="btn btn-primary mt-4">Browse chapters</Link>
           </div>
         )}
@@ -118,11 +118,11 @@ export default async function MyLearning() {
               <div key={b.id} className={`card p-4 text-center ${n ? "" : "opacity-50 grayscale"}`}>
                 <div className="relative mx-auto grid size-14 place-items-center rounded-full text-3xl" style={{ background: n ? `${b.color}25` : undefined }}>
                   {b.emoji}
-                  {!n && <Lock className="absolute -bottom-1 -right-1 size-5 rounded-full bg-surface p-1 text-muted" />}
-                  {n > 1 && <span className="absolute -right-1 -top-1 rounded-full bg-fg px-1.5 text-xs font-bold text-bg">×{n}</span>}
+                  {!n && <Lock className="absolute -bottom-1 -right-1 size-5 rounded-full bg-card p-1 text-muted-foreground" />}
+                  {n > 1 && <span className="absolute -right-1 -top-1 rounded-full bg-foreground px-1.5 text-xs font-bold text-background">×{n}</span>}
                 </div>
                 <p className="mt-2 text-sm font-bold">{b.name}</p>
-                <p className="text-xs text-muted">{b.description}</p>
+                <p className="text-xs text-muted-foreground">{b.description}</p>
               </div>
             );
           })}
@@ -135,15 +135,15 @@ export default async function MyLearning() {
           <ul className="mt-4 grid gap-3 md:grid-cols-2">
             {bookmarks.map(({ question: q }) => (
               <li key={q.id}>
-                <Link href={`/learn/${q.chapter.slug}?part=${q.part?.order ?? 1}`} className="card block p-4 hover:border-brand">
-                  <p className="text-xs font-bold text-muted">{q.chapter.title} · {q.type}</p>
+                <Link href={`/learn/${q.chapter.slug}?part=${q.part?.order ?? 1}`} className="card block p-4 hover:border-primary">
+                  <p className="text-xs font-bold text-muted-foreground">{q.chapter.title} · {q.type}</p>
                   <p className="mt-1 line-clamp-2 font-semibold">{q.prompt}</p>
                 </Link>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="mt-3 text-sm text-muted">Tap the bookmark icon on any question to save it for revision.</p>
+          <p className="mt-3 text-sm text-muted-foreground">Tap the bookmark icon on any question to save it for revision.</p>
         )}
       </section>
     </div>
@@ -155,7 +155,7 @@ function Stat({ icon: Icon, color, label, value, sub }: { icon: React.ComponentT
     <div className="card p-4 sm:p-5">
       <Icon className={`size-6 ${color}`} />
       <p className="mt-3 font-display text-2xl font-extrabold sm:text-3xl">{value}</p>
-      <p className="text-sm text-muted">{label}{sub ? ` · ${sub}` : ""}</p>
+      <p className="text-sm text-muted-foreground">{label}{sub ? ` · ${sub}` : ""}</p>
     </div>
   );
 }
@@ -166,7 +166,7 @@ function Legend({ swatch, label, value, total }: { swatch: string; label: string
       <span className={`size-3 rounded-sm ${swatch}`} />
       <span className="flex-1">{label}</span>
       <span className="font-bold">{value}</span>
-      <span className="w-10 text-right text-muted">{Math.round((value / total) * 100)}%</span>
+      <span className="w-10 text-right text-muted-foreground">{Math.round((value / total) * 100)}%</span>
     </li>
   );
 }

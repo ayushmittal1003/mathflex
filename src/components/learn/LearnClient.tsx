@@ -82,12 +82,12 @@ export function LearnClient(props: {
         <div className="min-w-0">
           <VideoPlayer playback={props.playback} initialWatched={props.initialWatched} onProgress={onProgress} />
           <div className="px-4 pt-4 md:px-0">
-            <p className="text-sm font-semibold text-muted">
-              <Link href={`/chapter/${chapter.slug}`} className="hover:text-brand">{chapter.title}</Link> · Part {part.order}
+            <p className="text-sm font-semibold text-muted-foreground">
+              <Link href={`/chapter/${chapter.slug}`} className="hover:text-primary">{chapter.title}</Link> · Part {part.order}
             </p>
             <h1 className="mt-1 font-display text-2xl font-extrabold sm:text-3xl">{part.title}</h1>
             {props.isPreviewOnly && (
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-brand/10 p-4">
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-primary/10 p-4">
                 <p className="text-sm font-semibold">You&apos;re watching a free preview. Buy the chapter to save progress and unlock practice.</p>
                 <Link href={`/chapter/${chapter.slug}`} className="btn btn-primary !py-2 text-sm">Unlock chapter</Link>
               </div>
@@ -99,7 +99,7 @@ export function LearnClient(props: {
                 ["notes", "Notes", FileText],
                 ["about", "About", BookOpen],
               ] as const).map(([k, label, Icon]) => (
-                <button key={k} onClick={() => setTab(k)} className={`-mb-px flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold ${tab === k ? "border-brand text-fg" : "border-transparent text-muted"}`}>
+                <button key={k} onClick={() => setTab(k)} className={`-mb-px flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold ${tab === k ? "border-primary text-foreground" : "border-transparent text-muted-foreground"}`}>
                   <Icon className="size-4" /> {label}
                   {k === "practice" && props.practiceDone && <CheckCircle2 className="size-4 text-ok" />}
                 </button>
@@ -114,20 +114,20 @@ export function LearnClient(props: {
                   <ul className="grid gap-3 sm:grid-cols-2">
                     {props.resources.map((r) => (
                       <li key={r.id}>
-                        <a href={r.url} target="_blank" className="card flex items-center gap-3 p-4 font-semibold hover:border-brand">
-                          <span className="grid size-10 place-items-center rounded-xl bg-brand/10 text-brand"><FileText className="size-5" /></span>
-                          <span><span className="block">{r.title}</span><span className="text-xs font-medium text-muted">{r.type.replace("_", " ").toLowerCase()}</span></span>
+                        <a href={r.url} target="_blank" className="card flex items-center gap-3 p-4 font-semibold hover:border-primary">
+                          <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><FileText className="size-5" /></span>
+                          <span><span className="block">{r.title}</span><span className="text-xs font-medium text-muted-foreground">{r.type.replace("_", " ").toLowerCase()}</span></span>
                         </a>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-muted">Short notes and mind maps for this chapter are coming soon.</p>
+                  <p className="text-muted-foreground">Short notes and mind maps for this chapter are coming soon.</p>
                 )
               )}
               {tab === "about" && (
                 <div>
-                  <p className="leading-relaxed text-muted">{part.summary}</p>
+                  <p className="leading-relaxed text-muted-foreground">{part.summary}</p>
                   {part.topics.length > 0 && (
                     <>
                       <p className="mt-5 font-bold">Topics in this part</p>
@@ -153,13 +153,13 @@ export function LearnClient(props: {
               {props.parts.map((p) => {
                 const active = p.id === part.id;
                 const content = (
-                  <div className={`flex items-center gap-3 p-4 ${active ? "bg-brand/10" : p.state !== "locked" ? "hover:bg-surface-2" : "opacity-55"}`}>
-                    <span className={`grid size-9 shrink-0 place-items-center rounded-full text-sm font-bold ${p.state === "done" ? "bg-ok text-white" : active ? "bg-brand text-white" : "bg-surface-2"}`}>
+                  <div className={`flex items-center gap-3 p-4 ${active ? "bg-primary/10" : p.state !== "locked" ? "hover:bg-surface-2" : "opacity-55"}`}>
+                    <span className={`grid size-9 shrink-0 place-items-center rounded-full text-sm font-bold ${p.state === "done" ? "bg-ok text-white" : active ? "bg-primary text-white" : "bg-surface-2"}`}>
                       {p.state === "done" ? <CheckCircle2 className="size-5" /> : p.state === "locked" ? <Lock className="size-4" /> : active ? <Play className="size-4 fill-current" /> : p.order}
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-bold">Part {p.order}: {p.title}</span>
-                      <span className="text-xs text-muted">{p.durationMin ? `${p.durationMin} min` : ""}{p.state === "locked" ? " · finish previous part" : ""}</span>
+                      <span className="text-xs text-muted-foreground">{p.durationMin ? `${p.durationMin} min` : ""}{p.state === "locked" ? " · finish previous part" : ""}</span>
                     </span>
                   </div>
                 );

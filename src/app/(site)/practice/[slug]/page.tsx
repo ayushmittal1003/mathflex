@@ -83,7 +83,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
 
   return (
     <div className="mx-auto max-w-4xl px-4 pb-16 pt-[calc(var(--nav-h)+1.5rem)] md:px-8">
-      <Link href="/practice" className="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-brand"><ChevronLeft className="size-4" /> Practice dashboard</Link>
+      <Link href="/practice" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary"><ChevronLeft className="size-4" /> Practice dashboard</Link>
       <header className="mt-3 overflow-hidden rounded-3xl p-5 text-white sm:p-6" style={{ background: `linear-gradient(135deg, ${chapter.coverFrom}, ${chapter.coverTo})` }}>
         <p className="text-xs font-bold uppercase tracking-widest opacity-80">Class {chapter.classLevel} · Question bank</p>
         <h1 className="font-display text-2xl font-extrabold sm:text-3xl">{chapter.title}</h1>
@@ -129,7 +129,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
         {questions.length ? (
           <PracticePlayer key={JSON.stringify(sp)} questions={player} sound={settings.features.celebrationSound} />
         ) : (
-          <div className="card p-10 text-center text-muted">Questions for this chapter are on the way.</div>
+          <div className="card p-10 text-center text-muted-foreground">Questions for this chapter are on the way.</div>
         )}
       </div>
     </div>
@@ -151,7 +151,7 @@ function Chips({ children }: { children: React.ReactNode }) {
 
 function Chip({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
   return (
-    <Link href={href} scroll={false} className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold ${active ? "bg-fg text-bg" : "bg-surface-2 text-muted hover:text-fg"}`}>
+    <Link href={href} scroll={false} className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold ${active ? "bg-foreground text-background" : "bg-surface-2 text-muted-foreground hover:text-foreground"}`}>
       {children}
     </Link>
   );

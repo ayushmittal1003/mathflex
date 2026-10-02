@@ -28,7 +28,7 @@ export default async function MockPay({ searchParams }: { searchParams: Promise<
           <form action={completeMockPayment.bind(null, order.id, false)}><button className="btn btn-ghost w-full">Simulate failure</button></form>
         </div>
       </div>
-      <p className="mt-4 text-center text-xs text-muted">Switch to live Paytm in Admin → Settings once your merchant keys are added.</p>
+      <p className="mt-4 text-center text-xs text-muted-foreground">Switch to live Paytm in Admin → Settings once your merchant keys are added.</p>
     </div>
   );
 }

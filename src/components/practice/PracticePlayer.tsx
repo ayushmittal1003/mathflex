@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { Bookmark, BookmarkCheck, Check, ChevronLeft, ChevronRight, Clock, RotateCcw, X, Zap } from "lucide-react";
+import { Bookmark, BookmarkCheck, Check, ChevronLeft, ChevronRight, CircleAlert, Clock, RotateCcw, X, Zap } from "lucide-react";
 import { submitPracticeAnswer, type PracticeResult } from "@/app/actions/practice";
 import { toggleBookmark } from "@/app/actions/learn";
 import { tone } from "@/components/learn/tone";
@@ -125,7 +125,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
   });
 
   if (!questions.length) {
-    return <div className="card p-10 text-center text-muted">No questions match these filters.</div>;
+    return <div className="card p-10 text-center text-muted-foreground">No questions match these filters.</div>;
   }
 
   const session = Object.values(done).filter((d) => d.fresh && !d.result.skipped);
@@ -138,7 +138,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
     <div>
       {/* Session bar */}
       <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-        <span className="font-semibold text-muted">{answered}/{questions.length} answered</span>
+        <span className="font-semibold text-muted-foreground">{answered}/{questions.length} answered</span>
         {session.length > 0 && (
           <>
             <span><b>{session.filter((d) => d.result.isCorrect).length}</b>/{session.length} correct this session</span>
@@ -151,12 +151,12 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
       <div className="no-scrollbar mb-4 flex gap-1.5 overflow-x-auto pb-1">
         {questions.map((v, i) => {
           const d = done[v.id]?.result;
-          const color = !d ? "bg-surface-2 text-muted" : d.skipped ? "bg-gold/25 text-fg" : d.isCorrect ? "bg-ok text-white" : d.partial ? "bg-gold text-white" : "bg-bad text-white";
+          const color = !d ? "bg-surface-2 text-muted-foreground" : d.skipped ? "bg-gold/25 text-foreground" : d.isCorrect ? "bg-ok text-white" : d.partial ? "bg-gold text-white" : "bg-bad text-white";
           return (
             <button
               key={v.id}
               onClick={() => go(i)}
-              className={`grid size-8 shrink-0 place-items-center rounded-lg text-xs font-bold transition ${i === idx ? "ring-2 ring-brand ring-offset-2 ring-offset-bg" : ""} ${color}`}
+              className={`grid size-8 shrink-0 place-items-center rounded-lg text-xs font-bold transition ${i === idx ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""} ${color}`}
               aria-label={`Question ${i + 1}${d ? (d.isCorrect ? ", correct" : d.skipped ? ", skipped" : ", incorrect") : ""}`}
             >
               {i + 1}
@@ -168,13 +168,13 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
       <div className="card relative p-5 sm:p-6">
         {xpPop && <span className="animate-pop absolute right-5 top-5 flex items-center gap-1 rounded-full bg-xp px-3 py-1 text-sm font-bold text-white"><Zap className="size-4" /> +{xpPop} XP</span>}
         <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
-          <span className="text-muted">Q{idx + 1}</span>
-          <span className={`rounded-md px-2 py-0.5 ${q.type === "PYQ" ? "bg-gold/20 text-gold" : "bg-brand/10 text-brand"}`}>{q.type}</span>
+          <span className="text-muted-foreground">Q{idx + 1}</span>
+          <span className={`rounded-md px-2 py-0.5 ${q.type === "PYQ" ? "bg-gold/20 text-gold" : "bg-primary/10 text-primary"}`}>{q.type}</span>
           <span className="rounded-md bg-xp/10 px-2 py-0.5 text-xp">{FORMAT_LABEL[q.format]}</span>
-          {q.exam && <span className="rounded-md bg-surface-2 px-2 py-0.5 text-muted">{q.exam}{q.year ? ` ${q.year}` : ""}</span>}
-          <span className="text-muted">{DIFFICULTY_LABEL[q.difficulty]}</span>
-          {q.topic && <span className="text-muted">· {q.topic}</span>}
-          <span className="ml-auto flex items-center gap-1 tabular-nums text-muted" aria-label="Time on this question">
+          {q.exam && <span className="rounded-md bg-surface-2 px-2 py-0.5 text-muted-foreground">{q.exam}{q.year ? ` ${q.year}` : ""}</span>}
+          <span className="text-muted-foreground">{DIFFICULTY_LABEL[q.difficulty]}</span>
+          {q.topic && <span className="text-muted-foreground">· {q.topic}</span>}
+          <span className="ml-auto flex items-center gap-1 tabular-nums text-muted-foreground" aria-label="Time on this question">
             {!res && <><Clock className="size-3.5" /> {fmtTime(elapsed)}</>}
           </span>
           <button
@@ -182,12 +182,12 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
             className="grid size-9 place-items-center rounded-full hover:bg-surface-2"
             aria-label={marks[q.id] ? "Remove bookmark" : "Bookmark question"}
           >
-            {marks[q.id] ? <BookmarkCheck className="size-5 fill-brand text-brand" /> : <Bookmark className="size-5 text-muted" />}
+            {marks[q.id] ? <BookmarkCheck className="size-5 fill-primary text-primary" /> : <Bookmark className="size-5 text-muted-foreground" />}
           </button>
         </div>
 
         <p className="mt-3 whitespace-pre-line text-lg font-semibold leading-relaxed">{q.prompt}</p>
-        {q.format === "MULTIPLE" && !res && <p className="mt-1 text-sm text-muted">One or more options are correct. Partial marks if you pick only correct ones.</p>}
+        {q.format === "MULTIPLE" && !res && <p className="mt-1 text-sm text-muted-foreground">One or more options are correct. Partial marks if you pick only correct ones.</p>}
 
         {q.format !== "NUMERICAL" ? (
           <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
@@ -198,7 +198,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
               const missed = r && isKey && !isPicked && q.format === "MULTIPLE";
               const cls = r
                 ? isKey ? (missed ? "border-ok border-dashed" : "border-ok bg-ok/10") : wrongPick ? "border-bad bg-bad/10" : "border-border opacity-60"
-                : isPicked ? "border-brand bg-brand/5" : "border-border hover:border-brand";
+                : isPicked ? "border-primary bg-primary/5" : "border-border hover:border-primary";
               return (
                 <button
                   key={i}
@@ -208,7 +208,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
                   className={`flex items-center gap-3 rounded-2xl border-2 p-3.5 text-left font-medium transition active:scale-[0.99] ${cls}`}
                 >
                   <span className={`grid size-8 shrink-0 place-items-center text-sm font-bold ${q.format === "MULTIPLE" ? "rounded-lg" : "rounded-full"} ${
-                    r && isKey && !missed ? "bg-ok text-white" : wrongPick ? "bg-bad text-white" : isPicked && !r ? "bg-brand text-white" : "bg-surface-2"
+                    r && isKey && !missed ? "bg-ok text-white" : wrongPick ? "bg-bad text-white" : isPicked && !r ? "bg-primary text-white" : "bg-surface-2"
                   }`}>
                     {r && isKey && !missed ? <Check className="size-4" strokeWidth={3} /> : wrongPick ? <X className="size-4" strokeWidth={3} /> : LETTERS[i]}
                   </span>
@@ -245,12 +245,12 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
           </div>
         )}
 
-        {error && <p className="mt-3 text-sm font-semibold text-bad">{error}</p>}
+        {error && <p role="alert" className="mt-3 flex items-start gap-2 text-sm font-semibold text-bad"><CircleAlert className="mt-0.5 size-4 shrink-0" />{error}</p>}
 
         {r && (
           <div className={`animate-rise mt-5 rounded-2xl p-4 ${r.isCorrect ? "bg-ok/10" : r.partial ? "bg-gold/15" : r.skipped ? "bg-surface-2" : "bg-bad/10"}`}>
-            <p className={`flex flex-wrap items-center gap-2 font-bold ${r.isCorrect ? "text-ok" : r.partial ? "text-gold" : r.skipped ? "text-muted" : "text-bad"}`}>
-              <span className="rounded-md bg-surface px-2 py-0.5 text-sm tabular-nums">{signed(r.marks)}</span>
+            <p className={`flex flex-wrap items-center gap-2 font-bold ${r.isCorrect ? "text-ok" : r.partial ? "text-gold" : r.skipped ? "text-muted-foreground" : "text-bad"}`}>
+              <span className="rounded-md bg-card px-2 py-0.5 text-sm tabular-nums">{signed(r.marks)}</span>
               {r.isCorrect ? "Correct! 🎯" : r.partial ? "Partially correct: you missed an option" : r.skipped ? "Skipped" : "Not quite. Here's how"}
             </p>
             {r.solution && <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">{r.solution}</p>}
@@ -261,7 +261,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
           <button onClick={() => go(idx - 1)} disabled={idx === 0} className="btn btn-ghost"><ChevronLeft className="size-4" /> Prev</button>
           {!res ? (
             <div className="flex items-center gap-3">
-              <button onClick={() => submit(q.format === "SINGLE" ? { selected: null } : q.format === "MULTIPLE" ? { selectedMany: [] } : { numericValue: null })} disabled={pending} className="text-sm font-semibold text-muted underline-offset-2 hover:underline">Skip</button>
+              <button onClick={() => submit(q.format === "SINGLE" ? { selected: null } : q.format === "MULTIPLE" ? { selectedMany: [] } : { numericValue: null })} disabled={pending} className="text-sm font-semibold text-muted-foreground underline-offset-2 hover:underline">Skip</button>
               <button onClick={submitCurrent} disabled={pending || (q.format !== "NUMERICAL" && !picks.length)} className="btn btn-primary">{pending ? "Checking…" : "Submit"}</button>
             </div>
           ) : (
@@ -270,7 +270,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
           <button onClick={() => go(idx + 1)} disabled={idx === questions.length - 1} className="btn btn-ghost">Next <ChevronRight className="size-4" /></button>
         </div>
       </div>
-      <p className="mt-3 hidden text-center text-xs text-muted sm:block">Keys: A–D or 1–4 to pick · Enter to submit · ← → to move</p>
+      <p className="mt-3 hidden text-center text-xs text-muted-foreground sm:block">Keys: A–D or 1–4 to pick · Enter to submit · ← → to move</p>
     </div>
   );
 }

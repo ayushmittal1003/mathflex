@@ -14,20 +14,20 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-md flex-col justify-center px-4 pb-24 pt-[calc(var(--nav-h)+2rem)]">
-      <ShieldCheck className="size-12 text-brand" />
+      <ShieldCheck className="size-12 text-primary" />
       {!inv ? (
         <>
           <h1 className="mt-4 font-display text-3xl font-extrabold">Invite not valid</h1>
-          <p className="mt-2 text-muted">This link has expired, was already used, or was revoked. Ask a MathFlex super admin to send you a fresh one.</p>
+          <p className="mt-2 text-muted-foreground">This link has expired, was already used, or was revoked. Ask a MathFlex super admin to send you a fresh one.</p>
           <Link href="/" className="btn btn-ghost mt-6 self-start">Go home</Link>
         </>
       ) : (
         <>
           <h1 className="mt-4 font-display text-3xl font-extrabold">Join the MathFlex team</h1>
-          <p className="mt-2 text-muted">
-            You&apos;ve been invited as <b className="text-fg">{ROLE_LABEL[inv.role]}</b>. {ROLE_BLURB[inv.role as StaffRole]}
+          <p className="mt-2 text-muted-foreground">
+            You&apos;ve been invited as <b className="text-foreground">{ROLE_LABEL[inv.role]}</b>. {ROLE_BLURB[inv.role as StaffRole]}
           </p>
-          <p className="mt-1 text-sm text-muted">Invite for {inv.email} · valid until {inv.expiresAt.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</p>
+          <p className="mt-1 text-sm text-muted-foreground">Invite for {inv.email} · valid until {inv.expiresAt.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</p>
           <div className="mt-8">
             {user && user.email === inv.email ? (
               <form action={acceptInvite.bind(null, token)}>

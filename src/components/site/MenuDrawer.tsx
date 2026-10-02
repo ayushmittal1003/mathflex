@@ -34,7 +34,7 @@ export function MenuDrawer({
     <div className={`fixed inset-0 z-[60] ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
       <div className={`absolute inset-0 bg-black/60 transition-opacity ${open ? "opacity-100" : "opacity-0"}`} onClick={onClose} />
       <aside
-        className={`absolute inset-y-0 left-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-surface pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] text-fg shadow-2xl transition-transform duration-300 ${
+        className={`absolute inset-y-0 left-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-card pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] text-foreground shadow-2xl transition-transform duration-300 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -66,25 +66,25 @@ export function MenuDrawer({
         )}
 
         <nav className="flex flex-col gap-0.5 p-2" onClick={onClose}>
-          <Link href="/" className={item}><LayoutGrid className="size-5 text-muted" /> Home</Link>
-          <Link href="/browse" className={item}><BookOpen className="size-5 text-muted" /> All chapters</Link>
-          <Link href="/courses" className={item}><GraduationCap className="size-5 text-muted" /> Complete courses</Link>
-          {features.practice && <Link href="/practice" className={item}><Target className="size-5 text-muted" /> Practice Q bank</Link>}
-          {features.leaderboard && <Link href="/leaderboard" className={item}><Trophy className="size-5 text-muted" /> Leaderboard</Link>}
+          <Link href="/" className={item}><LayoutGrid className="size-5 text-muted-foreground" /> Home</Link>
+          <Link href="/browse" className={item}><BookOpen className="size-5 text-muted-foreground" /> All chapters</Link>
+          <Link href="/courses" className={item}><GraduationCap className="size-5 text-muted-foreground" /> Complete courses</Link>
+          {features.practice && <Link href="/practice" className={item}><Target className="size-5 text-muted-foreground" /> Practice Q bank</Link>}
+          {features.leaderboard && <Link href="/leaderboard" className={item}><Trophy className="size-5 text-muted-foreground" /> Leaderboard</Link>}
           {user && (
             <>
               <div className="mx-4 my-2 border-t border-border" />
-              <Link href="/profile" className={item}><User className="size-5 text-muted" /> Profile</Link>
-              <Link href="/profile#plans" className={item}><CalendarClock className="size-5 text-muted" /> Plan validity & renewal</Link>
-              {features.referAndEarn && <Link href="/profile#refer" className={item}><Gift className="size-5 text-muted" /> Refer & Earn</Link>}
+              <Link href="/profile" className={item}><User className="size-5 text-muted-foreground" /> Profile</Link>
+              <Link href="/profile#plans" className={item}><CalendarClock className="size-5 text-muted-foreground" /> Plan validity & renewal</Link>
+              {features.referAndEarn && <Link href="/profile#refer" className={item}><Gift className="size-5 text-muted-foreground" /> Refer & Earn</Link>}
             </>
           )}
           <div className="mx-4 my-2 border-t border-border" />
           <a href={`https://wa.me/${contact.whatsapp}`} target="_blank" rel="noreferrer" className={item}>
-            <MessageCircle className="size-5 text-green-500" /> WhatsApp us
+            <MessageCircle className="size-5 text-ok" /> WhatsApp us
           </a>
-          <a href={`mailto:${contact.email}`} className={item}><Mail className="size-5 text-muted" /> {contact.email}</a>
-          {isStaff(user?.role) && <Link href="/admin" className={item}><Shield className="size-5 text-brand" /> Admin panel</Link>}
+          <a href={`mailto:${contact.email}`} className={item}><Mail className="size-5 text-muted-foreground" /> {contact.email}</a>
+          {isStaff(user?.role) && <Link href="/admin" className={item}><Shield className="size-5 text-primary" /> Admin panel</Link>}
         </nav>
 
         <div className="mt-auto p-4">

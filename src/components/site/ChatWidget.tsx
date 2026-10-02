@@ -15,7 +15,7 @@ function RichText({ text }: { text: string }) {
     <>
       {parts.map((p, i) =>
         /^\/(chapter|courses|learn)\//.test(p) ? (
-          <Link key={i} href={p} className="font-semibold text-brand underline underline-offset-2">{p}</Link>
+          <Link key={i} href={p} className="font-semibold text-primary underline underline-offset-2">{p}</Link>
         ) : p.startsWith("**") ? (
           <strong key={i}>{p.slice(2, -2)}</strong>
         ) : (
@@ -81,7 +81,7 @@ export function ChatWidget({ name, greeting }: { name: string; greeting: string 
       </button>
 
       {open && (
-        <div className="animate-rise fixed inset-0 z-[65] flex flex-col bg-surface sm:inset-auto sm:bottom-6 sm:right-6 sm:h-[600px] sm:max-h-[calc(100dvh-48px)] sm:w-[400px] sm:rounded-3xl sm:border sm:border-border sm:shadow-2xl">
+        <div className="animate-rise fixed inset-0 z-[65] flex flex-col bg-card sm:inset-auto sm:bottom-6 sm:right-6 sm:h-[600px] sm:max-h-[calc(100dvh-48px)] sm:w-[400px] sm:rounded-3xl sm:border sm:border-border sm:shadow-2xl">
           <header className="flex items-center gap-3 rounded-t-3xl bg-brand-gradient px-4 pb-3 pt-[calc(12px+env(safe-area-inset-top))] text-white sm:pt-3">
             <div className="grid size-10 place-items-center rounded-full bg-white/20"><Sparkles className="size-5" /></div>
             <div className="flex-1">
@@ -96,7 +96,7 @@ export function ChatWidget({ name, greeting }: { name: string; greeting: string 
             {msgs.length === 0 && (
               <div className="flex flex-wrap gap-2 pt-1">
                 {SUGGESTIONS.map((s) => (
-                  <button key={s} onClick={() => send(s)} className="rounded-full border border-border px-3 py-1.5 text-left text-sm hover:border-brand hover:text-brand">{s}</button>
+                  <button key={s} onClick={() => send(s)} className="rounded-full border border-border px-3 py-1.5 text-left text-sm hover:border-primary hover:text-primary">{s}</button>
                 ))}
               </div>
             )}
@@ -104,7 +104,7 @@ export function ChatWidget({ name, greeting }: { name: string; greeting: string 
               <div
                 key={i}
                 className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed ${
-                  m.role === "user" ? "ml-auto rounded-tr-sm bg-brand text-white" : "rounded-tl-sm bg-surface-2"
+                  m.role === "user" ? "ml-auto rounded-tr-sm bg-primary text-white" : "rounded-tl-sm bg-surface-2"
                 }`}
               >
                 {m.content ? <RichText text={m.content} /> : <span className="inline-flex gap-1"><Dot /><Dot d={150} /><Dot d={300} /></span>}
@@ -129,5 +129,5 @@ export function ChatWidget({ name, greeting }: { name: string; greeting: string 
 }
 
 function Dot({ d = 0 }: { d?: number }) {
-  return <span className="size-2 animate-bounce rounded-full bg-muted" style={{ animationDelay: `${d}ms` }} />;
+  return <span className="size-2 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: `${d}ms` }} />;
 }
