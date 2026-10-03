@@ -434,26 +434,46 @@ export async function deleteCourse(id: string) {
 
 /* ---------------- Coupons ---------------- */
 
-export async function saveCoupon(form: FormData) {
+export type CouponState = { ok?: string; error?: string } | undefined;
+
+export async function saveCoupon(_: CouponState, form: FormData): Promise<CouponState> {
   const me = await requireStaff("coupons");
   const id = str(form, "id");
   const data = {
     code: str(form, "code").toUpperCase().replace(/\s+/g, ""),
     description: str(form, "description"),
-    type: str(form, "type") as CouponType,
+    type: (str(form, "type") === "FLAT" ? "FLAT" : "PERCENT") as CouponType,
     value: int(form, "value"),
     maxDiscount: optInt(form, "maxDiscount"),
-    minAmount: int(form, "minAmount"),
+    minAmount: Math.max(0, int(form, "minAmount")),
     usageLimit: optInt(form, "usageLimit"),
-    perUserLimit: int(form, "perUserLimit", 1),
+    perUserLimit: Math.max(1, int(form, "perUserLimit", 1)),
     startsAt: date(form, "startsAt"),
     endsAt: date(form, "endsAt"),
     isActive: bool(form, "isActive"),
     isPublic: bool(form, "isPublic"),
   };
-  const c = id ? await db.coupon.update({ where: { id }, data }) : await db.coupon.create({ data });
+  if (!/^[A-Z0-9_-]{3,30}$/.test(data.code)) return { error: "Use 3–30 letters, numbers, - or _ for the code." };
+  if (data.type === "PERCENT" && (data.value < 1 || data.value > 100)) return { error: "A percent coupon must be between 1 and 100." };
+  if (data.type === "FLAT" && data.value < 1) return { error: "A flat discount must be at least ₹1." };
+  if (data.maxDiscount !== null && data.maxDiscount < 1) return { error: "Max discount must be at least ₹1, or leave it blank." };
+  if (data.usageLimit !== null && data.usageLimit < 1) return { error: "Total uses must be at least 1, or leave it blank for unlimited." };
+  if (data.startsAt && data.endsAt && data.endsAt <= data.startsAt) return { error: "The end time must be after the start time." };
+
+  const clash = await db.coupon.findUnique({ where: { code: data.code }, select: { id: true } });
+  if (clash && clash.id !== id) return { error: `A coupon with code ${data.code} already exists. Open it in the list above to edit it.` };
+
+  let c;
+  try {
+    c = id ? await db.coupon.update({ where: { id }, data }) : await db.coupon.create({ data });
+  } catch (e) {
+    // Two saves racing on the same new code.
+    if ((e as { code?: string }).code === "P2002") return { error: `A coupon with code ${data.code} already exists.` };
+    throw e;
+  }
   await audit(me, id ? "coupon.update" : "coupon.create", `${id ? "Updated" : "Created"} coupon ${c.code} (${c.type === "PERCENT" ? `${c.value}%` : `₹${c.value}`}${c.isActive ? "" : ", inactive"})`, { entity: "coupon", id: c.id });
   revalidatePath("/admin/coupons");
+  return { ok: id ? `Saved ${c.code}.` : `Created ${c.code}.` };
 }
 
 export async function deleteCoupon(id: string) {
