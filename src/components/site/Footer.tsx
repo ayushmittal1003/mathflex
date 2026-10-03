@@ -10,6 +10,19 @@ export function Footer({ email, whatsapp }: { email: string; whatsapp: string })
           <p className="mt-3 max-w-sm text-sm text-muted">
             JEE & Board maths by IIT Delhi and NIT Jalandhar alumni. Buy only the chapters you need, and actually enjoy learning them.
           </p>
+          <a
+            href="https://www.instagram.com/mathflex.in/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="MathFlex on Instagram"
+            className="mt-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 text-muted transition hover:text-brand"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+            </svg>
+          </a>
         </div>
         <div className="text-sm">
           <p className="mb-3 font-bold">Learn</p>
