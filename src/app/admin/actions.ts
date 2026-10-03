@@ -9,7 +9,7 @@ import { audit } from "@/lib/audit";
 import { can, isStaff } from "@/lib/permissions";
 import { saveSetting, getSettings, type Settings } from "@/lib/settings";
 import { saveFile, readStoredFile, keyFromUrl, urlForKey, deleteStoredFile } from "@/lib/storage";
-import { bunnyConfigured, bunnyVideoInfo, createBunnyUpload } from "@/lib/video";
+import { bunnyConfigured, bunnyHealth, bunnyVideoInfo, createBunnyUpload, normalizeBunnyRef } from "@/lib/video";
 import { extractKnowledge } from "@/lib/flexcare";
 import { fulfilOrder } from "@/lib/orders";
 import { fetchOrderStatus, paytmConfigured } from "@/lib/paytm";
@@ -51,7 +51,7 @@ export async function saveChapter(form: FormData) {
     isLowPriority: bool(form, "isLowPriority"),
     sortOrder: int(form, "sortOrder"),
     introVideoProvider: (str(form, "introVideoProvider") || null) as VideoProvider | null,
-    introVideoRef: str(form, "introVideoRef") || null,
+    introVideoRef: (str(form, "introVideoProvider") === "BUNNY" ? normalizeBunnyRef(str(form, "introVideoRef")) : str(form, "introVideoRef")) || null,
     ...(coverImage !== undefined ? { coverImage } : {}),
   };
   const saved = id ? await db.chapter.update({ where: { id }, data }) : await db.chapter.create({ data });
@@ -87,7 +87,7 @@ export async function savePart(form: FormData) {
     summary: str(form, "summary"),
     topics: list(form, "topics"),
     videoProvider: (str(form, "videoProvider") || "URL") as VideoProvider,
-    videoRef: str(form, "videoRef"),
+    videoRef: str(form, "videoProvider") === "BUNNY" ? normalizeBunnyRef(str(form, "videoRef")) : str(form, "videoRef"),
     durationSec: Math.round(num(form, "durationMin") * 60),
     isFreePreview: bool(form, "isFreePreview"),
     xpReward: int(form, "xpReward", 100),
@@ -128,12 +128,19 @@ export async function startVideoUpload(title: string) {
 export async function syncBunnyDuration(partId: string) {
   await requireStaff("content");
   const part = await db.part.findUniqueOrThrow({ where: { id: partId } });
-  if (part.videoProvider !== "BUNNY" || !part.videoRef) return { ok: false, message: "Not a Bunny video" };
+  if (part.videoProvider !== "BUNNY" || !part.videoRef) return { ok: false, message: "This part isn't set to a Bunny video." };
   const info = await bunnyVideoInfo(part.videoRef);
-  if (!info) return { ok: false, message: "Video not found on Bunny" };
-  if (info.durationSec) await db.part.update({ where: { id: partId }, data: { durationSec: info.durationSec } });
+  if (!info.ok) return info;
+  const { durationSec, ready, encodeProgress, title } = info.data;
+  if (durationSec) await db.part.update({ where: { id: partId }, data: { durationSec } });
   refreshSite();
-  return { ok: true, message: info.ready ? `Ready · ${Math.round(info.durationSec / 60)} min` : `Encoding… ${info.encodeProgress}%` };
+  return { ok: true, message: ready ? `Synced “${title}” · ${Math.max(1, Math.round(durationSec / 60))} min` : `Still encoding on Bunny (${encodeProgress}%). Try again shortly.` };
+}
+
+export async function testBunnyConnection() {
+  await requireStaff("video");
+  const r = await bunnyHealth();
+  return r.ok ? { ok: true, message: `Connected. Your library has ${r.data.videos} video${r.data.videos === 1 ? "" : "s"}.` } : r;
 }
 
 /* ---------------- Questions ---------------- */

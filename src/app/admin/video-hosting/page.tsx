@@ -1,6 +1,7 @@
 import { bunnyConfigured } from "@/lib/video";
 import { requireStaff } from "@/lib/auth";
 import { Card, PageHeader, Badge } from "@/components/admin/ui";
+import { TestBunny } from "@/components/admin/TestBunny";
 
 export const metadata = { title: "Video hosting" };
 
@@ -47,14 +48,31 @@ const OPTIONS = [
 export default async function VideoHosting() {
   await requireStaff("video");
   const ok = bunnyConfigured();
+  // Which keys this running server can see (never their values).
+  const keys = [
+    ["BUNNY_LIBRARY_ID", "required"],
+    ["BUNNY_API_KEY", "required"],
+    ["BUNNY_TOKEN_KEY", "for signed playback"],
+  ].map(([name, need]) => ({ name, need, set: !!process.env[name] }));
   return (
     <div className="max-w-4xl space-y-6">
       <PageHeader title="Video hosting" subtitle="Where lecture videos live. Each part can use a different provider, so you can switch any time." />
       <Card>
         <div className="flex items-center gap-3">
           <span className={`size-3 rounded-full ${ok ? "bg-ok" : "bg-gold"}`} />
-          <p className="text-sm">{ok ? "Bunny Stream is connected. Upload videos from any chapter's Parts tab." : "Bunny Stream isn't connected yet. Follow the steps below (≈10 minutes)."}</p>
+          <p className="text-sm">{ok ? "Bunny Stream keys are set. Test them below, then upload from any chapter's Parts tab." : "Bunny Stream isn't connected on this server yet. Follow the steps below (≈10 minutes)."}</p>
         </div>
+        <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-3">
+          {keys.map((k) => (
+            <li key={k.name} className="flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-2">
+              <span className={`size-2 rounded-full ${k.set ? "bg-ok" : "bg-bad"}`} />
+              <code className="text-xs">{k.name}</code>
+              <span className="ml-auto text-xs text-muted">{k.set ? "set" : k.need}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 text-xs text-muted">Added keys in Vercel but they show as missing? Vercel only applies environment variables to new deployments, so redeploy.</p>
+        {ok && <div className="mt-4"><TestBunny /></div>}
       </Card>
       <div className="grid gap-4 md:grid-cols-2">
         {OPTIONS.map((o) => (
