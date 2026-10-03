@@ -10,19 +10,33 @@ export function Footer({ email, whatsapp }: { email: string; whatsapp: string })
           <p className="mt-3 max-w-sm text-sm text-muted">
             JEE & Board maths by IIT Delhi and NIT Jalandhar alumni. Buy only the chapters you need, and actually enjoy learning them.
           </p>
-          <a
-            href="https://www.instagram.com/mathflex.in/"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="MathFlex on Instagram"
-            className="mt-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 text-muted transition hover:text-brand"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="3" width="18" height="18" rx="5" />
-              <circle cx="12" cy="12" r="4" />
-              <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
-            </svg>
-          </a>
+          <div className="mt-4 flex gap-3">
+            <a
+              href="https://www.instagram.com/mathflex.in/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="MathFlex on Instagram"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 text-muted transition hover:text-brand"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+              </svg>
+            </a>
+            <a
+              href={`https://wa.me/${whatsapp}`}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Chat with MathFlex on WhatsApp"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 text-muted transition hover:text-brand"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 21l1.65-4.9A8.5 8.5 0 1 1 8 19.4L3 21z" />
+                <path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.2-1.4-1.9-1-.9.7a3.6 3.6 0 0 1-1.7-1.7l.7-.9-1-1.9L9 9.5z" />
+              </svg>
+            </a>
+          </div>
         </div>
         <div className="text-sm">
           <p className="mb-3 font-bold">Learn</p>
