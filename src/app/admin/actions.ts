@@ -560,6 +560,24 @@ export async function setBlocked(userId: string, blocked: boolean) {
   revalidatePath(`/admin/students/${userId}`);
 }
 
+// Permanent. Progress, attempts and access go with the account (cascade). Paid or refunded
+// orders are financial records, so those students can only be blocked, never deleted.
+export async function deleteStudent(userId: string) {
+  const me = await requireStaff("students");
+  if (me.id === userId) return;
+  const target = await db.user.findUniqueOrThrow({ where: { id: userId } });
+  if (isStaff(target.role)) throw new Error("Remove them from the team first, then delete the account.");
+  const settled = await db.order.count({ where: { userId, status: { in: ["PAID", "REFUNDED"] } } });
+  if (settled) throw new Error("This student has paid orders, which we must keep for accounts. Block the account instead.");
+  await db.$transaction([
+    db.order.deleteMany({ where: { userId } }),
+    db.user.delete({ where: { id: userId } }),
+  ]);
+  await audit(me, "user.delete", `Deleted ${target.name} (${target.email})`, { entity: "user", id: userId });
+  revalidatePath("/admin/students");
+  redirect("/admin/students");
+}
+
 // Shared by the single and bulk grant forms. Returns the entitlements created.
 async function grant(me: { id: string; name: string; email: string }, userIds: string[], target: string, days: number, note: string) {
   const [kind, id] = target.split(":");

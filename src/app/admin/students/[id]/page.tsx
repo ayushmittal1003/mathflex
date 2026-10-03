@@ -14,7 +14,7 @@ import { practiceAnalytics } from "@/lib/qbank";
 import { accuracyOf, fmtTime, strengthOf } from "@/lib/grading";
 import { Card, Field, PageHeader, Stat, Badge, SubmitButton } from "@/components/admin/ui";
 import { ConfirmButton, ActionButton } from "@/components/admin/ConfirmButton";
-import { grantAccess, revokeEntitlement, extendEntitlement, setBlocked } from "../../actions";
+import { grantAccess, revokeEntitlement, extendEntitlement, setBlocked, deleteStudent } from "../../actions";
 
 export default async function Student({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -28,9 +28,10 @@ export default async function Student({ params }: { params: Promise<{ id: string
     },
   });
   if (!u) notFound();
-  const [chapters, courses, attempts, correct, partsDone, xpEvents, changes] = await Promise.all([
+  const [chapters, courses, settledOrders, attempts, correct, partsDone, xpEvents, changes] = await Promise.all([
     db.chapter.findMany({ orderBy: [{ classLevel: "asc" }, { sortOrder: "asc" }], select: { id: true, title: true, classLevel: true } }),
     db.course.findMany({ select: { id: true, title: true } }),
+    db.order.count({ where: { userId: id, status: { in: ["PAID", "REFUNDED"] } } }),
     db.attempt.count({ where: { userId: id } }),
     db.attempt.count({ where: { userId: id, isCorrect: true } }),
     db.partProgress.count({ where: { userId: id, completedAt: { not: null } } }),
@@ -66,6 +67,9 @@ export default async function Student({ params }: { params: Promise<{ id: string
               {can(me.role, "team") && <Link href={`/admin/team?q=${encodeURIComponent(u.email)}`} className="btn btn-ghost !py-2 text-sm">{staffTarget ? "Manage role" : "Add to team"}</Link>}
               {(!staffTarget || can(me.role, "team")) && (
                 <ConfirmButton action={setBlocked.bind(null, u.id, !u.isBlocked)} message={u.isBlocked ? "Unblock this account?" : "Block this account? They'll be signed out and can't log in."}>{u.isBlocked ? "Unblock" : "Block"}</ConfirmButton>
+              )}
+              {!staffTarget && !settledOrders && (
+                <ConfirmButton action={deleteStudent.bind(null, u.id)} message={`Permanently delete ${u.name}? Their progress, attempts and access are removed and this can't be undone.`}>Delete</ConfirmButton>
               )}
             </div>
           )
