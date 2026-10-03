@@ -12,7 +12,8 @@ import { saveFile, readStoredFile, keyFromUrl, urlForKey, deleteStoredFile } fro
 import { bunnyConfigured, bunnyHealth, bunnyVideoInfo, createBunnyUpload, normalizeBunnyRef } from "@/lib/video";
 import { extractKnowledge } from "@/lib/flexcare";
 import { fulfilOrder } from "@/lib/orders";
-import { fetchOrderStatus, paytmConfigured } from "@/lib/paytm";
+import { cashfreeConfigured } from "@/lib/cashfree";
+import { syncCashfreeOrder } from "@/lib/payments";
 import { bool, date, int, list, num, optInt, slugify, str } from "@/lib/form";
 import type { AnswerFormat, BannerKind, CouponType, QuestionType, ResourceType, VideoProvider } from "@/generated/prisma/enums";
 
@@ -516,13 +517,13 @@ export async function refundOrder(id: string) {
   revalidatePath("/admin/orders");
 }
 
-export async function recheckPaytm(id: string) {
-  await requireStaff("orders");
-  if (!paytmConfigured()) return;
+// Ask Cashfree for the real status of a pending order (e.g. if a webhook was missed).
+export async function recheckPayment(id: string) {
+  const me = await requireStaff("orders");
   const order = await db.order.findUniqueOrThrow({ where: { id } });
-  const s = await fetchOrderStatus(order.orderNo);
-  if (s.status === "TXN_SUCCESS" && Math.round(s.amount) === order.total) await fulfilOrder(id, { txnId: s.txnId, raw: s.raw });
-  else if (s.status === "TXN_FAILURE") await db.order.update({ where: { id }, data: { status: "FAILED" } });
+  if (order.gateway !== "cashfree" || !cashfreeConfigured()) return;
+  const result = await syncCashfreeOrder(order.orderNo);
+  await audit(me, "order.recheck", `Re-checked order ${order.orderNo} with Cashfree: ${result}`, { entity: "user", id: order.userId, meta: { orderId: id } });
   revalidatePath("/admin/orders");
 }
 
@@ -640,7 +641,6 @@ export async function saveSettings(form: FormData) {
     saveSetting("mentorshipTitle", str(form, "mentorshipTitle")),
     saveSetting("mentorshipBlurb", str(form, "mentorshipBlurb")),
     saveSetting("gstPercent", num(form, "gstPercent")),
-    saveSetting("paymentMode", str(form, "paymentMode") === "paytm" ? "paytm" : "mock"),
     saveSetting("features", features),
     saveSetting("xp", xp),
     saveSetting("marking", marking),

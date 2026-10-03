@@ -3,8 +3,7 @@ import { requireStaff } from "@/lib/auth";
 import { can, type Permission } from "@/lib/permissions";
 import { requestNow } from "@/lib/time";
 import { db } from "@/lib/db";
-import { getSettings } from "@/lib/settings";
-import { paytmConfigured } from "@/lib/paytm";
+import { cashfreeConfigured, cashfreeMode } from "@/lib/cashfree";
 import { bunnyConfigured } from "@/lib/video";
 import { claudeConfigured } from "@/lib/flexcare";
 import { inr } from "@/lib/format";
@@ -19,7 +18,7 @@ export default async function Dashboard() {
   const now = requestNow();
   const since30 = new Date(now - 30 * day);
   const startToday = new Date(new Date().setHours(0, 0, 0, 0));
-  const [paid30, students, newStudents, activeToday, pendingCalls, chats7, topItems, recent, settings, practice7, practiceToday, questionCount, changesToday] = await Promise.all([
+  const [paid30, students, newStudents, activeToday, pendingCalls, chats7, topItems, recent, practice7, practiceToday, questionCount, changesToday] = await Promise.all([
     db.order.findMany({ where: { status: "PAID", paidAt: { gte: since30 } }, select: { total: true, paidAt: true } }),
     db.user.count({ where: { role: "STUDENT" } }),
     db.user.count({ where: { role: "STUDENT", createdAt: { gte: new Date(now - 7 * day) } } }),
@@ -28,7 +27,6 @@ export default async function Dashboard() {
     db.chatLog.count({ where: { createdAt: { gte: new Date(now - 7 * day) } } }),
     db.orderItem.groupBy({ by: ["title"], where: { order: { status: "PAID" } }, _sum: { price: true }, _count: true, orderBy: { _sum: { price: "desc" } }, take: 8 }),
     db.order.findMany({ orderBy: { createdAt: "desc" }, take: 8, include: { user: { select: { name: true } } } }),
-    getSettings(),
     db.attempt.groupBy({ by: ["isCorrect"], where: { createdAt: { gte: new Date(now - 7 * day) } }, _count: true }),
     db.attempt.count({ where: { createdAt: { gte: startToday } } }),
     db.question.count({ where: { isPublished: true } }),
@@ -47,7 +45,7 @@ export default async function Dashboard() {
   });
 
   const setup = [
-    { ok: settings.paymentMode === "paytm" && paytmConfigured(), label: "Live Paytm payments", href: "/admin/settings", fix: settings.paymentMode === "paytm" ? "Add PAYTM_MID and PAYTM_MERCHANT_KEY" : "Payments are in test mode" },
+    { ok: cashfreeConfigured() && cashfreeMode() === "production", label: "Live Cashfree payments", href: "/admin/settings", fix: cashfreeConfigured() ? "Cashfree is in sandbox mode (no real money). Set CASHFREE_ENV=production to go live" : "Add CASHFREE_APP_ID and CASHFREE_SECRET_KEY" },
     { ok: bunnyConfigured(), label: "Bunny Stream video hosting", href: "/admin/video-hosting", fix: "Add Bunny keys to upload lectures" },
     { ok: claudeConfigured(), label: "FlexCare AI answers", href: "/admin/flexcare", fix: "Add ANTHROPIC_API_KEY (FAQ-only mode now)" },
   ];

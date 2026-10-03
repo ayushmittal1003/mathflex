@@ -53,7 +53,7 @@ export async function buildPlatformKnowledge() {
     } Finishing parts and questions earns XP; there are daily streaks, badges, ${f.leaderboard ? "a leaderboard, " : ""}and daily/weekly/monthly progress analytics.`,
   );
   if (f.mentorshipUpsell) lines.push(`Mentorship: ${s.mentorshipTitle} for ₹${s.mentorshipPrice}. ${s.mentorshipBlurb} Added at checkout.`);
-  lines.push(`Payments: Paytm (UPI, cards, netbanking, wallet).${s.gstPercent ? ` GST ${s.gstPercent}% extra.` : ""}`);
+  lines.push(`Payments: Cashfree (UPI, cards, netbanking, wallets).${s.gstPercent ? ` GST ${s.gstPercent}% extra.` : ""}`);
 
   lines.push(`\n## Course bundles`);
   for (const c of courses) {

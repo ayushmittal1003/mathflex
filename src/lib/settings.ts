@@ -17,7 +17,6 @@ export const DEFAULT_SETTINGS = {
   mentorshipTitle: "1:1 mentorship call with Karan",
   mentorshipBlurb: "45 minutes. Your doubts, your study plan, your rank strategy.",
   gstPercent: 0, // set to 18 to add GST on top at checkout
-  paymentMode: "mock" as "mock" | "paytm",
 
   // Feature flags (the "open functionalities")
   features: {

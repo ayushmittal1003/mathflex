@@ -4,12 +4,13 @@ import { requireUser } from "@/lib/auth";
 import { completeMockPayment } from "@/app/actions/checkout";
 import { mockPaymentsAllowed } from "@/lib/orders";
 import { inr } from "@/lib/format";
+import { cashfreeConfigured } from "@/lib/cashfree";
 
-// Stand-in for the Paytm sheet while Paytm keys aren't configured (dev only).
+// Stand-in for Cashfree checkout in local development when Cashfree keys aren't set.
 export default async function MockPay({ searchParams }: { searchParams: Promise<{ order?: string }> }) {
   const { order: id } = await searchParams;
   const user = await requireUser("/cart");
-  if (!mockPaymentsAllowed() || !id) notFound();
+  if (!mockPaymentsAllowed() || cashfreeConfigured() || !id) notFound();
   const order = await db.order.findFirst({ where: { id, userId: user.id }, include: { items: true } });
   if (!order) notFound();
   return (
@@ -28,7 +29,7 @@ export default async function MockPay({ searchParams }: { searchParams: Promise<
           <form action={completeMockPayment.bind(null, order.id, false)}><button className="btn btn-ghost w-full">Simulate failure</button></form>
         </div>
       </div>
-      <p className="mt-4 text-center text-xs text-muted">Switch to live Paytm in Admin → Settings once your merchant keys are added.</p>
+      <p className="mt-4 text-center text-xs text-muted">Add the Cashfree keys to the environment to use the real checkout.</p>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { inr } from "@/lib/format";
 import { PaidCelebration } from "@/components/site/PaidCelebration";
+import { PaymentPoller } from "@/components/site/PaymentPoller";
 
 export default async function PaymentStatus({ searchParams }: { searchParams: Promise<{ order?: string }> }) {
   const { order: orderNo } = await searchParams;
@@ -15,6 +16,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
   return (
     <div className="mx-auto max-w-lg px-4 pt-[calc(var(--nav-h)+3rem)] text-center">
       {paid && <PaidCelebration />}
+      {order?.status === "PENDING" && order.gateway === "cashfree" && <PaymentPoller orderNo={order.orderNo} />}
       <div className={`mx-auto grid size-24 place-items-center rounded-full text-5xl ${paid ? "bg-ok/15" : "bg-bad/10"}`}>{paid ? "🎉" : order?.status === "PENDING" ? "⏳" : "😕"}</div>
       <h1 className="mt-6 font-display text-3xl font-extrabold">
         {paid ? "You're in!" : order?.status === "PENDING" ? "Payment processing" : "Payment didn't go through"}
@@ -23,7 +25,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
         {paid
           ? `Order ${order!.orderNo} · ${inr(order!.total)} paid. Everything is unlocked in My Learning.`
           : order?.status === "PENDING"
-            ? "We're waiting for confirmation from Paytm. This page will show success as soon as it arrives — refresh in a minute."
+            ? "We're confirming your payment with Cashfree. This page updates by itself in a few seconds. Please don't pay again."
             : "No money was taken, or it will be auto-refunded by your bank. Please try again."}
       </p>
       {paid && order!.items.some((i) => i.itemType === "MENTORSHIP") && (
