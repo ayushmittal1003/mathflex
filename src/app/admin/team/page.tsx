@@ -1,3 +1,4 @@
+import { appUrl as getAppUrl } from "@/lib/app-url";
 import Link from "next/link";
 import { Check, Minus } from "lucide-react";
 import { db } from "@/lib/db";
@@ -16,7 +17,7 @@ type Search = { role?: string; q?: string };
 export default async function Team({ searchParams }: { searchParams: Promise<Search> }) {
   const [me, sp] = await Promise.all([requireStaff("team"), searchParams]);
   const now = requestNow();
-  const appUrl = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const appUrl = getAppUrl();
   const [members, invites] = await Promise.all([
     db.user.findMany({ where: { role: { in: STAFF_ROLES } }, orderBy: [{ role: "asc" }, { createdAt: "asc" }] }),
     db.staffInvite.findMany({ where: { acceptedAt: null, revokedAt: null }, orderBy: { createdAt: "desc" }, include: { invitedBy: { select: { name: true } } } }),

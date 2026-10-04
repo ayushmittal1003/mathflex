@@ -1,5 +1,6 @@
 "use server";
 // Team & roles: invite staff, change roles, remove people. Super admins only.
+import { appUrl } from "@/lib/app-url";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
@@ -9,7 +10,6 @@ import { ROLE_LABEL, STAFF_ROLES, type StaffRole } from "@/lib/permissions";
 import { str } from "@/lib/form";
 
 const INVITE_DAYS = 7;
-const appUrl = () => (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
 const parseRole = (v: string): StaffRole | null => (STAFF_ROLES.includes(v as StaffRole) ? (v as StaffRole) : null);
 
 // There must always be at least one super admin who can manage the team.

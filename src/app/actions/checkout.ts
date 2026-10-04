@@ -1,4 +1,5 @@
 "use server";
+import { appUrl } from "@/lib/app-url";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -23,7 +24,6 @@ export type PlaceOrderResult =
   | { ok: true; mode: "free"; orderNo: string };
 
 const Phone = /^[6-9]\d{9}$/;
-const appUrl = () => (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
 // The browser only sends item ids, a coupon code and the mentorship toggle. Prices,
 // discounts and the total are recomputed from the database in createOrder.
