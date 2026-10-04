@@ -10,12 +10,16 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 const API_VERSION = "2026-01-01";
 
+// Cashfree's dashboard calls these "Client ID" / "Client Secret"; accept those names too.
+const clientId = () => (process.env.CASHFREE_APP_ID ?? process.env.CASHFREE_CLIENT_ID)?.trim();
+const clientSecret = () => (process.env.CASHFREE_SECRET_KEY ?? process.env.CASHFREE_CLIENT_SECRET)?.trim();
+
 export type CashfreeMode = "sandbox" | "production";
-export const cashfreeMode = (): CashfreeMode => (process.env.CASHFREE_ENV === "production" ? "production" : "sandbox");
+export const cashfreeMode = (): CashfreeMode => (process.env.CASHFREE_ENV?.trim().toLowerCase() === "production" ? "production" : "sandbox");
 const baseUrl = () => (cashfreeMode() === "production" ? "https://api.cashfree.com/pg" : "https://sandbox.cashfree.com/pg");
 
 export function cashfreeConfigured() {
-  return !!(process.env.CASHFREE_APP_ID && process.env.CASHFREE_SECRET_KEY);
+  return !!(clientId() && clientSecret());
 }
 
 export class CashfreeError extends Error {
@@ -32,8 +36,8 @@ async function call<T>(method: "GET" | "POST", path: string, ref: string, body?:
       method,
       headers: {
         "x-api-version": API_VERSION,
-        "x-client-id": process.env.CASHFREE_APP_ID!,
-        "x-client-secret": process.env.CASHFREE_SECRET_KEY!,
+        "x-client-id": clientId()!,
+        "x-client-secret": clientSecret()!,
         "x-request-id": ref,
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -99,8 +103,8 @@ export function getCashfreePayments(orderNo: string) {
 
 // Webhook signature: base64(HMAC-SHA256(timestamp + rawBody, secret key)).
 export function verifyCashfreeWebhook(rawBody: string, timestamp: string | null, signature: string | null) {
-  if (!timestamp || !signature || !process.env.CASHFREE_SECRET_KEY) return false;
-  const expected = createHmac("sha256", process.env.CASHFREE_SECRET_KEY).update(timestamp + rawBody).digest("base64");
+  if (!timestamp || !signature || !clientSecret()) return false;
+  const expected = createHmac("sha256", clientSecret()).update(timestamp + rawBody).digest("base64");
   const a = Buffer.from(expected);
   const b = Buffer.from(signature);
   return a.length === b.length && timingSafeEqual(a, b);
