@@ -538,13 +538,23 @@ export async function refundOrder(id: string) {
 }
 
 // Ask Cashfree for the real status of a pending order (e.g. if a webhook was missed).
-export async function recheckPayment(id: string) {
+const RECHECK_MESSAGE: Record<string, string> = {
+  PAID: "Cashfree confirms this payment. The order is now Paid and access is granted.",
+  PENDING: "Cashfree has no successful payment for this order yet.",
+  FAILED: "Cashfree reports this payment as failed or expired.",
+  MISMATCH: "Cashfree's amount differs from the order total, so access was NOT granted. Check the order in Cashfree.",
+  NOT_FOUND: "Cashfree has no order with this number. It may belong to the other (sandbox/live) environment.",
+  ERROR: "Couldn't reach Cashfree or it rejected our keys. Check the Cashfree keys and CASHFREE_ENV in Vercel.",
+};
+
+export async function recheckPayment(id: string): Promise<string> {
   const me = await requireStaff("orders");
   const order = await db.order.findUniqueOrThrow({ where: { id } });
-  if (order.gateway !== "cashfree" || !cashfreeConfigured()) return;
+  if (order.gateway !== "cashfree" || !cashfreeConfigured()) return "Cashfree isn't configured on this server.";
   const result = await syncCashfreeOrder(order.orderNo);
   await audit(me, "order.recheck", `Re-checked order ${order.orderNo} with Cashfree: ${result}`, { entity: "user", id: order.userId, meta: { orderId: id } });
   revalidatePath("/admin/orders");
+  return RECHECK_MESSAGE[result] ?? result;
 }
 
 /* ---------------- Students ---------------- */

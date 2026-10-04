@@ -6,7 +6,7 @@ import { syncCashfreeOrder } from "@/lib/payments";
 // nothing, so we ask Cashfree's API for the order's real status before showing it.
 export async function GET(req: Request) {
   const orderNo = new URL(req.url).searchParams.get("order_id") ?? "";
-  const back = new URL(`/payment/status?order=${encodeURIComponent(orderNo)}`, process.env.APP_URL?.trim() ? appUrl() : req.url);
+  const back = new URL(`/payment/status?order=${encodeURIComponent(orderNo)}`, /cashfree\.com/i.test(process.env.APP_URL ?? "") ? req.url : process.env.APP_URL?.trim() ? appUrl() : req.url);
   if (!/^MF[A-Z0-9]{6,30}$/.test(orderNo)) return NextResponse.redirect(new URL("/cart", back), 303);
   const result = await syncCashfreeOrder(orderNo);
   console.info(`[cashfree:return] ${orderNo} → ${result}`);

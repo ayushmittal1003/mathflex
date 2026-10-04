@@ -16,10 +16,11 @@ export function ConfirmButton({ action, message, children, className = "" }: { a
   );
 }
 
+// A string returned by the action is shown to the admin (used by Re-check payment).
 export function ActionButton({ action, children, className = "" }: { action: () => Promise<unknown>; children: React.ReactNode; className?: string }) {
   const [pending, start] = useTransition();
   return (
-    <button type="button" disabled={pending} onClick={() => start(async () => { await action(); })} className={`btn btn-ghost !px-3 !py-1.5 text-sm ${className}`}>
+    <button type="button" disabled={pending} onClick={() => start(async () => { const r = await action(); if (typeof r === "string") alert(r); })} className={`btn btn-ghost !px-3 !py-1.5 text-sm ${className}`}>
       {pending ? "…" : children}
     </button>
   );
