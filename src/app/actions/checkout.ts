@@ -1,5 +1,5 @@
 "use server";
-import { appUrl } from "@/lib/app-url";
+import { siteUrl } from "@/lib/app-url";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -60,7 +60,7 @@ export async function placeOrder(items: unknown, coupon: string | null, mentorsh
   }
 
   if (cashfree) {
-    const base = appUrl();
+    const base = await siteUrl();
     console.info(`[checkout] return base for ${order.orderNo}: ${base}`);
     try {
       const { paymentSessionId, cfOrderId } = await createCashfreeOrder({

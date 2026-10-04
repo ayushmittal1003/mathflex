@@ -1,8 +1,21 @@
+import { headers } from "next/headers";
+
 // The public site address, used for links that leave the app (payment return and webhook URLs, invites).
-// APP_URL is easy to save without its scheme ("mathflex.in"); a scheme-less value would be treated as a
-// relative path by Cashfree, so we add https:// and strip trailing slashes.
+// APP_URL is easy to save blank or without its scheme ("mathflex.in"). A scheme-less or empty value would be
+// treated as a relative path by Cashfree, so we add https:// and strip trailing slashes.
 export function appUrl(): string {
   const raw = (process.env.APP_URL ?? "").trim().replace(/\/+$/, "");
   if (!raw) return "http://localhost:3000";
   return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+}
+
+// Like appUrl(), but when APP_URL isn't set it uses the address the visitor is on, so production
+// never sends localhost to a payment gateway.
+export async function siteUrl(): Promise<string> {
+  if (process.env.APP_URL?.trim()) return appUrl();
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  if (!host) return appUrl();
+  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+  return `${proto}://${host}`;
 }
