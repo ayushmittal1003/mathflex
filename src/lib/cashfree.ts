@@ -103,8 +103,9 @@ export function getCashfreePayments(orderNo: string) {
 
 // Webhook signature: base64(HMAC-SHA256(timestamp + rawBody, secret key)).
 export function verifyCashfreeWebhook(rawBody: string, timestamp: string | null, signature: string | null) {
-  if (!timestamp || !signature || !clientSecret()) return false;
-  const expected = createHmac("sha256", clientSecret()).update(timestamp + rawBody).digest("base64");
+  const secret = clientSecret();
+  if (!timestamp || !signature || !secret) return false;
+  const expected = createHmac("sha256", secret).update(timestamp + rawBody).digest("base64");
   const a = Buffer.from(expected);
   const b = Buffer.from(signature);
   return a.length === b.length && timingSafeEqual(a, b);
