@@ -61,6 +61,7 @@ export async function placeOrder(items: unknown, coupon: string | null, mentorsh
 
   if (cashfree) {
     const base = appUrl();
+    console.info(`[checkout] return base for ${order.orderNo}: ${base}`);
     try {
       const { paymentSessionId, cfOrderId } = await createCashfreeOrder({
         orderNo: order.orderNo,
