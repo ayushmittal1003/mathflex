@@ -266,3 +266,22 @@ export const bookCall = {
     { q: "How do I choose the time?", a: "After you pay, our team WhatsApps you to pick a slot that suits you. The call link then appears on your Profile page." },
   ] as Faq[],
 };
+
+// About page: proof cards, timeline and offerings (Allen-style structure, honest for a new
+// platform: no invented years or results). {tokens} are filled from live data; a card or
+// step whose data is missing is hidden on the page.
+export const aboutPillars = [
+  { key: "mentor", kicker: "Proven teaching", big: "{studentsGuided}", small: "JEE aspirants guided by {mentorShort}", body: "The same way of teaching that has already helped students into IITs and NITs, now chapter by chapter." },
+  { key: "chapters", kicker: "Every chapter", big: "{chapterCount}", small: "chapters across Class {classes}", body: "Each one split into short parts, with practice after every part and notes for revision." },
+  { key: "hours", kicker: "Depth", big: "{hours}", small: "hours of chapter-wise video", body: "Built from the questions that actually show up in JEE, not from a textbook's table of contents." },
+  { key: "practice", kicker: "Practice", big: "{questionCount}", small: "practice questions and PYQs", body: "Daily practice problems and past JEE questions, matched to the part you just watched." },
+  { key: "price", kicker: "Fair price", big: "{minPrice}", small: "to start a chapter", body: "Pay for the chapter you're stuck on, not the whole syllabus. {freeLine}" },
+];
+
+export const aboutTimeline = [
+  { tag: "The start", t: "Cracks JEE, studies at IIT Delhi", d: "{fullName} goes through the same prep you're going through now." },
+  { tag: "Mentoring", t: "{studentsGuided} aspirants guided", d: "Year after year, the same story: students stuck on a few chapters, with no way to fix just those." },
+  { tag: "Building", t: "Learning products at Allen and beyond", d: "Product roles at Allen, Transify, DaMENSCH and Meesho: how students actually learn, at scale." },
+  { tag: "Today", t: "Mathflex launches", d: "{chapterCount} chapters for Class {classes}, sold one at a time. We're new, and we're building it with our first students." },
+  { tag: "Next", t: "Your chapter", d: "Pick the chapter that's costing you marks and fix it this week.", you: true },
+];
