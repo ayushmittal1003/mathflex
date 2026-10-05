@@ -69,6 +69,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
         </FooterCol>
         <FooterCol title="Resources">
           <Link href="/blog" className={linkCls}>Blog</Link>
+          <Link href="/free-practice" className={linkCls}>Free practice</Link>
         </FooterCol>
         <FooterCol title="Support">
           {/* Placeholder phone: shown as text, not a dialable link. */}

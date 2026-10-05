@@ -9,7 +9,7 @@ import { button, cx, tone } from "./ui";
 export type SiteNavUser = { name: string; avatarColor: string; isStaff: boolean } | null;
 
 // Pages whose hero has no wash (design.md §3.1): the nav sits on white there.
-const PLAIN_HEADER = ["/leaderboard", "/contact", "/faq", "/terms", "/privacy", "/refund-policy", "/blog"];
+const PLAIN_HEADER = ["/leaderboard", "/contact", "/faq", "/terms", "/privacy", "/refund-policy", "/blog", "/free-practice"];
 
 // design.md §3.2: logo · dark segmented nav · actions. Below 1024px the segmented nav and
 // auth buttons hide and a dark hamburger opens a drop-down panel.
