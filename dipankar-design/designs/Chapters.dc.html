@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:oklch(0.995 0 0);color:oklch(0.145 0 0);font-family:Inter,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:oklch(0.637 0.237 25.331);text-decoration:none}
+a:hover{color:oklch(0.55 0.22 25.331)}
+::selection{background:color-mix(in oklab,oklch(0.637 0.237 25.331) 30%,transparent)}
+@keyframes mfblink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes mfrise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:oklch(0.995 0 0);overflow-x:clip">
+
+<div style="padding:16px 16px 0">
+<section data-screen-label="01 Chapters hero" style="position:relative;border-radius:12px;overflow:hidden;background:radial-gradient(70% 55% at 50% 0%, color-mix(in oklab, oklch(0.705 0.213 47.604) 30%, transparent), transparent 70%), radial-gradient(50% 50% at 100% 100%, color-mix(in oklab, oklch(0.637 0.237 25.331) 26%, transparent), transparent 70%), radial-gradient(40% 40% at 0% 80%, color-mix(in oklab, oklch(0.705 0.213 47.604) 18%, transparent), transparent 70%), oklch(0.975 0.012 50)">
+
+<nav style="position:relative;z-index:5;display:grid;grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr);align-items:center;gap:16px;padding:22px 32px">
+<a href="Landing Page v2.dc.html" style="grid-column:1;justify-self:start;display:flex;align-items:center;gap:8px;color:oklch(0.145 0 0)">
+<img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:27px;width:auto">
+</a>
+<sc-if value="{{ navWide }}" hint-placeholder-val="{{ true }}">
+<div style="grid-column:2;justify-self:center;flex:none;display:flex;gap:2px;padding:4px;border-radius:8px;background:oklch(0.145 0 0);white-space:nowrap">
+<a href="Landing Page v2.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Home</a>
+<a href="Chapters.dc.html" style="padding:7px 14px;border-radius:6px;background:oklch(0.995 0 0);font-size:13px;font-weight:700;color:oklch(0.145 0 0)">Chapters</a>
+<a href="Courses.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Courses</a>
+<a href="Pricing.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Pricing</a>
+<a href="Leaderboard.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Leaderboard</a>
+</div>
+</sc-if>
+<div style="grid-column:3;justify-self:end;display:flex;align-items:center;gap:8px">
+<a href="Checkout.dc.html" aria-label="Cart" style="position:relative;width:42px;height:42px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.95);color:oklch(0.145 0 0)" style-hover="background:oklch(0.995 0 0);color:oklch(0.145 0 0)">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+<sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:-6px;top:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;display:grid;place-items:center;background:oklch(0.637 0.237 25.331);color:#fff;font-size:11px;font-weight:800;border:2px solid oklch(0.995 0 0)">{{ cartCount }}</span></sc-if>
+</a>
+<sc-if value="{{ navWide }}" hint-placeholder-val="{{ true }}">
+<a href="Login.dc.html" style="flex:none;white-space:nowrap;padding:10px 16px;border-radius:8px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.95);color:oklch(0.145 0 0);font-size:14px;font-weight:700" style-hover="background:oklch(0.995 0 0);color:oklch(0.145 0 0)">Log in</a>
+<a href="Login.dc.html?mode=signup" style="flex:none;white-space:nowrap;padding:10px 18px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-size:14px;font-weight:700;border:1px solid oklch(0.637 0.237 25.331);box-shadow:0 8px 20px -8px oklch(0.637 0.237 25.331 / .7)" style-hover="filter:brightness(1.08);color:#fff">Start free</a>
+</sc-if>
+<sc-if value="{{ navNarrow }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ toggleMenu }}" aria-label="Menu" style="width:42px;height:42px;border-radius:8px;border:0;cursor:pointer;display:grid;place-items:center;background:oklch(0.145 0 0);color:#fff">
+<sc-if value="{{ menuClosed }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></sc-if>
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg></sc-if>
+</button>
+</sc-if>
+</div>
+</nav>
+
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:16px;right:16px;top:84px;z-index:20;padding:10px;border-radius:12px;background:oklch(0.145 0 0);color:#fff;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);animation:mfrise .3s cubic-bezier(0.22, 1, 0.36, 1) both">
+<a href="Landing Page v2.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Home</a>
+<a href="Chapters.dc.html" style="display:block;padding:14px 12px;border-radius:8px;background:rgba(255,255,255,.1);font-size:16px;font-weight:700;color:#fff">Chapters</a>
+<a href="Courses.dc.html" onClick="{{ toggleMenu }}" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Courses</a>
+<a href="Pricing.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Pricing</a>
+<a href="Leaderboard.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Leaderboard</a>
+<div style="display:flex;gap:8px;padding:10px 2px 2px">
+<a href="Login.dc.html" style="flex:1;text-align:center;padding:13px;border-radius:8px;background:rgba(255,255,255,.12);color:#fff;font-weight:700">Log in</a>
+<a href="Login.dc.html?mode=signup" style="flex:1;text-align:center;padding:13px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-weight:700">Start free</a>
+</div>
+</div>
+</sc-if>
+
+<div style="text-align:center;padding:40px 24px 0">
+<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);font-size:13px;font-weight:600;color:oklch(0.269 0 0)"><span style="width:6px;height:6px;border-radius:999px;background:oklch(0.627 0.194 149.214)"></span>35 chapters · Class 11 &amp; 12 · Part 1 free</div>
+<h1 style="margin:24px auto 0;font-size:clamp(44px, 7vw, 88px);line-height:1;font-weight:800;letter-spacing:-0.045em;max-width:980px;text-wrap:balance">Find the chapter that's costing you <span style="position:relative;display:inline-block;padding:0 14px 6px;background:oklch(0.995 0 0);box-shadow:0 10px 30px -12px rgba(120,40,0,.25)">marks{{ caret }}</span></h1>
+<p style="margin:22px auto 0;max-width:560px;font-size:17px;line-height:1.55;color:oklch(0.269 0 0);text-wrap:pretty">Every chapter is split into 2–3 parts, with DPPs, PYQs and notes. Buy just the one you need, from ₹149.</p>
+<div style="width:min(640px, 100%);margin:32px auto 0;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 18px;border-radius:12px;background:oklch(0.995 0 0);box-shadow:0 20px 50px -20px rgba(120,40,0,.35)">
+<svg style="flex:none" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="oklch(0.554 0.046 257.417)" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+<input value="{{ query }}" onInput="{{ onQuery }}" onKeyDown="{{ onSearchKey }}" placeholder="Try integrals, vectors, P&amp;C…" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font:inherit;font-size:17px;color:oklch(0.145 0 0);padding:10px 0">
+<button onClick="{{ goList }}" style="flex:none;border:0;cursor:pointer;font:inherit;padding:12px 20px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-weight:700;font-size:15px" style-hover="filter:brightness(1.08)">Search</button>
+</div>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin-top:16px">
+<span style="font-size:13px;color:oklch(0.269 0 0)">Popular:</span>
+<sc-for list="{{ popular }}" as="p" hint-placeholder-count="4">
+<button onClick="{{ p.onClick }}" style="border:1px solid rgba(255,255,255,.95);cursor:pointer;font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.75);color:oklch(0.145 0 0)" style-hover="background:oklch(0.995 0 0)">{{ p.label }}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="position:relative;width:min(980px, calc(100% - 48px));margin:56px auto -150px;border-radius:12px;border:6px solid oklch(0.145 0 0);background:oklch(0.995 0 0);box-shadow:0 40px 80px -30px rgba(80,20,0,.45);overflow:hidden;display:grid;grid-template-columns:{{ peekCols }};height:420px">
+<div style="position:relative;overflow:hidden;color:#fff;background:linear-gradient(125deg, #1a0610, #FF2E63)">
+<div style="position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-size:300px;font-weight:900;line-height:1;color:rgba(255,255,255,.14)">∫</div>
+<div style="position:absolute;inset:0;background:linear-gradient(90deg, rgba(0,0,0,.55), transparent 70%)"></div>
+<div style="position:absolute;left:22px;top:20px;display:flex;gap:8px"><span style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.35)">Class 12</span><span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:6px;background:#fff;color:#000">Part 1 · Free</span></div>
+<div style="position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:999px;display:grid;place-items:center;background:#fff;box-shadow:0 0 0 12px rgba(255,255,255,.16)"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="oklch(0.637 0.237 25.331)"></path></svg></div>
+<div style="position:absolute;left:22px;right:22px;top:200px">
+<div style="font-size:13px;font-weight:600;opacity:.85">Part 1 · Properties &amp; King's rule</div>
+<div style="font-size:30px;font-weight:800;letter-spacing:-0.03em;margin-top:4px">Definite Integrals</div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:14px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px"><span>04:12</span><div style="flex:1;height:4px;border-radius:999px;background:rgba(255,255,255,.3)"><div style="width:20%;height:100%;border-radius:999px;background:#fff"></div></div><span>21:30</span></div>
+</div>
+</div>
+<sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+<div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:oklch(0.554 0.046 257.417)">3 parts</span><span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:color-mix(in oklab, oklch(0.705 0.213 47.604) 14%, transparent);color:oklch(0.5 0.17 47)">5% of JEE Main</span></div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;border:1px solid color-mix(in oklab, oklch(0.637 0.237 25.331) 35%, transparent);background:color-mix(in oklab, oklch(0.637 0.237 25.331) 5%, oklch(0.995 0 0))"><span style="width:26px;height:26px;border-radius:999px;display:grid;place-items:center;background:oklch(0.637 0.237 25.331);color:#fff"><svg width="10" height="10" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"></path></svg></span><div><div style="font-size:13px;font-weight:700">Properties &amp; King's rule</div><div style="font-size:11px;color:oklch(0.554 0.046 257.417)">21:30 · Free preview</div></div></div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508)"><span style="width:26px;height:26px;border-radius:999px;display:grid;place-items:center;background:oklch(0.968 0.007 247.896);color:oklch(0.554 0.046 257.417)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span><div><div style="font-size:13px;font-weight:700">Leibniz rule</div><div style="font-size:11px;color:oklch(0.554 0.046 257.417)">19:45 · Unlocks after Part 1</div></div></div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508)"><span style="width:26px;height:26px;border-radius:999px;display:grid;place-items:center;background:oklch(0.968 0.007 247.896);color:oklch(0.554 0.046 257.417)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span><div><div style="font-size:13px;font-weight:700">Periodic integrals</div><div style="font-size:11px;color:oklch(0.554 0.046 257.417)">26:00 · Unlocks after Part 2</div></div></div>
+<div style="display:flex;align-items:baseline;gap:8px;margin-top:6px"><span style="font-size:26px;font-weight:800;letter-spacing:-0.03em">₹399</span><span style="font-size:13px;color:oklch(0.554 0.046 257.417);text-decoration:line-through">₹798</span></div>
+</div>
+</sc-if>
+</div>
+</section>
+</div>
+
+<section id="top" data-screen-label="02 Most marks" style="padding:96px 0 72px;overflow:hidden">
+<div style="text-align:center;padding:0 24px">
+<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:oklch(0.968 0.007 247.896);border:1px solid oklch(0.929 0.013 255.508);font-size:13px;font-weight:600;color:oklch(0.269 0 0)"><span style="width:6px;height:6px;border-radius:999px;background:oklch(0.795 0.184 86.047)"></span>Highest JEE weightage</div>
+<h2 style="margin:24px auto 0;font-size:clamp(40px, 5.6vw, 72px);line-height:1.02;font-weight:800;letter-spacing:-0.045em;max-width:960px;text-wrap:balance">Most marks for your <span style="display:inline-block;padding:0 12px 4px;background:color-mix(in oklab, oklch(0.705 0.213 47.604) 16%, oklch(0.995 0 0));box-shadow:0 10px 30px -12px rgba(120,40,0,.25)">time</span>.</h2>
+<p style="margin:22px auto 0;max-width:560px;font-size:17px;line-height:1.55;color:oklch(0.269 0 0);text-wrap:pretty">These five chapters carry the most weight in JEE Main. Short on time? Start here.</p>
+</div>
+<div style="width:min(1240px, calc(100% - 48px));margin:40px auto 0;display:flex;justify-content:{{ topJustify }};gap:8px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:none;padding:24px 4px 20px">
+<sc-for list="{{ top5 }}" as="c" hint-placeholder-count="5">
+<a href="{{ c.href }}" style="flex:none;display:flex;align-items:flex-end;color:#fff" style-hover="color:#fff">
+<span aria-hidden="true" style="font-size:{{ rankSize }};font-weight:900;letter-spacing:-0.06em;line-height:.78;color:transparent;-webkit-text-stroke:3px oklch(0.554 0.046 257.417);margin-right:-26px;user-select:none">{{ c.rank }}</span>
+<span style="position:relative;display:block;width:{{ topW }};aspect-ratio:2/3;border-radius:12px;overflow:hidden;background:{{ c.bg }};box-shadow:0 16px 32px -16px rgba(0,0,0,.45);transition:transform .3s" style-hover="transform:translateY(-6px)">
+<span style="position:absolute;right:-10px;top:4px;font-size:{{ c.glyph }};font-weight:900;line-height:1;color:rgba(255,255,255,.2);white-space:nowrap">{{ c.symbol }}</span>
+<span style="position:absolute;inset:0;background:linear-gradient(transparent 35%, rgba(0,0,0,.85))"></span>
+<span style="position:absolute;left:10px;top:10px;font-size:11px;font-weight:800;padding:3px 7px;border-radius:4px;background:#fff;color:#000">{{ c.weight }}% of JEE</span>
+<span style="position:absolute;left:12px;right:12px;bottom:12px"><span style="display:block;font-size:15px;font-weight:800;line-height:1.15">{{ c.title }}</span><span style="display:block;font-size:12px;opacity:.8;margin-top:4px">Class {{ c.cls }} · ₹{{ c.price }}</span></span>
+</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<div id="all" style="position:sticky;top:0;z-index:30;background:color-mix(in oklab, oklch(0.995 0 0) 90%, transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid oklch(0.929 0.013 255.508);border-bottom:1px solid oklch(0.929 0.013 255.508);scroll-margin-top:0">
+<div style="width:min(1240px, calc(100% - 48px));margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:12px 0">
+<div style="flex:1 1 220px;max-width:340px;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0)">
+<svg style="flex:none" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="oklch(0.554 0.046 257.417)" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+<input value="{{ query }}" onInput="{{ onQuery }}" placeholder="Search chapters" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font:inherit;font-size:15px;color:oklch(0.145 0 0)">
+<sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}"><button onClick="{{ clearQuery }}" aria-label="Clear" style="flex:none;border:0;cursor:pointer;width:22px;height:22px;border-radius:999px;background:oklch(0.968 0.007 247.896);color:oklch(0.145 0 0);font-size:13px;line-height:1">×</button></sc-if>
+</div>
+<div style="flex:none;display:flex;gap:2px;padding:4px;border-radius:8px;background:oklch(0.145 0 0)">
+<sc-for list="{{ classTabs }}" as="t" hint-placeholder-count="3">
+<button onClick="{{ t.onClick }}" style="border:0;cursor:pointer;font:inherit;padding:7px 12px;border-radius:6px;font-size:13px;font-weight:700;white-space:nowrap;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</button>
+</sc-for>
+</div>
+<div style="flex:none;position:relative">
+<select onChange="{{ onSort }}" value="{{ sortVal }}" style="appearance:none;-webkit-appearance:none;font:inherit;font-size:13px;font-weight:700;height:40px;padding:0 32px 0 12px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);color:oklch(0.145 0 0);cursor:pointer">
+<option value="default">Syllabus order</option>
+<option value="weight">Sort: JEE weightage</option>
+<option value="price">Sort: price, low to high</option>
+</select>
+<svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="oklch(0.145 0 0)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+</div>
+<button onClick="{{ toggleFree }}" style="flex:none;display:flex;align-items:center;gap:10px;border:0;background:transparent;cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:oklch(0.145 0 0);white-space:nowrap">
+<span style="position:relative;width:36px;height:20px;border-radius:999px;background:{{ freeTrack }};transition:background .2s"><span style="position:absolute;top:2px;left:{{ freeKnob }};width:16px;height:16px;border-radius:999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .2s"></span></span>
+Part 1 free
+</button>
+<span style="flex:none;margin-left:auto;font-size:13px;font-weight:600;color:oklch(0.554 0.046 257.417);white-space:nowrap">{{ countLabel }}</span>
+</div>
+</div>
+
+<section data-screen-label="03 All chapters" style="padding:32px 0 96px">
+<div style="width:min(1240px, calc(100% - 48px));margin:0 auto">
+<div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px">
+<sc-for list="{{ unitNav }}" as="u" hint-placeholder-count="7">
+<button onClick="{{ u.onClick }}" style="flex:none;border:1px solid {{ u.border }};cursor:pointer;font:inherit;font-size:14px;font-weight:700;padding:9px 14px;border-radius:999px;white-space:nowrap;background:{{ u.bg }};color:{{ u.fg }}">{{ u.label }} <span style="opacity:.6;font-weight:600">{{ u.count }}</span></button>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax({{ cardMin }}, 1fr));gap:{{ gridGap }};margin-top:28px">
+<sc-for list="{{ cards }}" as="c" hint-placeholder-count="8">
+<div style="position:relative;display:flex;flex-direction:column;border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);overflow:hidden;transition:transform .25s, box-shadow .25s;animation:mfrise .45s cubic-bezier(0.22, 1, 0.36, 1) both" style-hover="transform:translateY(-4px);box-shadow:0 22px 40px -22px rgba(80,20,0,.4)">
+<a href="{{ c.href }}" style="display:flex;flex-direction:column;flex:1;color:oklch(0.145 0 0)" style-hover="color:oklch(0.145 0 0)">
+<span style="position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:{{ c.bg }};color:#fff">
+<span style="position:absolute;right:-6px;top:50%;transform:translateY(-50%);font-size:{{ c.thumbGlyph }};font-weight:900;line-height:1;letter-spacing:-0.05em;color:rgba(255,255,255,.22);white-space:nowrap">{{ c.symbol }}</span>
+<span style="position:absolute;inset:0;background:radial-gradient(circle at 15% 10%, rgba(255,255,255,.22), transparent 50%)"></span>
+<sc-if value="{{ c.free }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:10px;bottom:10px;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;padding:4px 8px;border-radius:6px;background:#fff;color:#000"><svg width="9" height="9" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"></path></svg>Part 1 free</span></sc-if>
+</span>
+<span style="display:flex;flex-direction:column;flex:1;padding:14px 16px 16px">
+<span style="font-size:12px;font-weight:600;color:oklch(0.554 0.046 257.417)">Class {{ c.cls }} · {{ c.unitLabel }}</span>
+<span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:6px;font-size:17px;font-weight:700;letter-spacing:-0.015em;line-height:1.3;min-height:44px">{{ c.title }}</span>
+<span style="display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px;font-size:12px;color:oklch(0.554 0.046 257.417)"><span>{{ c.parts }} parts</span><span>{{ c.weight }}% of JEE Main</span><sc-if value="{{ c.hot }}" hint-placeholder-val="{{ false }}"><span style="font-weight:700;color:oklch(0.55 0.22 25.331)">Popular</span></sc-if></span>
+<span style="display:flex;align-items:baseline;gap:8px;margin-top:auto;padding-top:14px"><span style="font-size:19px;font-weight:800;letter-spacing:-0.02em">₹{{ c.price }}</span><span style="font-size:13px;color:oklch(0.554 0.046 257.417);text-decoration:line-through">₹{{ c.mrp }}</span><span style="font-size:12px;font-weight:700;color:oklch(0.5 0.16 149)">50% off</span></span>
+</span>
+</a>
+<button onClick="{{ c.toggleCart }}" aria-label="Add to cart" style="position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:999px;border:0;cursor:pointer;display:grid;place-items:center;background:{{ c.cartBg }};color:{{ c.cartFg }};box-shadow:0 4px 12px rgba(0,0,0,.2)">
+<sc-if value="{{ c.inCart }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+<sc-if value="{{ c.notInCart }}" hint-placeholder-val="{{ true }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></sc-if>
+</button>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+<div style="padding:72px 24px;text-align:center">
+<div style="font-size:24px;font-weight:800;letter-spacing:-0.02em">No chapter matches “{{ query }}”</div>
+<p style="margin:8px 0 0;font-size:15px;color:oklch(0.554 0.046 257.417)">Try a shorter word, or clear the filters.</p>
+<button onClick="{{ resetAll }}" style="margin-top:20px;border:0;cursor:pointer;font:inherit;padding:12px 20px;border-radius:8px;background:oklch(0.145 0 0);color:#fff;font-weight:700">Show all chapters</button>
+</div>
+</sc-if>
+</div>
+</section>
+
+<section id="bundles" data-screen-label="04 Bundles" style="padding:88px 0;border-top:1px solid oklch(0.929 0.013 255.508);scroll-margin-top:60px">
+<div style="width:min(1240px, calc(100% - 48px));margin:0 auto;display:flex;flex-wrap:wrap;gap:40px 64px;align-items:center">
+<div style="flex:1 1 360px;min-width:0">
+<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:oklch(0.968 0.007 247.896);border:1px solid oklch(0.929 0.013 255.508);font-size:13px;font-weight:600;color:oklch(0.269 0 0)"><span style="width:6px;height:6px;border-radius:999px;background:oklch(0.637 0.237 25.331)"></span>Complete courses</div>
+<h2 style="margin:22px 0 0;font-size:clamp(34px, 4.2vw, 54px);line-height:1.04;font-weight:800;letter-spacing:-0.045em;text-wrap:balance">Need 8 or more chapters? Take the <span style="display:inline-block;padding:0 12px 4px;background:color-mix(in oklab, oklch(0.705 0.213 47.604) 16%, oklch(0.995 0 0));box-shadow:0 10px 30px -12px rgba(120,40,0,.25)">whole class</span>.</h2>
+<p style="margin:18px 0 0;font-size:16px;line-height:1.6;color:oklch(0.269 0 0);max-width:460px">Past about 8 chapters, a full class works out cheaper than buying them one by one.</p>
+</div>
+<div style="flex:1.3 1 460px;min-width:0;border-top:1px solid oklch(0.929 0.013 255.508)">
+<sc-for list="{{ bundles }}" as="b" hint-placeholder-count="3">
+<a href="#" style="display:flex;align-items:center;gap:20px;padding:22px 4px;border-bottom:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0);transition:padding .3s" style-hover="padding-left:12px;color:oklch(0.145 0 0)">
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:20px;font-weight:800;letter-spacing:-0.02em">{{ b.title }}</span><sc-if value="{{ b.best }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;background:oklch(0.637 0.237 25.331);color:#fff">Best value</span></sc-if></div>
+<div style="font-size:14px;color:oklch(0.554 0.046 257.417);margin-top:4px">{{ b.sub }}</div>
+</div>
+<div style="text-align:right;flex:none"><div style="font-size:28px;font-weight:800;letter-spacing:-0.03em">{{ b.price }}</div><div style="font-size:12px;color:oklch(0.554 0.046 257.417);text-decoration:line-through">{{ b.mrp }}</div></div>
+<span style="flex:none;width:36px;height:36px;border-radius:999px;display:grid;place-items:center;background:oklch(0.145 0 0);color:#fff;font-size:16px">→</span>
+</a>
+</sc-for>
+</div>
+</div>
+</section>
+
+<footer data-screen-label="05 Footer" style="position:relative;background:oklch(0.995 0 0);border-top:1px solid oklch(0.929 0.013 255.508);overflow:hidden">
+<div style="width:min(1120px, calc(100% - 48px));margin:0 auto;padding:56px 0 0;display:grid;grid-template-columns:{{ footCols }};gap:40px 32px">
+<div style="grid-column:{{ footSpan }};min-width:0">
+<div style="display:inline-flex;align-items:center;gap:8px"><img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:29px;width:auto"></div>
+<p style="margin:14px 0 0;max-width:340px;font-size:14px;line-height:1.55;color:oklch(0.554 0.046 257.417)">Chapter-wise JEE maths for Class 11 and 12, taught by IIT Delhi alumnus Karan Mittal. Buy only the chapters you need.</p>
+<p style="margin:14px 0 0;max-width:340px;font-size:13px;line-height:1.55;color:oklch(0.554 0.046 257.417)"><b style="color:oklch(0.269 0 0)">Registered address</b><br>Mathflex Learning Pvt. Ltd., [address line], [city, state, PIN]</p>
+</div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Learn</div><div style="display:grid;gap:10px"><a href="Chapters.dc.html" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">All chapters</a><a href="#bundles" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">Complete courses</a><a href="Pricing.dc.html" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">Pricing</a><a href="Leaderboard.dc.html" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">Leaderboard</a></div></div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Company</div><div style="display:grid;gap:10px"><a href="About.dc.html" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">About us</a><a href="Contact.dc.html" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">Contact us</a><a href="FAQ.dc.html" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">FAQs</a><a href="Blog.dc.html" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">Blog</a></div></div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Support</div><div style="display:grid;gap:10px"><a href="tel:+910000000000" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">+91 XXXXX XXXXX</a><a href="mailto:support@mathflex.in" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">support@mathflex.in</a><a href="Contact.dc.html" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">WhatsApp</a><span style="color:oklch(0.554 0.046 257.417);font-size:13px">Mon–Sat, 10am–7pm</span></div></div>
+</div>
+<div style="width:min(1120px, calc(100% - 48px));margin:48px auto 0;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:20px 0;border-top:1px solid oklch(0.929 0.013 255.508);font-size:13px;color:oklch(0.554 0.046 257.417)"><span>© 2026 Mathflex · mathflex.in</span><div style="display:flex;gap:20px"><a href="Terms.dc.html" style="color:oklch(0.554 0.046 257.417)">Terms &amp; conditions</a><a href="Privacy Policy.dc.html" style="color:oklch(0.554 0.046 257.417)">Privacy policy</a><a href="Refund Policy.dc.html" style="color:oklch(0.554 0.046 257.417)">Refund policy</a></div></div>
+<div aria-hidden="true" style="text-align:center;font-size:clamp(90px, 21vw, 300px);font-weight:900;letter-spacing:-0.06em;line-height:.78;margin-bottom:-0.06em;background:linear-gradient(180deg, oklch(0.968 0.007 247.896), color-mix(in oklab, oklch(0.705 0.213 47.604) 22%, oklch(0.995 0 0)));-webkit-background-clip:text;background-clip:text;color:transparent;user-select:none;white-space:nowrap">mathflex</div>
+</footer>
+
+<sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:14px;padding:10px 10px 10px 18px;border-radius:12px;background:oklch(0.145 0 0);color:#fff;box-shadow:0 20px 40px -12px rgba(0,0,0,.45);animation:mfrise .35s cubic-bezier(0.22, 1, 0.36, 1) both;max-width:calc(100% - 32px)">
+<span style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ toastText }}</span>
+<a href="Checkout.dc.html" style="flex:none;padding:8px 14px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-size:13px;font-weight:700" style-hover="color:#fff">View cart · {{ cartCount }}</a>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { cls: "all", sort: "default", unit: "all", freeOnly: false, q: "", cart: [], open: null, toast: "", w: 1280, menu: false };
+
+  componentDidMount() {
+    this.onResize = () => { const w = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0); if (w > 100 && w !== this.state.w) this.setState({ w }); };
+    [300, 1000, 2500].forEach(t => setTimeout(() => this.onResize && this.onResize(), t));
+    this.mq = window.matchMedia("(max-width: 759px)"); this.mqh = () => this.onResize(); this.mq.addEventListener && this.mq.addEventListener("change", this.mqh);
+    window.addEventListener("resize", this.onResize);
+    if ("ResizeObserver" in window) { this.ro = new ResizeObserver(() => this.onResize()); this.ro.observe(document.documentElement); document.body && this.ro.observe(document.body); }
+    this.onResize();
+    requestAnimationFrame(this.onResize);
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this.onResize); this.ro && this.ro.disconnect(); clearTimeout(this.tt); }
+
+  chapters() {
+    if (this._ch) return this._ch;
+    const G = [["#FF2E63", "#FF8A3D"], ["#6366F1", "#EC4899"], ["#10B981", "#0EA5E9"], ["#F59E0B", "#DC2626"], ["#7C3AED", "#FF2E63"], ["#0EA5E9", "#6366F1"], ["#EC4899", "#F59E0B"], ["#1a0610", "#FF2E63"]];
+    // [title, symbol, JEE %, unit, popular, price]
+    const raw11 = [
+      ["Sets & Relations", "∈", 3, "alg"], ["Functions", "f(x)", 3.3, "calc", 1], ["Trigonometric Ratios & Identities", "θ", 3, "trig"], ["Trigonometric Equations", "tan", 2, "trig"],
+      ["Quadratic Equations & Expressions", "x²", 3.3, "alg", 1], ["Complex Numbers", "i", 5, "alg", 1], ["Sequence & Series", "Σ", 5, "alg", 1], ["Straight Lines", "m", 3.3, "coord"],
+      ["Pair of Straight Lines", "∥", 1, "coord"], ["Circle", "○", 3.3, "coord"], ["Parabola", "∪", 2.5, "coord"], ["Ellipse", "e", 2, "coord"], ["Hyperbola", "×", 2, "coord"], ["Statistics", "σ", 3.3, "stat"],
+      ["Principle of Mathematical Induction", "n+1", 0.5, "alg", 0, 199], ["Permutations & Combinations", "ⁿCᵣ", 3.3, "alg", 1], ["Binomial Theorem", "ⁿ", 3.3, "alg"],
+      ["Mathematical Reasoning", "∴", 1, "alg", 0, 199], ["Inequalities", "≤", 1, "alg", 0, 199], ["Limits & Derivatives", "lim", 3.3, "calc", 1],
+    ];
+    const raw12 = [
+      ["Relations & Functions (Advanced)", "f∘g", 3, "calc"], ["Inverse Trigonometric Functions", "sin⁻¹", 2, "trig"], ["Matrices", "[A]", 3.3, "alg", 1], ["Determinants", "|A|", 3.3, "alg"],
+      ["Continuity & Differentiability", "d/dx", 3.3, "calc"], ["Application of Derivatives", "f′", 5, "calc", 1], ["Indefinite Integrals", "∫", 3.3, "calc", 1], ["Definite Integrals", "∫ₐᵇ", 5, "calc", 1],
+      ["Application of Integrals", "∮", 2, "calc"], ["Differential Equations", "dy", 3.3, "calc"], ["Vector Algebra", "v→", 5, "vec", 1], ["3D Geometry", "xyz", 6.7, "vec", 1],
+      ["Probability", "P", 5, "stat", 1], ["Statistics (Advanced)", "μ", 2, "stat"], ["Linear Programming", "LPP", 0.5, "alg", 0, 149],
+    ];
+    const mk = (cls, offset) => ([title, symbol, weight, unit, hot, price], i) => {
+      const p = price ?? (weight >= 5 ? 399 : 299);
+      const [a, b] = G[(i + offset) % G.length];
+      return { id: cls + "-" + i, cls, order: i, title, symbol, weight, unit, hot: !!hot, free: !!hot || i % 3 === 0, price: p, mrp: p * 2, parts: weight >= 5 ? 3 : 2, bg: `linear-gradient(155deg, ${a}, ${b})` };
+    };
+    this._ch = [...raw11.map(mk(11, 0)), ...raw12.map(mk(12, 3))];
+    return this._ch;
+  }
+
+  renderVals() {
+    const ink = "oklch(0.145 0 0)", red = "oklch(0.637 0.237 25.331)", bd = "oklch(0.929 0.013 255.508)", white = "oklch(0.995 0 0)", mut = "oklch(0.968 0.007 247.896)", mute = "oklch(0.554 0.046 257.417)", ok = "oklch(0.627 0.194 149.214)";
+    const UNITS = [["calc", "Calculus"], ["alg", "Algebra"], ["coord", "Coordinate geometry"], ["vec", "Vectors & 3D"], ["trig", "Trigonometry"], ["stat", "Statistics & probability"]];
+    const all = this.chapters();
+    const s = this.state;
+    const narrow = s.w < 760, wide = !narrow, showAside = s.w >= 1000;
+    const q = s.q.trim().toLowerCase();
+    const base = all.filter(c => (s.cls === "all" || c.cls === s.cls) && (!s.freeOnly || c.free) && (!q || c.title.toLowerCase().includes(q)));
+    let list = base.filter(c => s.unit === "all" || c.unit === s.unit);
+    if (s.sort === "weight") list = [...list].sort((a, b) => b.weight - a.weight);
+    if (s.sort === "price") list = [...list].sort((a, b) => a.price - b.price || b.weight - a.weight);
+
+    const scrollToList = () => { const el = document.getElementById("all"); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: "smooth" }); };
+    const toggleCart = c => () => {
+      const inCart = s.cart.includes(c.id);
+      this.setState(st => ({ cart: inCart ? st.cart.filter(x => x !== c.id) : [...st.cart, c.id], toast: inCart ? "Removed " + c.title : "Added " + c.title + " to cart" }));
+      clearTimeout(this.tt);
+      this.tt = setTimeout(() => this.setState({ toast: "" }), 2600);
+    };
+    const row = c => {
+      const inCart = s.cart.includes(c.id), open = s.open === c.id;
+      return { ...c, inCart, notInCart: !inCart, open,
+        tileSize: c.symbol.length > 3 ? "12px" : c.symbol.length > 1 ? "15px" : "22px",
+        wPct: Math.round(c.weight / 6.7 * 100) + "%",
+        chev: open ? "rotate(180deg)" : "none", rowBg: open ? "color-mix(in oklab, " + red + " 3%, " + white + ")" : "transparent",
+        addLabel: inCart ? "Added" : "Add", addPad: wide ? "14px" : "11px",
+        addBg: inCart ? "color-mix(in oklab, " + ok + " 12%, " + white + ")" : ink, addFg: inCart ? "oklch(0.5 0.16 149)" : "#fff", addBorder: inCart ? "color-mix(in oklab, " + ok + " 40%, transparent)" : ink,
+        partList: Array.from({ length: c.parts }, (_, i) => {
+          const free = i === 0 && c.free;
+          return { label: "Part " + (i + 1) + (free ? " · Free" : ""), free, locked: !free,
+            border: free ? "color-mix(in oklab, " + red + " 35%, transparent)" : bd, bg: free ? "color-mix(in oklab, " + red + " 6%, " + white + ")" : white, fg: free ? red : "oklch(0.269 0 0)" };
+        }),
+        toggleOpen: () => this.setState(st => ({ open: st.open === c.id ? null : c.id })), toggleCart: toggleCart(c) };
+    };
+
+    const sumW = arr => Math.round(arr.reduce((t, c) => t + c.weight, 0) * 10) / 10;
+    let groups;
+    if (s.sort === "default") {
+      groups = UNITS.filter(([k]) => s.unit === "all" || s.unit === k).map(([k, title]) => {
+        const rows = list.filter(c => c.unit === k);
+        return { title, meta: rows.length + (rows.length === 1 ? " chapter" : " chapters") + " · " + sumW(rows) + "% of JEE Main", rows: rows.map(row) };
+      }).filter(g => g.rows.length);
+    } else {
+      groups = list.length ? [{ title: s.sort === "weight" ? "By JEE weightage" : "By price", meta: list.length + " chapters", rows: list.map(row) }] : [];
+    }
+    const unitNav = [["all", "All topics"], ...UNITS].map(([k, label]) => {
+      const n = k === "all" ? base.length : base.filter(c => c.unit === k).length;
+      const on = s.unit === k;
+      return { label, count: n, bg: on ? ink : white, fg: on ? "#fff" : ink, border: on ? ink : bd, onClick: () => this.setState({ unit: k, open: null }) };
+    });
+
+    const byWeight = [...all].sort((a, b) => b.weight - a.weight);
+    const top5 = byWeight.slice(0, 5).map((c, i) => ({ ...c, href: "Chapter Detail.dc.html?c=" + c.id, rank: i + 1, glyph: c.symbol.length > 2 ? "70px" : "120px" }));
+
+    const classTabs = [["all", "All"], [11, "Class 11"], [12, "Class 12"]].map(([v, label]) => ({
+      label, onClick: () => this.setState({ cls: v, open: null }), bg: s.cls === v ? white : "transparent", fg: s.cls === v ? ink : "rgba(255,255,255,.75)" }));
+    const popular = ["Definite Integrals", "3D Geometry", "Probability", "P & C"].map(label => ({
+      label, onClick: () => { this.setState({ q: label === "P & C" ? "Permutations" : label, cls: "all", unit: "all", freeOnly: false }); setTimeout(scrollToList, 30); } }));
+
+    const caret = React.createElement("span", { style: { display: "inline-block", width: 4, height: "0.82em", marginLeft: 6, verticalAlign: "-0.04em", background: red, animation: "mfblink 1s steps(1) infinite" } });
+
+    return {
+      navWide: s.w >= 1024, navNarrow: s.w < 1024,
+      caret, wide, narrow, showAside, menuOpen: s.menu, menuClosed: !s.menu, toggleMenu: () => this.setState(st => ({ menu: !st.menu })),
+      peekCols: wide ? "minmax(0, 1.5fr) minmax(0, 1fr)" : "minmax(0, 1fr)",
+      query: s.q, hasQuery: !!q, onQuery: e => this.setState({ q: e.target.value, open: null }),
+      onSearchKey: e => { if (e.key === "Enter") scrollToList(); }, goList: scrollToList,
+      clearQuery: () => this.setState({ q: "" }),
+      resetAll: () => this.setState({ q: "", cls: "all", unit: "all", freeOnly: false }),
+      popular, classTabs, sortVal: s.sort, onSort: e => this.setState({ sort: e.target.value, open: null }),
+      toggleFree: () => this.setState(st => ({ freeOnly: !st.freeOnly })),
+      freeTrack: s.freeOnly ? red : bd, freeKnob: s.freeOnly ? "18px" : "2px",
+      countLabel: list.length + (list.length === 1 ? " chapter" : " chapters"),
+      groups, unitNav, empty: list.length === 0,
+      cards: list.map(c => ({ ...row(c), href: "Chapter Detail.dc.html?c=" + c.id, unitLabel: (UNITS.find(u => u[0] === c.unit) || [0, ""])[1], thumbGlyph: c.symbol.length > 2 ? "68px" : "120px",
+        cartBg: s.cart.includes(c.id) ? ok : "rgba(255,255,255,.95)", cartFg: s.cart.includes(c.id) ? "#fff" : ink })),
+      cardMin: narrow ? "100%" : "250px", gridGap: narrow ? "14px" : "20px",
+      top5, topW: narrow ? "140px" : "170px", rankSize: narrow ? "140px" : "180px", topJustify: s.w >= 1400 ? "center" : "flex-start",
+      bundles: [
+        { title: "Class 11 complete", sub: "All 20 Class 11 chapters · 60+ hours", price: "₹2,999", mrp: "₹5,999" },
+        { title: "Class 12 complete", sub: "All 15 Class 12 chapters · 45+ hours", price: "₹2,999", mrp: "₹5,999" },
+        { title: "Class 11 + 12 combo", sub: "All 35 chapters · free 1:1 planning call", price: "₹4,999", mrp: "₹11,998", best: true },
+      ],
+      cartCount: s.cart.length, hasCart: s.cart.length > 0, toastOn: !!s.toast, toastText: s.toast,
+      footCols: narrow ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 2fr) repeat(3, minmax(0, 1fr))", footSpan: narrow ? "1 / -1" : "auto",
+    };
+  }
+}
+</script>
+</body>
+</html>

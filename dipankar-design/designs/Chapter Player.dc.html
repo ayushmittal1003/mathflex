@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:oklch(0.995 0 0);color:oklch(0.145 0 0);font-family:Inter,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:oklch(0.637 0.237 25.331);text-decoration:none}
+a:hover{color:oklch(0.55 0.22 25.331)}
+@keyframes mfrise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes mfpop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.1);opacity:1}100%{transform:scale(1)}}
+@keyframes mfspin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:oklch(0.995 0 0)">
+<header style="position:sticky;top:0;z-index:40;background:color-mix(in oklab, oklch(0.995 0 0) 92%, transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid oklch(0.929 0.013 255.508)">
+<div style="width:min(1240px, calc(100% - 32px));margin:0 auto;display:grid;grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr);align-items:center;gap:12px;height:68px">
+<div style="justify-self:start"><a href="Landing Page v2.dc.html" style="display:flex;align-items:center;gap:8px;color:oklch(0.145 0 0)"><img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:25px;width:auto"></a></div>
+<sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:2px;padding:4px;border-radius:8px;background:oklch(0.145 0 0)"><a href="Chapter Player.dc.html" style="padding:7px 14px;border-radius:6px;background:oklch(0.995 0 0);font-size:13px;font-weight:700;color:oklch(0.145 0 0);white-space:nowrap">My Learning</a><a href="Chapters.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75);white-space:nowrap" style-hover="color:#fff">Browse chapters</a><a href="Leaderboard.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75);white-space:nowrap" style-hover="color:#fff">Leaderboard</a></div></sc-if>
+<div style="grid-column:3;justify-self:end;display:flex;align-items:center;gap:8px">
+<span style="display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:8px;background:oklch(0.968 0.007 247.896);font-size:13px;font-weight:800;color:oklch(0.145 0 0)"><svg width="14" height="14" viewBox="0 0 24 24" fill="oklch(0.705 0.213 47.604)"><path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4-1-6 1-10z"></path></svg>{{ streak }}</span>
+<span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:8px;background:oklch(0.968 0.007 247.896);font-size:13px;font-weight:800;color:oklch(0.606 0.25 292.717);white-space:nowrap"><span>{{ xpLabel }} XP</span></span>
+<a href="Login.dc.html" title="Account" style="flex:none;width:36px;height:36px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(135deg, oklch(0.637 0.237 25.331), oklch(0.705 0.213 47.604));color:#fff;font-size:14px;font-weight:800">R</a>
+</div>
+</div>
+<sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:2px;padding:4px;margin:0 16px 10px;border-radius:8px;background:oklch(0.145 0 0);overflow-x:auto;scrollbar-width:none"><a href="Chapter Player.dc.html" style="flex:1;text-align:center;padding:7px 10px;border-radius:6px;background:oklch(0.995 0 0);font-size:13px;font-weight:700;color:oklch(0.145 0 0);white-space:nowrap">My Learning</a><a href="Chapters.dc.html" style="flex:1;text-align:center;padding:7px 10px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75);white-space:nowrap" style-hover="color:#fff">Browse chapters</a><a href="Leaderboard.dc.html" style="flex:1;text-align:center;padding:7px 10px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75);white-space:nowrap" style-hover="color:#fff">Leaderboard</a></div></sc-if>
+</header>
+<main data-screen-label="Chapter player" style="width:min(1240px, calc(100% - 32px));margin:0 auto;padding:20px 0 80px">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;font-weight:600;color:oklch(0.554 0.046 257.417)"><a href="Chapter Player.dc.html" style="color:oklch(0.554 0.046 257.417)" style-hover="color:oklch(0.145 0 0)">My Learning</a><span>/</span><span style="color:oklch(0.145 0 0)">Limits &amp; Derivatives</span></div>
+
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin-top:16px">
+<div style="flex:1 1 640px;min-width:0">
+<div style="position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:{{ cur.bg }};color:#fff;box-shadow:0 30px 60px -34px rgba(80,20,0,.55)">
+<div style="position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-size:clamp(160px, 26vw, 320px);font-weight:900;line-height:1;color:rgba(255,255,255,.14)">lim</div>
+<div style="position:absolute;inset:0;background:linear-gradient(transparent 55%, rgba(0,0,0,.7))"></div>
+<sc-if value="{{ notPlaying }}" hint-placeholder-val="{{ true }}"><button onClick="{{ play }}" aria-label="Play" style="position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:999px;border:0;cursor:pointer;display:grid;place-items:center;background:#fff;box-shadow:0 0 0 14px rgba(255,255,255,.16)" style-hover="transform:translate(-50%,-50%) scale(1.06)"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="oklch(0.637 0.237 25.331)"></path></svg></button></sc-if>
+<sc-if value="{{ playing }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.5)"><span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;padding:8px 12px;border-radius:6px;background:rgba(0,0,0,.5)">{{ cur.file }} plays here</span></div></sc-if>
+<div style="position:absolute;left:18px;right:18px;bottom:14px;display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px"><span>{{ cur.at }}</span><div style="flex:1;height:4px;border-radius:999px;background:rgba(255,255,255,.3)"><div style="height:100%;border-radius:999px;width:{{ cur.pct }};background:#fff"></div></div><span>{{ cur.len }}</span><span style="padding:3px 7px;border-radius:5px;background:rgba(0,0,0,.4)">1x</span></div>
+</div>
+<div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px 20px;margin-top:18px">
+<div style="min-width:0"><div style="font-size:13px;font-weight:700;color:oklch(0.637 0.237 25.331)">Part {{ cur.n }} of 3</div><h1 style="margin:4px 0 0;font-size:clamp(24px, 3vw, 32px);font-weight:800;letter-spacing:-0.03em;line-height:1.15">{{ cur.title }}</h1></div>
+<button onClick="{{ markDone }}" style="flex:none;display:flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:8px;cursor:pointer;font:inherit;font-size:14px;font-weight:700;border:1px solid {{ doneBtn.border }};background:{{ doneBtn.bg }};color:{{ doneBtn.fg }}">{{ doneBtn.label }}</button>
+</div>
+
+<div style="display:flex;gap:4px;margin-top:24px;border-bottom:1px solid oklch(0.929 0.013 255.508);overflow-x:auto;scrollbar-width:none">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.onClick }}" style="flex:none;border:0;background:transparent;cursor:pointer;font:inherit;padding:12px 14px;font-size:14px;font-weight:700;white-space:nowrap;color:{{ t.fg }};border-bottom:2px solid {{ t.line }};margin-bottom:-1px">{{ t.label }}</button></sc-for>
+</div>
+
+<sc-if value="{{ tabAbout }}" hint-placeholder-val="{{ true }}">
+<div style="padding:20px 0;display:grid;gap:14px;animation:mfrise .3s both">
+<p style="margin:0;font-size:16px;line-height:1.65;color:oklch(0.269 0 0)">{{ cur.about }}</p>
+<div style="display:grid;gap:10px">
+<sc-for list="{{ cur.points }}" as="pt" hint-placeholder-count="3"><div style="display:flex;gap:10px;font-size:15px;line-height:1.5"><svg style="flex:none;margin-top:3px" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="oklch(0.627 0.194 149.214)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg><span>{{ pt }}</span></div></sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ tabDpp }}" hint-placeholder-val="{{ false }}">
+<div style="padding:20px 0;display:grid;gap:16px;animation:mfrise .3s both">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><span style="font-size:15px;font-weight:800">DPP · Part {{ cur.n }}</span><span style="font-size:13px;font-weight:700;color:oklch(0.554 0.046 257.417)">{{ score }}</span></div>
+<sc-for list="{{ dpp }}" as="q" hint-placeholder-count="3">
+<div style="border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);padding:18px">
+<div style="display:flex;gap:10px;font-size:15px;font-weight:700;line-height:1.5"><span style="color:oklch(0.637 0.237 25.331)">Q{{ q.n }}.</span><span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500">{{ q.q }}</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 140px), 1fr));gap:8px;margin-top:14px">
+<sc-for list="{{ q.opts }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onClick }}" style="display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:8px;cursor:pointer;font:inherit;text-align:left;font-size:14px;font-weight:600;border:1.5px solid {{ o.border }};background:{{ o.bg }};color:oklch(0.145 0 0)"><span style="flex:none;width:22px;height:22px;border-radius:999px;display:grid;place-items:center;font-size:11px;font-weight:800;background:{{ o.dotBg }};color:{{ o.dotFg }}">{{ o.k }}</span><span style="font-family:'JetBrains Mono',ui-monospace,monospace">{{ o.v }}</span></button></sc-for>
+</div>
+<sc-if value="{{ q.answered }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid oklch(0.929 0.013 255.508)"><span style="font-size:14px;font-weight:700;color:{{ q.resC }}">{{ q.res }}</span><button onClick="{{ play }}" style="border:0;background:transparent;cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:oklch(0.637 0.237 25.331)">▶ Watch solution</button></div></sc-if>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ tabNotes }}" hint-placeholder-val="{{ false }}">
+<div style="padding:20px 0;display:grid;gap:10px;animation:mfrise .3s both">
+<sc-for list="{{ notes }}" as="n" hint-placeholder-count="4">
+<a href="#" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0)" style-hover="background:oklch(0.98 0 0);color:oklch(0.145 0 0)">
+<span style="flex:none;width:40px;height:48px;border-radius:6px;display:grid;place-items:center;background:{{ n.bg }};color:#fff;font-size:10px;font-weight:800">{{ n.type }}</span>
+<span style="flex:1;min-width:0"><span style="display:block;font-size:15px;font-weight:700">{{ n.t }}</span><span style="display:block;font-size:12px;color:oklch(0.554 0.046 257.417)">{{ n.d }}</span></span>
+<span style="flex:none;font-size:13px;font-weight:700;color:oklch(0.637 0.237 25.331)">Download</span>
+</a>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ tabTricks }}" hint-placeholder-val="{{ false }}">
+<div style="padding:20px 0;display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 240px), 1fr));gap:12px;animation:mfrise .3s both">
+<sc-for list="{{ tricks }}" as="tr" hint-placeholder-count="3">
+<div style="border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);padding:18px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.705 0.213 47.604)">Trick {{ tr.n }}</span>
+<span style="font-size:16px;font-weight:800;letter-spacing:-0.01em">{{ tr.t }}</span>
+<span style="padding:10px 12px;border-radius:8px;background:oklch(0.968 0.007 247.896);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px">{{ tr.f }}</span>
+<span style="font-size:14px;line-height:1.5;color:oklch(0.269 0 0)">{{ tr.d }}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+
+<aside style="flex:1 1 320px;max-width:{{ asideMax }};min-width:0;position:{{ asidePos }};top:92px;display:grid;gap:16px">
+<div style="border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);overflow:hidden">
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:16px 18px;border-bottom:1px solid oklch(0.929 0.013 255.508)"><span style="font-size:15px;font-weight:800">Parts</span><span style="font-size:12px;font-weight:700;color:oklch(0.554 0.046 257.417)">{{ doneCount }} of 3 done</span></div>
+<sc-for list="{{ parts }}" as="p" hint-placeholder-count="3">
+<button onClick="{{ p.onClick }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 18px;border:0;border-bottom:1px solid oklch(0.929 0.013 255.508);cursor:{{ p.cursor }};font:inherit;text-align:left;background:{{ p.bg }};color:{{ p.fg }}">
+<span style="flex:none;width:30px;height:30px;border-radius:999px;display:grid;place-items:center;background:{{ p.dotBg }};color:{{ p.dotFg }};font-size:12px;font-weight:800">{{ p.mark }}</span>
+<span style="flex:1;min-width:0"><span style="display:block;font-size:14px;font-weight:700">Part {{ p.n }} · {{ p.title }}</span><span style="display:block;font-size:12px;color:oklch(0.554 0.046 257.417);margin-top:2px">{{ p.sub }}</span></span>
+</button>
+</sc-for>
+</div>
+<div style="border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);padding:16px 18px">
+<div style="font-size:15px;font-weight:800">Chapter resources</div>
+<div style="display:grid;gap:8px;margin-top:12px">
+<sc-for list="{{ resources }}" as="r" hint-placeholder-count="3"><button onClick="{{ r.onClick }}" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:0;cursor:pointer;font:inherit;background:oklch(0.968 0.007 247.896);color:oklch(0.145 0 0);font-size:14px;font-weight:700">{{ r.t }}<span style="font-size:12px;font-weight:600;color:oklch(0.554 0.046 257.417)">{{ r.d }}</span></button></sc-for>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;background:oklch(0.145 0 0);color:#fff;box-shadow:0 20px 40px -12px rgba(0,0,0,.45);animation:mfrise .35s both;font-size:14px;font-weight:600;max-width:calc(100% - 32px)">{{ toastText }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { w: 1280, cur: 2, done: 1, tab: "about", playing: false, ans: {}, xp: 2340, toast: "" };
+  componentDidMount() {
+    this.onResize = () => { const w = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0); if (w > 100 && w !== this.state.w) this.setState({ w }); };
+    window.addEventListener("resize", this.onResize);
+    if ("ResizeObserver" in window) { this.ro = new ResizeObserver(() => this.onResize()); this.ro.observe(document.documentElement); }
+    this.onResize();
+    [300, 1000].forEach(t => setTimeout(() => this.onResize && this.onResize(), t));
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this.onResize); this.ro && this.ro.disconnect(); clearTimeout(this.tt); }
+
+  partsData() {
+    return [
+      { title: "Idea of a limit", len: "18:40", file: "limits-part-1.mp4", about: "What a limit really means, left and right hand limits, and when a limit doesn't exist.", points: ["Left-hand and right-hand limits", "Limits of piecewise functions", "When a limit does not exist"] },
+      { title: "Standard limits & L'Hôpital", len: "26:10", file: "limits-part-2.mp4", about: "The standard limits JEE uses again and again, and when to reach for L'Hôpital's rule instead of algebra.", points: ["sin x / x, (eˣ − 1) / x and (1 + x)^(1/x)", "0/0 and ∞/∞ forms with L'Hôpital", "Expansions that save time in the exam"] },
+      { title: "Derivatives from first principles", len: "22:30", file: "limits-part-3.mp4", about: "Building derivatives from the definition, then the rules you'll use in every calculus chapter.", points: ["First principles for standard functions", "Product, quotient and chain rule", "Derivatives in PYQs"] },
+    ];
+  }
+  renderVals() {
+    const s = this.state;
+    const ink = "oklch(0.145 0 0)", white = "oklch(0.995 0 0)", bd = "oklch(0.929 0.013 255.508)", red = "oklch(0.637 0.237 25.331)", ok = "oklch(0.627 0.194 149.214)", mut = "oklch(0.968 0.007 247.896)", mute = "oklch(0.554 0.046 257.417)", bad = "oklch(0.577 0.245 27.325)";
+    const P = this.partsData();
+    const cp = P[s.cur - 1];
+    const toast = t => { this.setState({ toast: t }); clearTimeout(this.tt); this.tt = setTimeout(() => this.setState({ toast: "" }), 2400); };
+    const DPP = [
+      { q: "lim (x→0) sin 3x / x = ?", opts: ["0", "1", "3", "1/3"], a: 2 },
+      { q: "lim (x→0) (eˣ − 1) / x = ?", opts: ["0", "1", "e", "∞"], a: 1 },
+      { q: "lim (x→0) (1 − cos x) / x² = ?", opts: ["0", "1/2", "1", "2"], a: 1 },
+    ];
+    const answered = Object.keys(s.ans).length, correct = DPP.filter((q, i) => s.ans[i] === q.a).length;
+    const isDone = s.cur <= s.done;
+    return {
+      wide: s.w >= 820, narrow: s.w < 820, streak: 7, xpLabel: s.xp.toLocaleString("en-IN"),
+      cur: { ...cp, n: s.cur, bg: "linear-gradient(155deg, #6366F1, #EC4899)", at: isDone ? cp.len : s.cur === 2 ? "16:12" : "00:00", pct: isDone ? "100%" : s.cur === 2 ? "62%" : "0%" },
+      playing: s.playing, notPlaying: !s.playing, play: () => this.setState({ playing: true }),
+      doneBtn: isDone ? { label: "✓ Completed", bg: "color-mix(in oklab, " + ok + " 12%, " + white + ")", fg: "oklch(0.5 0.16 149)", border: "color-mix(in oklab, " + ok + " 40%, transparent)" } : { label: "Mark as complete · +50 XP", bg: ink, fg: "#fff", border: ink },
+      markDone: () => { if (isDone) return; this.setState(st => ({ done: Math.max(st.done, st.cur), xp: st.xp + 50 })); toast(s.cur < 3 ? "+50 XP · Part " + (s.cur + 1) + " unlocked" : "+50 XP · Chapter complete"); },
+      tabs: [["about", "About this part"], ["dpp", "DPP"], ["notes", "Notes & mind map"], ["tricks", "Tricks"]].map(([k, label]) => ({ label, onClick: () => this.setState({ tab: k }), fg: s.tab === k ? ink : mute, line: s.tab === k ? ink : "transparent" })),
+      tabAbout: s.tab === "about", tabDpp: s.tab === "dpp", tabNotes: s.tab === "notes", tabTricks: s.tab === "tricks",
+      score: answered ? correct + " / " + answered + " correct" : "3 questions",
+      dpp: DPP.map((q, i) => {
+        const pick = s.ans[i], has = pick !== undefined;
+        return { n: i + 1, q: q.q, answered: has, res: !has ? "" : pick === q.a ? "Correct · +10 XP" : "Not quite. The answer is " + q.opts[q.a] + ".", resC: pick === q.a ? "oklch(0.5 0.16 149)" : bad,
+          opts: q.opts.map((v, j) => {
+            const isPick = pick === j, isAns = has && j === q.a;
+            return { k: "ABCD"[j], v, border: isAns ? ok : isPick ? bad : bd, bg: isAns ? "color-mix(in oklab, " + ok + " 8%, " + white + ")" : isPick ? "color-mix(in oklab, " + bad + " 6%, " + white + ")" : white,
+              dotBg: isAns ? ok : isPick ? bad : mut, dotFg: isAns || isPick ? "#fff" : ink,
+              onClick: () => { if (has) return; this.setState(st => ({ ans: { ...st.ans, [i]: j }, xp: st.xp + (j === q.a ? 10 : 0) })); } };
+          }) };
+      }),
+      notes: [["PDF", "Short notes · Limits & Derivatives", "12 pages · 1.4 MB", red], ["MAP", "Mind map", "1 page · printable", "oklch(0.705 0.213 47.604)"], ["PDF", "Formula sheet", "2 pages", "oklch(0.606 0.25 292.717)"], ["PYQ", "JEE Main PYQs · Limits", "38 questions with solutions", ink]].map(([type, t, d, bg]) => ({ type, t, d, bg })),
+      tricks: [
+        { n: 1, t: "The standard trio", f: "sin x/x → 1, tan x/x → 1, (eˣ−1)/x → 1", d: "Spot these inside bigger expressions and replace them straight away." },
+        { n: 2, t: "Expansion over L'Hôpital", f: "cos x ≈ 1 − x²/2,  eˣ ≈ 1 + x + x²/2", d: "For 0/0 forms with x² terms, expanding is often faster than differentiating twice." },
+        { n: 3, t: "1^∞ shortcut", f: "lim f^g = e^(lim g·(f − 1))", d: "Any 1^∞ form becomes a one-line answer with this rule." },
+      ],
+      doneCount: s.done,
+      parts: P.map((p, i) => {
+        const n = i + 1, done = n <= s.done, open = n <= s.done + 1, cur = n === s.cur;
+        return { n, title: p.title, sub: done ? p.len + " · completed" : open ? p.len + (cur ? " · now playing" : " · up next") : "Unlocks after Part " + (n - 1),
+          mark: done ? "✓" : open ? String(n) : "🔒".slice(0, 0) + "–", dotBg: done ? ok : cur ? red : open ? ink : mut, dotFg: done || cur || open ? "#fff" : mute,
+          bg: cur ? "color-mix(in oklab, " + red + " 5%, " + white + ")" : white, fg: open ? ink : mute, cursor: open ? "pointer" : "default",
+          onClick: () => { if (open) this.setState({ cur: n, playing: false, ans: {}, tab: "about" }); } };
+      }),
+      resources: [["Short notes", "PDF", "notes"], ["Mind map", "1 page", "notes"], ["PYQs", "38", "notes"], ["Tricks", "3", "tricks"]].map(([t, d, tab]) => ({ t, d, onClick: () => this.setState({ tab }) })),
+      asidePos: s.w >= 1000 ? "sticky" : "static", asideMax: s.w >= 1000 ? "360px" : "100%",
+      toastOn: !!s.toast, toastText: s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

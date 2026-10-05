@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:oklch(0.995 0 0);color:oklch(0.145 0 0);font-family:Inter,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:oklch(0.637 0.237 25.331);text-decoration:none}
+a:hover{color:oklch(0.55 0.22 25.331)}
+@keyframes mfrise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes mfpop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1)}}
+@keyframes mfdraw{from{stroke-dashoffset:30}to{stroke-dashoffset:0}}
+@keyframes mfblink{0%,49%{opacity:1}50%,100%{opacity:0}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:oklch(0.995 0 0);overflow-x:clip">
+
+<div style="padding:16px 16px 0">
+<section data-screen-label="01 Thank you hero" style="position:relative;border-radius:12px;overflow:hidden;padding-bottom:72px;background:radial-gradient(70% 55% at 50% 0%, color-mix(in oklab, oklch(0.705 0.213 47.604) 30%, transparent), transparent 70%), radial-gradient(50% 50% at 100% 100%, color-mix(in oklab, oklch(0.637 0.237 25.331) 26%, transparent), transparent 70%), radial-gradient(40% 40% at 0% 80%, color-mix(in oklab, oklch(0.705 0.213 47.604) 18%, transparent), transparent 70%), oklch(0.975 0.012 50)">
+
+<header style="display:grid;grid-template-columns:minmax(0, 1fr) auto;align-items:center;gap:16px;padding:22px 32px">
+<a href="Landing Page v2.dc.html" style="justify-self:start;display:flex;align-items:center;gap:8px;color:oklch(0.145 0 0)">
+<img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:27px;width:auto">
+</a>
+<a href="#" style="justify-self:end;display:flex;align-items:center;gap:10px;padding:6px 12px 6px 6px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95);color:oklch(0.145 0 0)" style-hover="background:oklch(0.995 0 0);color:oklch(0.145 0 0)"><span style="width:30px;height:30px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(135deg, oklch(0.637 0.237 25.331), oklch(0.705 0.213 47.604));color:#fff;font-size:13px;font-weight:800">R</span><span style="font-size:14px;font-weight:700">Riya</span></a>
+</header>
+
+<div style="text-align:center;padding:28px 24px 0">
+<span style="display:inline-grid;place-items:center;width:84px;height:84px;border-radius:999px;background:oklch(0.627 0.194 149.214);box-shadow:0 0 0 12px color-mix(in oklab, oklch(0.627 0.194 149.214) 18%, transparent), 0 20px 40px -14px oklch(0.627 0.194 149.214 / .7);animation:mfpop .6s cubic-bezier(0.22, 1, 0.36, 1) both"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:30;animation:mfdraw .5s .35s ease-out both"><path d="M20 6 9 17l-5-5"></path></svg></span>
+<div style="margin-top:26px;font-size:14px;font-weight:700;color:oklch(0.5 0.16 149)">Payment successful · ₹{{ totalLabel }}</div>
+<h1 style="margin:14px auto 0;font-size:clamp(42px, 6.6vw, 84px);line-height:1;font-weight:800;letter-spacing:-0.045em;max-width:960px;text-wrap:balance">You're in, Riya. Let's get you that <span style="position:relative;display:inline-block;padding:0 14px 6px;background:oklch(0.995 0 0);box-shadow:0 10px 30px -12px rgba(120,40,0,.25)">seat{{ caret }}</span></h1>
+<p style="margin:20px auto 0;max-width:560px;font-size:17px;line-height:1.55;color:oklch(0.269 0 0);text-wrap:pretty">Your chapters are unlocked on your account. We've sent the receipt to {{ email }}.</p>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:30px">
+<a href="{{ startHref }}" style="display:inline-flex;align-items:center;gap:10px;padding:15px 24px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-weight:700;font-size:16px;box-shadow:0 12px 26px -12px oklch(0.637 0.237 25.331 / .85)" style-hover="filter:brightness(1.08);color:#fff"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"></path></svg><span>Start {{ startTitle }}</span></a>
+<a href="Chapter Player.dc.html" style="display:inline-flex;align-items:center;padding:15px 22px;border-radius:8px;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95);color:oklch(0.145 0 0);font-weight:700;font-size:16px" style-hover="background:oklch(0.995 0 0);color:oklch(0.145 0 0)">Start learning</a>
+</div>
+</div>
+
+<div style="width:min(980px, calc(100% - 48px));margin:56px auto 0;border-radius:12px;border:6px solid oklch(0.145 0 0);background:oklch(0.995 0 0);box-shadow:0 40px 80px -34px rgba(80,20,0,.5);overflow:hidden">
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:16px 20px;border-bottom:1px solid oklch(0.929 0.013 255.508)">
+<span style="font-size:15px;font-weight:800">Unlocked for you</span>
+<span style="font-size:12px;font-weight:700;color:oklch(0.554 0.046 257.417)">{{ unlockMeta }}</span>
+</div>
+<sc-for list="{{ items }}" as="it" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:16px;padding:16px 20px;border-bottom:1px solid oklch(0.929 0.013 255.508);animation:mfrise .5s cubic-bezier(0.22, 1, 0.36, 1) both;animation-delay:{{ it.delay }}">
+<span style="flex:none;width:{{ thumbW }};aspect-ratio:16/10;border-radius:8px;display:grid;place-items:center;background:{{ it.bg }};color:#fff;font-weight:900;font-size:{{ it.symSize }};letter-spacing:-0.04em">{{ it.sym }}</span>
+<div style="flex:1;min-width:0">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px"><span style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:{{ it.tagBg }};color:{{ it.tagFg }}">{{ it.kind }}</span><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:oklch(0.5 0.16 149)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Unlocked</span></div>
+<div style="font-size:16px;font-weight:700;letter-spacing:-0.015em;margin-top:5px">{{ it.title }}</div>
+<div style="font-size:13px;color:oklch(0.554 0.046 257.417);margin-top:2px">{{ it.sub }}</div>
+</div>
+<a href="{{ it.href }}" style="flex:none;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;background:{{ it.btnBg }};color:{{ it.btnFg }};border:1px solid {{ it.btnBorder }};font-size:13px;font-weight:700;white-space:nowrap" style-hover="filter:brightness(0.96);color:{{ it.btnFg }}">{{ it.cta }}</a>
+</div>
+</sc-for>
+<sc-if value="{{ hasCall }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px 16px;padding:16px 20px;background:color-mix(in oklab, oklch(0.705 0.213 47.604) 7%, oklch(0.995 0 0))">
+<span style="flex:none;width:{{ thumbW }};aspect-ratio:16/10;border-radius:8px;display:grid;place-items:center;background:oklch(0.145 0 0);color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg></span>
+<div style="flex:1 1 220px;min-width:0"><div style="font-size:16px;font-weight:700">1:1 call with Karan</div><div style="font-size:13px;color:oklch(0.554 0.046 257.417);margin-top:2px">30 min · pick a slot that suits you</div></div>
+<a href="Book a Call.dc.html" style="flex:none;padding:10px 14px;border-radius:8px;background:oklch(0.145 0 0);color:#fff;font-size:13px;font-weight:700;white-space:nowrap" style-hover="filter:brightness(1.3);color:#fff">Book your slot</a>
+</div>
+</sc-if>
+</div>
+</section>
+</div>
+
+<section data-screen-label="02 Next steps" style="padding:88px 0">
+<div style="width:min(1120px, calc(100% - 48px));margin:0 auto">
+<h2 style="margin:0;text-align:center;font-size:clamp(34px, 4.2vw, 54px);line-height:1.04;font-weight:800;letter-spacing:-0.045em;text-wrap:balance">Your first <span style="display:inline-block;padding:0 12px 4px;background:color-mix(in oklab, oklch(0.705 0.213 47.604) 16%, oklch(0.995 0 0));box-shadow:0 10px 30px -12px rgba(120,40,0,.25)">week</span> on Mathflex</h2>
+<div style="display:grid;grid-template-columns:{{ stepCols }};gap:0;margin-top:48px;border-top:2px solid oklch(0.145 0 0)">
+<sc-for list="{{ nextSteps }}" as="n" hint-placeholder-count="4">
+<a href="{{ n.href }}" style="display:flex;flex-direction:column;gap:10px;padding:24px 22px 26px 0;border-bottom:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0)" style-hover="color:oklch(0.145 0 0)">
+<span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;font-weight:700;color:oklch(0.637 0.237 25.331)">{{ n.n }}</span>
+<span style="font-size:19px;font-weight:800;letter-spacing:-0.02em">{{ n.t }}</span>
+<span style="font-size:14px;line-height:1.55;color:oklch(0.554 0.046 257.417)">{{ n.d }}</span>
+<span style="margin-top:auto;padding-top:6px;font-size:14px;font-weight:700;color:oklch(0.637 0.237 25.331)">{{ n.cta }} →</span>
+</a>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section data-screen-label="03 Receipt" style="padding:0 0 88px">
+<div style="width:min(1120px, calc(100% - 48px));margin:0 auto;display:flex;flex-wrap:wrap;gap:40px 64px;align-items:flex-start">
+<div style="flex:1 1 320px;min-width:0">
+<h3 style="margin:0;font-size:24px;font-weight:800;letter-spacing:-0.025em">Order details</h3>
+<div style="margin-top:16px;border-top:1px solid oklch(0.929 0.013 255.508)">
+<sc-for list="{{ orderMeta }}" as="m" hint-placeholder-count="4">
+<div style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid oklch(0.929 0.013 255.508);font-size:14px"><span style="color:oklch(0.554 0.046 257.417)">{{ m.k }}</span><span style="font-weight:700;text-align:right">{{ m.v }}</span></div>
+</sc-for>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:18px">
+<a href="Invoice.dc.html" style="padding:10px 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0);font-size:13px;font-weight:700" style-hover="background:oklch(0.97 0 0);color:oklch(0.145 0 0)">Download invoice (PDF)</a>
+<a href="Refund Policy.dc.html" style="padding:10px 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0);font-size:13px;font-weight:700" style-hover="background:oklch(0.97 0 0);color:oklch(0.145 0 0)">Refund policy</a>
+</div>
+</div>
+<div style="flex:1 1 320px;min-width:0">
+<h3 style="margin:0;font-size:24px;font-weight:800;letter-spacing:-0.025em">Payment summary</h3>
+<div style="margin-top:16px;border-top:1px solid oklch(0.929 0.013 255.508)">
+<sc-for list="{{ payLines }}" as="l" hint-placeholder-count="4">
+<div style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid oklch(0.929 0.013 255.508);font-size:14px"><span style="color:oklch(0.269 0 0)">{{ l.k }}</span><span style="font-weight:700;color:{{ l.c }}">{{ l.v }}</span></div>
+</sc-for>
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:16px 0"><span style="font-size:16px;font-weight:800">Paid</span><span style="font-size:30px;font-weight:800;letter-spacing:-0.04em">₹{{ totalLabel }}</span></div>
+</div>
+<p style="margin:4px 0 0;font-size:13px;line-height:1.55;color:oklch(0.554 0.046 257.417)">Questions about your order? WhatsApp +91 XXXXX XXXXX or email support@mathflex.in.</p>
+</div>
+</div>
+</section>
+
+<footer data-screen-label="04 Footer" style="border-top:1px solid oklch(0.929 0.013 255.508)">
+<div style="width:min(1120px, calc(100% - 48px));margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:22px 0;font-size:13px;color:oklch(0.554 0.046 257.417)"><span>© 2026 Mathflex · mathflex.in</span><div style="display:flex;flex-wrap:wrap;gap:20px"><a href="Terms.dc.html" style="color:oklch(0.554 0.046 257.417)">Terms &amp; conditions</a><a href="Privacy Policy.dc.html" style="color:oklch(0.554 0.046 257.417)">Privacy policy</a><a href="Refund Policy.dc.html" style="color:oklch(0.554 0.046 257.417)">Refund policy</a><a href="Contact.dc.html" style="color:oklch(0.554 0.046 257.417)">Contact us</a></div></div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;order&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;mixed&quot;,&quot;combo&quot;,&quot;chapter&quot;],&quot;default&quot;:&quot;mixed&quot;,&quot;tsType&quot;:&quot;\&quot;mixed\&quot; | \&quot;combo\&quot; | \&quot;chapter\&quot;&quot;}}">
+class Component extends DCLogic {
+  state = { w: 1280 };
+
+  componentDidMount() {
+    this.onResize = () => { const w = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0); if (w > 100 && w !== this.state.w) this.setState({ w }); };
+    window.addEventListener("resize", this.onResize);
+    if ("ResizeObserver" in window) { this.ro = new ResizeObserver(() => this.onResize()); this.ro.observe(document.documentElement); }
+    this.onResize();
+    [300, 1000].forEach(t => setTimeout(() => this.onResize && this.onResize(), t));
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this.onResize); this.ro && this.ro.disconnect(); }
+
+  renderVals() {
+    const s = this.state;
+    const ink = "oklch(0.145 0 0)", red = "oklch(0.637 0.237 25.331)", bd = "oklch(0.929 0.013 255.508)", white = "oklch(0.995 0 0)", mut = "oklch(0.968 0.007 247.896)";
+    const narrow = s.w < 760;
+    const fmt = n => n.toLocaleString("en-IN");
+    const order = this.props.order ?? "mixed";
+    const sets = {
+      mixed: [
+        { kind: "Course", title: "Class 11 complete", sub: "20 chapters · start with Sets & Relations", price: 2999, sym: "11", bg: "linear-gradient(135deg, #1a0610, #FF2E63)", cta: "Start Chapter 1", href: "Chapter Player.dc.html", course: true },
+        { kind: "Chapter", title: "3D Geometry", sub: "Class 12 · 3 parts · DPPs, PYQs, notes", price: 399, sym: "xyz", bg: "linear-gradient(155deg, #10B981, #0EA5E9)", cta: "Start Part 1", href: "Chapter Player.dc.html" },
+        { kind: "Chapter", title: "Probability", sub: "Class 12 · 3 parts · DPPs, PYQs, notes", price: 399, sym: "P", bg: "linear-gradient(155deg, #6366F1, #EC4899)", cta: "Start Part 1", href: "Chapter Player.dc.html" },
+      ],
+      combo: [
+        { kind: "Combo", title: "Class 11 + 12 combo", sub: "All 35 chapters · start with Sets & Relations", price: 4999, sym: "11+12", bg: "linear-gradient(135deg, #FF2E63, #FF8A3D)", cta: "Start Chapter 1", href: "Chapter Player.dc.html", combo: true },
+      ],
+      chapter: [
+        { kind: "Chapter", title: "Definite Integrals", sub: "Class 12 · 3 parts · DPPs, PYQs, notes", price: 399, sym: "∫ₐᵇ", bg: "linear-gradient(155deg, #1a0610, #FF2E63)", cta: "Start Part 1", href: "Chapter Player.dc.html" },
+      ],
+    };
+    const raw = sets[order] || sets.mixed;
+    const hasCall = order !== "chapter";
+    const callPaid = hasCall && order !== "combo" ? 300 : 0;
+    const sub = raw.reduce((t, i) => t + i.price, 0);
+    const disc = Math.round(sub * 0.2);
+    const total = sub - disc + callPaid;
+    const items = raw.map((i, k) => ({ ...i, delay: 0.15 + k * 0.08 + "s", symSize: i.sym.length > 3 ? "14px" : i.sym.length > 1 ? "20px" : "28px",
+      tagBg: i.combo ? red : i.course ? ink : mut, tagFg: i.course || i.combo ? "#fff" : "oklch(0.269 0 0)",
+      btnBg: k === 0 ? ink : white, btnFg: k === 0 ? "#fff" : ink, btnBorder: k === 0 ? ink : bd }));
+    const chapterCount = raw.reduce((t, i) => t + (i.combo ? 35 : i.course ? 20 : 1), 0);
+    const caret = React.createElement("span", { style: { display: "inline-block", width: 4, height: "0.82em", marginLeft: 6, verticalAlign: "-0.04em", background: red, animation: "mfblink 1s steps(1) infinite" } });
+    return {
+      caret, email: "riya.sharma@gmail.com", totalLabel: fmt(total),
+      startTitle: raw[0].course || raw[0].combo ? "Chapter 1" : raw[0].title, startHref: raw[0].href,
+      items, hasCall, thumbW: narrow ? "76px" : "104px",
+      unlockMeta: chapterCount + (chapterCount === 1 ? " chapter" : " chapters") + " · access till 3 Oct 2027",
+      stepCols: s.w >= 960 ? "repeat(4, minmax(0, 1fr))" : s.w >= 600 ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)",
+      nextSteps: [
+        ["01", "Watch Part 1", "Each part is 20–30 minutes. Pause and rewind as much as you like.", "Start now", raw[0].href],
+        ["02", "Clear the DPP", "Practice right after the part. Wrong answers come with video solutions.", "See how DPPs work", "Landing Page v2.dc.html#how"],
+        ["03", "Keep your streak", "Study a little every day to build your streak and earn XP.", "View leaderboard", "Leaderboard.dc.html"],
+        ["04", hasCall ? "Book your call" : "Revise with notes", hasCall ? "Pick a 30-minute slot with Karan to plan the rest of your prep." : "Every chapter has short notes and a mind map for quick revision.", hasCall ? "Book a slot" : "Open notes", "#"],
+      ].map(([n, t, d, cta, href]) => ({ n, t, d, cta, href })),
+      orderMeta: [
+        { k: "Order ID", v: "MF-2026-104832" }, { k: "Date", v: "3 Oct 2026, 6:42 pm" },
+        { k: "Paid with", v: "UPI · riya@okaxis" }, { k: "Account", v: "riya.sharma@gmail.com" },
+      ],
+      payLines: [
+        ...raw.map(i => ({ k: i.title, v: "₹" + fmt(i.price), c: ink })),
+        ...(hasCall ? [{ k: "1:1 call with Karan", v: callPaid ? "₹300" : "Free", c: callPaid ? ink : "oklch(0.5 0.16 149)" }] : []),
+        { k: "WELCOME20 (20% off)", v: "−₹" + fmt(disc), c: "oklch(0.5 0.16 149)" },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
