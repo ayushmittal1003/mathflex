@@ -8,7 +8,7 @@ import { SiteExtras } from "@/components/site/SiteExtras";
 import { activeBanners } from "@/lib/banners";
 
 // The original site shell, unchanged. Pages move out of this group as they're redesigned;
-// My Learning, Practice and Profile stay here.
+// Practice and Profile stay here.
 export default async function AppShellLayout({ children }: { children: React.ReactNode }) {
   const [user, settings] = await Promise.all([getCurrentUser(), getSettings()]);
   const [marquee, ents] = await Promise.all([

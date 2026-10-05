@@ -2,13 +2,14 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
-import { duration, inr } from "@/lib/format";
+import { inr } from "@/lib/format";
 import { courseFaqs, fillFaq, instructorNames } from "@/lib/site-content";
 import { Caret, Eyebrow, Mark } from "@/components/site/web/primitives";
 import { WashHero, heroH1, heroLead } from "@/components/site/web/WashHero";
 import { FaqList } from "@/components/site/web/FaqList";
 import { MentorSection } from "@/components/site/web/home/MentorSection";
 import { CourseCards, CourseCalculator, CourseInside, type CourseView } from "@/components/site/web/courses/CourseParts";
+import { COURSE_INCLUDE, toCourseView } from "@/components/site/web/courses/course-view";
 import { button, cx, tone } from "@/components/site/web/ui";
 
 export const metadata = { title: "Complete courses" };
@@ -20,24 +21,7 @@ export const metadata = { title: "Complete courses" };
 export default async function Courses() {
   const user = await getCurrentUser();
   const [courses, ents, settings, freePreview] = await Promise.all([
-    db.course.findMany({
-      where: { isPublished: true },
-      orderBy: { sortOrder: "asc" },
-      include: {
-        chapters: {
-          where: { chapter: { isPublished: true } },
-          include: {
-            chapter: {
-              select: {
-                id: true, slug: true, title: true, classLevel: true, price: true, symbol: true, coverFrom: true, coverTo: true, jeeWeightage: true, sortOrder: true,
-                parts: { select: { durationSec: true } },
-                _count: { select: { questions: true, resources: { where: { isPublished: true } } } },
-              },
-            },
-          },
-        },
-      },
-    }),
+    db.course.findMany({ where: { isPublished: true }, orderBy: { sortOrder: "asc" }, include: COURSE_INCLUDE }),
     user ? db.entitlement.findMany({ where: { userId: user.id, courseId: { not: null }, expiresAt: { gt: new Date() } } }) : [],
     getSettings(),
     db.chapter.findFirst({ where: { isPublished: true, parts: { some: { isFreePreview: true } } }, orderBy: [{ jeeWeightage: "desc" }], select: { slug: true } }),
@@ -45,21 +29,7 @@ export default async function Courses() {
   const owned = new Set(ents.map((e) => e.courseId));
   const names = instructorNames(settings);
 
-  const views: CourseView[] = courses.map((c) => {
-    const chs = c.chapters.map((x) => x.chapter).sort((a, b) => a.classLevel - b.classLevel || a.sortOrder - b.sortOrder);
-    const sec = chs.reduce((s, ch) => s + ch.parts.reduce((t, p) => t + p.durationSec, 0), 0);
-    const sum = chs.reduce((s, ch) => s + ch.price, 0);
-    return {
-      id: c.id, slug: c.slug, title: c.title, subtitle: c.subtitle, price: c.price, mrp: c.mrp, highlights: c.highlights, validityDays: c.validityDays,
-      owned: owned.has(c.id),
-      hours: sec ? duration(sec) : null,
-      chapterSum: sum,
-      avgChapter: chs.length ? sum / chs.length : 0,
-      hasPractice: chs.some((ch) => ch._count.questions > 0),
-      hasNotes: chs.some((ch) => ch._count.resources > 0),
-      chapters: chs.map((ch) => ({ id: ch.id, slug: ch.slug, title: ch.title, classLevel: ch.classLevel, price: ch.price, symbol: ch.symbol, coverFrom: ch.coverFrom, coverTo: ch.coverTo, parts: ch.parts.length, weight: ch.jeeWeightage })),
-    };
-  });
+  const views: CourseView[] = courses.map((c) => toCourseView(c, owned.has(c.id)));
   const best = views.length > 1 ? [...views].sort((a, b) => b.chapters.length - a.chapters.length)[0].id : null;
   const calc = views.filter((v) => v.id !== best && v.chapters.length > 1 && v.avgChapter > 0)[0] ?? views.find((v) => v.avgChapter > 0) ?? null;
   const breakeven = calc ? Math.ceil(calc.price / calc.avgChapter) : null;

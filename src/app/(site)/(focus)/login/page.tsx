@@ -7,5 +7,5 @@ export const metadata = { title: "Log in" };
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const [{ next }, settings] = await Promise.all([searchParams, getSettings()]);
   const panel = await getAuthPanel(settings);
-  return <AuthForm mode="login" next={next ?? "/"} panel={panel} />;
+  return <AuthForm mode="login" next={next ?? "/my-learning"} panel={panel} />;
 }
