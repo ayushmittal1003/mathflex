@@ -15,6 +15,7 @@ import { COURSE_INCLUDE, toCourseView } from "@/components/site/web/courses/cour
 import { FaqList } from "@/components/site/web/FaqList";
 import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { CtaBand } from "@/components/site/web/CtaBand";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const c = await db.course.findUnique({ where: { slug: (await params).slug }, select: { title: true, subtitle: true, isPublished: true } });
@@ -76,8 +77,8 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
   return (
     <>
-      <WashHero className="!pb-[104px]">
-        <div className="mx-auto mt-5 flex w-[min(1180px,calc(100%-48px))] flex-wrap items-center gap-8">
+      <WashHero className="!pb-[128px]">
+        <div className="mx-auto mt-8 flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-16 gap-y-10 tablet:mt-12">
           <div className="order-2 min-w-0 flex-[1_1_340px] min-[900px]:order-1">
             <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-secondary-foreground">
               <Link href="/courses" className="hover:text-primary">Complete courses</Link>
@@ -150,9 +151,9 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       </WashHero>
 
       {/* Stats strip overlapping the hero. */}
-      <div className="relative z-[3] mx-auto -mt-16 grid w-[min(1180px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-28px_rgb(80_20_0/0.45)]">
+      <div className="relative z-[3] mx-auto -mt-16 grid w-[min(1240px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-28px_rgb(80_20_0/0.45)]">
         {stats.map((s, i) => (
-          <div key={s.big} className={cx("px-5.5 py-5", i > 0 && "border-l border-border")}>
+          <div key={s.big} className={cx("px-7 py-6", i > 0 && "border-l border-border")}>
             <div className="text-xl font-extrabold tracking-[-0.02em]">{s.big}</div>
             <div className="mt-0.5 text-[13px] text-muted-foreground">{s.small}</div>
           </div>
@@ -160,15 +161,15 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       </div>
 
       {/* What's included */}
-      <section className={cx(container.listing, "pt-20")}>
-        <div className="grid gap-10 min-[900px]:grid-cols-[1fr_1.3fr] min-[900px]:items-start">
+      <section className={cx(container.listing, "pt-28")}>
+        <div className="grid gap-12 min-[900px]:grid-cols-[1fr_1.3fr] min-[900px]:items-start min-[900px]:gap-20">
           <div>
             <h2 className={sectionH2}>Everything in <Mark>one</Mark> purchase</h2>
             <p className="mt-4 max-w-[420px] text-[16px] leading-[1.6] text-secondary-foreground">
               One payment unlocks every chapter in {v.title}. Inside each chapter, parts open one after another as you watch and practise.
             </p>
           </div>
-          <div className="grid gap-x-7 gap-y-3.5 rounded-xl border border-border bg-card p-6 min-[600px]:grid-cols-2 tablet:p-7">
+          <div className="grid gap-x-10 gap-y-5 rounded-2xl border border-border bg-card p-7 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_24px_48px_-38px_rgb(80_20_0/0.4)] min-[600px]:grid-cols-2 tablet:p-10">
             {includes.map((l) => (
               <div key={l} className="flex gap-3 text-[15px] leading-[1.45]"><CheckIcon className="mt-[3px] size-4 shrink-0 text-ok" /><span>{l}</span></div>
             ))}
@@ -177,34 +178,34 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       </section>
 
       {/* Chapters */}
-      <section id="chapters" className={cx(container.listing, "scroll-mt-24 pt-20")}>
+      <section id="chapters" className={cx(container.listing, "scroll-mt-24 pt-28")}>
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 className={sectionH2}>Chapters in this course</h2>
           <span className="text-sm font-semibold text-muted-foreground">{v.chapters.length} chapters{v.hours && ` · ${v.hours}`}</span>
         </div>
-        <div className="mt-8 grid gap-12">
+        <div className="mt-10 grid gap-16">
           {classes.map((n) => {
             const rows = v.chapters.filter((c) => c.classLevel === n);
             return (
               <div key={n}>
                 {classes.length > 1 && (
-                  <div className="mb-4 flex items-baseline gap-3">
+                  <div className="mb-6 flex items-baseline gap-3">
                     <span className="text-xl font-extrabold tracking-[-0.025em]">Class {n}</span>
                     <span className="text-[13px] font-semibold text-muted-foreground">{rows.length} chapters</span>
                   </div>
                 )}
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-3">
+                <div className="grid gap-4 min-[640px]:grid-cols-2 min-[1040px]:grid-cols-3">
                   {rows.map((r) => {
                     const p = progress.get(r.id);
                     const pct = p?.owned ? p.progress : 0;
                     return (
-                      <Link key={r.id} href={owned ? `/learn/${r.slug}` : `/chapter/${r.slug}`} className="flex min-h-[84px] items-center gap-3.5 rounded-xl border border-border bg-card px-3.5 py-3 text-foreground transition duration-300 hover:-translate-y-[3px] hover:shadow-[0_18px_34px_-22px_rgb(80_20_0/0.45)]">
-                        <span className={cx("grid size-12 shrink-0 place-items-center rounded-[10px] font-black tracking-[-0.03em] text-white shadow-[0_6px_14px_-8px_rgb(0_0_0/0.4)]", r.symbol.length > 2 ? "text-[13px]" : "text-lg")} style={posterBg(r.coverFrom, r.coverTo)}>
+                      <Link key={r.id} href={owned ? `/learn/${r.slug}` : `/chapter/${r.slug}`} className="flex min-h-[100px] items-center gap-4 rounded-xl border border-border bg-card px-5 py-4 text-foreground transition duration-300 hover:-translate-y-[3px] hover:shadow-[0_18px_34px_-22px_rgb(80_20_0/0.45)]">
+                        <span className={cx("grid size-14 shrink-0 place-items-center rounded-xl font-black tracking-[-0.03em] text-white shadow-[0_6px_14px_-8px_rgb(0_0_0/0.4)]", r.symbol.length > 2 ? "text-[13px]" : "text-lg")} style={posterBg(r.coverFrom, r.coverTo)}>
                           {r.symbol}
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="line-clamp-2 text-[15px] font-bold leading-[1.3] tracking-[-0.01em]">{r.title}</span>
-                          <span className="mt-1 block text-xs font-semibold text-muted-foreground">{r.parts} parts{r.weight > 0 && ` · ${r.weight}% of JEE`}</span>
+                          <span className="line-clamp-2 text-base font-bold leading-[1.3] tracking-[-0.01em]">{r.title}</span>
+                          <span className="mt-1.5 block text-[13px] font-semibold text-muted-foreground">{r.parts} parts{r.weight > 0 && ` · ${r.weight}% of JEE`}</span>
                           {owned && (
                             <span className="mt-2 block h-1 overflow-hidden rounded-full bg-muted"><span className="block h-full rounded-full bg-primary" style={{ width: `${pct * 100}%` }} /></span>
                           )}
@@ -221,14 +222,14 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       </section>
 
       {!owned && breakeven && (
-        <section className="pt-24">
+        <section className="pt-28">
           <CourseCalculator course={v} breakeven={breakeven} />
         </section>
       )}
 
       {/* Instructor */}
-      <section className={cx(container.listing, "pt-24")}>
-        <div className="flex flex-wrap items-center gap-x-10 gap-y-6 rounded-2xl bg-wash p-6 tablet:p-10">
+      <section className={cx(container.listing, "pt-28")}>
+        <div className="flex flex-wrap items-center gap-x-14 gap-y-8 rounded-2xl border border-border bg-card p-7 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_24px_48px_-38px_rgb(80_20_0/0.4)] tablet:p-12">
           <VideoFrame videoId={instructor.introVideoId} className="aspect-[16/10] w-full max-w-[360px] shrink-0" />
           <div className="min-w-0 flex-[1_1_300px]">
             <div className="text-xs font-extrabold uppercase tracking-[0.1em] text-muted-foreground">Taught by</div>
@@ -239,14 +240,14 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         </div>
       </section>
 
-      <section className="pt-24">
+      <section className="pt-28">
         <div className="mx-auto w-[min(820px,calc(100%-48px))]">
           <h2 className={cx(sectionH2, "text-center")}>Questions about this course</h2>
           <div className="mt-9"><FaqList items={faqs} initialOpen={-1} /></div>
         </div>
       </section>
 
-      <section className="px-6 pb-26 pt-22 text-center">
+      <CtaBand>
         <h2 className="mx-auto max-w-[820px] text-[clamp(34px,4.6vw,58px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
           {owned ? <>Pick up where you <Mark>left off</Mark>.</> : <>Every chapter of {v.title}, <Mark>one</Mark> price.</>}
         </h2>
@@ -260,7 +261,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
             </>
           )}
         </div>
-      </section>
+      </CtaBand>
     </>
   );
 }

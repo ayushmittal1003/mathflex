@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { DEFAULT_SETTINGS, getSettings } from "@/lib/settings";
-import { isStaff } from "@/lib/permissions";
+import { getSiteNavProps } from "@/components/site/web/data";
 import { inr } from "@/lib/format";
 import { SiteNav } from "@/components/site/web/SiteNav";
 import { SiteFooter } from "@/components/site/web/SiteFooter";
@@ -32,6 +32,7 @@ export default async function NotFound() {
       })
       .catch(() => []),
   ]);
+  const nav = await getSiteNavProps(user, settings);
   const links = [
     { href: "/chapters", label: "All chapters", sub: "Find the one you need" },
     { href: "/courses", label: "Complete courses", sub: "Every chapter, one price" },
@@ -43,7 +44,7 @@ export default async function NotFound() {
     <div className="site-light min-h-dvh overflow-x-clip bg-card text-foreground">
       <ToastProvider>
         <div className="relative">
-          <SiteNav user={user ? { name: user.name, avatarColor: user.avatarColor, isStaff: isStaff(user.role) } : null} leaderboard={settings.features.leaderboard} />
+          <SiteNav {...nav} />
           <main>
             <WashHero>
               <div className="px-6 pt-8 text-center">

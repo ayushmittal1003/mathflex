@@ -18,7 +18,7 @@ export function CourseCards({ courses, bestId }: { courses: CourseView[]; bestId
   // Best value sits in the middle, as in the design.
   const ordered = bestId && courses.length === 3 ? [courses.find((c) => c.id !== bestId)!, courses.find((c) => c.id === bestId)!, courses.filter((c) => c.id !== bestId)[1]] : courses;
   return (
-    <div className="mx-auto mt-14 grid w-[min(1120px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] items-stretch gap-5">
+    <div className="mx-auto mt-16 grid w-[min(1240px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] items-stretch gap-6">
       {ordered.map((c, i) => {
         const best = c.id === bestId;
         const off = pctOff(c.price, c.mrp);
@@ -27,7 +27,7 @@ export function CourseCards({ courses, bestId }: { courses: CourseView[]; bestId
           <div
             key={c.id}
             className={cx(
-              "relative flex animate-mf-rise flex-col rounded-xl border p-7",
+              "relative flex animate-mf-rise flex-col rounded-xl border p-8",
               best ? "border-foreground bg-foreground text-white shadow-[0_40px_70px_-30px_rgb(80_20_0/0.55)] tablet:-translate-y-3.5" : "border-border bg-card shadow-[0_1px_4px_0_rgb(0_0_0/0.08)]",
             )}
             style={{ animationDelay: `${i * 80}ms` }}
@@ -96,7 +96,7 @@ export function CourseInside({ courses }: { courses: CourseView[] }) {
         </div>
       )}
       <p className="mt-4 text-center text-[15px] text-muted-foreground">{cur.chapters.length} chapters{cur.hours && ` · ${cur.hours} of video`} · {inr(cur.price)}</p>
-      <div className="mx-auto mt-14 grid w-[min(1180px,calc(100%-48px))] gap-12">
+      <div className="mx-auto mt-14 grid w-[min(1240px,calc(100%-48px))] gap-16">
         {classes.map((n, i) => {
           const rows = cur.chapters.filter((c) => c.classLevel === n);
           return (
@@ -106,9 +106,9 @@ export function CourseInside({ courses }: { courses: CourseView[] }) {
                 <span className="text-[22px] font-extrabold tracking-[-0.025em]">Class {n}</span>
                 <span className="ml-auto whitespace-nowrap text-[13px] font-semibold text-muted-foreground">{rows.length} chapters</span>
               </div>
-              <div className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(min(100%,250px),1fr))] gap-3">
+              <div className="mt-6 grid gap-4 min-[640px]:grid-cols-2 min-[1040px]:grid-cols-3">
                 {rows.map((r) => (
-                  <Link key={r.id} href={`/chapter/${r.slug}`} className="flex min-h-[76px] items-center gap-3.5 rounded-xl border border-border bg-card px-3.5 py-3 text-foreground transition duration-300 hover:-translate-y-[3px] hover:border-[oklch(0.87_0.03_40)] hover:shadow-[0_18px_34px_-22px_rgb(80_20_0/0.45)]">
+                  <Link key={r.id} href={`/chapter/${r.slug}`} className="flex min-h-[92px] items-center gap-4 rounded-xl border border-border bg-card px-5 py-4 text-foreground transition duration-300 hover:-translate-y-[3px] hover:border-[oklch(0.87_0.03_40)] hover:shadow-[0_18px_34px_-22px_rgb(80_20_0/0.45)]">
                     <span className={cx("grid size-12 shrink-0 place-items-center rounded-[10px] font-black tracking-[-0.03em] text-white shadow-[0_6px_14px_-8px_rgb(0_0_0/0.4)]", r.symbol.length > 2 ? "text-[13px]" : "text-lg")} style={{ background: `linear-gradient(155deg, ${r.coverFrom}, ${r.coverTo})` }}>
                       {r.symbol}
                     </span>

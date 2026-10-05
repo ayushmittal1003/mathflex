@@ -14,7 +14,8 @@ export function FinalCta({ chapters, minPrice, anyFree }: { chapters: HomeChapte
   const mid = (fan.length - 1) / 2;
 
   return (
-    <section className="overflow-hidden pt-24">
+    <section className="px-4 pt-24">
+      <div className="mx-auto max-w-[1240px] overflow-hidden rounded-2xl bg-wash pt-16 shadow-[0_30px_60px_-50px_rgb(80_20_0/0.5)] tablet:pt-20">
       <div className="px-6 text-center">
         <h2 className="mx-auto max-w-[1000px] text-[clamp(44px,7vw,92px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
           Your IIT seat starts with one{" "}
@@ -62,6 +63,7 @@ export function FinalCta({ chapters, minPrice, anyFree }: { chapters: HomeChapte
           })}
         </div>
       )}
+      </div>
     </section>
   );
 }

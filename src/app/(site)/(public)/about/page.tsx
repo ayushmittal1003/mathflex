@@ -10,6 +10,7 @@ import { MentorSection } from "@/components/site/web/home/MentorSection";
 import { AboutPillars } from "@/components/site/web/about/AboutPillars";
 import { StoryTimeline } from "@/components/site/web/about/StoryTimeline";
 import { button, cx, tone } from "@/components/site/web/ui";
+import { CtaBand } from "@/components/site/web/CtaBand";
 
 export const metadata = { title: "About us", alternates: { canonical: "/about" } };
 
@@ -195,7 +196,7 @@ export default async function AboutPage() {
         <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} />
       </div>
 
-      <section className="px-6 pb-26 pt-22 text-center">
+      <CtaBand>
         <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           That&apos;s why we&apos;re here: so you get your <Mark>seat</Mark> too.
         </h2>
@@ -207,7 +208,7 @@ export default async function AboutPage() {
           <Link href="/chapters" className={cx(button.md, tone.secondary)}>Browse chapters</Link>
         </div>
         <p className="mx-auto mt-10 text-[13px] leading-[1.6] text-muted-foreground">{placeholders.address} · {placeholders.cin}</p>
-      </section>
+      </CtaBand>
     </>
   );
 }

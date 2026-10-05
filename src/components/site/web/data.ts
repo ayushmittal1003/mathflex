@@ -2,6 +2,8 @@ import "server-only";
 import { db } from "@/lib/db";
 import { requestNow } from "@/lib/time";
 import type { Settings } from "@/lib/settings";
+import { activeEntitlements } from "@/lib/access";
+import { isStaff } from "@/lib/permissions";
 
 // Read-only lookups shared by the redesigned pages. Same filters the existing code uses.
 
@@ -65,4 +67,22 @@ export async function getAuthPanel(settings: Settings) {
     "Taught by an IIT Delhi alumnus",
   ];
   return { rows, tagline };
+}
+
+// Props for the site nav: the signed-in student's account summary (same plan line as the
+// original account menu), the feature switches and support contacts.
+export async function getSiteNavProps(
+  user: { id: string; name: string; email: string; avatarColor: string; role: string; xp: number; streak: number } | null,
+  settings: Settings,
+) {
+  const ents = user ? await activeEntitlements(user.id).catch(() => []) : [];
+  const planSummary = ents.length
+    ? `${ents.length} active plan${ents.length > 1 ? "s" : ""} · next expiry ${ents[0].expiresAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`
+    : null;
+  const f = settings.features;
+  return {
+    user: user ? { name: user.name, email: user.email, avatarColor: user.avatarColor, isStaff: isStaff(user.role), xp: user.xp, streak: user.streak, planSummary } : null,
+    features: { leaderboard: f.leaderboard, practice: f.practice, referAndEarn: f.referAndEarn },
+    contact: { whatsapp: settings.whatsappNumber, email: settings.supportEmail },
+  };
 }

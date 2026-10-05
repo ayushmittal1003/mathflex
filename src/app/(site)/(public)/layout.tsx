@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { activeBanners } from "@/lib/banners";
-import { isStaff } from "@/lib/permissions";
+import { getSiteNavProps } from "@/components/site/web/data";
 import { Marquee } from "@/components/site/Marquee";
 import { SiteExtras } from "@/components/site/SiteExtras";
 import { SiteNav } from "@/components/site/web/SiteNav";
@@ -12,7 +12,10 @@ import { ToastProvider } from "@/components/site/web/Toast";
 // re-applies the light tokens here without touching the root layout or admin.
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const [user, settings] = await Promise.all([getCurrentUser(), getSettings()]);
-  const marquee = settings.features.marquee ? await activeBanners("MARQUEE") : [];
+  const [marquee, nav] = await Promise.all([
+    settings.features.marquee ? activeBanners("MARQUEE") : Promise.resolve([]),
+    getSiteNavProps(user, settings),
+  ]);
 
   return (
     <div className="site-light min-h-dvh overflow-x-clip bg-card text-foreground">
@@ -20,10 +23,7 @@ export default async function PublicLayout({ children }: { children: React.React
       {/* Admin-managed running ticker, kept from the original shell. */}
       <Marquee items={marquee.map((m) => ({ id: m.id, title: m.title, href: m.ctaHref }))} />
       <div className="relative">
-        <SiteNav
-          user={user ? { name: user.name, avatarColor: user.avatarColor, isStaff: isStaff(user.role) } : null}
-          leaderboard={settings.features.leaderboard}
-        />
+        <SiteNav {...nav} />
         <main>{children}</main>
       </div>
       <SiteFooter settings={settings} />

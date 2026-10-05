@@ -11,6 +11,7 @@ import { MentorSection } from "@/components/site/web/home/MentorSection";
 import { CourseCards, CourseCalculator, CourseInside, type CourseView } from "@/components/site/web/courses/CourseParts";
 import { COURSE_INCLUDE, toCourseView } from "@/components/site/web/courses/course-view";
 import { button, cx, tone } from "@/components/site/web/ui";
+import { CtaBand } from "@/components/site/web/CtaBand";
 
 export const metadata = { title: "Complete courses" };
 
@@ -114,7 +115,7 @@ export default async function Courses() {
         </div>
       </section>
 
-      <section className="px-6 pb-26 pt-22 text-center">
+      <CtaBand>
         <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           Not sure yet? {freePreview ? <>Watch a <Mark>free</Mark> Part 1 first.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
@@ -122,7 +123,7 @@ export default async function Courses() {
           <Link href="/chapters" className={cx(button.md, tone.primaryFlat)}>Browse chapters</Link>
           {freePreview && <Link href={`/chapter/${freePreview.slug}`} className={cx(button.md, tone.secondary)}>Watch a free preview</Link>}
         </div>
-      </section>
+      </CtaBand>
     </>
   );
 }

@@ -10,6 +10,7 @@ import { FaqList } from "@/components/site/web/FaqList";
 import { InsideMathflex } from "@/components/site/web/home/InsideMathflex";
 import { PricingTiers, PriceBuilder, CopyCode, type BuilderChapter, type BuilderCourse } from "@/components/site/web/pricing/PricingParts";
 import { button, cx, tone } from "@/components/site/web/ui";
+import { CtaBand } from "@/components/site/web/CtaBand";
 
 export const metadata = { title: "Pricing" };
 
@@ -111,7 +112,7 @@ export default async function PricingPage() {
         </section>
       )}
 
-      <section className="px-6 pb-26 pt-22 text-center">
+      <CtaBand>
         <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           {freeChapter ? <>Start with <Mark>₹0</Mark>. Pay when you&apos;re sure.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
@@ -119,7 +120,7 @@ export default async function PricingPage() {
           {freeChapter && <Link href={`/chapter/${freeChapter.slug}`} className={cx(button.md, tone.primaryFlat)}>Watch a free Part 1</Link>}
           <Link href="/chapters" className={cx(button.md, freeChapter ? tone.secondary : tone.primaryFlat)}>Browse chapters</Link>
         </div>
-      </section>
+      </CtaBand>
     </>
   );
 }

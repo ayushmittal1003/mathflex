@@ -6,6 +6,7 @@ import { faqGroups, fillFaq, instructorNames } from "@/lib/site-content";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { FaqBrowser } from "@/components/site/web/FaqBrowser";
 import { button, cx, tone } from "@/components/site/web/ui";
+import { CtaBand } from "@/components/site/web/CtaBand";
 
 export const metadata = { title: "FAQs", alternates: { canonical: "/faq" } };
 
@@ -35,7 +36,7 @@ export default async function FaqPage() {
         </h1>
       </section>
       <FaqBrowser groups={groups} />
-      <section className="px-6 pb-24 pt-18 text-center">
+      <CtaBand>
         <h2 className="mx-auto max-w-[760px] text-[clamp(34px,4.6vw,58px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
           Still have a <Mark>question</Mark>?
         </h2>
@@ -44,7 +45,7 @@ export default async function FaqPage() {
           <Link href="/contact" className={cx(button.md, tone.primary)}>Contact us</Link>
           <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className={cx(button.md, tone.secondary)}>WhatsApp us</a>
         </div>
-      </section>
+      </CtaBand>
     </>
   );
 }

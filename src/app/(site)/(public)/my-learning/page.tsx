@@ -74,7 +74,6 @@ export default async function MyLearning() {
     });
   const lastChapterId = last?.part.chapterId;
   const resume = mine.find((c) => c.id === lastChapterId && c.next) ?? mine.find((c) => c.next && c.doneCount > 0) ?? mine.find((c) => c.next);
-  const others = mine.filter((c) => c.id !== resume?.id);
   const expiring = mine.filter((c) => c.daysLeft !== null && c.daysLeft <= 30);
 
   const suggestions = catalog
@@ -125,19 +124,23 @@ export default async function MyLearning() {
               <span className="mt-1.5 block text-[13px] text-muted-foreground">{(lvl.levelSize - lvl.intoLevel).toLocaleString("en-IN")} XP to Level {lvl.level + 1}</span>
             </span>
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-            <Tile value={user.xp.toLocaleString("en-IN")} label="XP" />
-            <Tile value={`${user.streak}🔥`} label={`Best ${user.bestStreak}`} />
-            {f.leaderboard ? (
-              <Link href="/leaderboard" className="rounded-lg bg-muted px-2 py-2.5 transition hover:bg-border">
-                <span className="block text-lg font-extrabold tracking-[-0.03em]">#{rankAbove + 1}</span>
-                <span className="block text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">Rank →</span>
-              </Link>
-            ) : (
-              <Tile value={accuracy === null ? "–" : `${accuracy}%`} label="Accuracy" />
-            )}
-          </div>
+          {f.leaderboard && (
+            <Link href="/leaderboard" className="mt-4 flex items-center justify-between rounded-lg bg-muted px-3.5 py-2.5 text-sm font-bold transition hover:bg-border">
+              <span>Leaderboard rank <span className="text-primary">#{rankAbove + 1}</span></span>
+              <span aria-hidden>→</span>
+            </Link>
+          )}
         </div>
+      </section>
+
+      {/* Stats */}
+      <section className="mt-8 grid grid-cols-2 gap-3 min-[700px]:grid-cols-3 min-[1100px]:grid-cols-6" aria-label="Your stats">
+        <Stat icon="⚡" label="Total XP" value={user.xp.toLocaleString("en-IN")} sub={`Level ${lvl.level}`} />
+        <Stat icon="✨" label="XP earned" value={`+${weekXp.toLocaleString("en-IN")}`} sub="this week" />
+        <Stat icon="🔥" label="Day streak" value={`${user.streak}`} sub={`Best ${user.bestStreak}`} />
+        <Stat icon="🎯" label="Accuracy" value={accuracy === null ? "–" : `${accuracy}%`} sub={`${answered} answered`} />
+        <Stat icon="🏅" label="Badges" value={`${earnedSet.size}`} sub={`of ${badges.length}`} />
+        <Stat icon="❓" label="Questions" value={`${ownedQuestionCount}`} sub={mine.length ? `in your ${mine.length === 1 ? "chapter" : `${mine.length} chapters`}` : "buy a chapter to unlock"} />
       </section>
 
       {/* Continue learning */}
@@ -189,40 +192,55 @@ export default async function MyLearning() {
           <Link href="/chapters" className="text-sm font-bold text-primary hover:underline">All chapters →</Link>
         </div>
         {mine.length ? (
-          others.length > 0 || !resume ? (
-            <div className="grid gap-5 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-3">
-              {(resume ? others : mine).map((c) => {
-                const pct = c.doneCount / Math.max(1, c.partsCount);
-                const href = c.next ? `/learn/${c.slug}?part=${c.next.order}` : `/learn/${c.slug}`;
-                return (
-                  <div key={c.id} className={cx(card, "flex flex-col overflow-hidden")}>
-                    <Link href={`/chapter/${c.slug}`} className="relative block aspect-[16/8] overflow-hidden text-white" style={posterBg(c.coverFrom, c.coverTo)}>
-                      <span className={cx("absolute right-[6%] top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/22", c.symbol.length > 2 ? "text-[60px]" : "text-[100px]")}>{c.symbol}</span>
-                      {pct === 1 && <span className="absolute left-3 top-3 rounded-md bg-ok px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em]">Completed</span>}
-                    </Link>
-                    <div className="flex flex-1 flex-col p-5">
-                      <Link href={`/chapter/${c.slug}`} className="text-lg font-extrabold leading-tight tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
-                      <div className="mt-3 flex justify-between text-[13px] font-semibold text-muted-foreground"><span>{c.doneCount}/{c.partsCount} parts</span><span>{Math.round(pct * 100)}%</span></div>
-                      <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className={cx("h-full rounded-full", pct === 1 ? "bg-ok" : "bg-primary")} style={{ width: `${pct * 100}%` }} /></div>
-                      {c.daysLeft !== null && (
-                        <div className={cx("mt-3 text-[13px] font-semibold", c.daysLeft <= 30 ? "text-[color-mix(in_oklab,var(--gold)_55%,black)]" : "text-muted-foreground")}>
-                          {c.daysLeft} days of access left
-                        </div>
-                      )}
-                      <div className="mt-auto flex gap-2 pt-5">
-                        <Link href={href} className={cx(button.sm, tone.primaryFlat, "flex-1")}>{pct === 1 ? "Rewatch" : c.doneCount ? "Continue" : "Start"}</Link>
-                        {f.practice && <Link href={`/practice/${c.slug}`} className={cx(button.sm, tone.secondary)}>Practice</Link>}
+          <div className="grid gap-5 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-3">
+            {mine.map((c, i) => {
+              const pct = c.doneCount / Math.max(1, c.partsCount);
+              const href = c.next ? `/learn/${c.slug}?part=${c.next.order}` : `/learn/${c.slug}`;
+              return (
+                <div key={c.id} className={cx(card, "flex animate-mf-rise flex-col overflow-hidden transition duration-300 ease-mf hover:-translate-y-1")} style={{ animationDelay: `${Math.min(i, 9) * 40}ms` }}>
+                  <Link href={href} className="group relative block aspect-video overflow-hidden text-white" style={posterBg(c.coverFrom, c.coverTo)}>
+                    <span className={cx("absolute right-[6%] top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/22", c.symbol.length > 2 ? "text-[64px]" : "text-[110px]")}>{c.symbol}</span>
+                    <span className="absolute inset-0 bg-[linear-gradient(transparent_45%,rgb(0_0_0/0.45))]" />
+                    <span className="absolute left-3 top-3 flex gap-1.5">
+                      <span className="rounded-md bg-white/92 px-2 py-1 text-[11px] font-extrabold text-black">Class {c.classLevel}</span>
+                      {pct === 1 ? (
+                        <span className="rounded-md bg-ok px-2 py-1 text-[11px] font-extrabold">Completed</span>
+                      ) : c.id === resume?.id ? (
+                        <span className="rounded-md bg-primary px-2 py-1 text-[11px] font-extrabold">Continue here</span>
+                      ) : null}
+                    </span>
+                    <span className="absolute bottom-3 left-3 grid size-11 place-items-center rounded-full bg-white text-primary opacity-0 shadow-[0_0_0_8px_rgb(255_255_255/0.18)] transition group-hover:opacity-100">
+                      <PlayIcon className="size-4" />
+                    </span>
+                  </Link>
+                  <div className="flex flex-1 flex-col p-5">
+                    <Link href={`/chapter/${c.slug}`} className="text-lg font-extrabold leading-tight tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
+                    <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[13px] font-semibold text-muted-foreground">
+                      <span>{c.partsCount} parts</span>
+                      {c.durationSec > 0 && <span>{duration(c.durationSec)}</span>}
+                      {c.jeeWeightage > 0 && <span className="text-[oklch(0.5_0.17_47)]">{c.jeeWeightage}% of JEE</span>}
+                    </div>
+                    <div className="mt-4 flex justify-between text-[13px] font-semibold"><span>{c.doneCount}/{c.partsCount} parts done</span><span>{Math.round(pct * 100)}%</span></div>
+                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className={cx("h-full rounded-full", pct === 1 ? "bg-ok" : "bg-primary")} style={{ width: `${pct * 100}%` }} /></div>
+                    {c.daysLeft !== null && (
+                      <div className={cx("mt-3 text-[13px] font-semibold", c.daysLeft <= 30 ? "text-[color-mix(in_oklab,var(--gold)_55%,black)]" : "text-muted-foreground")}>
+                        {c.daysLeft} days of access left
                       </div>
+                    )}
+                    <div className="mt-auto flex gap-2 pt-5">
+                      <Link href={href} className={cx(button.sm, tone.primaryFlat, "flex-1")}>{pct === 1 ? "Rewatch" : c.doneCount ? `Continue · Part ${c.next?.order}` : "Start Part 1"}</Link>
+                      {f.practice && <Link href={`/practice/${c.slug}`} className={cx(button.sm, tone.secondary)}>Practice</Link>}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="rounded-xl bg-muted/60 px-5 py-4 text-[15px] text-secondary-foreground">
-              {resume?.title} is your only chapter so far. Add another from <Link href="/chapters" className="font-bold text-primary">all chapters</Link> or a <Link href="/courses" className="font-bold text-primary">complete course</Link>.
-            </p>
-          )
+                </div>
+              );
+            })}
+            <Link href="/chapters" className="flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border p-6 text-center text-foreground transition hover:border-primary/50 hover:bg-selected">
+              <span className="grid size-12 place-items-center rounded-full bg-muted text-2xl font-bold">+</span>
+              <span className="text-lg font-extrabold tracking-[-0.02em]">Add a chapter</span>
+              <span className="max-w-[240px] text-sm text-muted-foreground">Pick the next chapter you&apos;re stuck on, or save with a complete course.</span>
+            </Link>
+          </div>
         ) : suggestions.length ? (
           <>
             <p className="-mt-2 mb-6 max-w-[620px] text-[15px] leading-[1.6] text-secondary-foreground">Every chapter below has a free first part. Watch it, try the practice set and earn XP. Buy the chapter when you&apos;re ready for the rest.</p>
@@ -339,6 +357,16 @@ function Tile({ value, label, tone: t }: { value: string; label: string; tone?: 
     <div className="rounded-lg bg-muted px-2 py-2.5">
       <div className={cx("text-lg font-extrabold tracking-[-0.03em]", t)}>{value}</div>
       <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
+    </div>
+  );
+}
+
+function Stat({ icon, label, value, sub }: { icon: string; label: string; value: string; sub: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-4 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_20px_40px_-34px_rgb(80_20_0/0.4)]">
+      <div className="flex items-center gap-2 text-[13px] font-bold text-muted-foreground"><span aria-hidden>{icon}</span>{label}</div>
+      <div className="mt-2 text-[26px] font-extrabold leading-none tracking-[-0.04em]">{value}</div>
+      <div className="mt-1.5 text-xs font-semibold text-muted-foreground">{sub}</div>
     </div>
   );
 }
