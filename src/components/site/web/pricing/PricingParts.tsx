@@ -24,7 +24,7 @@ export function PricingTiers({ courses, minPrice, maxPrice, freeChapter }: { cou
     ...(minPrice !== null ? [{ key: "chapter", kicker: "One chapter", name: "Single chapter", from: minPrice !== maxPrice ? "from" : undefined, price: inr(minPrice), note: minPrice !== maxPrice ? `${inr(minPrice)}–${inr(maxPrice!)}, depending on the chapter.` : "Every chapter, one price.", feats: ["Every part of the chapter", "DPPs and PYQs with solutions", "Notes for the chapter"], cta: <Link href="/chapters" className={btn(false, !freeChapter)}>Pick a chapter</Link> }] : []),
     ...courses.map((c) => ({
       key: c.id,
-      kicker: c.id === best ? "Best value" : "Full course",
+      kicker: "Full course",
       name: c.title,
       price: inr(c.price),
       mrp: c.mrp > c.price ? inr(c.mrp) : undefined,

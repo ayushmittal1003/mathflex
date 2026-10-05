@@ -88,6 +88,8 @@ export default async function LearnPage({ params, searchParams }: { params: Prom
       isPreviewOnly={!owned || !user}
       sound={settings.features.celebrationSound}
       related={related}
+      user={user ? { name: user.name, avatarColor: user.avatarColor, streak: user.streak, xp: user.xp } : null}
+      leaderboard={settings.features.leaderboard}
     />
   );
 }
