@@ -3,7 +3,9 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ---------- Design tokens (see design.md) ---------- */
-:root {
+/* .site-light: public website pages are always light, even when the visitor picked dark
+   (dipankar-design/design.md §0). It re-declares the light values on the page wrapper. */
+:root, .site-light {
   --background: oklch(0.985 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(99.5% 0 0);
@@ -63,6 +65,11 @@
   --gold: oklch(0.795 0.184 86.047);    /* yellow: badges, top ranks, "partial", warnings */
   --ok: oklch(0.627 0.194 149.214);     /* green: correct, paid, success */
 
+  /* Website (v2) tokens */
+  --wash: oklch(0.975 0.012 50);       /* warm base of the framed hero wash */
+  --highlight: color-mix(in oklab, var(--brand-2) 16%, var(--card)); /* highlight box on white */
+  --selected: color-mix(in oklab, var(--primary) 6%, var(--card));   /* chosen option / own row */
+
   /* Legacy aliases. Kept so existing (and admin) code keeps working; new code uses the new names. */
   --bg: var(--background);
   --surface: var(--card);
@@ -112,7 +119,10 @@
   --xp: oklch(0.702 0.183 293.541);
   --gold: oklch(0.852 0.199 91.936);
   --ok: oklch(0.723 0.219 149.579);
+  --wash: oklch(0.2 0.02 40);
 }
+
+.site-light { color-scheme: light; }
 
 @theme inline {
   /* Colours */
@@ -185,6 +195,33 @@
   --animate-pop: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   --animate-rise: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-shimmer: shimmer 2.2s linear infinite;
+
+  /* Website (v2) */
+  --color-wash: var(--wash);
+  --color-highlight: var(--highlight);
+  --color-selected: var(--selected);
+  --shadow-highlight: 0 10px 30px -12px rgb(120 40 0 / 0.25);
+  --shadow-frame: 0 40px 80px -36px rgb(80 20 0 / 0.45);
+  --shadow-cta: 0 10px 24px -10px color-mix(in oklab, var(--primary) 80%, transparent);
+  --ease-mf: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-mf-rise: mfrise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-mf-pop: mfpop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-mf-blink: mfblink 1s steps(1) infinite;
+  --breakpoint-tablet: 47.5rem; /* 760px: design.md §6 single-column switch */
+}
+
+@keyframes mfrise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes mfpop {
+  0% { opacity: 0; transform: scale(0.85); }
+  70% { transform: scale(1.03); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes mfblink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }
 
 @keyframes marquee {
@@ -290,6 +327,29 @@ body {
   outline: none;
   &::placeholder { color: var(--muted-foreground); }
   &:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 25%, transparent); }
+}
+
+/* ---------- Website (v2) patterns, see dipankar-design/design.md §3 ---------- */
+/* Framed wash: heroes only. */
+@utility bg-wash {
+  background:
+    radial-gradient(70% 55% at 50% 0%, color-mix(in oklab, var(--brand-2) 30%, transparent), transparent 70%),
+    radial-gradient(50% 50% at 100% 100%, color-mix(in oklab, var(--primary) 26%, transparent), transparent 70%),
+    radial-gradient(40% 40% at 0% 80%, color-mix(in oklab, var(--brand-2) 18%, transparent), transparent 70%),
+    var(--wash);
+}
+
+/* Footer wordmark fill. */
+@utility text-wordmark {
+  background: linear-gradient(180deg, var(--muted), color-mix(in oklab, var(--brand-2) 22%, var(--card)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Striped placeholder behind video frames. */
+@utility bg-video-stripes {
+  background: repeating-linear-gradient(135deg, oklch(0.26 0.01 260) 0 12px, oklch(0.22 0.01 260) 12px 24px);
 }
 
 @media (prefers-reduced-motion: reduce) {
