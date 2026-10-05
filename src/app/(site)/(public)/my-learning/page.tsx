@@ -9,7 +9,7 @@ import { activitySeries } from "@/lib/analytics";
 import { requestNow } from "@/lib/time";
 import { isStaff } from "@/lib/permissions";
 import { duration } from "@/lib/format";
-import { Eyebrow, Mark, PlayIcon, posterBg } from "@/components/site/web/primitives";
+import { PlayIcon, posterBg } from "@/components/site/web/primitives";
 import { ChapterCard } from "@/components/site/web/ChapterCard";
 import { button, container, cx, tone } from "@/components/site/web/ui";
 
@@ -102,45 +102,50 @@ export default async function MyLearning() {
         </div>
       )}
 
-      {/* Greeting + level */}
-      <section className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
+      {/* Greeting: one compact row, level on the right */}
+      <section className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
         <div className="min-w-0">
-          <Eyebrow dot="ok">My Learning</Eyebrow>
-          <h1 className="mt-5 text-[clamp(38px,5.4vw,68px)] font-extrabold leading-[1.02] tracking-[-0.045em]">
-            Welcome back, <Mark>{first}</Mark>
-          </h1>
-          <p className="mt-4 max-w-[560px] text-[17px] leading-[1.55] text-secondary-foreground">
+          <h1 className="text-[clamp(30px,3.6vw,42px)] font-extrabold leading-[1.08] tracking-[-0.04em]">Welcome back, {first}</h1>
+          <p className="mt-1.5 text-[15px] text-secondary-foreground">
             {user.streak > 0 ? `You're on a ${user.streak}-day streak. Keep it going today.` : mine.length ? "Watch a part or solve a question today to start a streak." : "Start with a free Part 1, no payment needed."}
           </p>
         </div>
-        <div className={cx(card, "w-full max-w-[400px] p-5")}>
-          <div className="flex items-center gap-4">
-            <span className="grid size-14 flex-none place-items-center rounded-xl bg-gradient-to-br from-primary to-brand-2 text-2xl font-black text-white">{lvl.level}</span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-xs font-extrabold uppercase tracking-[0.1em] text-muted-foreground">Level {lvl.level} · {lvl.title}</span>
-              <span className="mt-2 block h-2 overflow-hidden rounded-full bg-muted">
-                <span className="block h-full rounded-full bg-gradient-to-r from-primary to-brand-2" style={{ width: `${(lvl.intoLevel / lvl.levelSize) * 100}%` }} />
-              </span>
-              <span className="mt-1.5 block text-[13px] text-muted-foreground">{(lvl.levelSize - lvl.intoLevel).toLocaleString("en-IN")} XP to Level {lvl.level + 1}</span>
+        <div className="flex w-full items-center gap-3.5 rounded-xl border border-border bg-card px-4 py-3 min-[600px]:w-auto min-[600px]:min-w-[340px]">
+          <span className="grid size-11 flex-none place-items-center rounded-lg bg-gradient-to-br from-primary to-brand-2 text-lg font-black text-white">{lvl.level}</span>
+          <span className="min-w-0 flex-1">
+            <span className="flex items-baseline justify-between gap-3 text-[13px] font-bold">
+              <span>Level {lvl.level} · {lvl.title}</span>
+              <span className="font-semibold text-muted-foreground">{(lvl.levelSize - lvl.intoLevel).toLocaleString("en-IN")} XP to go</span>
             </span>
-          </div>
+            <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-muted">
+              <span className="block h-full rounded-full bg-gradient-to-r from-primary to-brand-2" style={{ width: `${(lvl.intoLevel / lvl.levelSize) * 100}%` }} />
+            </span>
+          </span>
           {f.leaderboard && (
-            <Link href="/leaderboard" className="mt-4 flex items-center justify-between rounded-lg bg-muted px-3.5 py-2.5 text-sm font-bold transition hover:bg-border">
-              <span>Leaderboard rank <span className="text-primary">#{rankAbove + 1}</span></span>
-              <span aria-hidden>→</span>
+            <Link href="/leaderboard" className="flex-none rounded-lg bg-muted px-3 py-2 text-center transition hover:bg-border" aria-label={`Leaderboard rank ${rankAbove + 1}`}>
+              <span className="block text-[15px] font-extrabold leading-none text-primary">#{rankAbove + 1}</span>
+              <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.06em] text-muted-foreground">Rank</span>
             </Link>
           )}
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="mt-8 grid grid-cols-2 gap-3 min-[700px]:grid-cols-3 min-[1100px]:grid-cols-6" aria-label="Your stats">
-        <Stat icon="⚡" label="Total XP" value={user.xp.toLocaleString("en-IN")} sub={`Level ${lvl.level}`} />
-        <Stat icon="✨" label="XP earned" value={`+${weekXp.toLocaleString("en-IN")}`} sub="this week" />
-        <Stat icon="🔥" label="Day streak" value={`${user.streak}`} sub={`Best ${user.bestStreak}`} />
-        <Stat icon="🎯" label="Accuracy" value={accuracy === null ? "–" : `${accuracy}%`} sub={`${answered} answered`} />
-        <Stat icon="🏅" label="Badges" value={`${earnedSet.size}`} sub={`of ${badges.length}`} />
-        <Stat icon="❓" label="Questions" value={`${ownedQuestionCount}`} sub={mine.length ? `in your ${mine.length === 1 ? "chapter" : `${mine.length} chapters`}` : "buy a chapter to unlock"} />
+      {/* Stats: one strip, numbers first */}
+      <section className={cx(card, "mt-6 grid grid-cols-2 gap-px overflow-hidden bg-border min-[700px]:grid-cols-3 min-[1100px]:grid-cols-6")} aria-label="Your stats">
+        {[
+          { label: "Total XP", value: user.xp.toLocaleString("en-IN"), sub: `Level ${lvl.level}`, tone: "text-xp" },
+          { label: "XP this week", value: `+${weekXp.toLocaleString("en-IN")}`, sub: `${weekQ} question${weekQ === 1 ? "" : "s"}` },
+          { label: "Day streak", value: `${user.streak}`, sub: `Best ${user.bestStreak}`, tone: "text-brand-2" },
+          { label: "Accuracy", value: accuracy === null ? "–" : `${accuracy}%`, sub: `${answered} answered`, tone: accuracy === null ? "" : "text-ok" },
+          { label: "Badges", value: `${earnedSet.size}/${badges.length}`, sub: "earned" },
+          { label: "Questions", value: `${ownedQuestionCount}`, sub: mine.length ? `in your chapter${mine.length === 1 ? "" : "s"}` : "buy a chapter to unlock" },
+        ].map((t) => (
+          <div key={t.label} className="bg-card px-5 py-5">
+            <div className="text-[13px] font-bold text-muted-foreground">{t.label}</div>
+            <div className={cx("mt-2 text-[28px] font-extrabold leading-none tracking-[-0.04em] tabular-nums", t.tone)}>{t.value}</div>
+            <div className="mt-2 text-xs font-semibold text-muted-foreground">{t.sub}</div>
+          </div>
+        ))}
       </section>
 
       {/* Continue learning */}
@@ -181,7 +186,7 @@ export default async function MyLearning() {
           <span className="text-[15px] font-semibold">
             {expiring.length === 1 ? `${expiring[0].title}: access ends in ${expiring[0].daysLeft} day${expiring[0].daysLeft === 1 ? "" : "s"}.` : `Access to ${expiring.length} chapters ends within 30 days.`}
           </span>
-          <Link href="/profile#plans" className={cx(button.sm, tone.dark)}>Renew</Link>
+          <Link href="/plans" className={cx(button.sm, tone.dark)}>Renew</Link>
         </div>
       )}
 
@@ -361,12 +366,3 @@ function Tile({ value, label, tone: t }: { value: string; label: string; tone?: 
   );
 }
 
-function Stat({ icon, label, value, sub }: { icon: string; label: string; value: string; sub: string }) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-4 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_20px_40px_-34px_rgb(80_20_0/0.4)]">
-      <div className="flex items-center gap-2 text-[13px] font-bold text-muted-foreground"><span aria-hidden>{icon}</span>{label}</div>
-      <div className="mt-2 text-[26px] font-extrabold leading-none tracking-[-0.04em]">{value}</div>
-      <div className="mt-1.5 text-xs font-semibold text-muted-foreground">{sub}</div>
-    </div>
-  );
-}

@@ -8,7 +8,7 @@ import { SiteExtras } from "@/components/site/SiteExtras";
 import { activeBanners } from "@/lib/banners";
 
 // The original site shell, unchanged. Pages move out of this group as they're redesigned;
-// Practice and Profile stay here.
+// What stays here: staff invites, the local mock payment page and the old-URL redirects.
 export default async function AppShellLayout({ children }: { children: React.ReactNode }) {
   const [user, settings] = await Promise.all([getCurrentUser(), getSettings()]);
   const [marquee, ents] = await Promise.all([

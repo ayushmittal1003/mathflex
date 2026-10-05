@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { hasChapterAccess } from "@/lib/access";
 import { getSettings } from "@/lib/settings";
 import { questionStatuses, type QuestionStatus } from "@/lib/qbank";
 import { accuracyOf, fmtTime, FORMAT_LABEL } from "@/lib/grading";
-import { PracticePlayer, type PracticeQuestion } from "@/components/practice/PracticePlayer";
+import { PracticePlayer, type PracticeQuestion } from "@/components/site/web/practice/PracticePlayer";
+import { posterBg } from "@/components/site/web/primitives";
+import { container, cx } from "@/components/site/web/ui";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -81,21 +82,42 @@ export default async function ChapterPractice({ params, searchParams }: { params
     return `/practice/${slug}${qs.size ? `?${qs}` : ""}`;
   };
 
+  const stats = [
+    { label: "Solved", value: `${solved}/${questions.length}` },
+    { label: "Accuracy", value: firsts.length ? `${accuracyOf({ attempted: firsts.length, correct })}%` : "–" },
+    { label: "Marks", value: firsts.length ? `${marks}/${firsts.length * settings.marking.correct}` : "–" },
+    { label: "Avg time", value: firsts.length ? fmtTime(avgTime) : "–" },
+  ];
+
   return (
-    <div className="mx-auto max-w-4xl px-4 pb-16 pt-[calc(var(--nav-h)+1.5rem)] md:px-8">
-      <Link href="/practice" className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-primary"><ChevronLeft className="size-4" /> Practice dashboard</Link>
-      <header className="mt-3 overflow-hidden rounded-3xl p-5 text-white sm:p-6" style={{ background: `linear-gradient(135deg, ${chapter.coverFrom}, ${chapter.coverTo})` }}>
-        <p className="text-xs font-bold uppercase tracking-widest opacity-80">Class {chapter.classLevel} · Question bank</p>
-        <h1 className="font-display text-2xl font-extrabold sm:text-3xl">{chapter.title}</h1>
-        <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <HeroStat label="Solved" value={`${solved}/${questions.length}`} />
-          <HeroStat label="Accuracy" value={firsts.length ? `${accuracyOf({ attempted: firsts.length, correct })}%` : "–"} />
-          <HeroStat label="Marks" value={firsts.length ? `${marks}/${firsts.length * settings.marking.correct}` : "–"} />
-          <HeroStat label="Avg time" value={firsts.length ? fmtTime(avgTime) : "–"} />
-        </dl>
+    <div className={cx(container.detail, "pb-28 pt-[calc(86px+32px)]")}>
+      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+        <Link href="/practice" className="hover:text-foreground">Practice</Link>
+        <span aria-hidden>/</span>
+        <span className="text-foreground">{chapter.title}</span>
+      </nav>
+
+      {/* Chapter header */}
+      <header className="mt-5 grid overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_2px_rgb(0_0_0/0.04),0_24px_48px_-38px_rgb(80_20_0/0.4)] min-[860px]:grid-cols-[300px_1fr]">
+        <div className="relative min-h-[150px] overflow-hidden text-white" style={posterBg(chapter.coverFrom, chapter.coverTo)}>
+          <span className="absolute left-5 top-5 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em] text-black">Question bank</span>
+          <span className="absolute bottom-5 left-5 text-sm font-bold text-white/90">Class {chapter.classLevel} · marked +{settings.marking.correct} / {settings.marking.wrong}</span>
+        </div>
+        <div className="p-6 tablet:p-8">
+          <h1 className="text-[clamp(30px,3.6vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{chapter.title}</h1>
+          <dl className="mt-6 grid grid-cols-2 gap-3 min-[600px]:grid-cols-4">
+            {stats.map((st) => (
+              <div key={st.label} className="rounded-lg bg-muted px-4 py-3">
+                <dt className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{st.label}</dt>
+                <dd className="mt-1 text-xl font-extrabold tabular-nums tracking-[-0.03em]">{st.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </header>
 
-      <nav className="mt-5 space-y-3" aria-label="Filters">
+      {/* Filters */}
+      <nav className="mt-8 space-y-3" aria-label="Filters">
         <Chips>
           {STATUS_FILTERS.map(([k, label]) => (
             <Chip key={k} href={href({ status: k })} active={status === k}>
@@ -125,33 +147,31 @@ export default async function ChapterPractice({ params, searchParams }: { params
         )}
       </nav>
 
-      <div className="mt-6">
+      <div className="mt-8">
         {questions.length ? (
           <PracticePlayer key={JSON.stringify(sp)} questions={player} sound={settings.features.celebrationSound} />
         ) : (
-          <div className="card p-10 text-center text-muted-foreground">Questions for this chapter are on the way.</div>
+          <div className="rounded-xl border border-dashed border-border bg-muted/50 px-6 py-14 text-center text-muted-foreground">Questions for this chapter are on the way.</div>
         )}
       </div>
     </div>
   );
 }
 
-function HeroStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl bg-black/20 px-3 py-2.5 backdrop-blur">
-      <dt className="text-xs font-semibold opacity-80">{label}</dt>
-      <dd className="font-display text-lg font-extrabold tabular-nums">{value}</dd>
-    </div>
-  );
-}
-
 function Chips({ children }: { children: React.ReactNode }) {
-  return <div className="no-scrollbar flex gap-1.5 overflow-x-auto pb-1">{children}</div>;
+  return <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">{children}</div>;
 }
 
 function Chip({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
   return (
-    <Link href={href} scroll={false} className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold ${active ? "bg-foreground text-background" : "bg-surface-2 text-muted-foreground hover:text-foreground"}`}>
+    <Link
+      href={href}
+      scroll={false}
+      className={cx(
+        "shrink-0 rounded-full border px-4 py-2 text-sm font-bold transition duration-200 ease-mf",
+        active ? "border-foreground bg-foreground text-card" : "border-border bg-card text-secondary-foreground hover:border-foreground/40",
+      )}
+    >
       {children}
     </Link>
   );

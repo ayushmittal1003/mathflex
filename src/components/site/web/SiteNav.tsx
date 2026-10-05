@@ -13,7 +13,7 @@ type Features = { leaderboard: boolean; practice: boolean; referAndEarn: boolean
 type Contact = { whatsapp: string; email: string };
 
 // Pages whose hero has no wash (design.md §3.1): the nav sits on white there.
-const PLAIN_HEADER = ["/leaderboard", "/contact", "/faq", "/terms", "/privacy", "/refund-policy", "/blog", "/free-practice", "/my-learning"];
+const PLAIN_HEADER = ["/leaderboard", "/contact", "/faq", "/terms", "/privacy", "/refund-policy", "/blog", "/free-practice", "/my-learning", "/practice", "/profile", "/plans"];
 
 // design.md §3.2: logo · dark segmented nav · actions. Below 1024px the segmented nav and
 // auth buttons hide and a dark hamburger opens a drop-down panel.
@@ -202,7 +202,7 @@ function AccountMenu({ user, features, contact, onNavigate, compact = false }: {
             <span className="block truncate text-sm text-secondary-foreground">{user.email}</span>
           </span>
         </div>
-        <Link href={user.planSummary ? "/profile#plans" : "/chapters"} className="mt-3 flex items-center justify-between gap-2 rounded-md bg-card/80 px-3 py-2 text-[13px] font-semibold text-foreground">
+        <Link href={user.planSummary ? "/plans" : "/chapters"} className="mt-3 flex items-center justify-between gap-2 rounded-md bg-card/80 px-3 py-2 text-[13px] font-semibold text-foreground">
           <span>{user.planSummary ?? "No active plan yet. Start with any chapter."}</span>
           <span aria-hidden className="text-primary">→</span>
         </Link>
@@ -224,7 +224,7 @@ function AccountMenu({ user, features, contact, onNavigate, compact = false }: {
         )}
         <Link href="/my-learning" className={item}><PlayCircle className={icon} /> My Learning</Link>
         <Link href="/profile" className={item}><User className={icon} /> Profile</Link>
-        <Link href="/profile#plans" className={item}><CalendarClock className={icon} /> Plan validity &amp; renewal</Link>
+        <Link href="/plans" className={item}><CalendarClock className={icon} /> Plan validity &amp; renewal</Link>
         {features.referAndEarn && <Link href="/profile#refer" className={item}><Gift className={icon} /> Refer &amp; Earn</Link>}
         {rule}
         <a href={`https://wa.me/${contact.whatsapp}`} target="_blank" rel="noreferrer" className={item}><MessageCircle className="size-[18px] flex-none text-ok" /> WhatsApp support</a>

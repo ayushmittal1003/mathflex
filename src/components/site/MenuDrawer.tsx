@@ -75,7 +75,7 @@ export function MenuDrawer({
             <>
               <div className="mx-4 my-2 border-t border-border" />
               <Link href="/profile" className={item}><User className="size-5 text-muted-foreground" /> Profile</Link>
-              <Link href="/profile#plans" className={item}><CalendarClock className="size-5 text-muted-foreground" /> Plan validity & renewal</Link>
+              <Link href="/plans" className={item}><CalendarClock className="size-5 text-muted-foreground" /> Plan validity & renewal</Link>
               {features.referAndEarn && <Link href="/profile#refer" className={item}><Gift className="size-5 text-muted-foreground" /> Refer & Earn</Link>}
             </>
           )}
