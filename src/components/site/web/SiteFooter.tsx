@@ -16,7 +16,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
   const linkCls = "text-secondary-foreground transition-colors hover:text-primary";
 
   return (
-    <footer className="relative overflow-hidden border-t border-border bg-card pb-20 md:pb-0">
+    <footer className="relative overflow-hidden bg-card pb-20 md:pb-0">
       <div className={`${container.detail} grid grid-cols-2 gap-x-8 gap-y-10 pt-14 tablet:grid-cols-3 lg:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))]`}>
         <div className="col-span-2 min-w-0 tablet:col-span-3 lg:col-span-1">
           <SiteLogo className="h-[29px]" />

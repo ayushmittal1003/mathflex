@@ -8,6 +8,7 @@ import { WashHero, heroH1, heroLead } from "@/components/site/web/WashHero";
 import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { MentorSection } from "@/components/site/web/home/MentorSection";
 import { AboutPillars } from "@/components/site/web/about/AboutPillars";
+import { StoryTimeline } from "@/components/site/web/about/StoryTimeline";
 import { button, cx, tone } from "@/components/site/web/ui";
 
 export const metadata = { title: "About us", alternates: { canonical: "/about" } };
@@ -85,7 +86,7 @@ export default async function AboutPage() {
 
       {/* What we stand for: proof cards */}
       {pillars.length > 0 && (
-        <section className="overflow-hidden pb-18 pt-24">
+        <section className="overflow-hidden pb-4 pt-24">
           <div className="mx-auto flex w-[min(1240px,calc(100%-48px))] flex-wrap items-end justify-between gap-x-10 gap-y-4">
             <div className="max-w-[640px]">
               <Eyebrow>What we stand for</Eyebrow>
@@ -103,15 +104,13 @@ export default async function AboutPage() {
         </section>
       )}
 
-      <section className="border-t border-border py-22">
-        <div className="mx-auto flex w-[min(1120px,calc(100%-48px))] flex-wrap items-start gap-x-18 gap-y-8">
-          <div className="min-w-0 flex-[1_1_320px] min-[860px]:sticky min-[860px]:top-24">
-            <Eyebrow dot="brand-2">Our story</Eyebrow>
-            <h2 className="mt-5.5 text-[clamp(36px,4.6vw,60px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
-              Great JEE teaching shouldn&apos;t cost <Mark>₹2 lakh</Mark>.
-            </h2>
-          </div>
-          <div className="grid min-w-0 flex-[1.2_1_420px] gap-5 text-lg leading-[1.7] text-secondary-foreground">
+      <section className="py-16 tablet:py-20">
+        <div className="mx-auto w-[min(1120px,calc(100%-48px))]">
+          <Eyebrow dot="brand-2">Our story</Eyebrow>
+          <h2 className="mt-5.5 max-w-[1000px] text-[clamp(34px,4.4vw,58px)] font-extrabold leading-[1.06] tracking-[-0.045em] text-balance">
+            Great JEE teaching shouldn&apos;t cost <Mark>₹2 lakh</Mark>.
+          </h2>
+          <div className="mt-9 gap-12 text-lg leading-[1.7] text-secondary-foreground tablet:columns-2 [&>p]:mb-5 [&>p]:break-inside-avoid">
             {about.story.map((p) => <p key={p.slice(0, 20)} className="text-pretty">{fillFaq(p, vars)}</p>)}
             {anyFree && minPrice !== null && <p className="text-pretty">{fillFaq(about.storyFree, vars)}</p>}
           </div>
@@ -119,36 +118,12 @@ export default async function AboutPage() {
       </section>
 
       {/* The story so far: timeline */}
-      <section className="border-t border-border py-22">
+      <section className="py-16 tablet:py-20">
         <SectionHead eyebrow="The story so far" dot="gold" title={<>From one student to <Mark>every chapter</Mark></>} lead="No decades of history yet. Just the road that led here, and where you come in." />
-        <ol className="mx-auto mt-14 grid w-[min(1180px,calc(100%-48px))] gap-0 min-[960px]:grid-cols-5">
-          {timeline.map((t, i) => {
-            const last = i === timeline.length - 1;
-            return (
-              <li key={t.tag} className="relative flex gap-5 pb-9 min-[960px]:block min-[960px]:pb-0 min-[960px]:pr-6">
-                {/* connector: vertical on phones, horizontal on wide screens */}
-                {!last && <span aria-hidden className="absolute left-[11px] top-7 h-[calc(100%-12px)] w-0.5 bg-border min-[960px]:left-7 min-[960px]:top-[11px] min-[960px]:h-0.5 min-[960px]:w-[calc(100%-12px)]" />}
-                <span
-                  className={cx(
-                    "relative z-10 grid size-6 shrink-0 place-items-center rounded-full border-[3px]",
-                    t.you ? "border-primary bg-card shadow-[0_0_0_6px_color-mix(in_oklab,var(--primary)_14%,transparent)]" : t.tag === "Today" ? "border-foreground bg-foreground" : "border-foreground bg-card",
-                  )}
-                >
-                  {t.you && <i className="size-2 animate-pulse rounded-full bg-primary" />}
-                </span>
-                <div className="min-w-0 min-[960px]:mt-6">
-                  <div className={cx("font-mono text-xs font-bold uppercase tracking-[0.08em]", t.you ? "text-primary" : "text-muted-foreground")}>{t.tag}</div>
-                  <h3 className="mt-2 text-xl font-extrabold leading-[1.2] tracking-[-0.02em]">{t.t}</h3>
-                  <p className="mt-2 text-[15px] leading-[1.55] text-secondary-foreground">{t.d}</p>
-                  {t.you && <Link href="/chapters" className="mt-3 inline-flex text-sm font-bold text-primary">Find yours →</Link>}
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+        <StoryTimeline steps={timeline} />
       </section>
 
-      <section className="border-t border-border py-22">
+      <section className="py-16 tablet:py-20">
         <SectionHead eyebrow="What we solve" title={<>JEE prep is <Mark>broken</Mark> for most students</>} lead="Most students lose marks in a handful of chapters. The usual options make them pay for everything to fix those few." />
         <div className="mx-auto mt-12 w-[min(1000px,calc(100%-48px))]">
           <div className="grid grid-cols-2 gap-x-6 border-b-2 border-foreground pb-3 text-xs font-extrabold uppercase tracking-[0.1em] text-muted-foreground tablet:grid-cols-[160px_1fr_1fr]">
@@ -168,7 +143,7 @@ export default async function AboutPage() {
 
       {/* What you can learn with us: offerings */}
       {offerings.length > 0 && (
-        <section className="border-t border-border py-22">
+        <section className="py-16 tablet:py-20">
           <SectionHead eyebrow="Our offerings" dot="ok" title={<>What you can learn <Mark>with us</Mark></>} lead="Start with one chapter, take a whole class, or plan your prep with a call." />
           <div className="mx-auto mt-12 grid w-[min(1180px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-4">
             {offerings.map((o, i) => (
@@ -199,7 +174,7 @@ export default async function AboutPage() {
         </section>
       )}
 
-      <section className="border-t border-border py-22">
+      <section className="py-16 tablet:py-20">
         <SectionHead
           eyebrow="Why chapter-wise"
           title={<>Fix the chapter that&apos;s <Mark>costing you</Mark> marks</>}
@@ -216,11 +191,11 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <div className="border-t border-border">
+      <div>
         <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} />
       </div>
 
-      <section className="border-t border-border px-6 pb-26 pt-22 text-center">
+      <section className="px-6 pb-26 pt-22 text-center">
         <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           That&apos;s why we&apos;re here: so you get your <Mark>seat</Mark> too.
         </h2>

@@ -173,7 +173,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
       </section>
 
       {bundles.length > 0 && (
-        <section id="bundles" className="scroll-mt-16 border-t border-border py-22">
+        <section id="bundles" className="scroll-mt-16 py-16 tablet:py-20">
           <div className="mx-auto flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-16 gap-y-10">
             <div className="min-w-0 flex-[1_1_360px]">
               <Eyebrow>Complete courses</Eyebrow>

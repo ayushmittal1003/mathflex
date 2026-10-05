@@ -355,7 +355,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
       </section>
 
       {related.length > 0 && (
-        <section className="border-t border-border pb-24 pt-18">
+        <section className="pb-24 pt-18">
           <div className="mx-auto w-[min(1180px,calc(100%-48px))]">
             <div className="flex items-baseline justify-between gap-4">
               <h2 className="text-[clamp(28px,3vw,38px)] font-extrabold tracking-[-0.035em]">More from Class {chapter.classLevel}</h2>

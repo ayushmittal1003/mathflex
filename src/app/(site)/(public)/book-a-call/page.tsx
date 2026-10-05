@@ -87,7 +87,7 @@ export default async function BookACallPage() {
         </div>
       </section>
 
-      <section id="book" className="scroll-mt-20 border-t border-border py-22">
+      <section id="book" className="scroll-mt-20 py-16 tablet:py-20">
         <SectionHead eyebrow="Book your call" title={<>Booked in <Mark>three</Mark> steps</>} lead="Add the call to your order, pay, and our team sets up a time with you on WhatsApp." />
         <div className="mx-auto mt-11 grid w-[min(1080px,calc(100%-48px))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_30px_60px_-36px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
           <div className="flex flex-col border-b border-border p-6 tablet:border-b-0 tablet:border-r tablet:p-7">
@@ -158,11 +158,11 @@ export default async function BookACallPage() {
       </section>
 
 
-      <div className="border-t border-border">
+      <div>
         <MentorSection mentorship={null} names={names} />
       </div>
 
-      <section className="border-t border-border py-22">
+      <section className="py-16 tablet:py-20">
         <div className="mx-auto w-[min(820px,calc(100%-48px))]">
           <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about the call</h2>
           <div className="mt-9"><FaqList items={faqs} /></div>

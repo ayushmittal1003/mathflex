@@ -35,7 +35,7 @@ export default async function FaqPage() {
         </h1>
       </section>
       <FaqBrowser groups={groups} />
-      <section className="border-t border-border px-6 pb-24 pt-18 text-center">
+      <section className="px-6 pb-24 pt-18 text-center">
         <h2 className="mx-auto max-w-[760px] text-[clamp(34px,4.6vw,58px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
           Still have a <Mark>question</Mark>?
         </h2>

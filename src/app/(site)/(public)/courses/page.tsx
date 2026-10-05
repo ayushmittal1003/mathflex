@@ -96,13 +96,13 @@ export default async function Courses() {
       {views.length > 0 && <CourseInside courses={views} />}
 
       {calc && breakeven && (
-        <section className="border-t border-border py-22">
+        <section className="py-16 tablet:py-20">
           <CourseCalculator course={calc} breakeven={breakeven} />
         </section>
       )}
 
       {views.length > 1 && (
-        <section className="border-t border-border py-22">
+        <section className="py-16 tablet:py-20">
           <div className="mx-auto w-[min(1000px,calc(100%-48px))]">
             <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Compare courses</h2>
             <div className="no-scrollbar mt-10 overflow-x-auto">
@@ -133,18 +133,18 @@ export default async function Courses() {
         </section>
       )}
 
-      <div className="border-t border-border">
+      <div>
         <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} />
       </div>
 
-      <section className="border-t border-border py-22">
+      <section className="py-16 tablet:py-20">
         <div className="mx-auto w-[min(820px,calc(100%-48px))]">
           <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about courses</h2>
           <div className="mt-9"><FaqList items={faqs} initialOpen={-1} /></div>
         </div>
       </section>
 
-      <section className="border-t border-border px-6 pb-26 pt-22 text-center">
+      <section className="px-6 pb-26 pt-22 text-center">
         <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           Not sure yet? {freePreview ? <>Watch a <Mark>free</Mark> Part 1 first.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
