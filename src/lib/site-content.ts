@@ -46,6 +46,25 @@ export const instructorChapterLine = "builds every part around the questions tha
 
 export const about = {
   storyVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
+  // {fullName}, {minPrice} are filled at render time. The last story line only shows when
+  // free previews exist.
+  story: [
+    "{fullName} cracked JEE and studied at IIT Delhi. Over the years he has guided more than 1,000 JEE aspirants, and he kept hearing the same thing: students were stuck on a few chapters, but the only way to get help was a coaching course that cost lakhs or an online bundle with the whole syllabus.",
+    "So we built Mathflex around one idea. Pay for the chapter you're stuck on, not the whole course. Every chapter is split into short parts, with practice after each one, so you can fix a weak topic in a weekend.",
+  ],
+  storyFree: "Part 1 of the chapters marked free costs nothing. Watch it, and if it clicks, the rest of the chapter starts at {minPrice}.",
+  // "The usual way" vs "The Mathflex way". {minPrice}/{fullPrice} are live.
+  problems: [
+    { k: "Cost", bad: "₹1–2 lakh for coaching, ₹30,000+ for online bundles", good: "From {minPrice} a chapter{fullPriceLine}" },
+    { k: "What you buy", bad: "The whole syllabus, even the chapters you're good at", good: "Only the chapters you need" },
+    { k: "How you learn", bad: "Long lectures, fixed batch timings", good: "Short parts you watch any time" },
+    { k: "Practice", bad: "Separate test series, often at extra cost", good: "DPPs and past JEE questions after every part" },
+  ],
+  rules: [
+    { t: "Pay per chapter", d: "You shouldn't have to buy the whole syllabus to fix one weak topic. Every chapter is sold on its own." },
+    { t: "Watch before you pay", d: "Chapters marked “Part 1 free” let you watch Part 1 with no card and no sign-up. If it doesn't click, you've lost nothing.", needsFree: true },
+    { t: "Practice right after", d: "Every part ends with practice problems and past JEE questions, so what you watched turns into marks." },
+  ],
 };
 
 const DEFAULT_MENTOR = "Karan";

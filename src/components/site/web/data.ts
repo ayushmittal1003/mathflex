@@ -51,3 +51,18 @@ export async function getInsideData(settings: Settings) {
   ]);
   return { chapters: chapters.map((c) => ({ ...c, hasFreePart: false })), resources, leaders };
 }
+
+// Brand panel on log in / sign up: a few real chapters and live proof points.
+export async function getAuthPanel(settings: Settings) {
+  const [rows, min, free] = await Promise.all([
+    db.chapter.findMany({ where: { isPublished: true }, orderBy: [{ jeeWeightage: "desc" }], take: 3, select: { title: true, symbol: true, coverFrom: true, coverTo: true } }),
+    db.chapter.aggregate({ where: { isPublished: true }, _min: { price: true } }),
+    settings.features.freePreviews ? db.part.count({ where: { isFreePreview: true, chapter: { isPublished: true } } }) : Promise.resolve(0),
+  ]);
+  const tagline = [
+    ...(free > 0 ? ["Part 1 free"] : []),
+    ...(min._min.price != null ? [`From ₹${min._min.price.toLocaleString("en-IN")} a chapter`] : []),
+    "Taught by an IIT Delhi alumnus",
+  ];
+  return { rows, tagline };
+}
