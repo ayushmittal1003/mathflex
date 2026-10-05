@@ -17,8 +17,8 @@ export function SiteFooter({ settings }: { settings: Settings }) {
 
   return (
     <footer className="relative overflow-hidden border-t border-border bg-card pb-20 md:pb-0">
-      <div className={`${container.detail} grid grid-cols-2 gap-x-8 gap-y-10 pt-14 tablet:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))]`}>
-        <div className="col-span-2 min-w-0 tablet:col-span-1">
+      <div className={`${container.detail} grid grid-cols-2 gap-x-8 gap-y-10 pt-14 tablet:grid-cols-3 lg:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))]`}>
+        <div className="col-span-2 min-w-0 tablet:col-span-3 lg:col-span-1">
           <SiteLogo className="h-[29px]" />
           <p className="mt-3.5 max-w-[340px] text-sm leading-[1.55] text-muted-foreground">
             Chapter-wise JEE maths for Class 11 and 12, taught by IIT Delhi alumnus {names.full}.
@@ -66,6 +66,9 @@ export function SiteFooter({ settings }: { settings: Settings }) {
           <Link href="/about" className={linkCls}>About us</Link>
           <Link href="/contact" className={linkCls}>Contact us</Link>
           <Link href="/faq" className={linkCls}>FAQs</Link>
+        </FooterCol>
+        <FooterCol title="Resources">
+          <Link href="/blog" className={linkCls}>Blog</Link>
         </FooterCol>
         <FooterCol title="Support">
           {/* Placeholder phone: shown as text, not a dialable link. */}

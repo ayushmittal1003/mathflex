@@ -26,10 +26,12 @@ export const knownSocials: Partial<Record<keyof typeof placeholders.socials, str
 // shortName everywhere on the site (CTAs, call booking, FAQs, tips, leaderboard, upsells);
 // fullName only where he's formally introduced (instructor sections, author boxes, About).
 export const instructor = {
-  shortName: "Karan sir",
+  shortName: "Karan bhaiya",
   fullName: "Karan Mittal",
   title: "B.Tech, IIT Delhi",
   introVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
+  // Portrait for the Book a call card, e.g. "/brand/karan.jpg" in public/. null shows a placeholder.
+  photo: null as string | null,
   studentsGuided: "1,000+", // real figure from the founder
   bio: "cracked JEE and studied at IIT Delhi. He has spent his career building learning products, including at Allen, and has mentored 1,000+ JEE aspirants along the way. Every Mathflex video is built around the questions that actually show up in the exam.",
   credentials: [
