@@ -32,7 +32,7 @@ export function StoryTimeline({ steps }: { steps: Step[] }) {
         if (b.top < window.innerHeight * 0.85) s++;
         if (b.top + 14 < line) p++;
       });
-      setShown(s);
+      setShown((prev) => Math.max(prev, s)); // once revealed, a card stays visible
       setPassed(p);
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };

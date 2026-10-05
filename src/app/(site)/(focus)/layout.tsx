@@ -10,7 +10,7 @@ export default async function FocusLayout({ children }: { children: React.ReactN
     <div className="site-light min-h-dvh bg-[color-mix(in_oklab,var(--muted)_45%,var(--card))] text-foreground">
       <ToastProvider>
         {children}
-        <SiteExtras settings={settings} />
+        <SiteExtras settings={settings} tabBar={false} lifted={false} />
       </ToastProvider>
     </div>
   );

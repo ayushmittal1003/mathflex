@@ -40,7 +40,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
                 role="tab"
                 aria-selected={n === cls}
                 onClick={() => { setCls(n); setSelId(null); setQ(""); }}
-                className={cx("rounded-md px-4.5 py-2 text-sm font-bold transition-colors", n === cls ? "bg-card text-foreground" : "text-white/75 hover:text-white")}
+                className={cx("tap relative rounded-md px-4.5 py-2 text-sm font-bold transition-colors", n === cls ? "bg-card text-foreground" : "text-white/75 hover:text-white")}
               >
                 Class {n}
               </button>

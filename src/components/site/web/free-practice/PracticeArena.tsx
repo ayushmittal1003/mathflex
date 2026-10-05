@@ -124,7 +124,7 @@ export function PracticeArena({ questions }: { questions: PracticeQ[] }) {
                       aria-label={`Question ${i + 1}${state === "new" ? "" : state === "right" ? ", correct" : ", wrong"}`}
                       aria-current={x.id === q.id}
                       className={cx(
-                        "grid aspect-square place-items-center rounded-md font-mono text-xs font-bold transition",
+                        "tap relative grid aspect-square place-items-center rounded-md font-mono text-xs font-bold transition",
                         state === "right" ? "bg-ok text-white" : state === "wrong" ? "bg-bad text-white" : "bg-muted text-secondary-foreground hover:bg-border",
                         x.id === q.id && "ring-2 ring-foreground ring-offset-2 ring-offset-card",
                       )}

@@ -25,7 +25,7 @@ export function BlogBrowser({ posts }: { posts: BlogPost[] }) {
 
   const chip = (active: boolean) =>
     cx(
-      "shrink-0 rounded-full border px-4 py-2 text-sm font-bold transition duration-200 ease-mf",
+      "tap relative shrink-0 rounded-full border px-4 py-2 text-sm font-bold transition duration-200 ease-mf",
       active ? "border-foreground bg-foreground text-card" : "border-border bg-card text-secondary-foreground hover:border-foreground/40",
     );
 

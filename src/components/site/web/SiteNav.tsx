@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BookOpen, CalendarClock, Gift, GraduationCap, LayoutGrid, LogOut, Mail, MessageCircle, PlayCircle, Shield, Target, Trophy, User } from "lucide-react";
+import { BookOpen, CalendarClock, Gift, GraduationCap, Home, LayoutGrid, LogOut, Mail, MessageCircle, PlayCircle, Shield, ShoppingBag, Target, Trophy, User } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import { useCart } from "../cart-store";
 import { SiteLogo } from "./SiteLogo";
@@ -21,11 +21,13 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
   const pathname = usePathname();
   const cartCount = useCart().length;
   // The menu is open for the page it was opened on, so navigating closes it.
-  const [openOn, setOpenOn] = useState<{ path: string; menu: "nav" | "account" } | null>(null);
+  const [openOn, setOpenOn] = useState<{ path: string; menu: "nav" | "account" | "more" } | null>(null);
   const open = openOn?.path === pathname && openOn.menu === "nav";
   const accountOpen = openOn?.path === pathname && openOn.menu === "account";
   const setOpen = (v: boolean) => setOpenOn(v ? { path: pathname, menu: "nav" } : null);
   const setAccountOpen = (v: boolean) => setOpenOn(v ? { path: pathname, menu: "account" } : null);
+  const moreOpen = openOn?.path === pathname && openOn.menu === "more";
+  const setMoreOpen = (v: boolean) => setOpenOn(v ? { path: pathname, menu: "more" } : null);
   const accountRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!accountOpen) return;
@@ -59,6 +61,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
   const secondary = onWash ? tone.glass : "border border-border bg-card text-foreground hover:brightness-97";
 
   return (
+    <>
     <header
       className={cx(
         stuck
@@ -141,12 +144,21 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
             )}
           </div>
 
+          {/* Phones: account button (the rest lives in the bottom bar's More sheet). */}
+          {user ? (
+            <button type="button" onClick={() => setMoreOpen(true)} aria-label="Account menu" className="grid size-[42px] place-items-center rounded-full text-sm font-bold text-white ring-2 ring-white tablet:hidden" style={{ background: user.avatarColor }}>
+              {user.name.trim()[0]?.toUpperCase() ?? "?"}
+            </button>
+          ) : (
+            <Link href="/login" className={cx(button.sm, secondary, "h-[42px] tablet:hidden")}>Log in</Link>
+          )}
+
           <button
             type="button"
             onClick={() => setOpen(!open)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            className="grid size-[42px] place-items-center rounded-lg bg-foreground text-card lg:hidden"
+            className="hidden size-[42px] place-items-center rounded-lg bg-foreground text-card tablet:grid lg:hidden"
           >
             <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden>
               {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
@@ -183,6 +195,9 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
         </div>
       )}
     </header>
+    <MobileTabBar pathname={pathname} user={user} features={features} onMore={() => setMoreOpen(!moreOpen)} moreOpen={moreOpen} />
+    {moreOpen && <MoreSheet user={user} features={features} contact={contact} onClose={() => setOpenOn(null)} />}
+    </>
   );
 }
 
@@ -237,4 +252,105 @@ function AccountMenu({ user, features, contact, onNavigate, compact = false }: {
       </nav>
     </div>
   );
+}
+
+// Phones (< 760px): app-style bottom bar. Tablets and up use the top nav instead.
+function MobileTabBar({ pathname, user, features, onMore, moreOpen }: { pathname: string; user: SiteNavUser; features: Features; onMore: () => void; moreOpen: boolean }) {
+  const tabs = [
+    { href: "/", label: "Home", icon: Home },
+    { href: "/chapters", label: "Chapters", icon: BookOpen },
+    ...(user
+      ? [{ href: "/my-learning", label: "Learning", icon: PlayCircle }, { href: features.practice ? "/practice" : "/free-practice", label: "Practice", icon: Target }]
+      : [{ href: "/courses", label: "Courses", icon: GraduationCap }, { href: "/free-practice", label: "Practice", icon: Target }]),
+  ];
+  const item = "relative flex h-full flex-col items-center justify-center gap-0.5 text-[11px] font-bold";
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/94 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_30px_-20px_rgb(0_0_0/0.3)] backdrop-blur-xl tablet:hidden" aria-label="Quick links">
+      <ul className="grid h-16 grid-cols-5">
+        {tabs.map(({ href, label, icon: Icon }) => {
+          const active = !moreOpen && (href === "/" ? pathname === "/" : pathname.startsWith(href));
+          return (
+            <li key={href}>
+              <Link href={href} aria-current={active ? "page" : undefined} className={cx(item, active ? "text-primary" : "text-muted-foreground")}>
+                {active && <span className="absolute top-0 h-[3px] w-8 rounded-b-full bg-primary" aria-hidden />}
+                <Icon className="size-[22px]" strokeWidth={active ? 2.5 : 2} />
+                {label}
+              </Link>
+            </li>
+          );
+        })}
+        <li>
+          <button type="button" onClick={onMore} aria-expanded={moreOpen} className={cx(item, "w-full", moreOpen ? "text-primary" : "text-muted-foreground")}>
+            {moreOpen && <span className="absolute top-0 h-[3px] w-8 rounded-b-full bg-primary" aria-hidden />}
+            <span className="relative">
+              <LayoutGrid className="size-[22px]" strokeWidth={moreOpen ? 2.5 : 2} />
+            </span>
+            More
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
+}
+
+// The More sheet: everything that isn't in the bottom bar, plus the account menu.
+function MoreSheet({ user, features, contact, onClose }: { user: SiteNavUser; features: Features; contact: Contact; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
+  }, [onClose]);
+  const tile = "flex min-h-[64px] flex-col justify-center gap-0.5 rounded-lg bg-muted px-3.5 py-2.5 text-[15px] font-bold text-foreground";
+  const links = [
+    { href: "/courses", label: "Complete courses", sub: "Every chapter, one price" },
+    { href: "/pricing", label: "Pricing", sub: "Chapters and courses" },
+    ...(features.leaderboard ? [{ href: "/leaderboard", label: "Leaderboard", sub: "This week's top students" }] : []),
+    { href: "/free-practice", label: "Free practice", sub: "Easy to hard sets" },
+    { href: "/blog", label: "Blog", sub: "Study tips and guides" },
+    { href: "/book-a-call", label: "Book a 1:1 call", sub: "With Karan bhaiya" },
+    { href: "/about", label: "About us", sub: "Our story" },
+    { href: "/faq", label: "Help centre", sub: "FAQs and support" },
+  ];
+  return (
+    <div className="fixed inset-0 z-[55] tablet:hidden" role="dialog" aria-modal aria-label="More">
+      <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-black/45 backdrop-blur-[2px]" />
+      <div className="absolute inset-x-0 bottom-0 max-h-[88dvh] animate-mf-rise overflow-y-auto rounded-t-2xl bg-card px-4 pb-[calc(80px+env(safe-area-inset-bottom))] pt-3 text-foreground shadow-[0_-30px_60px_-20px_rgb(0_0_0/0.4)]" onClick={(e) => { if ((e.target as HTMLElement).closest("a")) onClose(); }}>
+        <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-border" aria-hidden />
+        {user ? (
+          <AccountMenu user={user} features={features} contact={contact} onNavigate={onClose} compact />
+        ) : (
+          <div className="rounded-lg bg-wash p-4">
+            <div className="text-lg font-extrabold tracking-[-0.02em]">Learn JEE maths, chapter by chapter</div>
+            <div className="mt-3 flex gap-2">
+              <Link href="/login" className={cx(button.md, "flex-1 border border-border bg-card text-foreground")}>Log in</Link>
+              <Link href="/signup" className={cx(button.md, tone.primary, "flex-1")}>Start free</Link>
+            </div>
+          </div>
+        )}
+        <Link href="/checkout" className="mt-3 flex min-h-[52px] items-center justify-between rounded-lg border border-border px-4 text-[15px] font-bold">
+          <span className="flex items-center gap-2.5"><ShoppingBag className="size-[18px] text-muted-foreground" /> Cart</span>
+          <CartCount />
+        </Link>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          {links.map((l) => (
+            <Link key={l.href} href={l.href} className={tile}>
+              {l.label}
+              <span className="text-xs font-semibold text-muted-foreground">{l.sub}</span>
+            </Link>
+          ))}
+        </div>
+        {!user && (
+          <a href={`https://wa.me/${contact.whatsapp}`} target="_blank" rel="noreferrer" className="mt-3 flex min-h-[52px] items-center gap-2.5 rounded-lg border border-border px-4 text-[15px] font-bold">
+            <MessageCircle className="size-[18px] text-ok" /> WhatsApp support
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CartCount() {
+  const n = useCart().length;
+  return n ? <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-white">{n} item{n === 1 ? "" : "s"}</span> : <span className="text-sm font-semibold text-muted-foreground">Empty</span>;
 }

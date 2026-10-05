@@ -55,7 +55,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
         <div className="mx-auto flex w-[min(1000px,calc(100%-48px))] flex-wrap items-center gap-x-3 gap-y-2.5 py-3">
           <div className="flex shrink-0 gap-0.5 rounded-lg bg-foreground p-1">
             {Object.entries(periods).map(([k, label]) => (
-              <Link key={k} href={`/leaderboard?p=${k}`} scroll={false} aria-current={k === period ? "page" : undefined} className={cx("whitespace-nowrap rounded-md px-3 py-[7px] text-[13px] font-bold", k === period ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
+              <Link key={k} href={`/leaderboard?p=${k}`} scroll={false} aria-current={k === period ? "page" : undefined} className={cx("tap relative whitespace-nowrap rounded-md px-3 py-[7px] text-[13px] font-bold", k === period ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
                 {label}
               </Link>
             ))}
@@ -63,7 +63,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
           {classes.length > 0 && (
             <div className="flex shrink-0 gap-1.5">
               {(["all", ...classes] as const).map((c) => (
-                <button key={c} type="button" onClick={() => setCls(c)} aria-pressed={cls === c} className={cx("whitespace-nowrap rounded-lg border px-3 py-2 text-[13px] font-bold", cls === c ? "border-foreground bg-foreground text-white" : "border-border bg-card text-foreground")}>
+                <button key={c} type="button" onClick={() => setCls(c)} aria-pressed={cls === c} className={cx("tap relative whitespace-nowrap rounded-lg border px-3 py-2 text-[13px] font-bold", cls === c ? "border-foreground bg-foreground text-white" : "border-border bg-card text-foreground")}>
                   {c === "all" ? "All" : classLabel(c)}
                 </button>
               ))}
@@ -120,7 +120,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
           <p className="mt-5 text-center text-sm text-muted-foreground">Showing the top {rows.length} students. Rankings refresh when you reload the page.</p>
 
           {signedIn && (
-            <div className="sticky bottom-[calc(84px+env(safe-area-inset-bottom))] z-20 mt-6 flex h-[68px] items-center gap-3.5 rounded-xl bg-foreground px-4 text-white shadow-[0_24px_44px_-18px_rgb(0_0_0/0.5)] md:bottom-4">
+            <div className="sticky bottom-[calc(80px+env(safe-area-inset-bottom))] z-20 mt-6 flex h-[68px] items-center gap-3.5 rounded-xl bg-foreground px-4 text-white shadow-[0_24px_44px_-18px_rgb(0_0_0/0.5)] tablet:bottom-4">
               {me ? (
                 <>
                   <span className="shrink-0 text-base font-extrabold text-brand-2">#{me.rank}</span>

@@ -41,7 +41,7 @@ export default async function NotFound() {
   ];
 
   return (
-    <div className="site-light min-h-dvh overflow-x-clip bg-card text-foreground">
+    <div className="site-light min-h-dvh overflow-x-clip bg-card pb-[calc(64px+env(safe-area-inset-bottom))] text-foreground tablet:pb-0">
       <ToastProvider>
         <div className="relative">
           <SiteNav {...nav} />

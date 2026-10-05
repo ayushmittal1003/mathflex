@@ -68,7 +68,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               <span className="text-[13px] text-secondary-foreground">Popular:</span>
               {popular.map((p) => (
-                <button key={p.id} type="button" onClick={() => { setQ(p.title); goList(); }} className="rounded-full border border-white/95 bg-white/75 px-3 py-1.5 text-[13px] font-semibold text-foreground transition hover:bg-card">
+                <button key={p.id} type="button" onClick={() => { setQ(p.title); goList(); }} className="tap relative rounded-full border border-white/95 bg-white/75 px-3 py-1.5 text-[13px] font-semibold text-foreground transition hover:bg-card">
                   {p.title}
                 </button>
               ))}
@@ -116,11 +116,11 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
           <label className="flex h-10 max-w-[340px] flex-[1_1_220px] items-center gap-2 rounded-lg border border-border bg-card px-3">
             <svg className="size-[15px] shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search chapters" aria-label="Search chapters" className="min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground" />
-            {q && <button type="button" onClick={() => setQ("")} aria-label="Clear search" className="grid size-5.5 shrink-0 place-items-center rounded-full bg-muted text-[13px] leading-none">×</button>}
+            {q && <button type="button" onClick={() => setQ("")} aria-label="Clear search" className="tap relative grid size-5.5 shrink-0 place-items-center rounded-full bg-muted text-[13px] leading-none">×</button>}
           </label>
           <div className="flex shrink-0 gap-0.5 rounded-lg bg-foreground p-1">
             {(["all", ...classes] as const).map((v) => (
-              <button key={v} type="button" onClick={() => setCls(v)} aria-pressed={cls === v} className={cx("whitespace-nowrap rounded-md px-3 py-[7px] text-[13px] font-bold", cls === v ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
+              <button key={v} type="button" onClick={() => setCls(v)} aria-pressed={cls === v} className={cx("tap relative whitespace-nowrap rounded-md px-3 py-[7px] text-[13px] font-bold", cls === v ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
                 {v === "all" ? "All" : `Class ${v}`}
               </button>
             ))}
@@ -134,7 +134,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
             <svg className="pointer-events-none absolute right-2.5 top-1/2 size-[13px] -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m6 9 6 6 6-6" /></svg>
           </div>
           {anyFree && (
-            <button type="button" role="switch" aria-checked={freeOnly} onClick={() => setFreeOnly((f) => !f)} className="flex shrink-0 items-center gap-2.5 whitespace-nowrap text-[13px] font-bold text-foreground">
+            <button type="button" role="switch" aria-checked={freeOnly} onClick={() => setFreeOnly((f) => !f)} className="tap relative flex shrink-0 items-center gap-2.5 whitespace-nowrap text-[13px] font-bold text-foreground">
               <span className={cx("relative h-5 w-9 rounded-full transition-colors", freeOnly ? "bg-ok" : "bg-border")}>
                 <span className={cx("absolute top-0.5 size-4 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.25)] transition-[left]", freeOnly ? "left-[18px]" : "left-0.5")} />
               </span>

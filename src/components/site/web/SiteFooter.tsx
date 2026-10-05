@@ -36,7 +36,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
                 target={s.href.startsWith("http") ? "_blank" : undefined}
                 rel="noreferrer"
                 aria-label={`Mathflex on ${s.label}`}
-                className="grid size-9 place-items-center rounded-lg border border-border bg-secondary text-secondary-foreground transition hover:scale-[1.06] hover:text-primary"
+                className="tap relative grid size-9 place-items-center rounded-lg border border-border bg-secondary text-secondary-foreground transition hover:scale-[1.06] hover:text-primary"
               >
                 {s.key === "instagram" ? (
                   <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

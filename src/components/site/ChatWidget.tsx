@@ -26,7 +26,7 @@ function RichText({ text }: { text: string }) {
   );
 }
 
-export function ChatWidget({ name, greeting }: { name: string; greeting: string }) {
+export function ChatWidget({ name, greeting, lifted: liftedProp = true }: { name: string; greeting: string; lifted?: boolean }) {
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -65,14 +65,14 @@ export function ChatWidget({ name, greeting }: { name: string; greeting: string 
   }
 
   // Keep the button clear of the phone tab bar and the video player controls.
-  const lifted = !pathname.startsWith("/learn/");
+  const lifted = liftedProp && !pathname.startsWith("/learn/");
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`fixed right-4 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-primary to-brand-2 py-3 pl-3 pr-4 font-bold text-white shadow-cta transition hover:scale-105 md:bottom-6 md:right-6 ${
-          lifted ? "bottom-[calc(76px+env(safe-area-inset-bottom))]" : "bottom-4"
+        className={`fixed right-4 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-primary to-brand-2 py-3 pl-3 pr-4 font-bold text-white shadow-cta transition hover:scale-105 tablet:bottom-6 tablet:right-6 ${
+          lifted ? "bottom-[calc(80px+env(safe-area-inset-bottom))]" : "bottom-4"
         } ${open ? "scale-0" : ""}`}
         aria-label={`Open ${name} chat`}
       >

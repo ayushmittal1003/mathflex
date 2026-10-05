@@ -18,7 +18,7 @@ export default async function PublicLayout({ children }: { children: React.React
   ]);
 
   return (
-    <div className="site-light min-h-dvh overflow-x-clip bg-card text-foreground">
+    <div className="site-light min-h-dvh overflow-x-clip bg-card pb-[calc(64px+env(safe-area-inset-bottom))] text-foreground tablet:pb-0">
       <ToastProvider>
       {/* Admin-managed running ticker, kept from the original shell. */}
       <Marquee items={marquee.map((m) => ({ id: m.id, title: m.title, href: m.ctaHref }))} />
@@ -27,7 +27,7 @@ export default async function PublicLayout({ children }: { children: React.React
         <main>{children}</main>
       </div>
       <SiteFooter settings={settings} />
-      <SiteExtras settings={settings} />
+      <SiteExtras settings={settings} tabBar={false} />
       </ToastProvider>
     </div>
   );

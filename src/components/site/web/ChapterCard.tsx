@@ -80,7 +80,7 @@ export function ChapterCard({ c, index = 0 }: { c: CardChapter; index?: number }
           aria-label={inCart ? `Remove ${c.title} from cart` : `Add ${c.title} to cart`}
           aria-pressed={inCart}
           className={cx(
-            "absolute right-2.5 top-2.5 grid size-[34px] place-items-center rounded-full shadow-[0_4px_12px_rgb(0_0_0/0.2)] transition hover:scale-[1.08]",
+            "tap absolute right-2.5 top-2.5 grid size-[34px] place-items-center rounded-full shadow-[0_4px_12px_rgb(0_0_0/0.2)] transition hover:scale-[1.08]",
             inCart ? "bg-ok text-white" : "bg-card text-foreground",
           )}
         >

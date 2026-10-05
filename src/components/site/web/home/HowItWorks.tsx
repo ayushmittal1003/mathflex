@@ -43,7 +43,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
               key={s.kicker}
               data-how-step={i}
               onClick={() => setStep(i)}
-              className={cx("min-h-[58vh] cursor-pointer pb-10 pt-2 transition-opacity duration-400", i === step ? "opacity-100" : "opacity-35")}
+              className={cx("cursor-pointer pb-8 pt-2 transition-opacity duration-400 tablet:min-h-[58vh] tablet:pb-10", i === step ? "opacity-100" : "tablet:opacity-35")}
             >
               <div className="flex items-center gap-3">
                 <span className={cx("rounded-md px-2 py-1 font-mono text-[13px] font-bold transition-colors duration-300", i === step ? "bg-foreground text-card" : "bg-muted text-muted-foreground")}>
@@ -57,7 +57,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
           ))}
         </div>
 
-        <div className="sticky top-6 z-[2] min-w-0 flex-[1.15_1_380px]">
+        <div className="z-[2] min-w-0 flex-[1.15_1_380px] tablet:sticky tablet:top-6">
           <div className="h-[480px] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-frame tablet:h-[520px]">
             <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5">
               <span className="truncate text-[13px] font-bold">My Learning · {chapter.title}</span>
