@@ -79,8 +79,9 @@ export function SiteNav({ user, leaderboard }: { user: SiteNavUser; leaderboard:
             className={cx("relative grid size-[42px] place-items-center rounded-lg transition hover:scale-[1.06]", secondary)}
           >
             <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M6 7h12l-1 13H7z" />
-              <path d="M9 7a3 3 0 0 1 6 0" />
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+              <path d="M3 6h18" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
             {cartCount > 0 && (
               <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground">

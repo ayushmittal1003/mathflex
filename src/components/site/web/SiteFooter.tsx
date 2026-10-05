@@ -75,7 +75,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
         </FooterCol>
       </div>
 
-      <div className={`${container.detail} mt-12 flex flex-wrap justify-between gap-3 border-t border-border py-5 text-[13px] text-muted-foreground`}>
+      <div className={`${container.detail} relative z-10 mt-12 flex flex-wrap justify-between gap-3 border-t border-border py-5 text-[13px] text-muted-foreground`}>
         <span>© {new Date().getFullYear()} Mathflex · mathflex.in</span>
         <div className="flex flex-wrap gap-5">
           <Link href="/terms" className="hover:text-foreground">Terms &amp; conditions</Link>
@@ -86,7 +86,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
 
       <div
         aria-hidden
-        className="mb-[-0.06em] select-none whitespace-nowrap text-center text-[clamp(90px,21vw,300px)] font-black leading-[0.78] tracking-[-0.06em] text-wordmark"
+        className="pointer-events-none relative z-0 mb-[-0.06em] select-none whitespace-nowrap text-center text-[clamp(90px,21vw,300px)] font-black leading-[0.78] tracking-[-0.06em] text-wordmark"
       >
         mathflex
       </div>
