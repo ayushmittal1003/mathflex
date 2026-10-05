@@ -5,14 +5,9 @@ import { useRouter } from "next/navigation";
 import { Trash2, Tag, PhoneCall, ShieldCheck, ShoppingBag, Loader2 } from "lucide-react";
 import { cart, useCart } from "./cart-store";
 import { getQuote, placeOrder } from "@/app/actions/checkout";
+import { load } from "@cashfreepayments/cashfree-js";
 import type { Quote } from "@/lib/pricing";
 import { inr } from "@/lib/format";
-
-declare global {
-  interface Window {
-    Paytm?: { CheckoutJS: { init: (c: unknown) => Promise<void>; invoke: () => void; onLoad: (cb: () => void) => void } };
-  }
-}
 
 export function CartView(props: {
   mentorship: { enabled: boolean; price: number; title: string; blurb: string; mentor: string };
@@ -27,6 +22,8 @@ export function CartView(props: {
   const [couponInput, setCouponInput] = useState("");
   const [mentor, setMentor] = useState(props.initialMentorship);
   const [error, setError] = useState<string | null>(null);
+  const [needPhone, setNeedPhone] = useState(false);
+  const [phone, setPhone] = useState("");
   const [paying, startPay] = useTransition();
   const [loading, startLoad] = useTransition();
 
@@ -39,10 +36,13 @@ export function CartView(props: {
   function pay() {
     setError(null);
     startPay(async () => {
-      const res = await placeOrder(items, coupon, mentor);
+      const res = await placeOrder(items, coupon, mentor, needPhone ? phone : undefined);
       if (!res.ok) {
         if (res.login) router.push(`/login?next=${encodeURIComponent("/cart" + (mentor ? "?mentorship=1" : ""))}`);
-        else setError(res.error);
+        else {
+          if (res.needPhone) setNeedPhone(true);
+          setError(res.error);
+        }
         return;
       }
       if (res.mode === "free") {
@@ -52,32 +52,22 @@ export function CartView(props: {
         cart.clear();
         router.push(`/payment/mock?order=${res.orderId}`);
       } else {
-        await openPaytm(res);
+        await openCashfree(res.paymentSessionId, res.env);
       }
     });
   }
 
-  async function openPaytm(res: { orderNo: string; txnToken: string; amount: number; scriptUrl: string }) {
-    await new Promise<void>((resolve, reject) => {
-      if (window.Paytm?.CheckoutJS) return resolve();
-      const s = document.createElement("script");
-      s.src = res.scriptUrl;
-      s.crossOrigin = "anonymous";
-      s.onload = () => resolve();
-      s.onerror = () => reject(new Error("Could not load Paytm"));
-      document.body.appendChild(s);
-    });
-    const config = {
-      root: "",
-      flow: "DEFAULT",
-      data: { orderId: res.orderNo, token: res.txnToken, tokenType: "TXN_TOKEN", amount: res.amount.toFixed(2) },
-      handler: { notifyMerchant: (event: string) => event === "APP_CLOSED" && setError("Payment cancelled.") },
-    };
-    window.Paytm!.CheckoutJS.onLoad(async () => {
-      await window.Paytm!.CheckoutJS.init(config);
-      cart.clear();
-      window.Paytm!.CheckoutJS.invoke();
-    });
+  // Official Cashfree JS SDK. It takes over the tab and returns to our return URL,
+  // where the server confirms the payment. The cart is cleared only once it's paid.
+  async function openCashfree(paymentSessionId: string, mode: "sandbox" | "production") {
+    try {
+      const cashfree = await load({ mode });
+      if (!cashfree) throw new Error("Cashfree didn't load");
+      const result = await cashfree.checkout({ paymentSessionId, redirectTarget: "_self" });
+      if (result?.error) setError(result.error.message || "Payment was not completed.");
+    } catch {
+      setError("Couldn't open the payment page. Check your connection and try again.");
+    }
   }
 
   if (empty) {
@@ -146,12 +136,29 @@ export function CartView(props: {
           {!!quote?.tax && <div className="flex justify-between"><dt className="text-muted">GST</dt><dd className="font-semibold">{inr(quote.tax)}</dd></div>}
           <div className="flex justify-between border-t border-border pt-3 text-lg"><dt className="font-bold">Total</dt><dd className="font-display font-extrabold">{inr(quote?.total ?? 0)}</dd></div>
         </dl>
+        {needPhone && (
+          <label className="mt-4 block text-sm">
+            <span className="font-semibold">Mobile number</span>
+            <span className="mt-1 flex items-center gap-2">
+              <span className="rounded-xl bg-surface-2 px-3 py-2.5 font-semibold text-muted">+91</span>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                inputMode="numeric"
+                autoComplete="tel-national"
+                placeholder="10-digit mobile"
+                className="input"
+              />
+            </span>
+            <span className="mt-1 block text-xs text-muted">Needed by the payment gateway for receipts. Saved to your profile.</span>
+          </label>
+        )}
         {error && <p className="mt-3 rounded-xl bg-bad/10 p-3 text-sm font-medium text-bad">{error}</p>}
         <button onClick={pay} disabled={paying || loading || !quote?.lines.length} className="btn btn-primary mt-5 w-full !py-3.5 text-base">
           {paying ? <Loader2 className="size-5 animate-spin" /> : null}
           {props.loggedIn ? `Pay ${inr(quote?.total ?? 0)}` : "Log in to pay"}
         </button>
-        <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted"><ShieldCheck className="size-4" /> Secure payment via Paytm · UPI, cards, netbanking</p>
+        <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted"><ShieldCheck className="size-4" /> Secure payment via Cashfree · UPI, cards, netbanking</p>
       </aside>
     </div>
   );

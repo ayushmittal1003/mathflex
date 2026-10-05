@@ -1,6 +1,6 @@
 import { getSettings, DEFAULT_SETTINGS } from "@/lib/settings";
 import { requireStaff } from "@/lib/auth";
-import { paytmConfigured } from "@/lib/paytm";
+import { cashfreeConfigured, cashfreeMode } from "@/lib/cashfree";
 import { Card, Field, PageHeader, Toggle, SubmitButton } from "@/components/admin/ui";
 import { saveSettings } from "../actions";
 
@@ -54,12 +54,14 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
       <Card title="Payments">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Payment mode" hint={paytmConfigured() ? "Paytm keys found on the server." : "Paytm keys not found — set PAYTM_MID and PAYTM_MERCHANT_KEY."}>
-            <select name="paymentMode" defaultValue={s.paymentMode} className="input">
-              <option value="mock">Test mode (no real money)</option>
-              <option value="paytm">Live Paytm</option>
-            </select>
-          </Field>
+          <div className="text-sm">
+            <p className="font-semibold">Payment gateway</p>
+            <p className="mt-1 flex items-center gap-2">
+              <span className={`size-2.5 rounded-full ${cashfreeConfigured() ? (cashfreeMode() === "production" ? "bg-ok" : "bg-gold") : "bg-bad"}`} />
+              {cashfreeConfigured() ? `Cashfree · ${cashfreeMode() === "production" ? "live (real money)" : "sandbox (test money)"}` : "Cashfree not connected"}
+            </p>
+            <p className="mt-1 text-xs text-muted">Set by the server environment: CASHFREE_APP_ID, CASHFREE_SECRET_KEY and CASHFREE_ENV (sandbox or production). Redeploy after changing them.</p>
+          </div>
           <Field label="GST on top (%)" hint="0 if your prices already include tax"><input name="gstPercent" type="number" step="0.01" defaultValue={s.gstPercent} className="input" /></Field>
         </div>
       </Card>

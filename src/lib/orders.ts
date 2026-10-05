@@ -3,7 +3,7 @@ import { db } from "./db";
 import { quoteCart, evaluateCoupon, type CartLine } from "./pricing";
 import type { Prisma } from "@/generated/prisma/client";
 
-export async function createOrder(userId: string, items: CartLine[], couponCode: string | null, mentorship: boolean) {
+export async function createOrder(userId: string, items: CartLine[], couponCode: string | null, mentorship: boolean, gateway: "cashfree" | "mock") {
   const quote = await quoteCart(items, { userId, couponCode, mentorship });
   if (quote.lines.length === 0) throw new Error("Your cart is empty (or you already own everything in it).");
   const orderNo = `MF${Date.now().toString(36).toUpperCase()}${randomInt(100, 999)}`;
@@ -15,6 +15,7 @@ export async function createOrder(userId: string, items: CartLine[], couponCode:
       discount: quote.discount,
       total: quote.total,
       couponCode: quote.coupon?.code ?? null,
+      gateway,
       items: {
         create: quote.lines.map((l) => ({ itemType: l.type, itemId: l.id, title: l.title, price: l.price })),
       },
@@ -23,11 +24,22 @@ export async function createOrder(userId: string, items: CartLine[], couponCode:
   });
 }
 
-// Idempotent: safe to call from both the Paytm callback and a status re-check.
+// Idempotent and race-safe: the webhook and the browser's return can confirm the same
+// order at the same moment. Claiming the order with a conditional update locks the row,
+// so only one caller ever creates the entitlements.
 export async function fulfilOrder(orderId: string, gateway: { txnId?: string; raw?: unknown }) {
   return db.$transaction(async (tx) => {
+    const claimed = await tx.order.updateMany({
+      where: { id: orderId, status: { not: "PAID" } },
+      data: {
+        status: "PAID",
+        paidAt: new Date(),
+        gatewayTxnId: gateway.txnId,
+        gatewayRaw: (gateway.raw ?? undefined) as Prisma.InputJsonValue | undefined,
+      },
+    });
     const order = await tx.order.findUniqueOrThrow({ where: { id: orderId }, include: { items: true } });
-    if (order.status === "PAID") return order;
+    if (claimed.count === 0) return order; // already paid by an earlier call
 
     const [chapters, courses] = await Promise.all([
       tx.chapter.findMany({ where: { id: { in: order.items.filter((i) => i.itemType === "CHAPTER").map((i) => i.itemId!) } } }),
@@ -58,15 +70,7 @@ export async function fulfilOrder(orderId: string, gateway: { txnId?: string; ra
         await tx.couponRedemption.create({ data: { couponId: coupon.id, userId: order.userId, orderId: order.id } });
       }
     }
-    return tx.order.update({
-      where: { id: order.id },
-      data: {
-        status: "PAID",
-        paidAt: new Date(),
-        gatewayTxnId: gateway.txnId,
-        gatewayRaw: (gateway.raw ?? undefined) as Prisma.InputJsonValue | undefined,
-      },
-    });
+    return order;
   });
 }
 

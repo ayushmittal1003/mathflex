@@ -12,7 +12,8 @@ import { saveFile, readStoredFile, keyFromUrl, urlForKey, deleteStoredFile } fro
 import { bunnyConfigured, bunnyHealth, bunnyVideoInfo, createBunnyUpload, normalizeBunnyRef } from "@/lib/video";
 import { extractKnowledge } from "@/lib/flexcare";
 import { fulfilOrder } from "@/lib/orders";
-import { fetchOrderStatus, paytmConfigured } from "@/lib/paytm";
+import { cashfreeConfigured } from "@/lib/cashfree";
+import { syncCashfreeOrder } from "@/lib/payments";
 import { bool, date, int, list, num, optInt, slugify, str } from "@/lib/form";
 import type { AnswerFormat, BannerKind, CouponType, QuestionType, ResourceType, VideoProvider } from "@/generated/prisma/enums";
 
@@ -433,26 +434,46 @@ export async function deleteCourse(id: string) {
 
 /* ---------------- Coupons ---------------- */
 
-export async function saveCoupon(form: FormData) {
+export type CouponState = { ok?: string; error?: string } | undefined;
+
+export async function saveCoupon(_: CouponState, form: FormData): Promise<CouponState> {
   const me = await requireStaff("coupons");
   const id = str(form, "id");
   const data = {
     code: str(form, "code").toUpperCase().replace(/\s+/g, ""),
     description: str(form, "description"),
-    type: str(form, "type") as CouponType,
+    type: (str(form, "type") === "FLAT" ? "FLAT" : "PERCENT") as CouponType,
     value: int(form, "value"),
     maxDiscount: optInt(form, "maxDiscount"),
-    minAmount: int(form, "minAmount"),
+    minAmount: Math.max(0, int(form, "minAmount")),
     usageLimit: optInt(form, "usageLimit"),
-    perUserLimit: int(form, "perUserLimit", 1),
+    perUserLimit: Math.max(1, int(form, "perUserLimit", 1)),
     startsAt: date(form, "startsAt"),
     endsAt: date(form, "endsAt"),
     isActive: bool(form, "isActive"),
     isPublic: bool(form, "isPublic"),
   };
-  const c = id ? await db.coupon.update({ where: { id }, data }) : await db.coupon.create({ data });
+  if (!/^[A-Z0-9_-]{3,30}$/.test(data.code)) return { error: "Use 3–30 letters, numbers, - or _ for the code." };
+  if (data.type === "PERCENT" && (data.value < 1 || data.value > 100)) return { error: "A percent coupon must be between 1 and 100." };
+  if (data.type === "FLAT" && data.value < 1) return { error: "A flat discount must be at least ₹1." };
+  if (data.maxDiscount !== null && data.maxDiscount < 1) return { error: "Max discount must be at least ₹1, or leave it blank." };
+  if (data.usageLimit !== null && data.usageLimit < 1) return { error: "Total uses must be at least 1, or leave it blank for unlimited." };
+  if (data.startsAt && data.endsAt && data.endsAt <= data.startsAt) return { error: "The end time must be after the start time." };
+
+  const clash = await db.coupon.findUnique({ where: { code: data.code }, select: { id: true } });
+  if (clash && clash.id !== id) return { error: `A coupon with code ${data.code} already exists. Open it in the list above to edit it.` };
+
+  let c;
+  try {
+    c = id ? await db.coupon.update({ where: { id }, data }) : await db.coupon.create({ data });
+  } catch (e) {
+    // Two saves racing on the same new code.
+    if ((e as { code?: string }).code === "P2002") return { error: `A coupon with code ${data.code} already exists.` };
+    throw e;
+  }
   await audit(me, id ? "coupon.update" : "coupon.create", `${id ? "Updated" : "Created"} coupon ${c.code} (${c.type === "PERCENT" ? `${c.value}%` : `₹${c.value}`}${c.isActive ? "" : ", inactive"})`, { entity: "coupon", id: c.id });
   revalidatePath("/admin/coupons");
+  return { ok: id ? `Saved ${c.code}.` : `Created ${c.code}.` };
 }
 
 export async function deleteCoupon(id: string) {
@@ -516,13 +537,13 @@ export async function refundOrder(id: string) {
   revalidatePath("/admin/orders");
 }
 
-export async function recheckPaytm(id: string) {
-  await requireStaff("orders");
-  if (!paytmConfigured()) return;
+// Ask Cashfree for the real status of a pending order (e.g. if a webhook was missed).
+export async function recheckPayment(id: string) {
+  const me = await requireStaff("orders");
   const order = await db.order.findUniqueOrThrow({ where: { id } });
-  const s = await fetchOrderStatus(order.orderNo);
-  if (s.status === "TXN_SUCCESS" && Math.round(s.amount) === order.total) await fulfilOrder(id, { txnId: s.txnId, raw: s.raw });
-  else if (s.status === "TXN_FAILURE") await db.order.update({ where: { id }, data: { status: "FAILED" } });
+  if (order.gateway !== "cashfree" || !cashfreeConfigured()) return;
+  const result = await syncCashfreeOrder(order.orderNo);
+  await audit(me, "order.recheck", `Re-checked order ${order.orderNo} with Cashfree: ${result}`, { entity: "user", id: order.userId, meta: { orderId: id } });
   revalidatePath("/admin/orders");
 }
 
@@ -537,6 +558,24 @@ export async function setBlocked(userId: string, blocked: boolean) {
   await db.user.update({ where: { id: userId }, data: { isBlocked: blocked } });
   await audit(me, blocked ? "user.block" : "user.unblock", `${blocked ? "Blocked" : "Unblocked"} ${target.name} (${target.email})`, { entity: "user", id: userId });
   revalidatePath(`/admin/students/${userId}`);
+}
+
+// Permanent. Progress, attempts and access go with the account (cascade). Paid or refunded
+// orders are financial records, so those students can only be blocked, never deleted.
+export async function deleteStudent(userId: string) {
+  const me = await requireStaff("students");
+  if (me.id === userId) return;
+  const target = await db.user.findUniqueOrThrow({ where: { id: userId } });
+  if (isStaff(target.role)) throw new Error("Remove them from the team first, then delete the account.");
+  const settled = await db.order.count({ where: { userId, status: { in: ["PAID", "REFUNDED"] } } });
+  if (settled) throw new Error("This student has paid orders, which we must keep for accounts. Block the account instead.");
+  await db.$transaction([
+    db.order.deleteMany({ where: { userId } }),
+    db.user.delete({ where: { id: userId } }),
+  ]);
+  await audit(me, "user.delete", `Deleted ${target.name} (${target.email})`, { entity: "user", id: userId });
+  revalidatePath("/admin/students");
+  redirect("/admin/students");
 }
 
 // Shared by the single and bulk grant forms. Returns the entitlements created.
@@ -640,7 +679,6 @@ export async function saveSettings(form: FormData) {
     saveSetting("mentorshipTitle", str(form, "mentorshipTitle")),
     saveSetting("mentorshipBlurb", str(form, "mentorshipBlurb")),
     saveSetting("gstPercent", num(form, "gstPercent")),
-    saveSetting("paymentMode", str(form, "paymentMode") === "paytm" ? "paytm" : "mock"),
     saveSetting("features", features),
     saveSetting("xp", xp),
     saveSetting("marking", marking),

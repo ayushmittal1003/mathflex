@@ -2,10 +2,10 @@ import Link from "next/link";
 import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { inr } from "@/lib/format";
-import { paytmConfigured } from "@/lib/paytm";
+import { cashfreeConfigured } from "@/lib/cashfree";
 import { PageHeader, Table, Td, Badge } from "@/components/admin/ui";
 import { ConfirmButton, ActionButton } from "@/components/admin/ConfirmButton";
-import { markOrderPaid, refundOrder, recheckPaytm } from "../actions";
+import { markOrderPaid, refundOrder, recheckPayment } from "../actions";
 import type { OrderStatus } from "@/generated/prisma/enums";
 
 export const metadata = { title: "Orders" };
@@ -23,10 +23,10 @@ export default async function Orders({ searchParams }: { searchParams: Promise<{
     take: 200,
     include: { user: { select: { id: true, name: true, email: true } }, items: true },
   });
-  const paytm = paytmConfigured();
+  const cashfree = cashfreeConfigured();
   return (
     <div>
-      <PageHeader title="Orders & payments" subtitle="Every checkout. Mark offline payments as paid, refund, or re-check a pending Paytm order." />
+      <PageHeader title="Orders & payments" subtitle="Every checkout. Mark offline payments as paid, refund, or re-check a pending Cashfree order." />
       <form className="mb-4 flex flex-wrap gap-2">
         <input name="q" defaultValue={q} placeholder="Order no. or email" className="input max-w-xs" />
         <select name="status" defaultValue={status ?? ""} className="input max-w-[160px]">
@@ -46,9 +46,9 @@ export default async function Orders({ searchParams }: { searchParams: Promise<{
             <Td className="whitespace-nowrap text-xs text-muted">{o.createdAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })}</Td>
             <Td>
               <div className="flex gap-1">
-                {o.status === "PENDING" && paytm && <ActionButton action={recheckPaytm.bind(null, o.id)}>Re-check</ActionButton>}
+                {(o.status === "PENDING" || o.status === "FAILED") && cashfree && o.gateway === "cashfree" && <ActionButton action={recheckPayment.bind(null, o.id)}>Re-check</ActionButton>}
                 {(o.status === "PENDING" || o.status === "FAILED") && <ConfirmButton action={markOrderPaid.bind(null, o.id)} message="Mark as paid and unlock access? Only do this if you received the money." className="!bg-ok/15 !text-ok">Mark paid</ConfirmButton>}
-                {o.status === "PAID" && <ConfirmButton action={refundOrder.bind(null, o.id)} message="Mark refunded and REMOVE the student's access from this order? (Refund the money in your Paytm dashboard.)">Refund</ConfirmButton>}
+                {o.status === "PAID" && <ConfirmButton action={refundOrder.bind(null, o.id)} message="Mark refunded and REMOVE the student's access from this order? (Refund the money in your Cashfree dashboard.)">Refund</ConfirmButton>}
               </div>
             </Td>
           </tr>
