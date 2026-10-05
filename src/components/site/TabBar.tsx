@@ -8,7 +8,8 @@ import { useCart } from "./cart-store";
 export function TabBar({ leaderboard, practice }: { leaderboard: boolean; practice: boolean }) {
   const pathname = usePathname();
   const count = useCart().length;
-  if (pathname.startsWith("/learn/")) return null;
+  // Hidden in the player and at checkout (checkout has its own sticky pay bar).
+  if (pathname.startsWith("/learn/") || pathname.startsWith("/checkout")) return null;
   const tabs = [
     { href: "/", label: "Home", icon: Home },
     { href: "/browse", label: "Browse", icon: Search },

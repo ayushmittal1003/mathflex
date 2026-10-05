@@ -215,3 +215,11 @@ export const pricingFaqs: (Faq & { needs?: "free" | "gst" })[] = [
   { q: "Is GST included?", a: "GST at {gstPercent}% is added to the total at checkout, before you pay.", needs: "gst" },
   { q: "What if it isn't right for me?", a: "Watch a free Part 1 first where it's available. For how refunds work, see the [refund policy](/refund-policy)." },
 ];
+
+// Thank-you page "Your first week" steps. Copy only; links are set on the page.
+export const firstWeek = [
+  { t: "Watch Part 1", d: "Short, focused parts. Pause and rewind as much as you like.", cta: "Start now" },
+  { t: "Clear the practice set", d: "Practice right after the part, with worked solutions for every answer you get wrong.", cta: "How practice works" },
+  { t: "Keep your streak", d: "Study a little every day to build your streak and earn XP.", cta: "View leaderboard" },
+  { t: "Revise with notes", d: "Open your chapter's notes any time for quick revision.", cta: "Go to My Learning" },
+];
