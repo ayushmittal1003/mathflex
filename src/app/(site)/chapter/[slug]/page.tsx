@@ -63,7 +63,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
           {chapter.symbol}
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-bg to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
         <div className="relative mx-auto max-w-[1500px] px-4 pb-16 pt-[calc(var(--nav-h)+3rem)] md:px-8 md:pb-24">
           <nav className="text-sm font-semibold text-white/70">
             <Link href="/browse">Chapters</Link> / <Link href={`/browse?class=${chapter.classLevel}`}>Class {chapter.classLevel}</Link>
@@ -98,7 +98,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
               <div className="flex items-baseline gap-3">
                 <span className="font-display text-4xl font-extrabold">{inr(chapter.price)}</span>
                 {off > 0 && <span className="text-lg text-white/60 line-through">{inr(chapter.mrp)}</span>}
-                {off > 0 && <span className="rounded-full bg-green-500 px-2.5 py-0.5 text-sm font-bold">{off}% OFF</span>}
+                {off > 0 && <span className="rounded-full bg-ok px-2.5 py-0.5 text-sm font-bold">{off}% OFF</span>}
               </div>
               <p className="mt-1 text-sm text-white/70">{chapter.validityDays} days access · all parts, DPPs, PYQs & notes</p>
               <div className="mt-5 flex flex-wrap gap-3">
@@ -119,20 +119,20 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
         {/* Episodes */}
         <section>
           <h2 className="font-display text-2xl font-extrabold">Parts</h2>
-          <p className="text-sm text-muted">{settings.features.sequentialUnlock ? "Finish a part's video and practice set to unlock the next one." : "Watch in any order."}</p>
+          <p className="text-sm text-muted-foreground">{settings.features.sequentialUnlock ? "Finish a part's video and practice set to unlock the next one." : "Watch in any order."}</p>
           <ol className="mt-5 space-y-3">
             {chapter.parts.map((p) => {
               const st = states.get(p.id)!;
               const pr = progMap.get(p.id);
               const pct = p.durationSec ? Math.min(1, (pr?.watchedSec ?? 0) / p.durationSec) : 0;
               const body = (
-                <div className={`card group flex gap-4 p-3 transition sm:p-4 ${st === "locked" ? "opacity-60" : "hover:border-brand/60"}`}>
+                <div className={`card group flex gap-4 p-3 transition sm:p-4 ${st === "locked" ? "opacity-60" : "hover:border-primary/60"}`}>
                   <div className="relative grid aspect-video w-28 shrink-0 place-items-center overflow-hidden rounded-xl sm:w-44" style={{ background: `linear-gradient(135deg, ${chapter.coverFrom}, ${chapter.coverTo})` }}>
                     <span className="font-display text-3xl font-extrabold text-white/90 sm:text-5xl">{p.order}</span>
                     <span className="absolute inset-0 grid place-items-center bg-black/30 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
                       {st === "locked" ? <Lock className="size-6 text-white" /> : st === "done" ? <CheckCircle2 className="size-8 text-white" /> : <Play className="size-8 fill-white text-white" />}
                     </span>
-                    {pct > 0 && <span className="absolute inset-x-0 bottom-0 h-1 bg-black/30"><span className="block h-full bg-brand" style={{ width: `${pct * 100}%` }} /></span>}
+                    {pct > 0 && <span className="absolute inset-x-0 bottom-0 h-1 bg-black/30"><span className="block h-full bg-primary" style={{ width: `${pct * 100}%` }} /></span>}
                   </div>
                   <div className="min-w-0 flex-1 py-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -140,8 +140,8 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                       {p.isFreePreview && !owned && <span className="rounded-md bg-ok/15 px-1.5 py-0.5 text-[11px] font-bold text-ok">FREE</span>}
                       {st === "done" && <span className="rounded-md bg-ok/15 px-1.5 py-0.5 text-[11px] font-bold text-ok">DONE</span>}
                     </div>
-                    <p className="mt-1 line-clamp-2 text-sm text-muted">{p.summary}</p>
-                    <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-muted">
+                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{p.summary}</p>
+                    <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-muted-foreground">
                       {p.durationSec > 0 && <span className="flex items-center gap-1"><Clock className="size-3.5" />{duration(p.durationSec)}</span>}
                       {p._count.questions > 0 && <span className="flex items-center gap-1"><ListChecks className="size-3.5" />{p._count.questions} questions</span>}
                       <span className="text-xp">+{p.xpReward} XP</span>
@@ -156,7 +156,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
           {chapter.description && (
             <div className="mt-10">
               <h2 className="font-display text-2xl font-extrabold">About this chapter</h2>
-              <p className="mt-3 whitespace-pre-line leading-relaxed text-muted">{chapter.description}</p>
+              <p className="mt-3 whitespace-pre-line leading-relaxed text-muted-foreground">{chapter.description}</p>
             </div>
           )}
         </section>
@@ -191,11 +191,11 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                   return (
                     <li key={r.id}>
                       {open ? (
-                        <a href={r.fileUrl} target="_blank" className="flex items-center gap-3 rounded-xl bg-surface-2 p-3 text-sm font-semibold hover:text-brand">
+                        <a href={r.fileUrl} target="_blank" className="flex items-center gap-3 rounded-xl bg-surface-2 p-3 text-sm font-semibold hover:text-primary">
                           <FileText className="size-4 shrink-0" /> {r.title}
                         </a>
                       ) : (
-                        <span className="flex items-center gap-3 rounded-xl bg-surface-2 p-3 text-sm font-semibold text-muted"><Lock className="size-4 shrink-0" /> {r.title}</span>
+                        <span className="flex items-center gap-3 rounded-xl bg-surface-2 p-3 text-sm font-semibold text-muted-foreground"><Lock className="size-4 shrink-0" /> {r.title}</span>
                       )}
                     </li>
                   );
@@ -225,8 +225,8 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 function Inc({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
   return (
     <li className="flex items-start gap-3">
-      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand"><Icon className="size-4" /></span>
-      <span className="flex-1"><span className="block font-semibold">{label}</span><span className="text-muted">{value}</span></span>
+      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary"><Icon className="size-4" /></span>
+      <span className="flex-1"><span className="block font-semibold">{label}</span><span className="text-muted-foreground">{value}</span></span>
     </li>
   );
 }

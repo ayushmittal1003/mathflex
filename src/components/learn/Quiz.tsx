@@ -47,13 +47,13 @@ export function Quiz({
   if (locked) {
     return (
       <div className="card grid place-items-center p-10 text-center">
-        <Lock className="size-10 text-muted" />
+        <Lock className="size-10 text-muted-foreground" />
         <p className="mt-3 font-bold">Practice unlocks after the video</p>
-        <p className="mt-1 max-w-xs text-sm text-muted">Watch this part to the end to unlock its DPPs and PYQs. They cover only the topics in this part.</p>
+        <p className="mt-1 max-w-xs text-sm text-muted-foreground">Watch this part to the end to unlock its DPPs and PYQs. They cover only the topics in this part.</p>
       </div>
     );
   }
-  if (!questions.length) return <div className="card p-8 text-center text-muted">No practice questions for this part yet.</div>;
+  if (!questions.length) return <div className="card p-8 text-center text-muted-foreground">No practice questions for this part yet.</div>;
 
   const q = visible[Math.min(idx, visible.length - 1)];
   const res = q ? results[q.id] : undefined;
@@ -84,12 +84,12 @@ export function Quiz({
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex gap-1 rounded-full bg-surface-2 p-1 text-sm font-semibold">
           {(["ALL", "DPP", "PYQ"] as const).map((f) => (
-            <button key={f} onClick={() => { setFilter(f); setIdx(0); }} className={`rounded-full px-3.5 py-1.5 ${filter === f ? "bg-surface shadow" : "text-muted"}`}>
+            <button key={f} onClick={() => { setFilter(f); setIdx(0); }} className={`rounded-full px-3.5 py-1.5 ${filter === f ? "bg-card shadow" : "text-muted-foreground"}`}>
               {f === "ALL" ? "All" : f === "DPP" ? "DPPs" : "PYQs"}
             </button>
           ))}
         </div>
-        <span className="text-sm font-semibold text-muted">{answered}/{questions.length} done</span>
+        <span className="text-sm font-semibold text-muted-foreground">{answered}/{questions.length} done</span>
       </div>
 
       {/* progress dots */}
@@ -101,8 +101,8 @@ export function Quiz({
               key={v.id}
               onClick={() => { setIdx(i); shownAt.current = Date.now(); }}
               className={`grid size-8 shrink-0 place-items-center rounded-lg text-xs font-bold transition ${
-                i === idx ? "ring-2 ring-brand ring-offset-2 ring-offset-bg" : ""
-              } ${r ? (r.isCorrect ? "bg-ok text-white" : "bg-bad text-white") : "bg-surface-2 text-muted"}`}
+                i === idx ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
+              } ${r ? (r.isCorrect ? "bg-ok text-white" : "bg-bad text-white") : "bg-surface-2 text-muted-foreground"}`}
               aria-label={`Question ${i + 1}`}
             >
               {i + 1}
@@ -115,15 +115,15 @@ export function Quiz({
         <div className="card relative p-5 sm:p-6">
           {xpPop && <span className="animate-pop absolute right-5 top-5 flex items-center gap-1 rounded-full bg-xp px-3 py-1 text-sm font-bold text-white"><Zap className="size-4" /> +{xpPop} XP</span>}
           <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
-            <span className={`rounded-md px-2 py-0.5 ${q.type === "PYQ" ? "bg-gold/20 text-gold" : "bg-brand/10 text-brand"}`}>{q.type}</span>
-            {q.exam && <span className="rounded-md bg-surface-2 px-2 py-0.5 text-muted">{q.exam}{q.year ? ` ${q.year}` : ""}</span>}
-            <span className="text-muted">{["", "Easy", "Medium", "Hard"][q.difficulty]}</span>
+            <span className={`rounded-md px-2 py-0.5 ${q.type === "PYQ" ? "bg-gold/20 text-gold" : "bg-primary/10 text-primary"}`}>{q.type}</span>
+            {q.exam && <span className="rounded-md bg-surface-2 px-2 py-0.5 text-muted-foreground">{q.exam}{q.year ? ` ${q.year}` : ""}</span>}
+            <span className="text-muted-foreground">{["", "Easy", "Medium", "Hard"][q.difficulty]}</span>
             <button
               onClick={async () => setMarks({ ...marks, [q.id]: await toggleBookmark(q.id) })}
               className="ml-auto grid size-9 place-items-center rounded-full hover:bg-surface-2"
               aria-label="Bookmark question"
             >
-              {marks[q.id] ? <BookmarkCheck className="size-5 fill-brand text-brand" /> : <Bookmark className="size-5 text-muted" />}
+              {marks[q.id] ? <BookmarkCheck className="size-5 fill-primary text-primary" /> : <Bookmark className="size-5 text-muted-foreground" />}
             </button>
           </div>
           <p className="mt-3 whitespace-pre-line text-lg font-semibold leading-relaxed">{q.prompt}</p>
@@ -137,7 +137,7 @@ export function Quiz({
                   disabled={!!res || pending}
                   onClick={() => choose(i)}
                   className={`flex items-center gap-3 rounded-2xl border-2 p-3.5 text-left font-medium transition ${
-                    isAns ? "border-ok bg-ok/10" : isWrongPick ? "border-bad bg-bad/10" : res ? "border-border opacity-60" : "border-border hover:border-brand active:scale-[0.99]"
+                    isAns ? "border-ok bg-ok/10" : isWrongPick ? "border-bad bg-bad/10" : res ? "border-border opacity-60" : "border-border hover:border-primary active:scale-[0.99]"
                   }`}
                 >
                   <span className={`grid size-8 shrink-0 place-items-center rounded-full text-sm font-bold ${isAns ? "bg-ok text-white" : isWrongPick ? "bg-bad text-white" : "bg-surface-2"}`}>
@@ -161,7 +161,7 @@ export function Quiz({
           <div className="mt-5 flex items-center justify-between gap-2">
             <button onClick={() => go(-1)} disabled={idx === 0} className="btn btn-ghost">Back</button>
             {!res ? (
-              <button onClick={() => choose(null)} disabled={pending} className="text-sm font-semibold text-muted underline-offset-2 hover:underline">Skip</button>
+              <button onClick={() => choose(null)} disabled={pending} className="text-sm font-semibold text-muted-foreground underline-offset-2 hover:underline">Skip</button>
             ) : (
               <span />
             )}

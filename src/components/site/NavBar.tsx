@@ -42,7 +42,7 @@ export function NavBar({ user, features, contact, ticker }: NavProps & { ticker?
     <>
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 pt-[env(safe-area-inset-top)] ${
-          transparent ? "bg-gradient-to-b from-black/70 to-transparent text-white" : "border-b border-border bg-bg/85 backdrop-blur-xl"
+          transparent ? "bg-gradient-to-b from-black/70 to-transparent text-white" : "border-b border-border bg-background/85 backdrop-blur-xl"
         }`}
       >
         {ticker}
@@ -73,11 +73,11 @@ export function NavBar({ user, features, contact, ticker }: NavProps & { ticker?
           <div className="ml-auto flex items-center gap-1">
             {user && (
               <Link href="/my-learning" className="mr-1 hidden items-center gap-3 rounded-full bg-black/20 px-3 py-1.5 text-sm font-bold sm:flex dark:bg-white/5">
-                <span className="flex items-center gap-1 text-orange-400">
+                <span className="flex items-center gap-1 text-brand-2">
                   <Flame className="size-4" />
                   {user.streak}
                 </span>
-                <span className="flex items-center gap-1 text-violet-400">
+                <span className="flex items-center gap-1 text-xp">
                   <Zap className="size-4" />
                   {user.xp.toLocaleString("en-IN")}
                 </span>
@@ -90,7 +90,7 @@ export function NavBar({ user, features, contact, ticker }: NavProps & { ticker?
             <Link href="/cart" className="relative grid size-10 place-items-center rounded-full hover:bg-white/10" aria-label="Cart">
               <ShoppingBag className="size-5" />
               {cartCount > 0 && (
-                <span className="animate-pop absolute right-0.5 top-0.5 grid size-5 place-items-center rounded-full bg-brand text-[11px] font-bold text-white">
+                <span className="animate-pop absolute right-0.5 top-0.5 grid size-5 place-items-center rounded-full bg-primary text-[11px] font-bold text-white">
                   {cartCount}
                 </span>
               )}

@@ -15,10 +15,10 @@ export function PracticeTrend({ data }: { data: Day[] }) {
   return (
     <div className="card p-5">
       <h3 className="font-bold">Questions practised</h3>
-      <p className="text-sm text-muted">{total} in the last 14 days</p>
+      <p className="text-sm text-muted-foreground">{total} in the last 14 days</p>
 
       <div className="relative mt-6 flex gap-2" aria-hidden>
-        <div className="flex h-[160px] flex-col justify-between text-right text-[11px] text-muted">
+        <div className="flex h-[160px] flex-col justify-between text-right text-[11px] text-muted-foreground">
           <span>{nice}</span><span>{nice / 2}</span><span>0</span>
         </div>
         <div className="relative flex-1">
@@ -30,19 +30,19 @@ export function PracticeTrend({ data }: { data: Day[] }) {
               <div key={d.label} className="relative flex h-full flex-1 items-end justify-center" onMouseEnter={() => setHover(i)} onTouchStart={() => setHover(i)}>
                 <div
                   className="w-full max-w-7 rounded-t-[4px] transition-[height,opacity] duration-500"
-                  style={{ height: `${(d.attempted / nice) * h}px`, background: "var(--brand)", opacity: hover === null || hover === i ? 1 : 0.35, minHeight: d.attempted ? 2 : 0 }}
+                  style={{ height: `${(d.attempted / nice) * h}px`, background: "var(--chart-1)", opacity: hover === null || hover === i ? 1 : 0.35, minHeight: d.attempted ? 2 : 0 }}
                 />
                 {hover === i && (
-                  <div className="pointer-events-none absolute bottom-full z-10 mb-2 whitespace-nowrap rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs shadow-lg">
-                    <p className="font-semibold text-muted">{d.label}</p>
-                    <p className="font-bold text-fg">{d.attempted} questions</p>
-                    {d.attempted > 0 && <p className="text-muted">{d.correct} correct · {Math.round((d.correct / d.attempted) * 100)}%</p>}
+                  <div className="pointer-events-none absolute bottom-full z-10 mb-2 whitespace-nowrap rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs shadow-lg">
+                    <p className="font-semibold text-muted-foreground">{d.label}</p>
+                    <p className="font-bold text-foreground">{d.attempted} questions</p>
+                    {d.attempted > 0 && <p className="text-muted-foreground">{d.correct} correct · {Math.round((d.correct / d.attempted) * 100)}%</p>}
                   </div>
                 )}
               </div>
             ))}
           </div>
-          <div className="mt-2 flex gap-[2px] text-[10px] text-muted">
+          <div className="mt-2 flex gap-[2px] text-[10px] text-muted-foreground">
             {data.map((d, i) => <span key={d.label} className="flex-1 text-center">{i % 2 ? "" : d.label.split(" ")[0]}</span>)}
           </div>
         </div>

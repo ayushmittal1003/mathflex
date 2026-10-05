@@ -21,7 +21,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
       <h1 className="mt-6 font-display text-3xl font-extrabold">
         {paid ? "You're in!" : order?.status === "PENDING" ? "Payment processing" : "Payment didn't go through"}
       </h1>
-      <p className="mt-2 text-muted">
+      <p className="mt-2 text-muted-foreground">
         {paid
           ? `Order ${order!.orderNo} · ${inr(order!.total)} paid. Everything is unlocked in My Learning.`
           : order?.status === "PENDING"

@@ -59,13 +59,13 @@ export function AccessWatcher({ initial }: { initial: Snapshot }) {
 
   if (!unlocked.length) return null;
   return (
-    <div role="status" className="animate-rise fixed inset-x-4 bottom-24 z-[70] mx-auto flex max-w-md items-center gap-3 rounded-2xl bg-fg p-4 text-bg shadow-2xl md:bottom-6">
+    <div role="status" className="animate-rise fixed inset-x-4 bottom-24 z-[70] mx-auto flex max-w-md items-center gap-3 rounded-2xl bg-foreground p-4 text-background shadow-2xl md:bottom-6">
       <PartyPopper className="size-6 shrink-0 text-gold" />
       <p className="min-w-0 flex-1 text-sm">
         <b>Unlocked: {unlocked.join(", ")}</b>
         <span className="block opacity-80">It&apos;s in My Learning now.</span>
       </p>
-      <button onClick={() => setUnlocked([])} aria-label="Dismiss" className="grid size-8 place-items-center rounded-full hover:bg-bg/10"><X className="size-4" /></button>
+      <button onClick={() => setUnlocked([])} aria-label="Dismiss" className="grid size-8 place-items-center rounded-full hover:bg-background/10"><X className="size-4" /></button>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Trash2, Tag, PhoneCall, ShieldCheck, ShoppingBag, Loader2 } from "lucide-react";
+import { CircleAlert, Trash2, Tag, PhoneCall, ShieldCheck, ShoppingBag, Loader2 } from "lucide-react";
 import { cart, useCart } from "./cart-store";
 import { getQuote, placeOrder } from "@/app/actions/checkout";
 import { load } from "@cashfreepayments/cashfree-js";
@@ -73,9 +73,9 @@ export function CartView(props: {
   if (empty) {
     return (
       <div className="grid place-items-center py-24 text-center">
-        <div className="grid size-20 place-items-center rounded-full bg-surface-2"><ShoppingBag className="size-9 text-muted" /></div>
+        <div className="grid size-20 place-items-center rounded-full bg-surface-2"><ShoppingBag className="size-9 text-muted-foreground" /></div>
         <h2 className="mt-5 font-display text-2xl font-extrabold">Your cart is empty</h2>
-        <p className="mt-1 text-muted">Pick the one chapter you&apos;re stuck on. That&apos;s the whole point.</p>
+        <p className="mt-1 text-muted-foreground">Pick the one chapter you&apos;re stuck on. That&apos;s the whole point.</p>
         <Link href="/browse" className="btn btn-primary mt-6">Browse chapters</Link>
       </div>
     );
@@ -88,26 +88,26 @@ export function CartView(props: {
           <div key={l.id} className="card flex items-center gap-4 p-4">
             <div className="grid size-14 shrink-0 place-items-center rounded-xl bg-brand-gradient font-display text-xl font-extrabold text-white">{l.type === "COURSE" ? "Σ" : "∫"}</div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold uppercase tracking-wider text-muted">{l.type === "COURSE" ? "Complete course" : "Chapter"}</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{l.type === "COURSE" ? "Complete course" : "Chapter"}</p>
               <p className="truncate font-bold">{l.title}</p>
-              <p className="text-sm"><span className="font-bold">{inr(l.price)}</span>{l.mrp > l.price && <span className="ml-2 text-muted line-through">{inr(l.mrp)}</span>}</p>
+              <p className="text-sm"><span className="font-bold">{inr(l.price)}</span>{l.mrp > l.price && <span className="ml-2 text-muted-foreground line-through">{inr(l.mrp)}</span>}</p>
             </div>
-            <button onClick={() => cart.remove(l.id!)} className="grid size-10 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-bad" aria-label="Remove">
+            <button onClick={() => cart.remove(l.id!)} className="grid size-10 place-items-center rounded-full text-muted-foreground hover:bg-surface-2 hover:text-bad" aria-label="Remove">
               <Trash2 className="size-5" />
             </button>
           </div>
         ))}
         {!!quote?.skipped.length && (
-          <p className="rounded-xl bg-surface-2 p-3 text-sm text-muted">Removed from the bill because you already own them: {quote.skipped.join(", ")}</p>
+          <p className="rounded-xl bg-surface-2 p-3 text-sm text-muted-foreground">Removed from the bill because you already own them: {quote.skipped.join(", ")}</p>
         )}
 
         {props.mentorship.enabled && (
-          <label className={`card flex cursor-pointer items-start gap-4 p-4 transition ${mentor ? "border-brand ring-2 ring-brand/20" : ""}`}>
-            <input type="checkbox" checked={mentor} onChange={(e) => setMentor(e.target.checked)} className="mt-1 size-5 accent-[var(--brand)]" />
+          <label className={`card flex cursor-pointer items-start gap-4 p-4 transition ${mentor ? "border-primary ring-2 ring-primary/20" : ""}`}>
+            <input type="checkbox" checked={mentor} onChange={(e) => setMentor(e.target.checked)} className="mt-1 size-5 accent-primary" />
             <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold"><PhoneCall className="size-6" /></span>
             <span className="flex-1">
               <span className="flex flex-wrap items-center gap-2 font-bold">{props.mentorship.title} <span className="rounded-md bg-gold/20 px-1.5 py-0.5 text-[11px] text-gold">POPULAR</span></span>
-              <span className="mt-0.5 block text-sm text-muted">{props.mentorship.blurb}</span>
+              <span className="mt-0.5 block text-sm text-muted-foreground">{props.mentorship.blurb}</span>
             </span>
             <span className="font-bold">+{inr(props.mentorship.price)}</span>
           </label>
@@ -121,26 +121,26 @@ export function CartView(props: {
             className="flex gap-2"
           >
             <div className="relative flex-1">
-              <Tag className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
+              <Tag className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <input value={couponInput} onChange={(e) => setCouponInput(e.target.value.toUpperCase())} placeholder="Coupon code" className="input !pl-9 uppercase" />
             </div>
             <button className="btn btn-ghost !px-4">Apply</button>
           </form>
         )}
         {quote?.coupon && <p className="mt-2 text-sm font-semibold text-ok">🎉 {quote.coupon.message}</p>}
-        {quote?.couponError && <p className="mt-2 text-sm font-semibold text-bad">{quote.couponError}</p>}
+        {quote?.couponError && <p role="alert" className="mt-2 flex items-start gap-2 text-sm font-semibold text-bad"><CircleAlert className="mt-0.5 size-4 shrink-0" />{quote.couponError}</p>}
 
         <dl className="mt-5 space-y-2 text-sm">
-          <div className="flex justify-between"><dt className="text-muted">Subtotal</dt><dd className="font-semibold">{inr(quote?.subtotal ?? 0)}</dd></div>
+          <div className="flex justify-between"><dt className="text-muted-foreground">Subtotal</dt><dd className="font-semibold">{inr(quote?.subtotal ?? 0)}</dd></div>
           {!!quote?.discount && <div className="flex justify-between text-ok"><dt>Coupon</dt><dd className="font-semibold">−{inr(quote.discount)}</dd></div>}
-          {!!quote?.tax && <div className="flex justify-between"><dt className="text-muted">GST</dt><dd className="font-semibold">{inr(quote.tax)}</dd></div>}
+          {!!quote?.tax && <div className="flex justify-between"><dt className="text-muted-foreground">GST</dt><dd className="font-semibold">{inr(quote.tax)}</dd></div>}
           <div className="flex justify-between border-t border-border pt-3 text-lg"><dt className="font-bold">Total</dt><dd className="font-display font-extrabold">{inr(quote?.total ?? 0)}</dd></div>
         </dl>
         {needPhone && (
           <label className="mt-4 block text-sm">
             <span className="font-semibold">Mobile number</span>
             <span className="mt-1 flex items-center gap-2">
-              <span className="rounded-xl bg-surface-2 px-3 py-2.5 font-semibold text-muted">+91</span>
+              <span className="rounded-xl bg-surface-2 px-3 py-2.5 font-semibold text-muted-foreground">+91</span>
               <input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
@@ -150,15 +150,15 @@ export function CartView(props: {
                 className="input"
               />
             </span>
-            <span className="mt-1 block text-xs text-muted">Needed by the payment gateway for receipts. Saved to your profile.</span>
+            <span className="mt-1 block text-xs text-muted-foreground">Needed by the payment gateway for receipts. Saved to your profile.</span>
           </label>
         )}
-        {error && <p className="mt-3 rounded-xl bg-bad/10 p-3 text-sm font-medium text-bad">{error}</p>}
+        {error && <p role="alert" className="mt-3 flex items-start gap-2 rounded-xl bg-bad/10 p-3 text-sm font-medium text-bad"><CircleAlert className="mt-0.5 size-4 shrink-0" />{error}</p>}
         <button onClick={pay} disabled={paying || loading || !quote?.lines.length} className="btn btn-primary mt-5 w-full !py-3.5 text-base">
           {paying ? <Loader2 className="size-5 animate-spin" /> : null}
           {props.loggedIn ? `Pay ${inr(quote?.total ?? 0)}` : "Log in to pay"}
         </button>
-        <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted"><ShieldCheck className="size-4" /> Secure payment via Cashfree · UPI, cards, netbanking</p>
+        <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground"><ShieldCheck className="size-4" /> Secure payment via Cashfree · UPI, cards, netbanking</p>
       </aside>
     </div>
   );

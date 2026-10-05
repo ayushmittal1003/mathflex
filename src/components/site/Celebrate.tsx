@@ -70,7 +70,7 @@ export function CelebrateProvider({ children, sound }: { children: React.ReactNo
               {current.emoji ?? "🎉"}
             </div>
             <h2 className="font-display text-2xl font-extrabold">{current.title}</h2>
-            {current.subtitle && <p className="mt-1 text-muted">{current.subtitle}</p>}
+            {current.subtitle && <p className="mt-1 text-muted-foreground">{current.subtitle}</p>}
             {!!current.xp && (
               <p className="mt-4 inline-flex items-center gap-1 rounded-full bg-xp/15 px-4 py-1.5 font-bold text-xp">+{current.xp} XP</p>
             )}
@@ -82,7 +82,7 @@ export function CelebrateProvider({ children, sound }: { children: React.ReactNo
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wider text-gold">New badge</p>
                       <p className="font-bold">{b.name}</p>
-                      <p className="text-xs text-muted">{b.description}</p>
+                      <p className="text-xs text-muted-foreground">{b.description}</p>
                     </div>
                   </div>
                 ))}

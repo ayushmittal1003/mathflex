@@ -1,5 +1,6 @@
 "use client";
 import { useActionState } from "react";
+import { CircleAlert } from "lucide-react";
 import { updateProfile } from "@/app/actions/profile";
 
 export function ProfileForm({ user }: { user: { name: string; email: string; phone: string | null; classLevel: number | null } }) {
@@ -16,7 +17,7 @@ export function ProfileForm({ user }: { user: { name: string; email: string; pho
           </select>
         </label>
       </div>
-      {state && "error" in state && <p className="text-sm text-bad">{state.error}</p>}
+      {state && "error" in state && <p role="alert" className="flex items-start gap-2 text-sm text-bad"><CircleAlert className="mt-0.5 size-4 shrink-0" />{state.error}</p>}
       {state && "ok" in state && <p className="text-sm text-ok">Saved!</p>}
       <button disabled={pending} className="btn btn-primary">Save changes</button>
     </form>

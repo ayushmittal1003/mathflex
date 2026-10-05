@@ -55,7 +55,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
             </>
           )}
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
 
           <div className="relative mx-auto flex h-full max-w-[1500px] flex-col justify-end px-4 pb-24 sm:pb-32 md:px-8">
             <div className={`max-w-xl ${idx === i ? "animate-rise" : ""}`}>

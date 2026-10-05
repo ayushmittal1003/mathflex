@@ -14,7 +14,7 @@ export default async function Courses() {
   return (
     <div className="mx-auto max-w-[1500px] px-4 pt-[calc(var(--nav-h)+2rem)] md:px-8">
       <h1 className="font-display text-3xl font-extrabold sm:text-4xl">Complete courses</h1>
-      <p className="mt-1 text-muted">Every chapter, every DPP, every PYQ — one price.</p>
+      <p className="mt-1 text-muted-foreground">Every chapter, every DPP, every PYQ — one price.</p>
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 [&>a]:!w-full">
         {courses.map((c) => <CourseCard key={c.id} c={{ ...c, chapterCount: c._count.chapters, owned: owned.has(c.id) }} />)}
       </div>

@@ -32,7 +32,7 @@ export function ChapterPoster({ c, size = "md" }: { c: ChapterCardData; size?: "
         <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1.5">
           <span className="rounded-md bg-black/40 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">Class {c.classLevel}</span>
           {c.isTrending && (
-            <span className="flex items-center gap-0.5 rounded-md bg-brand px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
+            <span className="flex items-center gap-0.5 rounded-md bg-primary px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
               <Flame className="size-3" /> Hot
             </span>
           )}
@@ -53,7 +53,7 @@ export function ChapterPoster({ c, size = "md" }: { c: ChapterCardData; size?: "
           {c.owned ? (
             <div className="mt-2.5">
               <div className="h-1 overflow-hidden rounded-full bg-white/25">
-                <div className="h-full rounded-full bg-brand" style={{ width: `${Math.max(3, c.progress * 100)}%` }} />
+                <div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(3, c.progress * 100)}%` }} />
               </div>
               <p className="mt-1.5 flex items-center gap-1 text-xs font-bold"><Play className="size-3 fill-current" /> {c.progress > 0 ? "Continue" : "Start watching"}</p>
             </div>
@@ -79,7 +79,7 @@ export function RankedPoster({ c, rank }: { c: ChapterCardData; rank: number }) 
     <div className="relative flex shrink-0 snap-start items-end">
       <span
         className="-mr-6 select-none font-display text-[7.5rem] font-extrabold leading-[0.8] text-transparent sm:-mr-8 sm:text-[10rem]"
-        style={{ WebkitTextStroke: "3px var(--muted)" }}
+        style={{ WebkitTextStroke: "3px var(--muted-foreground)" }}
         aria-hidden
       >
         {rank}
