@@ -60,6 +60,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
           <Link href="/courses" className={linkCls}>Complete courses</Link>
           <Link href="/pricing" className={linkCls}>Pricing</Link>
           {settings.features.leaderboard && <Link href="/leaderboard" className={linkCls}>Leaderboard</Link>}
+          {settings.features.mentorshipUpsell && <Link href="/book-a-call" className={linkCls}>Book a 1:1 call</Link>}
         </FooterCol>
         <FooterCol title="Company">
           <Link href="/about" className={linkCls}>About us</Link>

@@ -6,7 +6,7 @@ import { VideoFrame } from "../VideoFrame";
 import { button, cx, tone } from "../ui";
 
 // 07 Meet the mentor: intro video (or "Video coming soon"), bio, credentials timeline and
-// the 1:1 call upsell, which uses the existing mentorship add-on in the cart.
+// the 1:1 call upsell (details on /book-a-call; it's the existing mentorship add-on).
 export function MentorSection({ mentorship, names }: { mentorship: { price: number } | null; names: { short: string; full: string } }) {
   return (
     <section id="mentor" className="py-22">
@@ -52,7 +52,7 @@ export function MentorSection({ mentorship, names }: { mentorship: { price: numb
                 <div className="text-base font-extrabold">Book a 1:1 call with {names.short}</div>
                 <div className="mt-0.5 text-sm text-muted-foreground">Plan your prep and fix your weak chapters. Add it at checkout.</div>
               </div>
-              <Link href="/cart?mentorship=1" className={cx(button.lg, tone.dark)}>Book for {inr(mentorship.price)}</Link>
+              <Link href="/book-a-call" className={cx(button.lg, tone.dark)}>Book for {inr(mentorship.price)}</Link>
             </div>
           )}
         </div>

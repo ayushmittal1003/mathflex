@@ -183,7 +183,7 @@ export const faqGroups: FaqGroup[] = [
     title: "1:1 calls with {mentorShort}",
     items: [
       { q: "What is the 1:1 call?", a: "{mentorshipBlurb}" },
-      { q: "How do I book?", a: "Add the call at checkout for {mentorshipPrice}. After you pay, our team will WhatsApp you to pick a time." },
+      { q: "How do I book?", a: "Add the call at checkout for {mentorshipPrice}, or start from the [Book a call](/book-a-call) page. After you pay, our team will WhatsApp you to pick a time." },
     ],
   },
 ];
@@ -242,3 +242,25 @@ export const firstWeek = [
   { t: "Keep your streak", d: "Study a little every day to build your streak and earn XP.", cta: "View leaderboard" },
   { t: "Revise with notes", d: "Open your chapter's notes any time for quick revision.", cta: "Go to My Learning" },
 ];
+
+// Book a call page. Matches how the call works today: it's the mentorship add-on bought at
+// checkout; after payment the team arranges a time on WhatsApp and the call link shows on
+// the student's Profile page. {tokens} are filled from settings.
+export const bookCall = {
+  gets: [
+    { t: "A diagnosis of your weak chapters", d: "{mentorShort} looks at your recent scores and tells you which chapters are costing you the most marks." },
+    { t: "A week-by-week study plan", d: "Which chapters to do first, how long to spend on each and when to revise." },
+    { t: "Exam-day strategy", d: "Which questions to attempt first, how to split your time and how to avoid silly mistakes." },
+  ],
+  steps: [
+    { t: "Add the call at checkout", d: "It's {price}. Add a chapter or a course too if you like, or book the call on its own." },
+    { t: "Pay securely", d: "UPI, cards or netbanking through Cashfree. Your call is confirmed as soon as the payment goes through." },
+    { t: "Pick a time on WhatsApp", d: "Our team messages you to fix a time. Once it's set, the call link shows on your Profile page." },
+  ],
+  faqs: [
+    { q: "What happens on the call?", a: "{blurb}" },
+    { q: "What should I bring to the call?", a: "Your recent test scores, the chapters you find hardest and any questions about your plan." },
+    { q: "Do I need to buy a chapter first?", a: "No. You can book the call on its own, or add it to an order with chapters or a course." },
+    { q: "How do I choose the time?", a: "After you pay, our team WhatsApps you to pick a slot that suits you. The call link then appears on your Profile page." },
+  ] as Faq[],
+};
