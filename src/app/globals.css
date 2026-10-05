@@ -207,6 +207,7 @@
   --animate-mf-rise: mfrise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-mf-pop: mfpop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   --animate-mf-blink: mfblink 1s steps(1) infinite;
+  --animate-mf-drop: mfdrop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
   --breakpoint-tablet: 47.5rem; /* 760px: design.md §6 single-column switch */
 }
 
@@ -218,6 +219,10 @@
   0% { opacity: 0; transform: scale(0.85); }
   70% { transform: scale(1.03); }
   100% { opacity: 1; transform: none; }
+}
+@keyframes mfdrop {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: none; }
 }
 @keyframes mfblink {
   0%, 49% { opacity: 1; }

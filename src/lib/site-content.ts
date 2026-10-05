@@ -41,6 +41,9 @@ export const instructor = {
   ],
 };
 
+// Short line for the instructor block on chapter pages.
+export const instructorChapterLine = "builds every part around the questions that actually appear in JEE, with the shortcuts that save minutes in the exam hall.";
+
 export const about = {
   storyVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
 };
@@ -177,3 +180,38 @@ export type FaqVars = Record<string, string>;
 export function fillFaq(text: string, vars: FaqVars) {
   return text.replace(/\{(\w+)\}/g, (m, k: string) => vars[k] ?? m);
 }
+
+// Chapter detail FAQs. Matches the real unlock and access rules.
+export function chapterFaqs(c: { classLevel: number; free: boolean; validityDays: number; sequential: boolean }): Faq[] {
+  return [
+    {
+      q: "Can I watch before I buy?",
+      a: c.free ? "Yes. Part 1 is free to watch, no sign-up needed. Buy the chapter to unlock the rest." : "Not this chapter yet. Look for chapters marked “Part 1 free” to try one before you buy.",
+    },
+    {
+      q: "How do the parts unlock?",
+      a: c.sequential
+        ? "Each part opens after you watch most of the previous one and clear its practice set."
+        : "Once you own the chapter, every part is open. Watch them in any order.",
+    },
+    { q: "How long do I get access?", a: `${c.validityDays} days from the date you buy it, on phone and laptop. You can renew early from your Profile page.` },
+    { q: "Is this enough for Boards too?", a: `It follows the Class ${c.classLevel} syllabus, so it works for Boards as well as JEE.` },
+  ];
+}
+
+// Courses page FAQs. {tokens} are filled from live course data.
+export const courseFaqs: Faq[] = [
+  { q: "Course or chapters: which should I buy?", a: "If you need help with only a few chapters, buy those. If you want most of a class, the full course costs less{breakevenLine}." },
+  { q: "Do all parts unlock at once?", a: "Every chapter in the course is yours from day one. Inside a chapter, {unlockRule}" },
+  { q: "How long can I access the course?", a: "{accessLine} from the date of purchase, on phone and laptop. You can renew early from your Profile page." },
+  { q: "What if I already own some chapters?", a: "They keep their own access period. Buying the course gives you every chapter in it, including the ones you own." },
+];
+
+// Pricing page FAQs. {tokens} are filled from live data; lines whose data is missing are dropped.
+export const pricingFaqs: (Faq & { needs?: "free" | "gst" })[] = [
+  { q: "Is there a monthly fee?", a: "No. You pay once for a chapter or a course and keep access for its access period." },
+  { q: "What's free?", a: "Part 1 of chapters marked “Part 1 free”. No card or sign-up needed to watch.", needs: "free" },
+  { q: "Why do chapter prices differ?", a: "Each chapter is priced on its own, from {minPrice} to {maxPrice}. You only pay for the chapters you pick." },
+  { q: "Is GST included?", a: "GST at {gstPercent}% is added to the total at checkout, before you pay.", needs: "gst" },
+  { q: "What if it isn't right for me?", a: "Watch a free Part 1 first where it's available. For how refunds work, see the [refund policy](/refund-policy)." },
+];

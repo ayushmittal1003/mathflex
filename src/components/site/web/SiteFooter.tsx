@@ -56,15 +56,15 @@ export function SiteFooter({ settings }: { settings: Settings }) {
         </div>
 
         <FooterCol title="Learn">
-          <Link href="/browse" className={linkCls}>All chapters</Link>
+          <Link href="/chapters" className={linkCls}>All chapters</Link>
           <Link href="/courses" className={linkCls}>Complete courses</Link>
-          <Link href="/#pricing" className={linkCls}>Pricing</Link>
+          <Link href="/pricing" className={linkCls}>Pricing</Link>
           {settings.features.leaderboard && <Link href="/leaderboard" className={linkCls}>Leaderboard</Link>}
         </FooterCol>
         <FooterCol title="Company">
           <Link href="/about" className={linkCls}>About us</Link>
           <Link href="/contact" className={linkCls}>Contact us</Link>
-          <Link href="/#faq" className={linkCls}>FAQs</Link>
+          <Link href="/faq" className={linkCls}>FAQs</Link>
         </FooterCol>
         <FooterCol title="Support">
           {/* Placeholder phone: shown as text, not a dialable link. */}

@@ -12,7 +12,7 @@ export function BuyButton({ item, className, children }: { item: CartItem; class
       className={className}
       onClick={() => {
         cart.add(item);
-        router.push("/cart");
+        router.push("/checkout");
       }}
     >
       {children}

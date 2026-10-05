@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "../cart-store";
 import { SiteLogo } from "./SiteLogo";
 import { button, cx, tone } from "./ui";
@@ -20,21 +20,38 @@ export function SiteNav({ user, leaderboard }: { user: SiteNavUser; leaderboard:
   const [openOn, setOpenOn] = useState<string | null>(null);
   const open = openOn === pathname;
   const setOpen = (v: boolean) => setOpenOn(v ? pathname : null);
-  const onWash = !PLAIN_HEADER.some((p) => pathname.startsWith(p));
+  // Once the page scrolls past the nav's own spot it sticks to the top on a white bar.
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setStuck(window.scrollY > 110);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const onWash = !stuck && !PLAIN_HEADER.some((p) => pathname.startsWith(p));
 
   const links = [
     { href: "/", label: "Home" },
-    { href: "/browse", label: "Chapters" },
+    { href: "/chapters", label: "Chapters" },
     { href: "/courses", label: "Courses" },
-    { href: "/#pricing", label: "Pricing" },
+    { href: "/pricing", label: "Pricing" },
     ...(leaderboard ? [{ href: "/leaderboard", label: "Leaderboard" }] : []),
   ];
   const isActive = (href: string) => (href === "/" ? pathname === "/" : !href.includes("#") && pathname.startsWith(href));
   const secondary = onWash ? tone.glass : "border border-border bg-card text-foreground hover:brightness-97";
 
   return (
-    <header className="absolute inset-x-4 top-4 z-30">
-      <nav className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 px-5 py-5.5 sm:px-8" aria-label="Main">
+    <header
+      className={cx(
+        stuck
+          ? "fixed inset-x-0 top-0 z-40 animate-mf-drop border-b border-border bg-card/90 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-16px_rgb(0_0_0/0.25)] backdrop-blur-xl"
+          : "absolute inset-x-4 top-4 z-30",
+      )}
+    >
+      <nav
+        className={cx("mx-auto grid max-w-[1240px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 px-5 sm:px-8", stuck ? "py-3" : "py-5.5")}
+        aria-label="Main"
+      >
         <Link href="/" className="col-start-1 justify-self-start" aria-label="Mathflex home">
           <SiteLogo />
         </Link>
@@ -57,7 +74,7 @@ export function SiteNav({ user, leaderboard }: { user: SiteNavUser; leaderboard:
 
         <div className="col-start-3 flex items-center gap-2 justify-self-end">
           <Link
-            href="/cart"
+            href="/checkout"
             aria-label={`Cart, ${cartCount} item${cartCount === 1 ? "" : "s"}`}
             className={cx("relative grid size-[42px] place-items-center rounded-lg transition hover:scale-[1.06]", secondary)}
           >
@@ -109,7 +126,8 @@ export function SiteNav({ user, leaderboard }: { user: SiteNavUser; leaderboard:
       </nav>
 
       {open && (
-        <div className="absolute inset-x-0 top-[84px] z-20 animate-mf-rise rounded-xl bg-foreground p-2.5 text-white shadow-[0_30px_60px_-20px_rgb(0_0_0/0.5)] lg:hidden">
+        <div className={cx("absolute z-20", stuck ? "inset-x-4 top-full mt-2" : "inset-x-0 top-[84px]")}>
+        <div className="animate-mf-rise rounded-xl bg-foreground p-2.5 text-white shadow-[0_30px_60px_-20px_rgb(0_0_0/0.5)] lg:hidden">
           {links.map((l) => (
             <Link
               key={l.href}
@@ -133,6 +151,7 @@ export function SiteNav({ user, leaderboard }: { user: SiteNavUser; leaderboard:
               <Link href="/signup" className="flex-1 rounded-lg bg-primary p-3.5 text-center font-bold text-primary-foreground">Start free</Link>
             </div>
           )}
+        </div>
         </div>
       )}
     </header>

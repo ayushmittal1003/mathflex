@@ -11,7 +11,7 @@ type FeatKey = (typeof chapterIncludes)[number]["key"];
 // 06 Inside Mathflex: a framed My Learning dashboard with five feature captions that take
 // turns highlighting their panel. Chapters, notes and the weekly leaderboard are real
 // data; the streak, XP, level and chart values are illustrative.
-export function InsideMathflex({ chapters, leaders, resources }: { chapters: HomeChapter[]; leaders: Leader[]; resources: ResourceRow[] }) {
+export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside Mathflex" }: { chapters: HomeChapter[]; leaders: Leader[]; resources: ResourceRow[]; eyebrow?: string }) {
   const [feat, setFeat] = useState(0);
   const hold = useRef(false);
 
@@ -31,7 +31,7 @@ export function InsideMathflex({ chapters, leaders, resources }: { chapters: Hom
   return (
     <section id="inside" className="py-22">
       <SectionHead
-        eyebrow="Inside Mathflex"
+        eyebrow={eyebrow}
         dot="gold"
         title={<>Everything for a chapter, in <Mark>one</Mark> place.</>}
         lead="Your My Learning dashboard keeps every part, every practice set and every note together, and shows you exactly how far you have come."

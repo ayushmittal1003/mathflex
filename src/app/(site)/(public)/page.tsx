@@ -1,11 +1,9 @@
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
-import { activeBanners } from "@/lib/banners";
-import { requestNow } from "@/lib/time";
+import { getInsideData, getPublicCoupon } from "@/components/site/web/data";
 import { inr } from "@/lib/format";
 import { faqGroups, fillFaq, homeFaqs, instructorNames } from "@/lib/site-content";
 import { HomeHero } from "@/components/site/web/home/HomeHero";
-import { OffersStrip } from "@/components/site/web/home/OffersStrip";
 import { PreviewExplorer } from "@/components/site/web/home/PreviewExplorer";
 import { CostCompare } from "@/components/site/web/home/CostCompare";
 import { HowItWorks } from "@/components/site/web/home/HowItWorks";
@@ -22,8 +20,7 @@ import type { HomeChapter, HomeCourse } from "@/components/site/web/home/types";
 // carousel and student reviews are hidden until they have a backend.
 export default async function Home() {
   const settings = await getSettings();
-  const now = new Date(requestNow());
-  const [chapterRows, courseRows, heroBanners, offerBanners, coupon, mindMaps, resources] = await Promise.all([
+  const [chapterRows, courseRows, coupon, mindMaps, inside] = await Promise.all([
     db.chapter.findMany({
       where: { isPublished: true },
       orderBy: [{ classLevel: "asc" }, { sortOrder: "asc" }, { title: "asc" }],
@@ -37,17 +34,9 @@ export default async function Home() {
       orderBy: { sortOrder: "asc" },
       select: { id: true, slug: true, title: true, subtitle: true, price: true, mrp: true, highlights: true, _count: { select: { chapters: true } } },
     }),
-    activeBanners("HERO"),
-    activeBanners("OFFER"),
-    settings.features.coupons
-      ? db.coupon.findFirst({
-          where: { isPublic: true, isActive: true, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }] },
-          orderBy: { createdAt: "asc" },
-          select: { code: true, description: true },
-        })
-      : null,
+    getPublicCoupon(settings),
     db.resource.count({ where: { type: "MINDMAP", isPublished: true } }),
-    db.resource.findMany({ where: { isPublished: true }, orderBy: { createdAt: "asc" }, take: 3, select: { title: true, type: true } }),
+    getInsideData(settings),
   ]);
 
   const freeOn = settings.features.freePreviews;
@@ -73,8 +62,6 @@ export default async function Home() {
     ? { dpp: demoCounts.find((c) => c.type === "DPP")?._count._all ?? 0, pyq: demoCounts.find((c) => c.type === "PYQ")?._count._all ?? 0 }
     : null;
 
-  // Weekly ranking for the dashboard mock-up: same query as the leaderboard page.
-  const leaders = settings.features.leaderboard ? await weeklyLeaders(now) : [];
 
   const faqVars = {
     supportEmail: settings.supportEmail,
@@ -91,11 +78,10 @@ export default async function Home() {
   return (
     <>
       <HomeHero chapters={chapters} chapterCount={chapters.length} minPrice={minChapterPrice} anyFree={anyFree} />
-      <OffersStrip banners={[...heroBanners, ...offerBanners]} />
       {anyFree && <PreviewExplorer chapters={chapters.filter((c) => c.parts.length > 0)} chapterCount={chapters.length} mentorShort={names.short} />}
       <CostCompare fullCourse={fullCourse} minChapterPrice={minChapterPrice} />
       <HowItWorks chapter={demoChapter} practice={practice} />
-      <InsideMathflex chapters={chapters.slice(0, 2)} leaders={leaders} resources={resources} />
+      <InsideMathflex chapters={inside.chapters} leaders={inside.leaders} resources={inside.resources} />
       <MentorSection mentorship={mentorship} names={names} />
       <CompareTable fullPrice={fullCourse?.price ?? null} callPrice={mentorship?.price ?? null} />
       <PricingSection chapters={chapters} courses={courses} coupon={coupon} />
@@ -103,24 +89,4 @@ export default async function Home() {
       <FinalCta chapters={chapters} minPrice={minChapterPrice} anyFree={anyFree} />
     </>
   );
-}
-
-async function weeklyLeaders(now: Date) {
-  const since = new Date(now.getTime() - 7 * 86_400_000);
-  const grouped = await db.xpEvent.groupBy({
-    by: ["userId"],
-    where: { createdAt: { gte: since }, user: { role: "STUDENT", isBlocked: false } },
-    _sum: { amount: true },
-    orderBy: { _sum: { amount: "desc" } },
-    take: 8,
-  });
-  const users = await db.user.findMany({ where: { id: { in: grouped.map((g) => g.userId) } }, select: { id: true, name: true, avatarColor: true } });
-  const byId = new Map(users.map((u) => [u.id, u]));
-  return grouped
-    .filter((g) => byId.has(g.userId))
-    .map((g) => {
-      const u = byId.get(g.userId)!;
-      const [first, last] = u.name.split(" ");
-      return { id: u.id, name: last ? `${first} ${last[0]}.` : first, avatarColor: u.avatarColor, xp: g._sum.amount ?? 0 };
-    });
 }
