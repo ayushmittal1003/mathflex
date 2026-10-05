@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
-import { getSettings } from "@/lib/settings";
+import { DEFAULT_SETTINGS, getSettings } from "@/lib/settings";
 import { isStaff } from "@/lib/permissions";
 import { inr } from "@/lib/format";
 import { SiteNav } from "@/components/site/web/SiteNav";
@@ -15,11 +16,13 @@ export const metadata = { title: "Page not found", robots: { index: false } };
 
 // 404 for unknown URLs and for notFound() anywhere (missing chapter, leaderboard off…).
 // Built from the website design system (no dedicated design file). Always light. The
-// suggested chapters are real, the highest JEE weightage first.
+// suggested chapters are real, the highest JEE weightage first. Rendered per request (not at
+// build time) and still renders, with default settings, if the database is unreachable.
 export default async function NotFound() {
+  await connection();
   const [user, settings, chapters] = await Promise.all([
     getCurrentUser().catch(() => null),
-    getSettings(),
+    getSettings().catch(() => DEFAULT_SETTINGS),
     db.chapter
       .findMany({
         where: { isPublished: true },
