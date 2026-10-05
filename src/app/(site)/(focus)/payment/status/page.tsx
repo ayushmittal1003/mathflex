@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PendingNote } from "@/components/site/web/PendingNote";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
@@ -93,7 +94,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                   <div className="mt-2 text-left text-[13px] text-muted-foreground">Checking with Cashfree…</div>
                 </div>
                 {metaTable}
-                <p className="mt-0 rounded-b-xl px-4.5 py-3.5 text-left text-[13px] leading-[1.5] text-secondary-foreground">Most payments confirm within 2 minutes.</p>
+                <PendingNote />
                 <div className="mt-5.5 flex flex-wrap justify-center gap-2.5">
                   <CheckStatusNow orderNo={order!.orderNo} />
                   <Link href="/contact" className={cx(button.md, tone.secondary)}>Contact support</Link>

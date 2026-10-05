@@ -51,7 +51,7 @@ export function HomeHero({ chapters, chapterCount, minPrice, anyFree }: { chapte
                 <PlayIcon /> Watch Part 1 free
               </a>
             )}
-            <Link href="/browse" className={cx(button.lg, anyFree ? tone.white : tone.primary)}>
+            <Link href="/chapters" className={cx(button.lg, anyFree ? tone.white : tone.primary)}>
               Browse {chapterCount} chapters →
             </Link>
           </div>

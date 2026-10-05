@@ -41,9 +41,19 @@ export function CartView(props: {
   const [paying, startPay] = useTransition();
   const [loading, startLoad] = useTransition();
 
+  // If the price check fails (network or server), show a retry instead of an error page.
+  const [quoteFailed, setQuoteFailed] = useState(false);
+  const [quoteTry, setQuoteTry] = useState(0);
   useEffect(() => {
-    startLoad(async () => setQuote(await getQuote(items, coupon, mentor)));
-  }, [items, coupon, mentor]);
+    startLoad(async () => {
+      try {
+        setQuote(await getQuote(items, coupon, mentor));
+        setQuoteFailed(false);
+      } catch {
+        setQuoteFailed(true);
+      }
+    });
+  }, [items, coupon, mentor, quoteTry]);
 
   const empty = items.length === 0 && !mentor;
 
@@ -199,6 +209,12 @@ export function CartView(props: {
               })}
               {!!quote?.skipped.length && (
                 <p className="mx-5.5 my-4 rounded-lg bg-muted p-3 text-sm text-muted-foreground">Removed from the bill because you already own them: {quote.skipped.join(", ")}</p>
+              )}
+              {quoteFailed && !empty && !loading && (
+                <div role="alert" className="mx-5.5 my-4 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-bad/8 p-4 text-sm">
+                  <span className="font-semibold text-foreground">We couldn&apos;t load the latest prices. Check your connection and try again.</span>
+                  <button type="button" onClick={() => setQuoteTry((n) => n + 1)} className="rounded-lg bg-foreground px-3.5 py-2 text-sm font-bold text-white">Try again</button>
+                </div>
               )}
               {empty && (
                 <div className="px-5.5 py-12 text-center">

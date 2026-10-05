@@ -15,7 +15,7 @@ export type AuthPanel = {
 // Log in / sign up (dipankar-design/designs/Login.dc.html). Same server actions and fields as
 // before (login: email, password; signup: name, email, optional phone, class incl. Dropper,
 // password). Google, OTP and password reset aren't shown: there's no backend for them.
-export function AuthForm({ mode, next, panel }: { mode: "login" | "signup"; next: string; panel?: AuthPanel }) {
+export function AuthForm({ mode, next, panel, paused = false }: { mode: "login" | "signup"; next: string; panel?: AuthPanel; paused?: boolean }) {
   const [state, action, pending] = useActionState<AuthState, FormData>(mode === "login" ? login : signup, undefined);
   const isSignup = mode === "signup";
   const field = "h-12 w-full rounded-lg border border-input bg-card px-3.5 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-3 focus:ring-ring/25";
@@ -39,6 +39,16 @@ export function AuthForm({ mode, next, panel }: { mode: "login" | "signup"; next
               <Link href={`/signup${q}`} role="tab" aria-selected={isSignup} className={cx("flex-1 rounded-md px-3 py-2.5 text-center text-sm font-bold", isSignup ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>Sign up</Link>
             </div>
 
+            {isSignup && paused ? (
+              <div className="mt-6 rounded-xl bg-wash p-6 text-center">
+                <div className="text-lg font-extrabold tracking-[-0.02em]">New sign-ups are paused right now</div>
+                <p className="mt-1.5 text-sm leading-[1.6] text-secondary-foreground">Already have an account? Log in. Otherwise check back soon, or watch a free Part 1 without an account.</p>
+                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                  <Link href={`/login${q}`} className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground">Log in</Link>
+                  <Link href="/chapters" className="rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-bold">Browse chapters</Link>
+                </div>
+              </div>
+            ) : (
             <form action={action} className="mt-6 grid gap-3.5">
               <input type="hidden" name="next" value={next} />
               {isSignup && (
@@ -86,6 +96,7 @@ export function AuthForm({ mode, next, panel }: { mode: "login" | "signup"; next
                 {pending ? "One sec…" : isSignup ? "Create account" : "Log in"}
               </button>
             </form>
+            )}
             <p className="mt-4.5 text-center text-sm text-secondary-foreground">
               {isSignup ? "Already have an account? " : "New to Mathflex? "}
               <Link href={`/${isSignup ? "login" : "signup"}${q}`} className="font-bold text-primary">{isSignup ? "Log in" : "Create an account"}</Link>

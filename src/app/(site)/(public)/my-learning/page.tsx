@@ -24,7 +24,7 @@ export default async function MyLearning() {
   const owned = await getAccessibleChapterIds(user.id);
   const ownedIds = [...owned];
   const now = requestNow();
-  const [catalog, series, badges, earned, attempts, bookmarks, ownedQuestionCount, rankAbove, settings, ents, parts, last, doneRows, freeParts] = await Promise.all([
+  const [catalog, series, badges, earned, attempts, bookmarks, ownedQuestionCount, rankAbove, settings, ents, parts, last, doneRows, freeParts, endedEnts] = await Promise.all([
     getCatalog(user.id),
     activitySeries(user.id),
     db.badge.findMany({ orderBy: { code: "asc" } }),
@@ -34,11 +34,12 @@ export default async function MyLearning() {
     db.question.count({ where: { chapterId: { in: ownedIds }, isPublished: true } }),
     db.user.count({ where: { xp: { gt: user.xp }, role: "STUDENT" } }),
     getSettings(),
-    db.entitlement.findMany({ where: { userId: user.id, expiresAt: { gt: new Date(now) } }, select: { chapterId: true, expiresAt: true, course: { select: { chapters: { select: { chapterId: true } } } } } }),
+    db.entitlement.findMany({ where: { userId: user.id, expiresAt: { gt: new Date(now) } }, select: { chapterId: true, courseId: true, expiresAt: true, course: { select: { chapters: { select: { chapterId: true } } } } } }),
     db.part.findMany({ where: { chapterId: { in: ownedIds } }, orderBy: { order: "asc" }, select: { id: true, chapterId: true, order: true, title: true, durationSec: true } }),
     db.partProgress.findFirst({ where: { userId: user.id, part: { chapterId: { in: ownedIds } } }, orderBy: { updatedAt: "desc" }, select: { part: { select: { chapterId: true } } } }),
     db.partProgress.findMany({ where: { userId: user.id, videoDone: true, practiceDone: true }, select: { partId: true } }),
     db.part.findMany({ where: { isFreePreview: true }, select: { chapterId: true } }),
+    db.entitlement.findMany({ where: { userId: user.id, expiresAt: { lte: new Date(now) } }, select: { chapterId: true, courseId: true, chapter: { select: { title: true } }, course: { select: { title: true } } } }),
   ]);
   const f = settings.features;
 
@@ -75,6 +76,13 @@ export default async function MyLearning() {
   const lastChapterId = last?.part.chapterId;
   const resume = mine.find((c) => c.id === lastChapterId && c.next) ?? mine.find((c) => c.next && c.doneCount > 0) ?? mine.find((c) => c.next);
   const expiring = mine.filter((c) => c.daysLeft !== null && c.daysLeft <= 30);
+  // Plans that ended and weren't renewed (progress is kept; renewing brings it back).
+  const activeCourseIds = new Set(ents.map((e) => e.courseId).filter(Boolean));
+  const ended = [...new Map(
+    endedEnts
+      .filter((e) => (e.chapterId ? !owned.has(e.chapterId) : !activeCourseIds.has(e.courseId)))
+      .map((e) => [e.chapterId ?? e.courseId, e.chapter?.title ?? e.course?.title ?? "A plan"]),
+  ).values()];
 
   const suggestions = catalog
     .filter((c) => !c.owned && (mine.length || freeIds.has(c.id)))
@@ -178,6 +186,16 @@ export default async function MyLearning() {
             </span>
           </Link>
         </section>
+      )}
+
+      {/* Plans that ended */}
+      {ended.length > 0 && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/60 px-5 py-4">
+          <span className="text-[15px] font-semibold">
+            {ended.length === 1 ? `Your access to ${ended[0]} has ended.` : `Access to ${ended.length} of your plans has ended.`} <span className="font-normal text-secondary-foreground">Your progress is saved; renew to pick up where you left off.</span>
+          </span>
+          <Link href="/plans" className={cx(button.sm, tone.primaryFlat)}>See plans</Link>
+        </div>
       )}
 
       {/* Plans running out */}

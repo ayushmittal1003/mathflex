@@ -91,7 +91,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
     ["FAQs", "#faq"],
   ];
   const sectionH2 = "mt-14 scroll-mt-[150px] border-b-2 border-foreground pb-3.5 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.035em]";
-  const playHref = owned ? `/learn/${chapter.slug}?part=${resumePart?.order ?? 1}` : preview ? `/learn/${chapter.slug}?part=${preview.order}` : null;
+  const playHref = !chapter.parts.length ? null : owned ? `/learn/${chapter.slug}?part=${resumePart?.order ?? 1}` : preview ? `/learn/${chapter.slug}?part=${preview.order}` : null;
   const heroPart = owned ? resumePart : preview ?? chapter.parts[0];
 
   return (
@@ -127,9 +127,13 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                 <div className="mb-2 flex justify-between text-sm font-semibold"><span>Your progress</span><span>{doneCount}/{chapter.parts.length} parts</span></div>
                 <div className="h-2 overflow-hidden rounded-full bg-white/70"><div className="h-full rounded-full bg-primary" style={{ width: `${(doneCount / Math.max(1, chapter.parts.length)) * 100}%` }} /></div>
                 <div className="mt-5.5 flex flex-wrap gap-2.5">
-                  <Link href={playHref!} className={cx(button.lg, tone.primary)}>
-                    <PlayIcon /> {doneCount ? `Continue · Part ${resumePart?.order}` : "Start Part 1"}
-                  </Link>
+                  {playHref ? (
+                    <Link href={playHref} className={cx(button.lg, tone.primary)}>
+                      <PlayIcon /> {doneCount ? `Continue · Part ${resumePart?.order}` : "Start Part 1"}
+                    </Link>
+                  ) : (
+                    <span className="rounded-lg bg-white/70 px-4 py-3 text-sm font-semibold">Parts are being added. You&apos;ll get them as soon as they&apos;re live.</span>
+                  )}
                   {settings.features.practice && chapter.questions.length > 0 && (
                     <Link href={`/practice/${chapter.slug}`} className={cx(button.lg, tone.glass)}>Practice {chapter.questions.length} Qs</Link>
                   )}
@@ -224,6 +228,9 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
               <h2 id="parts" className="scroll-mt-[150px] text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.035em]">Parts</h2>
               <span className="text-[13px] font-semibold text-muted-foreground">{chapter.parts.length} parts{totalSec > 0 && ` · ${duration(totalSec)}`}</span>
             </div>
+            {chapter.parts.length === 0 && (
+              <p className="mt-5 rounded-xl border border-dashed border-border bg-muted/50 px-5 py-8 text-center text-[15px] text-muted-foreground">The parts for this chapter are being recorded. Check back soon.</p>
+            )}
             {chapter.parts.map((p, i) => {
               const st = states.get(p.id)!;
               const isFree = freeOn && p.isFreePreview && !owned;
