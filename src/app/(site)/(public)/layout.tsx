@@ -27,7 +27,7 @@ export default async function PublicLayout({ children }: { children: React.React
         <main>{children}</main>
       </div>
       <SiteFooter settings={settings} />
-      <SiteExtras settings={settings} tabBar={false} />
+      <SiteExtras settings={settings} />
       </ToastProvider>
     </div>
   );

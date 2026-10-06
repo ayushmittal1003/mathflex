@@ -18,6 +18,15 @@ Reference designs: the `.dc.html` files in this project. `Landing Page v2.dc.htm
 | Product UI on marketing pages | none | **Dark-framed screens** that peek out of the hero (section 3.4) |
 | New tokens | none | `wash` (hero base). Everything else uses existing tokens. |
 
+### v2.1 updates (October 2026, from the build)
+- **No section divider lines.** Sections are separated by spacing only (section 3.7).
+- **Phones get an app-style bottom bar**; tablets get the hamburger; desktop keeps the segmented nav (sections 3.2 and 6).
+- **Signed-in nav:** My Learning and Practice replace Pricing, plus a streak/XP chip and an account menu (section 3.2).
+- **Closing call to action** sits in a soft wash card before the footer on every page (section 3.9).
+- **Footer:** no registered address or phone number for now (section 3.8).
+- **Tap targets:** a `tap` utility grows small controls to a 44px hit area (section 6).
+- **Loading and error states** (section 6).
+
 ---
 
 ## 1. Colour (unchanged tokens, website usage)
@@ -83,10 +92,17 @@ Use `text-wrap: balance` on headings and `text-wrap: pretty` on paragraphs.
 ### 3.2 Navigation
 - Row: logo left, segmented nav centre, actions right. `padding: 22px 32px`, content `max-width: 1240px`, centred.
 - **Segmented nav:** `bg-foreground`, `rounded-lg`, `padding: 4px`, `gap: 2px`. Items are 13px/600 at `rgba(255,255,255,.75)`. The active item is a `bg-card` chip, 6px radius, 700 weight, `foreground` text.
-- Items: Home · Chapters · Courses · Pricing · Leaderboard.
+- Items (signed out): Home · Chapters · Courses · Pricing · Leaderboard.
+- Items (signed in): Home · Chapters · Courses · My Learning · Practice · Leaderboard. Pricing moves into the menus.
 - Actions: cart icon button (42×42, 8px radius, count badge in `primary`), `Log in` (secondary), `Start free` (primary). Both buttons are `white-space: nowrap`.
 - On a wash the secondary buttons are `rgba(255,255,255,.7)` with a `rgba(255,255,255,.95)` border. On white they are `bg-card` with a `border-border` border.
-- **Below 1024px:** the segmented nav and the auth buttons hide, and a 42×42 dark hamburger opens a dark drop-down panel (12px radius, 16px links, Log in and Start free side by side at the bottom).
+- **Signed in:** the auth buttons are replaced by a streak/XP chip (≥ 1280px) and a round avatar. The avatar opens the **account menu**: a soft wash card with name, email, the plan line ("2 active plans · next expiry …") and streak/XP, then site links, My Learning · Profile · Plan validity & renewal · Refer & Earn (when switched on), WhatsApp support, the support email, Admin panel (staff only) and Log out.
+- **Tablet, 760–1023px:** the segmented nav and the auth buttons hide, and a 42×42 dark hamburger opens a dark drop-down panel (12px radius, 16px links). Signed out it ends with Log in and Start free side by side; signed in it ends with the account menu.
+- **Phone, under 760px: bottom bar, no hamburger.** The top row keeps only the logo, the cart and the avatar (or Log in). A fixed bottom bar, 64px plus the safe-area inset, white at 94% with a blur and a hairline on top, holds five equal tabs: icon (22px) over an 11px/700 label, `muted-foreground` when idle and `primary` with a 3px top marker when active.
+  - Signed out: Home · Chapters · Courses · Practice (free practice) · More.
+  - Signed in: Home · Chapters · Learning · Practice · More.
+  - **More** opens a bottom sheet (rounded top, drag handle, dimmed backdrop) with the account menu (or Log in / Start free), the cart, then two-column tiles for every other page.
+  - Pages add bottom padding for the bar, and anything floating (FlexCare, toasts, sticky rank bars) sits above it. Focus pages (log in, checkout, player) have no bar.
 
 ### 3.3 Highlight box
 - One key word in every H1 and H2 sits in a box: `display: inline-block; padding: 0 12–14px 4–6px`.
@@ -106,16 +122,19 @@ Use `text-wrap: balance` on headings and `text-wrap: pretty` on paragraphs.
 `position: sticky; top: 0`, `card` at 90% with `backdrop-filter: blur(16px)`, and hairlines top and bottom. Contents wrap onto a second line rather than scrolling. It holds a search field, a dark segmented control (class or time period), outline chips or a select for sort, toggles, and a muted result count pushed to the right.
 
 ### 3.7 Section rhythm
-- Sections: `padding: 88–96px 0`, separated by a 1px `border-border` top line. No cards around sections.
+- Sections: `padding: 88–96px 0`. **No divider lines between sections**: spacing alone separates them. No cards around sections.
 - Content widths: 1240px for listings, 1120–1180px for detail pages, 820–1000px for text, legal pages and forms.
 - Section headers: eyebrow, then H2 with highlight box, then lead, all centred. Split sections put the H2 on the left and content on the right, with `flex-wrap` and `gap: 40px 64px`.
 - List blocks: a 2px `foreground` rule under the block heading, then 1px `border-border` between rows.
 
 ### 3.8 Footer
-White, full-bleed, `border-top: border-border`.
-- **Columns:** brand (logo, one-line description, registered address) · Learn (chapters, courses, pricing, leaderboard) · Company (About us, Contact us, FAQs, Blog) · Support (phone, email, WhatsApp, hours).
+White, full-bleed, no top border.
+- **Columns:** brand (logo, one-line description, social icons) · Learn (chapters, courses, pricing, leaderboard, book a 1:1 call) · Company (About us, Contact us, FAQs) · Resources (Blog, Free practice) · Support (email, WhatsApp, hours). The registered address and phone are left out until they're final; the support number lives on the Contact page.
 - **Bottom row:** © 2026 Mathflex, then Terms & conditions · Privacy policy · Refund policy. The policies appear only here.
 - **Wordmark:** a giant "mathflex", `clamp(90px, 21vw, 300px)`, weight 900, −0.06em, `white-space: nowrap`. It is filled with a vertical gradient from `muted` to the `brand-2` tint and bleeds off the bottom edge.
+
+### 3.9 Closing call to action
+The last section before the footer is a centred H2 (with highlight box), a short lead and one or two buttons, wrapped in a `rounded-2xl` card on the wash (`bg-wash`), max 1240px wide, with a soft warm shadow. This is the one allowed exception to "no wash on body sections".
 
 ---
 
@@ -131,7 +150,7 @@ White, full-bleed, `border-top: border-border`.
 | **FAQ row** | A full-width button at 16–17px/700 with a 26–28px round "+" that turns `primary` and rotates 45° when open. The answer expands with a `grid-template-rows: 0fr → 1fr` transition. |
 | **Toast** | Fixed at bottom centre, `foreground` background, 12px radius, white 14px/600 text, with an optional primary action ("View cart · n"). It auto-hides after 2.6s. |
 | **Leaderboard row** | 64px tall: rank (top 3 in `gold`), an ▲/▼ movement indicator (`ok`/`bad`), 38px avatar, name and city, class, streak, and XP in `xp`. Rows reorder by animating `top` over 0.7s. Your own row has the primary tint, and a sticky dark "you" bar sits at the bottom. |
-| **Blog card** | A 16:10 cover, 12px radius, with a category chip. Then date · read time, a 20px/800 title and a 2-line excerpt. Articles are grouped by month, newest first, with a 1px divider between months. |
+| **Blog card** | A 16:10 cover, 12px radius, with a category chip, and the date and read time on the thumbnail. Then an 18px/800 title and a 2-line excerpt. Three per row on desktop. The listing leads with the latest post as a white banner, then groups older posts by category. |
 | **Buttons** | Primary: `bg-primary`, white, 8px radius, 700 weight, `padding: 12–14px 18–24px`, `box-shadow: 0 10px 24px -10px primary/80%`. Dark: `bg-foreground`, white. Secondary: `bg-secondary` (0.97) with a 1px border and `secondary-foreground` text. |
 
 ---
@@ -150,14 +169,20 @@ White, full-bleed, `border-top: border-border`.
 
 | Width | Behaviour |
 |---|---|
-| ≥ 1024px | Full segmented nav and the auth buttons |
-| < 1024px | Hamburger menu |
+| ≥ 1024px | Full segmented nav and the auth buttons (or avatar) |
+| 760–1023px | Hamburger menu, no bottom bar |
 | < 1000px | Sticky side columns (contents list, purchase box) drop into the page flow |
-| < 760px | Single-column cards, two-column footer grid, smaller podium and posters, hero frames show the video only |
+| < 760px | **Phone bottom bar** (section 3.2), no hamburger. Single-column cards, two-column footer grid, smaller podium and posters, hero frames show the video only. Wide product mock-ups that would need sideways scrolling are hidden (their feature list stays), and scroll-driven sticky demos become a plain stack. |
 
 - Read the width with `ResizeObserver`, and also re-check it after load at 300 and 1000ms. Never trust the first `innerWidth`.
 - Text never sits in fixed-height boxes. Use `minmax(0, 1fr)` grid tracks and `flex-wrap` with `gap`.
-- Tap targets are at least 44px on mobile.
+- Tap targets are at least 44px on mobile. For chips and icon buttons that look smaller, add the `tap` utility (with `relative` unless the element is already positioned): it grows the hit area to 44px without changing the look.
+- No page may scroll sideways at 390, 768 or 1024px; only tables, chip rows and code blocks scroll inside their own container.
+
+### States
+- **Loading:** skeletons in the page's own shape (`components/site/web/Skeletons.tsx`). Only on signed-in pages, the chapters listing and the player. Never on public detail pages, because a `loading.tsx` makes missing pages and redirects return 200 instead of 404/307.
+- **Errors:** every site layout has an `error.tsx` showing "Something went wrong" with Try again (`retry`) and Go home, plus the error reference. No internals are shown.
+- **Empty states:** a dashed `muted` box with one line of copy and one action. Never leave a blank area.
 
 ---
 
@@ -203,4 +228,4 @@ White, full-bleed, `border-top: border-border`.
 - Don't use photos of Karan; use his intro video.
 - Don't use emoji or icon-heavy feature grids.
 
-**Placeholders still to replace:** Karan's intro and story videos, college counts, student reviews, support phone, email and address, CIN, social links, blog content and covers, and per-chapter part names and counts.
+**Placeholders still to replace:** Karan's intro and story videos (and his photo for the Book a call card), per-chapter preview videos (uploaded in admin), college counts, student reviews, the registered address, CIN and GSTIN, the YouTube link, blog content and covers (Sanity), the free-practice question bank, and real per-part durations.
