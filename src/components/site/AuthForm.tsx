@@ -15,7 +15,15 @@ export type AuthPanel = {
 // Log in / sign up (dipankar-design/designs/Login.dc.html). Same server actions and fields as
 // before (login: email, password; signup: name, email, optional phone, class incl. Dropper,
 // password). Google, OTP and password reset aren't shown: there's no backend for them.
-export function AuthForm({ mode, next, panel, paused = false }: { mode: "login" | "signup"; next: string; panel?: AuthPanel; paused?: boolean }) {
+const GOOGLE_ERRORS: Record<string, string> = {
+  google_unavailable: "Google sign-in is being set up. Use your email for now.",
+  google_cancelled: "Google sign-in was cancelled.",
+  google_failed: "We couldn't sign you in with Google. Please try again.",
+  blocked: "This account is suspended. Please contact support.",
+  signup_paused: "New sign-ups are paused right now. Existing accounts can still log in.",
+};
+
+export function AuthForm({ mode, next, panel, paused = false, googleReady = false, error }: { mode: "login" | "signup"; next: string; panel?: AuthPanel; paused?: boolean; googleReady?: boolean; error?: string }) {
   const [state, action, pending] = useActionState<AuthState, FormData>(mode === "login" ? login : signup, undefined);
   const isSignup = mode === "signup";
   const field = "h-12 w-full rounded-lg border border-input bg-card px-3.5 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-3 focus:ring-ring/25";
@@ -39,6 +47,25 @@ export function AuthForm({ mode, next, panel, paused = false }: { mode: "login" 
               <Link href={`/signup${q}`} role="tab" aria-selected={isSignup} className={cx("flex-1 rounded-md px-3 py-2.5 text-center text-sm font-bold", isSignup ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>Sign up</Link>
             </div>
 
+            {error && GOOGLE_ERRORS[error] && (
+              <p role="alert" className="mt-6 rounded-lg bg-bad/8 px-3.5 py-2.5 text-sm font-semibold text-foreground">{GOOGLE_ERRORS[error]}</p>
+            )}
+            {!(isSignup && paused) && (
+              <>
+                {googleReady ? (
+                  <a href={`/api/auth/google?next=${encodeURIComponent(next)}`} className="mt-6 flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-border bg-card text-[15px] font-bold text-foreground shadow-[0_1px_4px_0_rgb(0_0_0/0.06)] transition hover:bg-muted">
+                    <GoogleMark /> Continue with Google
+                  </a>
+                ) : (
+                  <span aria-disabled className="mt-6 flex h-12 w-full cursor-not-allowed items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-muted/50 text-[15px] font-bold text-muted-foreground" title="Google sign-in is being set up">
+                    <GoogleMark /> Continue with Google <span className="text-xs font-semibold">(coming soon)</span>
+                  </span>
+                )}
+                <div className="mt-5 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground" aria-hidden>
+                  <span className="h-px flex-1 bg-border" />or use email<span className="h-px flex-1 bg-border" />
+                </div>
+              </>
+            )}
             {isSignup && paused ? (
               <div className="mt-6 rounded-xl bg-wash p-6 text-center">
                 <div className="text-lg font-extrabold tracking-[-0.02em]">New sign-ups are paused right now</div>
@@ -49,7 +76,7 @@ export function AuthForm({ mode, next, panel, paused = false }: { mode: "login" 
                 </div>
               </div>
             ) : (
-            <form action={action} className="mt-6 grid gap-3.5">
+            <form action={action} className="mt-5 grid gap-3.5">
               <input type="hidden" name="next" value={next} />
               {isSignup && (
                 <label className="grid gap-1.5">
@@ -101,7 +128,6 @@ export function AuthForm({ mode, next, panel, paused = false }: { mode: "login" 
               {isSignup ? "Already have an account? " : "New to Mathflex? "}
               <Link href={`/${isSignup ? "login" : "signup"}${q}`} className="font-bold text-primary">{isSignup ? "Log in" : "Create an account"}</Link>
             </p>
-            {!isSignup && <p className="mt-2 text-center text-[13px] text-muted-foreground">Forgot your password? <Link href="/contact" className="font-semibold text-primary">Contact us</Link> and we&apos;ll help you back in.</p>}
             <p className="mt-3.5 text-center text-xs leading-[1.5] text-muted-foreground">
               By continuing you agree to our <Link href="/terms" className="text-primary">Terms</Link> and <Link href="/privacy" className="text-primary">Privacy policy</Link>.
             </p>
@@ -146,5 +172,16 @@ export function AuthForm({ mode, next, panel, paused = false }: { mode: "login" 
         </aside>
       )}
     </div>
+  );
+}
+
+function GoogleMark() {
+  return (
+    <svg className="size-5" viewBox="0 0 48 48" aria-hidden>
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
+      <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" />
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" />
+    </svg>
   );
 }

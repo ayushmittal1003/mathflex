@@ -14,6 +14,8 @@ export type HomeChapter = {
   jeeWeightage: number;
   parts: HomePart[];
   hasFreePart: boolean;
+  // Chapter preview video (3–4 min) as an embeddable URL; null until it is uploaded.
+  previewSrc: string | null;
 };
 
 export type HomeCourse = {

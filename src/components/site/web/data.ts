@@ -51,7 +51,7 @@ export async function getInsideData(settings: Settings) {
     db.resource.findMany({ where: { isPublished: true }, orderBy: { createdAt: "asc" }, take: 3, select: { title: true, type: true } }),
     settings.features.leaderboard ? weeklyLeaders(new Date(requestNow())) : Promise.resolve([]),
   ]);
-  return { chapters: chapters.map((c) => ({ ...c, hasFreePart: false })), resources, leaders };
+  return { chapters: chapters.map((c) => ({ ...c, hasFreePart: false, previewSrc: null })), resources, leaders };
 }
 
 // Brand panel on log in / sign up: a few real chapters and live proof points.

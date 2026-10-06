@@ -7,7 +7,7 @@ import type { HomeChapter } from "./types";
 
 // 01 Hero: framed wash, headline, proof points, CTAs and a dashboard peek that overlaps
 // into the next section. Peek rows are real chapters; progress numbers are illustrative.
-export function HomeHero({ chapters, chapterCount, minPrice, anyFree }: { chapters: HomeChapter[]; chapterCount: number; minPrice: number | null; anyFree: boolean }) {
+export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeChapter[]; chapterCount: number; minPrice: number | null }) {
   const peek = chapters.filter((c) => c.parts.length > 0).slice(0, 2);
   const peekProgress = [62, 24];
 
@@ -33,9 +33,9 @@ export function HomeHero({ chapters, chapterCount, minPrice, anyFree }: { chapte
             <Proof>
               Taught by an <b>IIT Delhi</b> alumnus
             </Proof>
-            {anyFree && (
+            {chapterCount > 0 && (
               <Proof>
-                Part 1 <b>free</b> to watch
+                <b>Free</b> chapter previews
               </Proof>
             )}
             {minPrice !== null && (
@@ -46,12 +46,12 @@ export function HomeHero({ chapters, chapterCount, minPrice, anyFree }: { chapte
           </div>
 
           <div className="mt-8.5 flex flex-wrap justify-center gap-3">
-            {anyFree && (
+            {chapterCount > 0 && (
               <a href="#previews" className={cx(button.lg, tone.primary)}>
-                <PlayIcon /> Watch Part 1 free
+                <PlayIcon /> Watch a preview
               </a>
             )}
-            <Link href="/chapters" className={cx(button.lg, anyFree ? tone.white : tone.primary)}>
+            <Link href="/chapters" className={cx(button.lg, chapterCount > 0 ? tone.white : tone.primary)}>
               Browse {chapterCount} chapters →
             </Link>
           </div>

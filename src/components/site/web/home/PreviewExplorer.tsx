@@ -7,28 +7,27 @@ import { LockIcon, Mark, PlayIcon, SectionHead, posterBg } from "../primitives";
 import { button, cx, tone } from "../ui";
 import { clock, glyphSize, type HomeChapter } from "./types";
 
-// 03 Free previews: class tabs, chapter search and a framed preview of the picked chapter.
-// "Watch Part 1" opens the existing free-preview player at /learn/[slug] (no sign-up).
+// 03 Chapter previews: class tabs, chapter search and the picked chapter's 3–4 minute
+// preview video (uploaded in admin). Without one yet, the frame says "Preview coming soon".
 export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapters: HomeChapter[]; chapterCount: number; mentorShort: string }) {
   const classes = [...new Set(chapters.map((c) => c.classLevel))].sort();
   const [cls, setCls] = useState(classes[0] ?? 11);
   const [q, setQ] = useState("");
   const list = useMemo(() => chapters.filter((c) => c.classLevel === cls), [chapters, cls]);
   const [selId, setSelId] = useState<string | null>(null);
-  const cur = list.find((c) => c.id === selId) ?? list.find((c) => c.hasFreePart) ?? list[0];
+  const cur = list.find((c) => c.id === selId) ?? list.find((c) => c.previewSrc) ?? list[0];
   const rows = list.filter((c) => !q.trim() || c.title.toLowerCase().includes(q.trim().toLowerCase()));
 
   if (!cur) return null;
   const off = pctOff(cur.price, cur.mrp);
-  const freePart = cur.parts.find((p) => p.isFreePreview);
 
   return (
     <section id="previews" className="scroll-mt-6 py-22">
       <SectionHead
-        eyebrow="Free previews"
+        eyebrow="Chapter previews"
         dot="ok"
         title={<>Try it before you <Mark>buy</Mark> it.</>}
-        lead={`Pick a chapter and watch Part 1 free. No card, no sign-up wall. If ${mentorShort}'s way of teaching clicks, unlock the rest of the chapter.`}
+        lead={`Pick a chapter and watch its 3–4 minute preview. No card, no sign-up. If ${mentorShort}'s way of teaching clicks, unlock the whole chapter.`}
       />
       {classes.length > 1 && (
         <div className="mt-8 flex justify-center">
@@ -90,7 +89,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
                   </span>
                   <span className="shrink-0 text-right">
                     <span className="block text-[15px] font-extrabold">{inr(c.price)}</span>
-                    {c.hasFreePart && <span className="mt-0.5 block text-[11px] font-bold text-ok">Part 1 free</span>}
+                    {c.previewSrc && <span className="mt-0.5 block text-[11px] font-bold text-primary">▶ Preview</span>}
                   </span>
                 </button>
               );
@@ -106,46 +105,42 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
 
         {/* Preview frame */}
         <div className="flex min-w-0 max-w-full flex-[2_1_520px] flex-col overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-frame">
-          <div className="relative aspect-video overflow-hidden text-white" style={posterBg(cur.coverFrom, cur.coverTo)}>
-            <div className={cx("absolute -right-6 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", glyphSize(cur.symbol, "text-[150px] tablet:text-[220px]", "text-[220px] tablet:text-[380px]"))}>
-              {cur.symbol}
+          {cur.previewSrc ? (
+            <div className="relative aspect-video bg-foreground">
+              <iframe key={cur.id} src={cur.previewSrc} title={`${cur.title} preview`} className="absolute inset-0 size-full" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen loading="lazy" />
             </div>
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.6))]" />
-            <div className="absolute left-5 top-4.5 flex gap-2">
-              <span className="rounded-md bg-black/35 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.08em] backdrop-blur-md">Class {cur.classLevel}</span>
-              {cur.jeeWeightage > 0 && <span className="rounded-md bg-black/35 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.06em] backdrop-blur-md">{cur.jeeWeightage}% of JEE Main</span>}
+          ) : (
+            <div className="relative aspect-video overflow-hidden text-white" style={posterBg(cur.coverFrom, cur.coverTo)}>
+              <div className={cx("absolute -right-6 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", glyphSize(cur.symbol, "text-[150px] tablet:text-[220px]", "text-[220px] tablet:text-[380px]"))}>
+                {cur.symbol}
+              </div>
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.6))]" />
+              <div className="absolute left-5 top-4.5 flex gap-2">
+                <span className="rounded-md bg-black/35 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.08em] backdrop-blur-md">Class {cur.classLevel}</span>
+                {cur.jeeWeightage > 0 && <span className="rounded-md bg-black/35 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.06em] backdrop-blur-md">{cur.jeeWeightage}% of JEE Main</span>}
+              </div>
+              <span className="absolute left-1/2 top-[46%] grid -translate-x-1/2 -translate-y-1/2 place-items-center gap-3 text-center">
+                <span className="grid size-[76px] place-items-center rounded-full bg-white/20 text-white shadow-[0_0_0_12px_rgb(255_255_255/0.08)] backdrop-blur-sm"><PlayIcon className="size-6.5" /></span>
+                <span className="rounded-md bg-black/45 px-3 py-1.5 text-xs font-bold backdrop-blur">Preview coming soon</span>
+              </span>
+              <div className="absolute inset-x-5 bottom-4">
+                <div className="text-xs font-semibold opacity-85">Chapter preview · 3–4 min</div>
+                <div className="mt-1 text-[clamp(22px,2.6vw,32px)] font-extrabold leading-[1.05] tracking-[-0.03em]">{cur.title}</div>
+              </div>
             </div>
-            {freePart && (
-              <Link
-                href={`/learn/${cur.slug}?part=${freePart.order}`}
-                aria-label={`Watch Part ${freePart.order} of ${cur.title} free`}
-                className="absolute left-1/2 top-[46%] grid size-[76px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition duration-300 hover:scale-[1.06]"
-              >
-                <PlayIcon className="size-6.5" />
-              </Link>
-            )}
-            <div className="absolute inset-x-5 bottom-4">
-              <div className="text-xs font-semibold opacity-85">{freePart ? `Now previewing · Part ${freePart.order}, free` : "Preview"}</div>
-              <div className="mt-1 text-[clamp(22px,2.6vw,32px)] font-extrabold leading-[1.05] tracking-[-0.03em]">{cur.title}</div>
-            </div>
-          </div>
+          )}
 
           <div className="no-scrollbar flex gap-2.5 overflow-x-auto border-b border-border p-4">
-            {cur.parts.map((p, i) => {
-              const free = p.isFreePreview;
-              return (
-                <div key={p.id} className={cx("flex flex-[1_0_190px] flex-col gap-2 rounded-lg border p-2.5", free ? "border-primary/35 bg-selected" : "border-border")}>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-[11px] font-bold text-muted-foreground">PART {p.order}{p.durationSec > 0 && ` · ${clock(p.durationSec)}`}</span>
-                    <span className={cx("grid size-6 place-items-center rounded-full", free ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
-                      {free ? <PlayIcon className="size-2.5" /> : <LockIcon />}
-                    </span>
-                  </div>
-                  <div className={cx("text-sm font-bold leading-[1.3]", free ? "text-foreground" : "text-secondary-foreground")}>{p.title}</div>
-                  <div className="text-xs text-muted-foreground">{free ? "Free preview" : i > 0 ? `Unlocks after Part ${cur.parts[i - 1].order}` : "Unlocks after purchase"}</div>
+            {cur.parts.map((p) => (
+              <div key={p.id} className="flex flex-[1_0_190px] flex-col gap-2 rounded-lg border border-border p-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-[11px] font-bold text-muted-foreground">PART {p.order}{p.durationSec > 0 && ` · ${clock(p.durationSec)}`}</span>
+                  <span className="grid size-6 place-items-center rounded-full bg-muted text-muted-foreground"><LockIcon /></span>
                 </div>
-              );
-            })}
+                <div className="text-sm font-bold leading-[1.3] text-foreground">{p.title}</div>
+              </div>
+            ))}
+            {cur.parts.length === 0 && <div className="px-1 py-2 text-sm text-muted-foreground">Parts are being recorded.</div>}
           </div>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3.5 p-4">
@@ -158,19 +153,15 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
               <div className="text-xs text-muted-foreground">All parts, DPPs, PYQs and notes</div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {freePart && (
-                <Link href={`/learn/${cur.slug}?part=${freePart.order}`} className={cx(button.md, tone.primaryFlat)}>
-                  <PlayIcon className="size-3.5" /> Watch Part {freePart.order}
-                </Link>
-              )}
-              <BuyButton item={{ type: "CHAPTER", id: cur.id }} className={cx(button.md, tone.secondary)}>Unlock chapter</BuyButton>
+              <Link href={`/chapter/${cur.slug}`} className={cx(button.md, tone.secondary)}>View chapter</Link>
+              <BuyButton item={{ type: "CHAPTER", id: cur.id }} className={cx(button.md, tone.primaryFlat)}>Unlock chapter</BuyButton>
             </div>
           </div>
         </div>
       </div>
 
       <div className="mx-auto mt-5 w-[min(1120px,calc(100%-48px))] text-center">
-        <Link href="/browse" className="text-sm font-bold text-primary hover:brightness-90">Browse all {chapterCount} chapters →</Link>
+        <Link href="/chapters" className="text-sm font-bold text-primary hover:brightness-90">Browse all {chapterCount} chapters →</Link>
       </div>
     </section>
   );

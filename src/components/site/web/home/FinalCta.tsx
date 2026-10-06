@@ -7,7 +7,7 @@ import { button, cx, tone } from "../ui";
 import { glyphSize, type HomeChapter } from "./types";
 
 // 12 Final CTA with a fan of real chapter posters that spreads on hover.
-export function FinalCta({ chapters, minPrice, anyFree }: { chapters: HomeChapter[]; minPrice: number | null; anyFree: boolean }) {
+export function FinalCta({ chapters, minPrice }: { chapters: HomeChapter[]; minPrice: number | null }) {
   const [spread, setSpread] = useState(false);
   // Prefer high-weightage chapters for the fan, like the design's hand-picked set.
   const fan = [...chapters].sort((a, b) => b.jeeWeightage - a.jeeWeightage).slice(0, 7);
@@ -25,13 +25,13 @@ export function FinalCta({ chapters, minPrice, anyFree }: { chapters: HomeChapte
           </Mark>
         </h2>
         <p className="mx-auto mt-6 max-w-[520px] text-lg leading-[1.55] text-secondary-foreground">
-          {anyFree ? "Watch Part 1 free today. If it clicks, the rest of the chapter is yours" : "Pick the chapter you're stuck on. It's yours"}
+          {chapters.length ? "Watch a chapter preview today. If it clicks, the whole chapter is yours" : "Pick the chapter you're stuck on. It's yours"}
           {minPrice !== null ? ` from ${inr(minPrice)}.` : "."}
         </p>
         <div className="mt-8.5 flex flex-wrap justify-center gap-3">
-          {anyFree && (
+          {chapters.length > 0 && (
             <a href="#previews" className={cx(button.lg, tone.primary)}>
-              <PlayIcon /> Watch Part 1 free
+              <PlayIcon /> Watch a preview
             </a>
           )}
           <a href="#pricing" className={cx(button.lg, tone.secondary, "text-foreground")}>See pricing</a>

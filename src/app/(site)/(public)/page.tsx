@@ -43,13 +43,16 @@ export default async function Home() {
   const chapters: HomeChapter[] = chapterRows.map((c) => ({
     ...c,
     hasFreePart: freeOn && c.parts.some((p) => p.isFreePreview),
+    // Chapter preview video. TODO (backend, Ayush): add previewVideoProvider + previewVideoRef
+    // to Chapter with an admin upload field, select them above, then use
+    // playbackFor(c.previewVideoProvider, c.previewVideoRef) and pass its iframe src here.
+    previewSrc: null,
   }));
   const courses: HomeCourse[] = courseRows.map((c) => ({ ...c, chapterCount: c._count.chapters }));
 
   // A course that contains every published chapter is the "full syllabus" one.
   const fullCourse = [...courses].sort((a, b) => b.chapterCount - a.chapterCount).find((c) => chapters.length > 0 && c.chapterCount >= chapters.length) ?? null;
   const minChapterPrice = chapters.length ? Math.min(...chapters.map((c) => c.price)) : null;
-  const anyFree = chapters.some((c) => c.hasFreePart);
   const names = instructorNames(settings);
   const mentorship = settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null;
 
@@ -77,8 +80,8 @@ export default async function Home() {
 
   return (
     <>
-      <HomeHero chapters={chapters} chapterCount={chapters.length} minPrice={minChapterPrice} anyFree={anyFree} />
-      {anyFree && <PreviewExplorer chapters={chapters.filter((c) => c.parts.length > 0)} chapterCount={chapters.length} mentorShort={names.short} />}
+      <HomeHero chapters={chapters} chapterCount={chapters.length} minPrice={minChapterPrice} />
+      {chapters.length > 0 && <PreviewExplorer chapters={chapters} chapterCount={chapters.length} mentorShort={names.short} />}
       <CostCompare fullCourse={fullCourse} minChapterPrice={minChapterPrice} />
       <HowItWorks chapter={demoChapter} practice={practice} />
       <InsideMathflex chapters={inside.chapters} leaders={inside.leaders} resources={inside.resources} />
@@ -86,7 +89,7 @@ export default async function Home() {
       <CompareTable fullPrice={fullCourse?.price ?? null} callPrice={mentorship?.price ?? null} />
       <PricingSection chapters={chapters} courses={courses} coupon={coupon} />
       <HomeFaq faqs={faqs} whatsapp={settings.whatsappNumber} />
-      <FinalCta chapters={chapters} minPrice={minChapterPrice} anyFree={anyFree} />
+      <FinalCta chapters={chapters} minPrice={minChapterPrice} />
     </>
   );
 }
