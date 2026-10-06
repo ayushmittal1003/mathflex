@@ -58,7 +58,7 @@ export default async function PricingPage() {
             Pay only for what you <Mark onWash>need<Caret /></Mark>
           </h1>
           <p className={cx(heroLead, "mt-5.5 max-w-[580px]")}>
-            {freeChapter ? "Start free with Part 1 of a chapter marked free. Then buy" : "Buy"} one chapter or a full course. You pay once, with no monthly fees.
+            Watch any chapter&apos;s free preview, then buy one chapter or a full course. You pay once, with no monthly fees.
           </p>
         </div>
         <PricingTiers courses={courses} minPrice={minPrice} maxPrice={maxPrice} freeChapter={freeChapter} />

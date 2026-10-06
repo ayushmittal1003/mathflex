@@ -45,13 +45,12 @@ export const instructorChapterLine = "builds every part around the questions tha
 
 export const about = {
   storyVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
-  // {fullName}, {minPrice} are filled at render time. The last story line only shows when
-  // free previews exist.
+  // {fullName}, {minPrice} are filled at render time.
   story: [
     "{fullName} cracked JEE and studied at IIT Delhi. Over the years he has guided more than 1,000 JEE aspirants, and he kept hearing the same thing: students were stuck on a few chapters, but the only way to get help was a coaching course that cost lakhs or an online bundle with the whole syllabus.",
     "So we built Mathflex around one idea. Pay for the chapter you're stuck on, not the whole course. Every chapter is split into short parts, with practice after each one, so you can fix a weak topic in a weekend.",
   ],
-  storyFree: "Part 1 of the chapters marked free costs nothing. Watch it, and if it clicks, the rest of the chapter starts at {minPrice}.",
+  storyFree: "Every chapter has a free 3–4 minute preview. Watch it, and if it clicks, the full chapter starts at {minPrice}.",
   // "The usual way" vs "The Mathflex way". {minPrice}/{fullPrice} are live.
   problems: [
     { k: "Cost", bad: "₹1–2 lakh for coaching, ₹30,000+ for online bundles", good: "From {minPrice} a chapter{fullPriceLine}" },
@@ -61,7 +60,7 @@ export const about = {
   ],
   rules: [
     { t: "Pay per chapter", d: "You shouldn't have to buy the whole syllabus to fix one weak topic. Every chapter is sold on its own." },
-    { t: "Watch before you pay", d: "Chapters marked “Part 1 free” let you watch Part 1 with no card and no sign-up. If it doesn't click, you've lost nothing.", needsFree: true },
+    { t: "Watch before you pay", d: "Every chapter has a free 3–4 minute preview, with no card and no sign-up. If it doesn't click, you've lost nothing." },
     { t: "Practice right after", d: "Every part ends with practice problems and past JEE questions, so what you watched turns into marks." },
   ],
 };
@@ -142,7 +141,7 @@ export const faqGroups: FaqGroup[] = [
     title: "Getting started",
     items: [
       { q: "What is Mathflex?", a: "Chapter-wise JEE maths videos for Class 11 and 12. Each chapter is split into short video parts, with practice problems, previous-year JEE questions and notes." },
-      { q: "Can I watch anything for free?", a: "Yes. Chapters marked “Part 1 free” let you watch Part 1 without paying or signing up." },
+      { q: "Can I watch anything for free?", a: "Yes. Every chapter has a free 3–4 minute preview you can watch without paying or signing up. The full parts unlock when you buy the chapter." },
       { q: "Is this for JEE or Boards?", a: "Both. Chapters follow the Class 11 and 12 syllabus, and each one shows how much of JEE Main it carries so you can prioritise." },
       { q: "Do I need an account to buy?", a: "You can add chapters to your cart without an account. You log in or sign up with your email and a password just before you pay." },
     ],
@@ -204,7 +203,7 @@ export function chapterFaqs(c: { classLevel: number; free: boolean; validityDays
   return [
     {
       q: "Can I watch before I buy?",
-      a: c.free ? "Yes. Part 1 is free to watch, no sign-up needed. Buy the chapter to unlock the rest." : "Not this chapter yet. Look for chapters marked “Part 1 free” to try one before you buy.",
+      a: "Yes. Watch the chapter's free 3–4 minute preview, no sign-up needed. Buy the chapter to unlock every part.",
     },
     {
       q: "How do the parts unlock?",
@@ -228,10 +227,10 @@ export const courseFaqs: Faq[] = [
 // Pricing page FAQs. {tokens} are filled from live data; lines whose data is missing are dropped.
 export const pricingFaqs: (Faq & { needs?: "free" | "gst" })[] = [
   { q: "Is there a monthly fee?", a: "No. You pay once for a chapter or a course and keep access for its access period." },
-  { q: "What's free?", a: "Part 1 of chapters marked “Part 1 free”. No card or sign-up needed to watch.", needs: "free" },
+  { q: "What's free?", a: "A 3–4 minute preview of every chapter. No card or sign-up needed. All parts unlock when you buy the chapter." },
   { q: "Why do chapter prices differ?", a: "Each chapter is priced on its own, from {minPrice} to {maxPrice}. You only pay for the chapters you pick." },
   { q: "Is GST included?", a: "GST at {gstPercent}% is added to the total at checkout, before you pay.", needs: "gst" },
-  { q: "What if it isn't right for me?", a: "Watch a free Part 1 first where it's available. For how refunds work, see the [refund policy](/refund-policy)." },
+  { q: "What if it isn't right for me?", a: "Watch the chapter's free preview first. For how refunds work, see the [refund policy](/refund-policy)." },
 ];
 
 // Thank-you page "Your first week" steps. Copy only; links are set on the page.

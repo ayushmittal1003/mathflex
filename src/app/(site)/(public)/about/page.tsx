@@ -19,10 +19,9 @@ export const metadata = { title: "About us", alternates: { canonical: "/about" }
 // timeline has no invented years or results. Copy lives in lib/site-content.ts.
 export default async function AboutPage() {
   const settings = await getSettings();
-  const [chapters, courses, freeCount, questionCount] = await Promise.all([
+  const [chapters, courses, questionCount] = await Promise.all([
     db.chapter.findMany({ where: { isPublished: true }, select: { price: true, classLevel: true, parts: { select: { durationSec: true } } } }),
     db.course.findMany({ where: { isPublished: true }, orderBy: { sortOrder: "asc" }, select: { title: true, slug: true, price: true, _count: { select: { chapters: true } } } }),
-    settings.features.freePreviews ? db.part.count({ where: { isFreePreview: true, chapter: { isPublished: true } } }) : Promise.resolve(0),
     db.question.count({ where: { isPublished: true, chapter: { isPublished: true } } }),
   ]);
   const names = instructorNames(settings);
@@ -30,7 +29,6 @@ export default async function AboutPage() {
   const full = [...courses].sort((a, b) => b._count.chapters - a._count.chapters).find((c) => c._count.chapters >= chapters.length && chapters.length > 0);
   const totalSec = chapters.reduce((s, c) => s + c.parts.reduce((t, p) => t + p.durationSec, 0), 0);
   const classes = [...new Set(chapters.map((c) => c.classLevel))].sort();
-  const anyFree = freeCount > 0;
   const vars: Record<string, string> = {
     fullName: names.full,
     mentorShort: names.short,
@@ -40,13 +38,13 @@ export default async function AboutPage() {
     hours: totalSec ? (totalSec >= 36_000 ? `${Math.floor(totalSec / 3600)}+` : duration(totalSec)) : "",
     questionCount: questionCount ? questionCount.toLocaleString("en-IN") : "",
     minPrice: minPrice !== null ? inr(minPrice) : "",
-    freeLine: anyFree ? "Part 1 of chapters marked free costs nothing." : "",
+    freeLine: "Every chapter has a free preview.",
     fullPriceLine: full ? `, ${inr(full.price)} for both classes` : "",
   };
   const has = (key: string) => ({ chapters: chapters.length > 0, hours: totalSec > 0, practice: questionCount > 0, price: minPrice !== null }[key] ?? true);
   const pillars = aboutPillars.filter((p) => has(p.key)).map((p) => ({ ...p, big: fillFaq(p.big, vars), small: fillFaq(p.small, vars), body: fillFaq(p.body, vars).trim() }));
   const timeline = aboutTimeline.filter((t) => chapters.length > 0 || !t.t.includes("launches")).map((t) => ({ ...t, t: fillFaq(t.t, vars), d: fillFaq(t.d, vars) }));
-  const rules = about.rules.filter((r) => !("needsFree" in r) || anyFree);
+  const rules = about.rules;
 
   const offerings = [
     chapters.length > 0 && {
@@ -113,7 +111,7 @@ export default async function AboutPage() {
           </h2>
           <div className="mt-9 gap-12 text-lg leading-[1.7] text-secondary-foreground tablet:columns-2 [&>p]:mb-5 [&>p]:break-inside-avoid">
             {about.story.map((p) => <p key={p.slice(0, 20)} className="text-pretty">{fillFaq(p, vars)}</p>)}
-            {anyFree && minPrice !== null && <p className="text-pretty">{fillFaq(about.storyFree, vars)}</p>}
+            {minPrice !== null && <p className="text-pretty">{fillFaq(about.storyFree, vars)}</p>}
           </div>
         </div>
       </section>
@@ -201,7 +199,7 @@ export default async function AboutPage() {
           That&apos;s why we&apos;re here: so you get your <Mark>seat</Mark> too.
         </h2>
         <p className="mx-auto mt-4.5 max-w-[520px] text-[17px] leading-[1.55] text-secondary-foreground">
-          An IIT or NIT seat through JEE is within reach. Start with one chapter{anyFree ? ", watch Part 1 free," : ""} and build from there.
+          An IIT or NIT seat through JEE is within reach. Watch a free chapter preview, start with one chapter and build from there.
         </p>
         <div className="mt-7.5 flex flex-wrap justify-center gap-2.5">
           <Link href="/signup" className={cx(button.md, tone.primary)}>Start free</Link>
