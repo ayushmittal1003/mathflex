@@ -57,7 +57,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
           ))}
         </div>
 
-        <div className="z-[2] min-w-0 flex-[1.15_1_380px] tablet:sticky tablet:top-6">
+        <div className="z-[2] min-w-0 flex-[1.15_1_380px] tablet:sticky tablet:top-[max(24px,calc(50vh-260px))]">
           <div className="h-[480px] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-frame tablet:h-[520px]">
             <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5">
               <span className="truncate text-[13px] font-bold">My Learning · {chapter.title}</span>

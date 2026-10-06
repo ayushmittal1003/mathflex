@@ -2,7 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { duration, inr } from "@/lib/format";
-import { about, aboutPillars, aboutTimeline, fillFaq, instructor, instructorNames, placeholders } from "@/lib/site-content";
+import { about, aboutPillars, aboutTimeline, fillFaq, instructor, instructorNames } from "@/lib/site-content";
 import { Caret, Eyebrow, Mark, SectionHead } from "@/components/site/web/primitives";
 import { WashHero, heroH1, heroLead } from "@/components/site/web/WashHero";
 import { VideoFrame } from "@/components/site/web/VideoFrame";
@@ -207,7 +207,6 @@ export default async function AboutPage() {
           <Link href="/signup" className={cx(button.md, tone.primary)}>Start free</Link>
           <Link href="/chapters" className={cx(button.md, tone.secondary)}>Browse chapters</Link>
         </div>
-        <p className="mx-auto mt-10 text-[13px] leading-[1.6] text-muted-foreground">{placeholders.address} · {placeholders.cin}</p>
       </CtaBand>
     </>
   );

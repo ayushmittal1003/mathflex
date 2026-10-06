@@ -14,7 +14,7 @@ export default async function ContactPage() {
   const channels = [
     { key: "wa", label: "WhatsApp", value: "Chat with our team", href: `https://wa.me/${whatsappNumber}`, icon: "WA", bg: "bg-ok", external: true },
     { key: "mail", label: "Email", value: supportEmail, href: `mailto:${supportEmail}`, icon: "@", bg: "bg-primary" },
-    { key: "call", label: "Call us", value: placeholders.phone, href: null, icon: "☎", bg: "bg-foreground" },
+    { key: "call", label: "Call us", value: placeholders.phone, href: placeholders.phoneHref, icon: "☎", bg: "bg-foreground" },
   ];
 
   return (
@@ -82,7 +82,6 @@ export default async function ContactPage() {
               ))}
             </div>
             <div className="mt-5.5 text-sm leading-[1.6] text-secondary-foreground"><b className="text-foreground">Hours</b><br />{placeholders.hours} IST</div>
-            <div className="mt-4 text-sm leading-[1.6] text-secondary-foreground"><b className="text-foreground">Registered address</b><br />{placeholders.address}</div>
             <Link href="/faq" className="mt-5.5 flex items-center justify-between gap-3 rounded-xl bg-muted px-4.5 py-4 text-foreground hover:brightness-98">
               <span className="text-sm leading-[1.4]"><b>Quick answers</b><br /><span className="text-muted-foreground">Payments, refunds, access and more</span></span>
               <span className="text-lg">→</span>

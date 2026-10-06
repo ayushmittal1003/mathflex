@@ -9,8 +9,10 @@ import type { Settings } from "./settings";
 // always wins. Never shown on invoices, payment screens or legal documents: hide the
 // field there instead.
 export const placeholders = {
-  phone: "+91 XXXXX XXXXX",
+  phone: "+91 788 855 8921", // support line (same number as WhatsApp)
+  phoneHref: "tel:+917888558921",
   hours: "Mon–Sat, 10am–7pm",
+  // Registered address and CIN/GSTIN are hidden on the site until the real ones are added.
   address: "Mathflex Learning Pvt. Ltd., [Registered address], [City, State, PIN]",
   cin: "CIN: [to be added]",
   gstin: "GSTIN: [to be added]",
@@ -33,14 +35,9 @@ export const instructor = {
   // Portrait for the Book a call card, e.g. "/brand/karan.jpg" in public/. null shows a placeholder.
   photo: null as string | null,
   studentsGuided: "1,000+", // real figure from the founder
-  bio: "cracked JEE and studied at IIT Delhi. He has spent his career building learning products, including at Allen, and has mentored 1,000+ JEE aspirants along the way. Every Mathflex video is built around the questions that actually show up in the exam.",
-  credentials: [
-    { org: "B.Tech, IIT Delhi", role: "Indian Institute of Technology Delhi" },
-    { org: "Allen", role: "Product Consultant" },
-    { org: "Transify", role: "Senior Product Manager" },
-    { org: "DaMENSCH", role: "Product Manager" },
-    { org: "Meesho", role: "Product Manager", current: true },
-  ],
+  bio: "cracked JEE and studied at IIT Delhi. He has spent his career building learning products and has mentored 1,000+ JEE aspirants along the way. Every Mathflex video is built around the questions that actually show up in the exam.",
+  // Only the education credential is shown on the site (employers are left out by request).
+  credentials: [{ org: "B.Tech, IIT Delhi", role: "Indian Institute of Technology Delhi" }],
 };
 
 // Short line for the instructor block on chapter pages.

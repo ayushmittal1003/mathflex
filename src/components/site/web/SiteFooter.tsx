@@ -23,11 +23,6 @@ export function SiteFooter({ settings }: { settings: Settings }) {
           <p className="mt-3.5 max-w-[340px] text-sm leading-[1.55] text-muted-foreground">
             Chapter-wise JEE maths for Class 11 and 12, taught by IIT Delhi alumnus {names.full}.
           </p>
-          <p className="mt-3.5 max-w-[340px] text-[13px] leading-[1.55] text-muted-foreground">
-            <b className="text-secondary-foreground">Registered address</b>
-            <br />
-            {placeholders.address}
-          </p>
           <div className="mt-4 flex gap-2">
             {socials.map((s) => (
               <a
@@ -72,8 +67,6 @@ export function SiteFooter({ settings }: { settings: Settings }) {
           <Link href="/free-practice" className={linkCls}>Free practice</Link>
         </FooterCol>
         <FooterCol title="Support">
-          {/* Placeholder phone: shown as text, not a dialable link. */}
-          <span className="text-secondary-foreground">{placeholders.phone}</span>
           <a href={`mailto:${settings.supportEmail}`} className={`${linkCls} break-all`}>{settings.supportEmail}</a>
           <a href={wa} target="_blank" rel="noreferrer" className={linkCls}>WhatsApp</a>
           <span className="text-muted-foreground">{placeholders.hours}</span>
