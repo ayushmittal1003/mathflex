@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:oklch(0.995 0 0);color:oklch(0.145 0 0);font-family:Inter,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:oklch(0.637 0.237 25.331);text-decoration:none}
+a:hover{color:oklch(0.55 0.22 25.331)}
+::selection{background:color-mix(in oklab,oklch(0.637 0.237 25.331) 30%,transparent)}
+@keyframes mfrise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:oklch(0.995 0 0);overflow-x:clip">
+
+<div style="padding:16px 16px 0">
+<section data-screen-label="01 Chapter hero" style="position:relative;border-radius:12px;overflow:hidden;padding-bottom:104px;background:radial-gradient(70% 55% at 50% 0%, color-mix(in oklab, oklch(0.705 0.213 47.604) 30%, transparent), transparent 70%), radial-gradient(50% 50% at 100% 100%, color-mix(in oklab, oklch(0.637 0.237 25.331) 26%, transparent), transparent 70%), radial-gradient(40% 40% at 0% 80%, color-mix(in oklab, oklch(0.705 0.213 47.604) 18%, transparent), transparent 70%), oklch(0.975 0.012 50)">
+
+<nav style="position:relative;z-index:5;display:grid;grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr);align-items:center;gap:16px;padding:22px 32px">
+<a href="Landing Page v2.dc.html" style="grid-column:1;justify-self:start;display:flex;align-items:center;gap:8px;color:oklch(0.145 0 0)">
+<img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:27px;width:auto">
+</a>
+<sc-if value="{{ navWide }}" hint-placeholder-val="{{ true }}">
+<div style="grid-column:2;justify-self:center;flex:none;display:flex;gap:2px;padding:4px;border-radius:8px;background:oklch(0.145 0 0);white-space:nowrap">
+<a href="Landing Page v2.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Home</a>
+<a href="Chapters.dc.html" style="padding:7px 14px;border-radius:6px;background:oklch(0.995 0 0);font-size:13px;font-weight:700;color:oklch(0.145 0 0)">Chapters</a>
+<a href="Courses.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Courses</a>
+<a href="Pricing.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Pricing</a>
+<a href="Leaderboard.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Leaderboard</a>
+</div>
+</sc-if>
+<div style="grid-column:3;justify-self:end;display:flex;align-items:center;gap:8px">
+<a href="Checkout.dc.html" aria-label="Cart" style="position:relative;width:42px;height:42px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.95);color:oklch(0.145 0 0)" style-hover="background:oklch(0.995 0 0);color:oklch(0.145 0 0)">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+<sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:-6px;top:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;display:grid;place-items:center;background:oklch(0.637 0.237 25.331);color:#fff;font-size:11px;font-weight:800;border:2px solid oklch(0.995 0 0)">{{ cartCount }}</span></sc-if>
+</a>
+<sc-if value="{{ navWide }}" hint-placeholder-val="{{ true }}">
+<a href="Login.dc.html" style="flex:none;white-space:nowrap;padding:10px 16px;border-radius:8px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.95);color:oklch(0.145 0 0);font-size:14px;font-weight:700" style-hover="background:oklch(0.995 0 0);color:oklch(0.145 0 0)">Log in</a>
+<a href="Login.dc.html?mode=signup" style="flex:none;white-space:nowrap;padding:10px 18px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-size:14px;font-weight:700;border:1px solid oklch(0.637 0.237 25.331)" style-hover="filter:brightness(1.08);color:#fff">Start free</a>
+</sc-if>
+<sc-if value="{{ navNarrow }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ toggleMenu }}" aria-label="Menu" style="width:42px;height:42px;border-radius:8px;border:0;cursor:pointer;display:grid;place-items:center;background:oklch(0.145 0 0);color:#fff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+</sc-if>
+</div>
+</nav>
+
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:16px;right:16px;top:84px;z-index:20;padding:10px;border-radius:12px;background:oklch(0.145 0 0);color:#fff;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);animation:mfrise .3s both">
+<a href="Landing Page v2.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Home</a>
+<a href="Chapters.dc.html" style="display:block;padding:14px 12px;border-radius:8px;background:rgba(255,255,255,.1);font-size:16px;font-weight:700;color:#fff">Chapters</a>
+<a href="Courses.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Courses</a>
+<a href="Pricing.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Pricing</a>
+<div style="display:flex;gap:8px;padding:10px 2px 2px"><a href="Login.dc.html" style="flex:1;text-align:center;padding:13px;border-radius:8px;background:rgba(255,255,255,.12);color:#fff;font-weight:700">Log in</a><a href="Login.dc.html?mode=signup" style="flex:1;text-align:center;padding:13px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-weight:700">Start free</a></div>
+</div>
+</sc-if>
+
+<div style="width:min(1180px, calc(100% - 48px));margin:20px auto 0;display:flex;flex-wrap:wrap;gap:32px 32px;align-items:center">
+<div style="order:2;flex:1 1 320px;min-width:0">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;font-weight:600;color:oklch(0.269 0 0)"><a href="Chapters.dc.html" style="color:oklch(0.269 0 0)" style-hover="color:oklch(0.637 0.237 25.331)">Chapters</a><span style="opacity:.5">/</span><span>Class {{ ch.cls }}</span><span style="opacity:.5">/</span><span>{{ ch.unitLabel }}</span></div>
+<h1 style="margin:18px 0 0;font-size:clamp(42px, 5.4vw, 72px);line-height:1;font-weight:800;letter-spacing:-0.045em;text-wrap:balance">{{ ch.title }}</h1>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:22px">
+<span style="white-space:nowrap;font-size:13px;font-weight:700;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95)">Class {{ ch.cls }}</span>
+<span style="white-space:nowrap;font-size:13px;font-weight:700;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95)">{{ ch.parts }} parts · {{ ch.totalLen }}</span>
+<span style="white-space:nowrap;font-size:13px;font-weight:700;padding:6px 10px;border-radius:999px;background:oklch(0.995 0 0);border:1px solid oklch(0.995 0 0);color:oklch(0.5 0.17 47)">{{ ch.weight }}% of JEE Main</span>
+</div>
+<p style="margin:18px 0 0;max-width:520px;font-size:17px;line-height:1.55;color:oklch(0.269 0 0);text-wrap:pretty">{{ ch.tagline }}</p>
+<a href="#instructor" style="display:inline-flex;align-items:center;gap:10px;margin-top:18px;color:oklch(0.145 0 0)" style-hover="color:oklch(0.145 0 0)"><span style="width:34px;height:34px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(135deg, oklch(0.637 0.237 25.331), oklch(0.705 0.213 47.604));color:#fff;font-size:14px;font-weight:800;border:2px solid #fff">K</span><span style="font-size:14px;line-height:1.3">Taught by <b style="text-decoration:underline;text-underline-offset:3px">Karan Mittal</b><br><span style="color:oklch(0.269 0 0);font-size:13px">B.Tech, IIT Delhi</span></span></a>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-top:28px">
+<div><div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:40px;font-weight:800;letter-spacing:-0.035em">₹{{ ch.price }}</span><span style="font-size:16px;color:oklch(0.554 0.046 257.417);text-decoration:line-through">₹{{ ch.mrp }}</span><span style="font-size:12px;font-weight:800;padding:3px 8px;border-radius:6px;background:oklch(0.627 0.194 149.214);color:#fff">50% OFF</span></div><div style="font-size:13px;color:oklch(0.269 0 0);margin-top:2px">365 days access · all parts, DPPs, PYQs &amp; notes</div></div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:22px">
+<a href="Checkout.dc.html" style="display:inline-flex;align-items:center;gap:8px;padding:14px 24px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-weight:700;font-size:16px;box-shadow:0 10px 24px -10px oklch(0.637 0.237 25.331 / .8)" style-hover="filter:brightness(1.08);color:#fff">Buy now</a>
+<button onClick="{{ toggleCart }}" style="display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:8px;cursor:pointer;font:inherit;font-weight:700;font-size:16px;border:1px solid {{ cartBtn.border }};background:{{ cartBtn.bg }};color:{{ cartBtn.fg }}">{{ cartBtn.label }}</button>
+</div>
+</div>
+
+<div style="order:1;flex:1.15 1 360px;min-width:0;border-radius:12px;border:6px solid oklch(0.145 0 0);background:oklch(0.145 0 0);box-shadow:0 40px 80px -30px rgba(80,20,0,.5);overflow:hidden">
+<div style="position:relative;aspect-ratio:16/10;overflow:hidden;color:#fff;background:{{ ch.bg }}">
+<div style="position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-size:{{ ch.heroGlyph }};font-weight:900;line-height:1;letter-spacing:-0.05em;color:rgba(255,255,255,.16);white-space:nowrap">{{ ch.symbol }}</div>
+<div style="position:absolute;inset:0;background:linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,.05) 70%), linear-gradient(transparent 50%, rgba(0,0,0,.65))"></div>
+<sc-if value="{{ notPlaying }}" hint-placeholder-val="{{ true }}">
+<span style="position:absolute;left:18px;top:16px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:6px;background:#fff;color:#000">{{ previewTag }}</span>
+<button onClick="{{ play }}" aria-label="Play preview" style="position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:999px;border:0;cursor:pointer;display:grid;place-items:center;background:#fff;box-shadow:0 0 0 14px rgba(255,255,255,.16)" style-hover="transform:translate(-50%,-50%) scale(1.06)"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="oklch(0.637 0.237 25.331)"></path></svg></button>
+</sc-if>
+<sc-if value="{{ playing }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55)"><span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;padding:8px 12px;border-radius:6px;background:rgba(0,0,0,.5)">part-1-preview.mp4 plays here</span></div>
+</sc-if>
+<div style="position:absolute;left:18px;right:18px;bottom:16px">
+<div style="font-size:12px;font-weight:600;opacity:.85">Part 1 · {{ ch.p1len }}</div>
+<div style="font-size:clamp(20px, 2.2vw, 26px);font-weight:800;letter-spacing:-0.02em;margin-top:2px">{{ ch.p1 }}</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+
+<div style="width:min(1180px, calc(100% - 48px));margin-left:auto;margin-right:auto;position:relative;z-index:3;margin-top:-64px;display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);box-shadow:0 24px 48px -28px rgba(80,20,0,.45)">
+<sc-for list="{{ stats }}" as="st" hint-placeholder-count="5">
+<div style="padding:20px 22px;border-left:{{ st.div }}"><div style="font-size:20px;font-weight:800;letter-spacing:-0.02em">{{ st.big }}</div><div style="font-size:13px;color:oklch(0.554 0.046 257.417);margin-top:3px">{{ st.small }}</div></div>
+</sc-for>
+</div>
+
+<div style="position:sticky;top:0;z-index:30;margin-top:32px;background:color-mix(in oklab, oklch(0.995 0 0) 90%, transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid oklch(0.929 0.013 255.508)">
+<div style="width:min(1180px, calc(100% - 48px));margin-left:auto;margin-right:auto;display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+<a href="{{ t.href }}" style="flex:none;padding:16px 14px;font-size:14px;font-weight:700;color:oklch(0.269 0 0);border-bottom:2px solid transparent;white-space:nowrap" style-hover="color:oklch(0.145 0 0);border-bottom-color:oklch(0.145 0 0)">{{ t.label }}</a>
+</sc-for>
+<span style="flex:1"></span>
+<sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}"><span style="flex:none;display:flex;align-items:center;gap:12px;padding-left:12px"><span style="font-size:15px;font-weight:800">₹{{ ch.price }}</span><a href="Checkout.dc.html" style="padding:9px 16px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-size:13px;font-weight:700" style-hover="filter:brightness(1.08);color:#fff">Buy now</a></span></sc-if>
+</div>
+</div>
+
+<section data-screen-label="02 Parts & purchase" style="padding:24px 0 88px">
+<div style="width:min(1180px, calc(100% - 48px));margin:0 auto;display:flex;flex-wrap:wrap;gap:48px 40px;align-items:flex-start">
+
+<div style="flex:1 1 420px;min-width:0">
+<h2 id="learn" style="margin:56px 0 0;padding-bottom:14px;border-bottom:2px solid oklch(0.145 0 0);font-size:clamp(26px, 2.8vw, 34px);font-weight:800;letter-spacing:-0.035em;scroll-margin-top:80px">What you'll learn</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 240px), 1fr));gap:14px 28px;margin-top:20px">
+<sc-for list="{{ learn }}" as="l" hint-placeholder-count="4">
+<div style="display:flex;gap:12px;font-size:15px;line-height:1.45"><svg style="flex:none;margin-top:3px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.627 0.194 149.214)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg><span>{{ l }}</span></div>
+</sc-for>
+</div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-top:56px;padding-bottom:14px;border-bottom:2px solid oklch(0.145 0 0)">
+<h2 id="parts" style="margin:0;font-size:clamp(26px, 2.8vw, 34px);font-weight:800;letter-spacing:-0.035em;scroll-margin-top:80px">Parts</h2>
+<span style="font-size:13px;font-weight:600;color:oklch(0.554 0.046 257.417)">{{ ch.parts }} parts · {{ ch.totalLen }}</span>
+</div>
+<sc-for list="{{ partRows }}" as="p" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:20px;padding:20px 0;border-bottom:1px solid oklch(0.929 0.013 255.508)">
+<span style="flex:none;width:28px;font-size:26px;font-weight:800;letter-spacing:-0.03em;color:oklch(0.554 0.046 257.417)">{{ p.n }}</span>
+<span style="flex:none;position:relative;width:{{ thumbW }};aspect-ratio:16/10;border-radius:8px;overflow:hidden;background:{{ ch.bg }};color:#fff">
+<span style="position:absolute;right:-6px;top:50%;transform:translateY(-50%);font-size:56px;font-weight:900;line-height:1;color:rgba(255,255,255,.2);white-space:nowrap">{{ ch.symbol }}</span>
+<span style="position:absolute;inset:0;display:grid;place-items:center;background:{{ p.shade }}"><span style="width:34px;height:34px;border-radius:999px;display:grid;place-items:center;background:{{ p.iconBg }};color:{{ p.iconFg }}">
+<sc-if value="{{ p.free }}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"></path></svg></sc-if>
+<sc-if value="{{ p.locked }}" hint-placeholder-val="{{ true }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></sc-if>
+</span></span>
+</span>
+<div style="flex:1;min-width:0">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px"><span style="font-size:17px;font-weight:700;letter-spacing:-0.015em">{{ p.name }}</span><sc-if value="{{ p.free }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:color-mix(in oklab, oklch(0.627 0.194 149.214) 14%, transparent);color:oklch(0.5 0.16 149)">Free preview</span></sc-if></div>
+<div style="font-size:13px;color:oklch(0.554 0.046 257.417);margin-top:4px">{{ p.len }} · {{ p.note }}</div>
+</div>
+</div>
+</sc-for>
+
+<h2 id="included" style="margin:56px 0 0;padding-bottom:14px;border-bottom:2px solid oklch(0.145 0 0);font-size:clamp(26px, 2.8vw, 34px);font-weight:800;letter-spacing:-0.035em;scroll-margin-top:80px">What's included</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr))">
+<sc-for list="{{ includes }}" as="it" hint-placeholder-count="4">
+<div style="padding:22px 16px 22px 0;border-bottom:1px solid oklch(0.929 0.013 255.508)"><div style="font-size:30px;font-weight:800;letter-spacing:-0.035em">{{ it.n }}</div><div style="font-size:14px;font-weight:600;margin-top:2px">{{ it.label }}</div><div style="font-size:12px;color:oklch(0.554 0.046 257.417);margin-top:2px">{{ it.sub }}</div></div>
+</sc-for>
+</div>
+
+<sc-if value="{{ hasTopics }}" hint-placeholder-val="{{ true }}">
+<h2 style="margin:56px 0 0;padding-bottom:14px;border-bottom:2px solid oklch(0.145 0 0);font-size:clamp(26px, 2.8vw, 34px);font-weight:800;letter-spacing:-0.035em">Most-asked in JEE</h2>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:18px">
+<sc-for list="{{ ch.topics }}" as="t" hint-placeholder-count="3"><span style="font-size:14px;font-weight:600;padding:9px 14px;border-radius:999px;background:oklch(0.968 0.007 247.896);border:1px solid oklch(0.929 0.013 255.508)">{{ t }}</span></sc-for>
+</div>
+</sc-if>
+
+<h2 id="instructor" style="margin:56px 0 0;padding-bottom:14px;border-bottom:2px solid oklch(0.145 0 0);font-size:clamp(26px, 2.8vw, 34px);font-weight:800;letter-spacing:-0.035em;scroll-margin-top:80px">Your instructor</h2>
+<div style="display:flex;flex-wrap:wrap;gap:20px 24px;align-items:center;margin-top:22px">
+<div style="position:relative;flex:none;width:200px;aspect-ratio:16/10;border-radius:12px;border:4px solid oklch(0.145 0 0);background:repeating-linear-gradient(135deg, oklch(0.26 0.01 260) 0 10px, oklch(0.22 0.01 260) 10px 20px);display:grid;place-items:center"><span style="width:42px;height:42px;border-radius:999px;display:grid;place-items:center;background:#fff"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="oklch(0.637 0.237 25.331)"></path></svg></span></div>
+<div style="flex:1 1 260px;min-width:0">
+<div style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Karan Mittal</div>
+<div style="font-size:14px;color:oklch(0.554 0.046 257.417);margin-top:2px">B.Tech, IIT Delhi · 1,000+ JEE aspirants mentored</div>
+<p style="margin:10px 0 0;font-size:15px;line-height:1.6;color:oklch(0.269 0 0)">Karan builds every part around the questions that actually appear in JEE, with the shortcuts that save minutes in the exam hall.</p>
+<a href="Landing Page v2.dc.html#mentor" style="display:inline-flex;margin-top:10px;font-size:14px;font-weight:700">More about Karan →</a>
+</div>
+</div>
+
+<h2 id="faq" style="margin:56px 0 0;padding-bottom:14px;border-bottom:2px solid oklch(0.145 0 0);font-size:clamp(26px, 2.8vw, 34px);font-weight:800;letter-spacing:-0.035em;scroll-margin-top:80px">Questions about this chapter</h2>
+<sc-for list="{{ faqs }}" as="q" hint-placeholder-count="3">
+<div style="border-bottom:1px solid oklch(0.929 0.013 255.508)">
+<button onClick="{{ q.toggle }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;border:0;background:transparent;cursor:pointer;font:inherit;font-size:16px;font-weight:700;text-align:left;color:oklch(0.145 0 0)">{{ q.q }}<span style="flex:none;width:26px;height:26px;border-radius:999px;display:grid;place-items:center;background:{{ q.iconBg }};color:{{ q.iconFg }};transform:{{ q.rot }};transition:transform .3s"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span></button>
+<div style="display:grid;grid-template-rows:{{ q.rows }};transition:grid-template-rows .35s"><div style="overflow:hidden"><p style="margin:0;padding:0 40px 18px 0;font-size:15px;line-height:1.6;color:oklch(0.554 0.046 257.417)">{{ q.a }}</p></div></div>
+</div>
+</sc-for>
+</div>
+
+<aside style="flex:0 1 320px;min-width:0;max-width:100%;position:{{ asidePos }};top:84px;margin-top:56px">
+<div style="padding:22px;border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);box-shadow:0 20px 40px -28px rgba(80,20,0,.4)">
+<div style="font-size:14px;font-weight:700">{{ ch.title }}</div>
+<div style="display:flex;align-items:baseline;gap:8px;margin-top:10px"><span style="font-size:34px;font-weight:800;letter-spacing:-0.03em">₹{{ ch.price }}</span><span style="font-size:14px;color:oklch(0.554 0.046 257.417);text-decoration:line-through">₹{{ ch.mrp }}</span></div>
+<div style="display:grid;gap:8px;margin-top:16px">
+<a href="Checkout.dc.html" style="display:flex;justify-content:center;padding:13px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-weight:700;font-size:15px" style-hover="filter:brightness(1.08);color:#fff">Buy now</a>
+<button onClick="{{ toggleCart }}" style="display:flex;justify-content:center;padding:13px;border-radius:8px;cursor:pointer;font:inherit;font-weight:700;font-size:15px;border:1px solid {{ cartBtn.border }};background:{{ cartBtn.bg }};color:{{ cartBtn.fg }}">{{ cartBtn.label }}</button>
+</div>
+<div style="margin-top:14px;font-size:13px;color:oklch(0.554 0.046 257.417);line-height:1.5">New here? Use <b style="font-family:'JetBrains Mono',ui-monospace,monospace;color:oklch(0.145 0 0)">WELCOME20</b> at checkout for 20% off.</div>
+<a href="Courses.dc.html" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0)" style-hover="color:oklch(0.637 0.237 25.331)"><span style="font-size:13px;line-height:1.4"><b>Class {{ ch.cls }} complete</b><br><span style="color:oklch(0.554 0.046 257.417)">All {{ classCount }} chapters for ₹2,999</span></span><span style="font-size:16px">→</span></a>
+</div>
+</aside>
+</div>
+</section>
+
+<section data-screen-label="03 More chapters" style="padding:72px 0 96px;border-top:1px solid oklch(0.929 0.013 255.508)">
+<div style="width:min(1180px, calc(100% - 48px));margin:0 auto">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+<h2 style="margin:0;font-size:clamp(28px, 3vw, 38px);font-weight:800;letter-spacing:-0.035em">More from Class {{ ch.cls }}</h2>
+<a href="Chapters.dc.html" style="font-size:14px;font-weight:700;white-space:nowrap">All chapters →</a>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax({{ cardMin }}, 1fr));gap:20px;margin-top:28px">
+<sc-for list="{{ related }}" as="c" hint-placeholder-count="4">
+<a href="{{ c.href }}" style="display:flex;flex-direction:column;border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);overflow:hidden;color:oklch(0.145 0 0);transition:transform .25s, box-shadow .25s" style-hover="transform:translateY(-4px);box-shadow:0 22px 40px -22px rgba(80,20,0,.4);color:oklch(0.145 0 0)">
+<span style="position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:{{ c.bg }}"><span style="position:absolute;right:-6px;top:50%;transform:translateY(-50%);font-size:{{ c.glyph }};font-weight:900;line-height:1;color:rgba(255,255,255,.22);white-space:nowrap">{{ c.symbol }}</span></span>
+<span style="display:flex;flex-direction:column;flex:1;padding:14px 16px 16px">
+<span style="font-size:12px;font-weight:600;color:oklch(0.554 0.046 257.417)">Class {{ c.cls }} · {{ c.unitLabel }}</span>
+<span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:6px;font-size:16px;font-weight:700;line-height:1.3;min-height:42px">{{ c.title }}</span>
+<span style="display:flex;align-items:baseline;gap:8px;margin-top:auto;padding-top:12px"><span style="font-size:17px;font-weight:800">₹{{ c.price }}</span><span style="font-size:12px;color:oklch(0.554 0.046 257.417)">{{ c.weight }}% of JEE</span></span>
+</span>
+</a>
+</sc-for>
+</div>
+</div>
+</section>
+
+<footer data-screen-label="04 Footer" style="position:relative;background:oklch(0.995 0 0);border-top:1px solid oklch(0.929 0.013 255.508);overflow:hidden">
+<div style="width:min(1120px, calc(100% - 48px));margin:0 auto;padding:56px 0 0;display:grid;grid-template-columns:{{ footCols }};gap:40px 32px">
+<div style="grid-column:{{ footSpan }};min-width:0">
+<div style="display:inline-flex;align-items:center;gap:8px"><img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:29px;width:auto"></div>
+<p style="margin:14px 0 0;max-width:340px;font-size:14px;line-height:1.55;color:oklch(0.554 0.046 257.417)">Chapter-wise JEE maths for Class 11 and 12, taught by IIT Delhi alumnus Karan Mittal.</p>
+<p style="margin:14px 0 0;max-width:340px;font-size:13px;line-height:1.55;color:oklch(0.554 0.046 257.417)"><b style="color:oklch(0.269 0 0)">Registered address</b><br>Mathflex Learning Pvt. Ltd., [address line], [city, state, PIN]</p>
+</div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Learn</div><div style="display:grid;gap:10px"><a href="Chapters.dc.html" style="color:oklch(0.269 0 0)">All chapters</a><a href="Courses.dc.html" style="color:oklch(0.269 0 0)">Complete courses</a><a href="Pricing.dc.html" style="color:oklch(0.269 0 0)">Pricing</a></div></div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Company</div><div style="display:grid;gap:10px"><a href="About.dc.html" style="color:oklch(0.269 0 0)">About us</a><a href="Contact.dc.html" style="color:oklch(0.269 0 0)">Contact us</a><a href="FAQ.dc.html" style="color:oklch(0.269 0 0)">FAQs</a><a href="Blog.dc.html" style="color:oklch(0.269 0 0)">Blog</a></div></div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Support</div><div style="display:grid;gap:10px"><a href="tel:+910000000000" style="color:oklch(0.269 0 0)">+91 XXXXX XXXXX</a><a href="mailto:support@mathflex.in" style="color:oklch(0.269 0 0)">support@mathflex.in</a><a href="Contact.dc.html" style="color:oklch(0.269 0 0)">WhatsApp</a></div></div>
+</div>
+<div style="width:min(1120px, calc(100% - 48px));margin:48px auto 0;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:20px 0;border-top:1px solid oklch(0.929 0.013 255.508);font-size:13px;color:oklch(0.554 0.046 257.417)"><span>© 2026 Mathflex · mathflex.in</span><div style="display:flex;gap:20px"><a href="Terms.dc.html" style="color:oklch(0.554 0.046 257.417)">Terms &amp; conditions</a><a href="Privacy Policy.dc.html" style="color:oklch(0.554 0.046 257.417)">Privacy policy</a><a href="Refund Policy.dc.html" style="color:oklch(0.554 0.046 257.417)">Refund policy</a></div></div>
+<div aria-hidden="true" style="text-align:center;font-size:clamp(90px, 21vw, 300px);font-weight:900;letter-spacing:-0.06em;line-height:.78;margin-bottom:-0.06em;background:linear-gradient(180deg, oklch(0.968 0.007 247.896), color-mix(in oklab, oklch(0.705 0.213 47.604) 22%, oklch(0.995 0 0)));-webkit-background-clip:text;background-clip:text;color:transparent;user-select:none;white-space:nowrap">mathflex</div>
+</footer>
+
+<sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:14px;padding:10px 10px 10px 18px;border-radius:12px;background:oklch(0.145 0 0);color:#fff;box-shadow:0 20px 40px -12px rgba(0,0,0,.45);animation:mfrise .35s both;max-width:calc(100% - 32px)">
+<span style="font-size:14px;font-weight:600">{{ toastText }}</span>
+<a href="Checkout.dc.html" style="flex:none;padding:8px 14px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-size:13px;font-weight:700" style-hover="color:#fff">View cart</a>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { w: 1280, menu: false, inCart: false, playing: false, toast: "", faq: 0 };
+
+  componentDidMount() {
+    this.onResize = () => { const w = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0); if (w > 100 && w !== this.state.w) this.setState({ w }); };
+    window.addEventListener("resize", this.onResize);
+    if ("ResizeObserver" in window) { this.ro = new ResizeObserver(() => this.onResize()); this.ro.observe(document.documentElement); }
+    this.onResize();
+    [300, 1000].forEach(t => setTimeout(() => this.onResize && this.onResize(), t));
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this.onResize); this.ro && this.ro.disconnect(); clearTimeout(this.tt); }
+
+  data() {
+    if (this._d) return this._d;
+    const G = [["#FF2E63", "#FF8A3D"], ["#6366F1", "#EC4899"], ["#10B981", "#0EA5E9"], ["#F59E0B", "#DC2626"], ["#7C3AED", "#FF2E63"], ["#0EA5E9", "#6366F1"], ["#EC4899", "#F59E0B"], ["#1a0610", "#FF2E63"]];
+    const raw11 = [["Sets & Relations", "∈", 3, "alg"], ["Functions", "f(x)", 3.3, "calc", 1], ["Trigonometric Ratios & Identities", "θ", 3, "trig"], ["Trigonometric Equations", "tan", 2, "trig"], ["Quadratic Equations & Expressions", "x²", 3.3, "alg", 1], ["Complex Numbers", "i", 5, "alg", 1], ["Sequence & Series", "Σ", 5, "alg", 1], ["Straight Lines", "m", 3.3, "coord"], ["Pair of Straight Lines", "∥", 1, "coord"], ["Circle", "○", 3.3, "coord"], ["Parabola", "∪", 2.5, "coord"], ["Ellipse", "e", 2, "coord"], ["Hyperbola", "×", 2, "coord"], ["Statistics", "σ", 3.3, "stat"], ["Principle of Mathematical Induction", "n+1", 0.5, "alg", 0, 199], ["Permutations & Combinations", "ⁿCᵣ", 3.3, "alg", 1], ["Binomial Theorem", "ⁿ", 3.3, "alg"], ["Mathematical Reasoning", "∴", 1, "alg", 0, 199], ["Inequalities", "≤", 1, "alg", 0, 199], ["Limits & Derivatives", "lim", 3.3, "calc", 1]];
+    const raw12 = [["Relations & Functions (Advanced)", "f∘g", 3, "calc"], ["Inverse Trigonometric Functions", "sin⁻¹", 2, "trig"], ["Matrices", "[A]", 3.3, "alg", 1], ["Determinants", "|A|", 3.3, "alg"], ["Continuity & Differentiability", "d/dx", 3.3, "calc"], ["Application of Derivatives", "f′", 5, "calc", 1], ["Indefinite Integrals", "∫", 3.3, "calc", 1], ["Definite Integrals", "∫ₐᵇ", 5, "calc", 1], ["Application of Integrals", "∮", 2, "calc"], ["Differential Equations", "dy", 3.3, "calc"], ["Vector Algebra", "v→", 5, "vec", 1], ["3D Geometry", "xyz", 6.7, "vec", 1], ["Probability", "P", 5, "stat", 1], ["Statistics (Advanced)", "μ", 2, "stat"], ["Linear Programming", "LPP", 0.5, "alg", 0, 149]];
+    const UNITS = { calc: "Calculus", alg: "Algebra", coord: "Coordinate geometry", vec: "Vectors & 3D", trig: "Trigonometry", stat: "Statistics & probability" };
+    const PARTS = {
+      "Limits & Derivatives": ["Idea of a limit", "Standard limits & L'Hôpital", "Derivatives from first principles"],
+      "Complex Numbers": ["Modulus & argument", "Cube roots of unity", "Locus in the Argand plane"],
+      "Sequence & Series": ["AP, GP & HP basics", "AM–GM and its tricks", "Special series & sums"],
+      "3D Geometry": ["Lines in space", "Planes & angles", "Shortest distance & image of a point"],
+      "Definite Integrals": ["Properties & King's rule", "Leibniz rule", "Periodic integrals & limits as sums"],
+      "Probability": ["Conditional probability", "Bayes' theorem", "Random variables & distributions"],
+      "Vector Algebra": ["Dot & cross product", "Triple products", "Applications in geometry"],
+    };
+    const TAG = {
+      "Complex Numbers": ["Rotate, reflect and conquer the Argand plane. i² = −1 is just the beginning.", ["Modulus & argument", "Cube roots of unity", "Locus in Argand plane"]],
+      "Definite Integrals": ["Properties, King's rule and the tricks that turn 10-minute questions into 90-second ones.", ["King's property", "Leibniz rule", "Periodic integrals"]],
+      "3D Geometry": ["Lines, planes and shortest distances. The single highest-scoring chapter in JEE Main.", ["Shortest distance between skew lines", "Angle between planes", "Image of a point"]],
+    };
+    const mk = (cls, off) => ([title, symbol, weight, unit, hot, price], i) => {
+      const p = price ?? (weight >= 5 ? 399 : 299), [a, b] = G[(i + off) % G.length], parts = weight >= 5 ? 3 : 2;
+      return { id: cls + "-" + i, cls, title, symbol, weight, unit, unitLabel: UNITS[unit], hot: !!hot, free: !!hot || i % 3 === 0, price: p, mrp: p * 2, parts, bg: `linear-gradient(155deg, ${a}, ${b})`,
+        partNames: PARTS[title] || Array.from({ length: parts }, (_, k) => "Part " + (k + 1)),
+        tagline: (TAG[title] || [])[0] || `Everything you need for ${title} in JEE Main, Advanced and Boards, in ${parts} focused parts with practice after each one.`,
+        topics: (TAG[title] || [])[1] || [] };
+    };
+    this._d = [...raw11.map(mk(11, 0)), ...raw12.map(mk(12, 3))];
+    return this._d;
+  }
+
+  renderVals() {
+    const all = this.data(), s = this.state;
+    const id = (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("c")) || this.props.chapterId || "12-7";
+    const c = all.find(x => x.id === id) || all.find(x => x.id === "12-7");
+    const narrow = s.w < 760, wide = !narrow;
+    const red = "oklch(0.637 0.237 25.331)", ink = "oklch(0.145 0 0)", bd = "oklch(0.929 0.013 255.508)", white = "oklch(0.995 0 0)", mut = "oklch(0.968 0.007 247.896)", ok = "oklch(0.627 0.194 149.214)";
+    const lens = ["21:30", "19:45", "26:00"].map((x, i) => x);
+    const mins = [21, 20, 26].slice(0, c.parts);
+    const total = mins.reduce((a, b) => a + b, 0);
+    const ch = { ...c, totalLen: total + " min", p1: c.partNames[0], p1len: lens[0], heroGlyph: c.symbol.length > 2 ? "200px" : "340px" };
+    const partRows = c.partNames.map((name, i) => {
+      const free = i === 0 && c.free;
+      return { n: i + 1, name, len: lens[i] || "20:00", free, locked: !free,
+        note: free ? "Watch free, no sign-up" : i === 0 ? "Unlocks when you buy" : "Unlocks after Part " + i + " + its practice",
+        shade: free ? "rgba(0,0,0,.15)" : "rgba(0,0,0,.45)", iconBg: free ? "#fff" : "rgba(255,255,255,.2)", iconFg: free ? red : "#fff" };
+    });
+    const toggleCart = () => {
+      const now = !s.inCart;
+      this.setState({ inCart: now, toast: now ? "Added " + c.title + " to cart" : "Removed from cart" });
+      clearTimeout(this.tt); this.tt = setTimeout(() => this.setState({ toast: "" }), 2600);
+    };
+    const related = all.filter(x => x.cls === c.cls && x.id !== c.id).sort((a, b) => b.weight - a.weight).slice(0, 4)
+      .map(x => ({ ...x, href: "Chapter Detail.dc.html?c=" + x.id, glyph: x.symbol.length > 2 ? "64px" : "110px" }));
+    return {
+      navWide: s.w >= 1024, navNarrow: s.w < 1024,
+      ch, partRows, related, wide, narrow, menuOpen: s.menu, toggleMenu: () => this.setState(st => ({ menu: !st.menu })),
+      previewTag: c.free ? "Part 1 · Free preview" : "Trailer",
+      playing: s.playing, notPlaying: !s.playing, play: () => this.setState({ playing: true }),
+      toggleCart, cartCount: s.inCart ? 1 : 0, hasCart: s.inCart,
+      cartBtn: s.inCart ? { label: "✓ In cart", bg: "color-mix(in oklab, " + ok + " 12%, " + white + ")", fg: "oklch(0.5 0.16 149)", border: "color-mix(in oklab, " + ok + " 40%, transparent)" } : { label: "Add to cart", bg: white, fg: ink, border: bd },
+      includes: [
+        { n: c.parts, label: "Video parts", sub: total + " minutes in total" },
+        { n: c.parts * 8, label: "DPPs", sub: "Daily practice problems" },
+        { n: c.parts * 6, label: "PYQs", sub: "JEE Main 2019–2025" },
+        { n: 2, label: "Notes & mind map", sub: "Downloadable PDFs" },
+      ],
+      hasTopics: c.topics.length > 0,
+      stats: [
+        [c.parts + " parts", total + " min of video"], [c.weight + "%", "of JEE Main"], [(c.parts * 14) + " questions", "DPPs + PYQs"],
+        [c.free ? "Part 1 free" : "Trailer free", c.free ? "No sign-up needed" : "Watch before you buy"], ["365 days", "of access"],
+      ].map(([big, small], i) => ({ big, small, div: i === 0 ? "0" : "1px solid " + bd })),
+      tabs: [["About", "#learn"], ["Parts", "#parts"], ["What's included", "#included"], ["Instructor", "#instructor"], ["FAQs", "#faq"]].map(([label, href]) => ({ label, href })),
+      learn: (c.topics.length ? [...c.partNames.filter(n => !/^Part \d/.test(n)), ...c.topics] : c.partNames.filter(n => !/^Part \d/.test(n))).concat(["Solve JEE Main PYQs from this chapter with confidence", "Shortcuts that save time in the exam hall"]).slice(0, 6),
+      faqs: [["Can I watch before I buy?", c.free ? "Yes. Part 1 is free to watch, no sign-up needed. Buy the chapter to unlock the rest." : "You can watch the trailer free. Buy the chapter to unlock every part."],
+        ["How do the parts unlock?", "Each part opens after you watch 90% of the previous one and clear its practice set."],
+        ["Is this enough for Boards too?", "Yes. The chapter follows the Class " + c.cls + " syllabus, and the notes cover Board-style derivations."]]
+        .map(([q, a], i) => { const open = s.faq === i; return { q, a, rows: open ? "1fr" : "0fr", rot: open ? "rotate(45deg)" : "none", iconBg: open ? red : mut, iconFg: open ? "#fff" : ink, toggle: () => this.setState(st => ({ faq: st.faq === i ? -1 : i })) }; }),
+      classCount: c.cls === 11 ? 20 : 15,
+      thumbW: narrow ? "96px" : "150px", asidePos: wide ? "sticky" : "static", cardMin: narrow ? "100%" : "230px",
+      toastOn: !!s.toast, toastText: s.toast,
+      footCols: narrow ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 2fr) repeat(3, minmax(0, 1fr))", footSpan: narrow ? "1 / -1" : "auto",
+    };
+  }
+}
+</script>
+</body>
+</html>

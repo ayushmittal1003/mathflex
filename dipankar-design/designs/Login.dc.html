@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:oklch(0.995 0 0);color:oklch(0.145 0 0);font-family:Inter,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:oklch(0.637 0.237 25.331);text-decoration:none}
+a:hover{color:oklch(0.55 0.22 25.331)}
+input:focus{outline:none;border-color:oklch(0.145 0 0) !important;box-shadow:0 0 0 3px oklch(0.145 0 0 / .08)}
+@keyframes mfrise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:oklch(0.995 0 0);display:flex;padding:16px;gap:16px">
+
+<div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column">
+<header style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 16px 0">
+<a href="Landing Page v2.dc.html" style="display:flex;align-items:center;gap:8px;color:oklch(0.145 0 0)">
+<img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:27px;width:auto">
+</a>
+<a href="Landing Page v2.dc.html" style="font-size:14px;font-weight:700;color:oklch(0.269 0 0)" style-hover="color:oklch(0.145 0 0)">← Back to home</a>
+</header>
+
+<main style="flex:1;display:grid;place-items:center;padding:40px 16px">
+<div style="width:min(420px, 100%)">
+
+<sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
+<h1 style="margin:0;font-size:clamp(32px, 4vw, 44px);font-weight:800;letter-spacing:-0.04em;line-height:1.05">{{ title }}</h1>
+<p style="margin:10px 0 0;font-size:16px;line-height:1.5;color:oklch(0.269 0 0)">{{ subtitle }}</p>
+
+<div style="display:flex;gap:2px;padding:4px;border-radius:8px;background:oklch(0.145 0 0);margin-top:24px">
+<sc-for list="{{ modeTabs }}" as="m" hint-placeholder-count="2">
+<button onClick="{{ m.onClick }}" style="flex:1;border:0;cursor:pointer;font:inherit;padding:10px 12px;border-radius:6px;font-size:14px;font-weight:700;background:{{ m.bg }};color:{{ m.fg }}">{{ m.label }}</button>
+</sc-for>
+</div>
+
+<button onClick="{{ google }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;height:50px;margin-top:20px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);cursor:pointer;font:inherit;font-size:15px;font-weight:700;color:oklch(0.145 0 0)" style-hover="background:oklch(0.97 0 0)">
+<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"></path><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"></path><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"></path><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"></path></svg>
+Continue with Google
+</button>
+
+<div style="display:flex;align-items:center;gap:12px;margin:18px 0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:oklch(0.554 0.046 257.417)"><span style="flex:1;height:1px;background:oklch(0.929 0.013 255.508)"></span>or<span style="flex:1;height:1px;background:oklch(0.929 0.013 255.508)"></span></div>
+
+<div style="display:grid;gap:14px">
+<sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+<label style="display:grid;gap:6px"><span style="font-size:13px;font-weight:700">Full name</span><input value="{{ name }}" onInput="{{ onName }}" placeholder="Riya Sharma" autocomplete="name" style="height:48px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font:inherit;font-size:16px"></label>
+<div style="display:grid;gap:6px"><span style="font-size:13px;font-weight:700">I'm in</span><div style="display:flex;gap:6px"><sc-for list="{{ classes }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="flex:1;height:44px;border-radius:8px;cursor:pointer;font:inherit;font-size:14px;font-weight:700;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button></sc-for></div></div>
+</sc-if>
+
+<div style="display:flex;gap:2px;padding:4px;border-radius:8px;background:oklch(0.968 0.007 247.896)">
+<sc-for list="{{ methodTabs }}" as="m" hint-placeholder-count="2">
+<button onClick="{{ m.onClick }}" style="flex:1;border:0;cursor:pointer;font:inherit;padding:9px 12px;border-radius:6px;font-size:14px;font-weight:700;background:{{ m.bg }};color:{{ m.fg }};box-shadow:{{ m.shadow }}">{{ m.label }}</button>
+</sc-for>
+</div>
+
+<sc-if value="{{ isPhone }}" hint-placeholder-val="{{ true }}">
+<label style="display:grid;gap:6px"><span style="font-size:13px;font-weight:700">Mobile number</span>
+<div style="display:flex;gap:8px"><span style="flex:none;display:grid;place-items:center;height:48px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.968 0.007 247.896);font-size:15px;font-weight:700">+91</span><input value="{{ phone }}" onInput="{{ onPhone }}" inputmode="numeric" placeholder="98765 43210" autocomplete="tel" style="flex:1;min-width:0;height:48px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font:inherit;font-size:16px"></div>
+</label>
+<sc-if value="{{ otpSent }}" hint-placeholder-val="{{ false }}">
+<label style="display:grid;gap:6px;animation:mfrise .3s both"><span style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>6-digit OTP</span><button onClick="{{ resend }}" style="border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:oklch(0.637 0.237 25.331)">Resend</button></span>
+<input value="{{ otp }}" onInput="{{ onOtp }}" inputmode="numeric" placeholder="••••••" style="height:52px;padding:0 16px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:22px;letter-spacing:.5em">
+<span style="font-size:12px;color:oklch(0.554 0.046 257.417)">Sent to +91 {{ phone }}. Any 6 digits work in this prototype.</span>
+</label>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ isEmail }}" hint-placeholder-val="{{ false }}">
+<label style="display:grid;gap:6px"><span style="font-size:13px;font-weight:700">Email</span><input value="{{ email }}" onInput="{{ onEmail }}" type="email" placeholder="you@example.com" autocomplete="email" style="height:48px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font:inherit;font-size:16px"></label>
+<label style="display:grid;gap:6px"><span style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>Password</span><sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}"><button onClick="{{ openForgot }}" style="border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:oklch(0.637 0.237 25.331)">Forgot?</button></sc-if></span><input value="{{ pass }}" onInput="{{ onPass }}" type="password" placeholder="At least 8 characters" style="height:48px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font:inherit;font-size:16px"></label>
+</sc-if>
+
+<button onClick="{{ submit }}" style="height:50px;border-radius:8px;border:0;cursor:{{ btnCursor }};font:inherit;font-size:16px;font-weight:700;background:{{ btnBg }};color:#fff;box-shadow:{{ btnShadow }};transition:background .2s">{{ btnLabel }}</button>
+</div>
+
+<p style="margin:18px 0 0;font-size:14px;color:oklch(0.269 0 0);text-align:center">{{ switchText }} <button onClick="{{ switchMode }}" style="border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-size:14px;font-weight:700;color:oklch(0.637 0.237 25.331)">{{ switchCta }}</button></p>
+<p style="margin:14px 0 0;font-size:12px;line-height:1.5;color:oklch(0.554 0.046 257.417);text-align:center">By continuing you agree to our <a href="Terms.dc.html">Terms</a> and <a href="Privacy Policy.dc.html">Privacy policy</a>.</p>
+</sc-if>
+
+<sc-if value="{{ forgotView }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Forgot password" style="animation:mfrise .35s both">
+<button onClick="{{ closeForgot }}" style="border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-size:14px;font-weight:700;color:oklch(0.269 0 0)">← Back to log in</button>
+<sc-if value="{{ resetNotSent }}" hint-placeholder-val="{{ true }}">
+<h1 style="margin:18px 0 0;font-size:clamp(30px, 4vw, 40px);font-weight:800;letter-spacing:-0.04em;line-height:1.05">Reset your password</h1>
+<p style="margin:10px 0 0;font-size:16px;line-height:1.5;color:oklch(0.269 0 0)">Enter the email you signed up with. We'll send you a link to set a new password.</p>
+<label style="display:grid;gap:6px;margin-top:22px"><span style="font-size:13px;font-weight:700">Email</span><input value="{{ email }}" onInput="{{ onEmail }}" type="email" placeholder="you@example.com" style="height:48px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font:inherit;font-size:16px"></label>
+<button onClick="{{ sendReset }}" style="width:100%;height:50px;margin-top:14px;border-radius:8px;border:0;cursor:{{ resetCursor }};font:inherit;font-size:16px;font-weight:700;background:{{ resetBg }};color:#fff">Send reset link</button>
+<p style="margin:16px 0 0;font-size:14px;color:oklch(0.269 0 0);text-align:center">Signed up with your phone? <button onClick="{{ usePhone }}" style="border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-size:14px;font-weight:700;color:oklch(0.637 0.237 25.331)">Log in with OTP</button> instead. No password needed.</p>
+</sc-if>
+<sc-if value="{{ resetSent }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:center;margin-top:24px">
+<span style="display:inline-grid;place-items:center;width:64px;height:64px;border-radius:999px;background:oklch(0.627 0.194 149.214);box-shadow:0 0 0 10px color-mix(in oklab, oklch(0.627 0.194 149.214) 18%, transparent)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></span>
+<h1 style="margin:20px 0 0;font-size:clamp(28px, 4vw, 36px);font-weight:800;letter-spacing:-0.04em">Check your inbox</h1>
+<p style="margin:10px 0 0;font-size:15px;line-height:1.55;color:oklch(0.269 0 0)">We sent a reset link to <b>{{ email }}</b>. It expires in 30 minutes. Check spam if you can't find it.</p>
+<button onClick="{{ sendReset }}" style="margin-top:18px;border:0;background:transparent;cursor:pointer;font:inherit;font-size:14px;font-weight:700;color:oklch(0.637 0.237 25.331)">Resend link</button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:center;animation:mfrise .4s both">
+<span style="display:inline-grid;place-items:center;width:72px;height:72px;border-radius:999px;background:linear-gradient(135deg, oklch(0.637 0.237 25.331), oklch(0.705 0.213 47.604));color:#fff;font-size:28px;font-weight:800;box-shadow:0 0 0 10px color-mix(in oklab, oklch(0.705 0.213 47.604) 18%, transparent)">{{ initial }}</span>
+<h1 style="margin:22px 0 0;font-size:clamp(30px, 4vw, 40px);font-weight:800;letter-spacing:-0.04em">{{ doneTitle }}</h1>
+<p style="margin:10px 0 0;font-size:16px;line-height:1.5;color:oklch(0.269 0 0)">{{ doneBody }}</p>
+<div style="display:grid;gap:10px;margin-top:26px">
+<a href="Chapter Detail.dc.html?c=12-7" style="display:flex;justify-content:center;align-items:center;gap:8px;height:50px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-weight:700;font-size:15px" style-hover="filter:brightness(1.08);color:#fff"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M7 4v16l13-8z" fill="currentColor"></path></svg><span>Watch a free Part 1</span></a>
+<a href="Chapter Player.dc.html" style="display:flex;justify-content:center;align-items:center;height:50px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0);font-weight:700;font-size:15px" style-hover="background:oklch(0.97 0 0);color:oklch(0.145 0 0)">Start learning</a>
+<a href="Checkout.dc.html" style="font-size:14px;font-weight:700;margin-top:4px">Go to my cart →</a>
+</div>
+<button onClick="{{ reset }}" style="margin-top:18px;border:0;background:transparent;cursor:pointer;font:inherit;font-size:13px;font-weight:600;color:oklch(0.554 0.046 257.417);text-decoration:underline;text-underline-offset:3px">Not you? Sign out</button>
+</div>
+</sc-if>
+</div>
+</main>
+</div>
+
+<sc-if value="{{ showPanel }}" hint-placeholder-val="{{ true }}">
+<aside data-screen-label="Login side panel" style="order:-1;position:relative;flex:1 1 520px;min-width:0;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:48px;background:radial-gradient(70% 55% at 50% 0%, color-mix(in oklab, oklch(0.705 0.213 47.604) 30%, transparent), transparent 70%), radial-gradient(50% 50% at 100% 100%, color-mix(in oklab, oklch(0.637 0.237 25.331) 26%, transparent), transparent 70%), radial-gradient(40% 40% at 0% 80%, color-mix(in oklab, oklch(0.705 0.213 47.604) 18%, transparent), transparent 70%), oklch(0.975 0.012 50)">
+<div>
+<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);font-size:13px;font-weight:600;color:oklch(0.269 0 0)"><span style="width:6px;height:6px;border-radius:999px;background:oklch(0.627 0.194 149.214)"></span>{{ panelTag }}</div>
+<h2 style="margin:24px 0 0;font-size:clamp(40px, 4.4vw, 64px);line-height:1;font-weight:800;letter-spacing:-0.045em;text-wrap:balance">Your IIT seat starts with one <span style="display:inline-block;padding:0 12px 6px;background:oklch(0.995 0 0);box-shadow:0 10px 30px -12px rgba(120,40,0,.25)">chapter</span></h2>
+</div>
+<div style="margin-top:40px;border-radius:12px;border:6px solid oklch(0.145 0 0);background:oklch(0.995 0 0);box-shadow:0 40px 70px -30px rgba(80,20,0,.5);overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid oklch(0.929 0.013 255.508)"><span style="font-size:14px;font-weight:800">Good evening, Riya</span><span style="display:flex;gap:12px;font-size:12px"><span><b style="color:oklch(0.705 0.213 47.604)">7</b> day streak</span><span><b style="color:oklch(0.606 0.25 292.717)">2,340</b> XP</span></span></div>
+<sc-for list="{{ panelRows }}" as="r" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid oklch(0.929 0.013 255.508)">
+<span style="flex:none;width:44px;height:30px;border-radius:6px;display:grid;place-items:center;background:{{ r.bg }};color:#fff;font-size:11px;font-weight:900">{{ r.sym }}</span>
+<span style="flex:1;min-width:0"><span style="display:block;font-size:13px;font-weight:700">{{ r.t }}</span><span style="display:block;height:4px;border-radius:999px;background:oklch(0.968 0.007 247.896);margin-top:6px"><span style="display:block;height:100%;border-radius:999px;width:{{ r.p }};background:oklch(0.637 0.237 25.331)"></span></span></span>
+<span style="flex:none;font-size:12px;font-weight:700;color:oklch(0.554 0.046 257.417)">{{ r.p }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:28px;font-size:14px;font-weight:600;color:oklch(0.269 0 0)"><span>Part 1 free</span><span>·</span><span>From ₹149 a chapter</span><span>·</span><span>Taught by an IIT Delhi alumnus</span></div>
+</aside>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;signup&quot;],&quot;default&quot;:&quot;login&quot;,&quot;tsType&quot;:&quot;\&quot;login\&quot; | \&quot;signup\&quot;&quot;}}">
+class Component extends DCLogic {
+  state = { w: 1280, forgot: false, resetSent: false, mode: null, method: "phone", name: "", cls: "Class 12", phone: "", otp: "", otpSent: false, email: "", pass: "", user: null };
+
+  componentDidMount() {
+    this.onResize = () => { const w = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0); if (w > 100 && w !== this.state.w) this.setState({ w }); };
+    window.addEventListener("resize", this.onResize);
+    if ("ResizeObserver" in window) { this.ro = new ResizeObserver(() => this.onResize()); this.ro.observe(document.documentElement); }
+    this.onResize();
+    [300, 1000].forEach(t => setTimeout(() => this.onResize && this.onResize(), t));
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this.onResize); this.ro && this.ro.disconnect(); }
+
+  renderVals() {
+    const s = this.state;
+    const ink = "oklch(0.145 0 0)", white = "oklch(0.995 0 0)", bd = "oklch(0.929 0.013 255.508)", mute = "oklch(0.554 0.046 257.417)", red = "oklch(0.637 0.237 25.331)";
+    const qm = (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("mode")) || this.props.mode || "login";
+    const mode = s.mode || (qm === "signup" ? "signup" : "login");
+    const signup = mode === "signup";
+    const digits = s.phone.replace(/\D/g, "");
+    const nameOk = !signup || s.name.trim().length > 1;
+    const ready = s.method === "phone" ? (s.otpSent ? s.otp.length === 6 : digits.length === 10) && nameOk : /.+@.+\..+/.test(s.email) && s.pass.length >= 8 && nameOk;
+    const finish = (who) => this.setState({ user: who });
+    const nm = s.name.trim() || "Riya";
+    return {
+      notDone: !s.user && !s.forgot, done: !!s.user, forgotView: !s.user && s.forgot,
+      openForgot: () => this.setState({ forgot: true, resetSent: false }), closeForgot: () => this.setState({ forgot: false, resetSent: false }),
+      resetSent: s.resetSent, resetNotSent: !s.resetSent,
+      resetBg: /.+@.+\..+/.test(s.email) ? "oklch(0.637 0.237 25.331)" : "oklch(0.8 0.01 260)", resetCursor: /.+@.+\..+/.test(s.email) ? "pointer" : "default",
+      sendReset: () => { if (/.+@.+\..+/.test(s.email)) this.setState({ resetSent: true }); },
+      usePhone: () => this.setState({ forgot: false, method: "phone", mode: "login" }),
+      title: signup ? "Create your account" : "Welcome back",
+      subtitle: signup ? "Free to join. Watch Part 1 of any chapter right away." : "Log in to continue where you left off.",
+      modeTabs: [["login", "Log in"], ["signup", "Sign up"]].map(([k, label]) => ({ label, onClick: () => this.setState({ mode: k, otpSent: false, otp: "" }), bg: mode === k ? white : "transparent", fg: mode === k ? ink : "rgba(255,255,255,.75)" })),
+      isSignup: signup, isLogin: !signup,
+      name: s.name, onName: e => this.setState({ name: e.target.value }),
+      classes: ["Class 11", "Class 12", "Dropper"].map(label => ({ label, onClick: () => this.setState({ cls: label }), bg: s.cls === label ? ink : white, fg: s.cls === label ? "#fff" : ink, border: s.cls === label ? ink : bd })),
+      methodTabs: [["phone", "Phone"], ["email", "Email"]].map(([k, label]) => ({ label, onClick: () => this.setState({ method: k }), bg: s.method === k ? white : "transparent", fg: s.method === k ? ink : mute, shadow: s.method === k ? "0 1px 3px rgba(0,0,0,.12)" : "none" })),
+      isPhone: s.method === "phone", isEmail: s.method === "email",
+      phone: s.phone, onPhone: e => this.setState({ phone: e.target.value.replace(/[^\d ]/g, "").slice(0, 11) }),
+      otp: s.otp, onOtp: e => this.setState({ otp: e.target.value.replace(/\D/g, "").slice(0, 6) }), otpSent: s.otpSent,
+      resend: () => this.setState({ otp: "" }),
+      email: s.email, onEmail: e => this.setState({ email: e.target.value }), pass: s.pass, onPass: e => this.setState({ pass: e.target.value }),
+      btnLabel: s.method === "phone" && !s.otpSent ? "Send OTP" : signup ? "Create account" : "Log in",
+      btnBg: ready ? red : "oklch(0.8 0.01 260)", btnCursor: ready ? "pointer" : "default", btnShadow: ready ? "0 12px 26px -12px oklch(0.637 0.237 25.331 / .8)" : "none",
+      submit: () => { if (!ready) return; if (s.method === "phone" && !s.otpSent) { this.setState({ otpSent: true }); return; } finish(nm); },
+      google: () => finish(signup && s.name.trim() ? s.name.trim() : "Riya"),
+      switchText: signup ? "Already have an account?" : "New to Mathflex?", switchCta: signup ? "Log in" : "Create an account",
+      switchMode: () => this.setState({ mode: signup ? "login" : "signup", otpSent: false, otp: "" }),
+      initial: (s.user || "R")[0].toUpperCase(),
+      doneTitle: signup ? "Welcome to Mathflex, " + (s.user || "").split(" ")[0] : "Welcome back, " + (s.user || "").split(" ")[0],
+      doneBody: signup ? "Your account is ready. Start with a free Part 1 or pick your chapters." : "You're signed in. Pick up where you left off.",
+      reset: () => this.setState({ user: null, otpSent: false, otp: "" }),
+      showPanel: s.w >= 980, panelTag: signup ? "Free to join" : "Good to see you again",
+      panelRows: [["lim", "Limits & Derivatives · Part 2", "62%", "linear-gradient(155deg,#6366F1,#EC4899)"], ["xyz", "3D Geometry · Part 1", "24%", "linear-gradient(155deg,#10B981,#0EA5E9)"], ["∫", "Definite Integrals · Part 3", "88%", "linear-gradient(155deg,#1a0610,#FF2E63)"]].map(([sym, t, p, bg]) => ({ sym, t, p, bg })),
+    };
+  }
+}
+</script>
+</body>
+</html>

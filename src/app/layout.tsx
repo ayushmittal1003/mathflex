@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Plus_Jakarta_Sans, Sora } from "next/font/google";
+import { Inter, JetBrains_Mono, Noto_Serif } from "next/font/google";
 import "./globals.css";
 
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta" });
-const sora = Sora({ subsets: ["latin"], variable: "--font-sora", weight: ["600", "700", "800"] });
+// Font stacks that use these live in globals.css (--font-*-stack). Mono and serif are rarely used, so skip preloading them.
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono", preload: false });
+const notoSerif = Noto_Serif({ subsets: ["latin"], variable: "--font-noto-serif", preload: false });
 
 export const metadata: Metadata = {
   title: { default: "MathFlex — Binge-learn JEE Maths", template: "%s · MathFlex" },
@@ -19,8 +21,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#08080d" },
-    { media: "(prefers-color-scheme: light)", color: "#f7f7fa" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
   ],
 };
 
@@ -29,7 +31,7 @@ const themeScript = `try{var t=localStorage.getItem("mf-theme");if(t!=="light")d
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${jakarta.variable} ${sora.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable} ${notoSerif.variable}`}>
       {/* Browser extensions (e.g. ClickUp) add classes to <body>; don't flag that as a mismatch. */}
       <body className="min-h-dvh" suppressHydrationWarning>
         {/* next/script injects this into the initial HTML; a raw <script> would warn on client renders. */}

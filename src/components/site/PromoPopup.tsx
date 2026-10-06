@@ -29,19 +29,19 @@ export function PromoPopup({ promo }: { promo: Promo | null }) {
   return (
     <div className="fixed inset-0 z-[70] grid place-items-end bg-black/60 p-4 backdrop-blur-sm sm:place-items-center" onClick={close}>
       <div
-        className="animate-rise relative w-full max-w-md overflow-hidden rounded-3xl p-7 text-white shadow-2xl"
+        className="relative w-full max-w-md animate-mf-rise overflow-hidden rounded-xl p-7 text-white shadow-[0_40px_80px_-30px_rgb(0_0_0/0.6)]"
         style={{ background: `linear-gradient(135deg, ${promo.colorFrom}, ${promo.colorTo})` }}
         onClick={(e) => e.stopPropagation()}
       >
         <button onClick={close} className="absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-black/20" aria-label="Close">
           <X className="size-5" />
         </button>
-        <div className="pointer-events-none absolute -right-6 -top-10 font-display text-[10rem] font-extrabold leading-none opacity-15">%</div>
-        <p className="text-xs font-bold uppercase tracking-[0.2em] opacity-80">Limited offer</p>
-        <h3 className="mt-2 font-display text-3xl font-extrabold leading-tight">{promo.title}</h3>
+        <div className="pointer-events-none absolute -right-6 -top-10 text-[10rem] font-black leading-none opacity-15">%</div>
+        <p className="text-xs font-extrabold uppercase tracking-[0.12em] opacity-85">Limited offer</p>
+        <h3 className="mt-2 text-[30px] font-extrabold leading-[1.08] tracking-[-0.035em]">{promo.title}</h3>
         {promo.subtitle && <p className="mt-2 opacity-90">{promo.subtitle}</p>}
         {promo.ctaText && (
-          <Link href={promo.ctaHref || "/browse"} onClick={close} className="btn mt-6 w-full bg-white text-black">
+          <Link href={promo.ctaHref || "/chapters"} onClick={close} className="mt-6 flex w-full items-center justify-center rounded-lg bg-white px-4.5 py-3 text-[15px] font-bold text-black transition hover:brightness-97">
             {promo.ctaText}
           </Link>
         )}

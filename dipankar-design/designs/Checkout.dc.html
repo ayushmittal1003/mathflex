@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:oklch(0.985 0.004 60);color:oklch(0.145 0 0);font-family:Inter,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:oklch(0.637 0.237 25.331);text-decoration:none}
+a:hover{color:oklch(0.55 0.22 25.331)}
+input:focus{outline:none;border-color:oklch(0.145 0 0) !important;box-shadow:0 0 0 3px oklch(0.145 0 0 / .08)}
+@keyframes mfrise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes mfspin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:oklch(0.985 0.004 60);padding-bottom:{{ pageBottom }}">
+
+<header style="background:oklch(0.995 0 0);border-bottom:1px solid oklch(0.929 0.013 255.508)">
+<div style="width:min(1160px, calc(100% - 48px));margin:0 auto;display:grid;grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr);align-items:center;gap:16px;height:72px">
+<a href="Landing Page v2.dc.html" style="justify-self:start;display:flex;align-items:center;gap:8px;color:oklch(0.145 0 0)">
+<img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:25px;width:auto">
+</a>
+<sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:center;gap:10px">
+<sc-for list="{{ steps }}" as="st" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:{{ st.fg }}"><span style="width:22px;height:22px;border-radius:999px;display:grid;place-items:center;font-size:11px;font-weight:800;background:{{ st.dotBg }};color:{{ st.dotFg }}">{{ st.mark }}</span>{{ st.label }}</span>
+<sc-if value="{{ st.line }}" hint-placeholder-val="{{ true }}"><span style="width:36px;height:2px;border-radius:2px;background:{{ st.lineBg }}"></span></sc-if>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<div style="justify-self:end;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:oklch(0.269 0 0)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="oklch(0.627 0.194 149.214)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Secure checkout</div>
+</div>
+</header>
+
+<main style="width:min(1160px, calc(100% - 48px));margin:0 auto;padding:40px 0 80px">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px">
+<h1 style="margin:0;font-size:clamp(32px, 4vw, 48px);font-weight:800;letter-spacing:-0.04em;line-height:1.05">Checkout</h1>
+<a href="Chapters.dc.html" style="font-size:14px;font-weight:700">← Keep browsing</a>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;margin-top:28px">
+
+<div style="flex:1 1 560px;min-width:0;display:grid;gap:20px">
+
+<section data-screen-label="01 Cart" style="border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);overflow:hidden">
+<div style="display:flex;align-items:center;gap:12px;padding:20px 22px;border-bottom:1px solid oklch(0.929 0.013 255.508)">
+<span style="width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:oklch(0.145 0 0);color:#fff;font-size:13px;font-weight:800">1</span>
+<h2 style="margin:0;font-size:19px;font-weight:800;letter-spacing:-0.02em">Your cart</h2>
+<span style="margin-left:auto;font-size:13px;font-weight:600;color:oklch(0.554 0.046 257.417)">{{ itemCountLabel }}</span>
+</div>
+
+<sc-for list="{{ items }}" as="it" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:16px;padding:18px 22px;border-bottom:1px solid oklch(0.929 0.013 255.508);animation:mfrise .35s cubic-bezier(0.22, 1, 0.36, 1) both">
+<span style="flex:none;position:relative;overflow:hidden;width:{{ thumbW }};aspect-ratio:16/10;border-radius:8px;display:grid;place-items:center;background:{{ it.bg }};color:#fff;font-weight:900;font-size:{{ it.symSize }};letter-spacing:-0.04em">{{ it.sym }}</span>
+<div style="flex:1;min-width:0">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px"><span style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:{{ it.tagBg }};color:{{ it.tagFg }}">{{ it.kind }}</span></div>
+<div style="font-size:16px;font-weight:700;letter-spacing:-0.015em;margin-top:5px">{{ it.title }}</div>
+<div style="font-size:13px;color:oklch(0.554 0.046 257.417);margin-top:2px">{{ it.sub }}</div>
+</div>
+<div style="flex:none;text-align:right">
+<div style="font-size:17px;font-weight:800;letter-spacing:-0.02em">₹{{ it.priceLabel }}</div>
+<div style="font-size:12px;color:oklch(0.554 0.046 257.417);text-decoration:line-through">₹{{ it.mrpLabel }}</div>
+<button onClick="{{ it.remove }}" style="margin-top:6px;border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-size:12px;font-weight:700;color:oklch(0.554 0.046 257.417);text-decoration:underline;text-underline-offset:3px">Remove</button>
+</div>
+</div>
+</sc-for>
+
+<sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+<div style="padding:48px 22px;text-align:center">
+<div style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Your cart is empty</div>
+<p style="margin:6px 0 0;font-size:14px;color:oklch(0.554 0.046 257.417)">Pick a chapter or a full course to get started.</p>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:18px"><a href="Chapters.dc.html" style="padding:11px 16px;border-radius:8px;background:oklch(0.145 0 0);color:#fff;font-weight:700;font-size:14px">Browse chapters</a><a href="Courses.dc.html" style="padding:11px 16px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0);font-weight:700;font-size:14px">See courses</a></div>
+<button onClick="{{ restore }}" style="margin-top:14px;border:0;background:transparent;cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:oklch(0.637 0.237 25.331)">Restore sample cart</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasUpgrade }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;margin:18px 22px;padding:16px 18px;border-radius:12px;border:1.5px dashed color-mix(in oklab, oklch(0.637 0.237 25.331) 45%, transparent);background:color-mix(in oklab, oklch(0.705 0.213 47.604) 7%, oklch(0.995 0 0))">
+<span style="flex:none;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg, oklch(0.637 0.237 25.331), oklch(0.705 0.213 47.604));color:#fff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></span>
+<div style="flex:1 1 240px;min-width:0">
+<div style="font-size:15px;font-weight:800;letter-spacing:-0.01em">{{ upgrade.title }}</div>
+<div style="font-size:13px;color:oklch(0.269 0 0);margin-top:2px;line-height:1.45">{{ upgrade.body }}</div>
+</div>
+<button onClick="{{ upgrade.apply }}" style="flex:none;border:0;cursor:pointer;font:inherit;padding:11px 16px;border-radius:8px;background:oklch(0.145 0 0);color:#fff;font-size:14px;font-weight:700;white-space:nowrap" style-hover="filter:brightness(1.3)">{{ upgrade.cta }}</button>
+</div>
+</sc-if>
+</section>
+
+<section data-screen-label="02 Upsell call" style="border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);overflow:hidden">
+<div style="display:flex;flex-wrap:wrap;align-items:stretch">
+<div style="position:relative;flex:0 0 {{ callThumbW }};min-height:150px;background:repeating-linear-gradient(135deg, oklch(0.26 0.01 260) 0 10px, oklch(0.22 0.01 260) 10px 20px);display:grid;place-items:center;color:#fff">
+<div style="position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 100%, oklch(0.637 0.237 25.331 / .35), transparent 70%)"></div>
+<span style="position:relative;width:48px;height:48px;border-radius:999px;display:grid;place-items:center;background:#fff"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="oklch(0.637 0.237 25.331)"></path></svg></span>
+<span style="position:absolute;left:10px;bottom:10px;font-size:11px;font-weight:700;padding:3px 7px;border-radius:5px;background:rgba(0,0,0,.45)">Karan · 0:45</span>
+</div>
+<div style="flex:1 1 300px;min-width:0;padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px"><span style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;background:oklch(0.145 0 0);color:#fff">Recommended</span><span style="font-size:12px;font-weight:600;color:oklch(0.554 0.046 257.417)">Picked by 1 in 3 students</span></div>
+<div>
+<div style="font-size:18px;font-weight:800;letter-spacing:-0.02em">Book a 1:1 call with Karan</div>
+<div style="font-size:14px;line-height:1.5;color:oklch(0.269 0 0);margin-top:4px">30 minutes with an IIT Delhi alumnus to plan your prep and pick which chapters to fix first.</div>
+</div>
+<button onClick="{{ toggleCall }}" style="align-self:flex-start;display:flex;align-items:center;gap:12px;padding:10px 14px 10px 10px;border-radius:10px;cursor:{{ callCursor }};font:inherit;border:1.5px solid {{ callBorder }};background:{{ callBg }};color:oklch(0.145 0 0);transition:all .2s">
+<span style="width:22px;height:22px;border-radius:6px;display:grid;place-items:center;border:1.5px solid {{ callBoxBorder }};background:{{ callBoxBg }};color:#fff;transition:background .2s"><sc-if value="{{ callOn }}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></sc-if></span>
+<span style="font-size:14px;font-weight:700">{{ callLabel }}</span>
+<span style="font-size:14px;font-weight:800;color:{{ callPriceC }}">{{ callPrice }}</span>
+</button>
+</div>
+</div>
+</section>
+
+<sc-if value="{{ hasAddOns }}" hint-placeholder-val="{{ true }}">
+<section data-screen-label="02b Chapter upsell" style="border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);padding:20px 22px">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px"><h2 style="margin:0;font-size:17px;font-weight:800;letter-spacing:-0.02em">{{ addOnTitle }}</h2><a href="Chapters.dc.html" style="font-size:13px;font-weight:700">See all chapters →</a></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:10px;margin-top:14px">
+<sc-for list="{{ addOns }}" as="a" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;border:1px solid oklch(0.929 0.013 255.508);animation:mfrise .3s both">
+<span style="flex:none;width:44px;height:44px;border-radius:8px;display:grid;place-items:center;background:{{ a.bg }};color:#fff;font-weight:900;font-size:{{ a.symSize }}">{{ a.sym }}</span>
+<span style="flex:1;min-width:0"><span style="display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.title }}</span><span style="display:block;font-size:12px;color:oklch(0.554 0.046 257.417)">₹{{ a.priceLabel }} <span style="text-decoration:line-through">₹{{ a.mrpLabel }}</span></span></span>
+<button onClick="{{ a.add }}" style="flex:none;height:34px;padding:0 12px;border-radius:8px;border:1px solid oklch(0.145 0 0);background:oklch(0.995 0 0);cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:oklch(0.145 0 0)" style-hover="background:oklch(0.145 0 0);color:#fff">+ Add</button>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<section data-screen-label="03 Sign in" style="border-radius:12px;border:1px solid {{ authBorder }};background:oklch(0.995 0 0);overflow:hidden;transition:border-color .3s">
+<div style="display:flex;align-items:center;gap:12px;padding:20px 22px;border-bottom:1px solid oklch(0.929 0.013 255.508)">
+<span style="width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:{{ authDotBg }};color:#fff;font-size:13px;font-weight:800">{{ authMark }}</span>
+<h2 style="margin:0;font-size:19px;font-weight:800;letter-spacing:-0.02em">{{ authTitle }}</h2>
+<sc-if value="{{ signedIn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ signOut }}" style="margin-left:auto;border:0;background:transparent;cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:oklch(0.554 0.046 257.417);text-decoration:underline;text-underline-offset:3px">Change</button></sc-if>
+</div>
+
+<sc-if value="{{ signedIn }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:14px;padding:18px 22px;animation:mfrise .35s both">
+<span style="flex:none;width:42px;height:42px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(135deg, oklch(0.637 0.237 25.331), oklch(0.705 0.213 47.604));color:#fff;font-weight:800">R</span>
+<div style="min-width:0"><div style="font-size:15px;font-weight:700">{{ userName }}</div><div style="font-size:13px;color:oklch(0.554 0.046 257.417)">{{ userId }}</div></div>
+<span style="margin-left:auto;font-size:12px;font-weight:700;padding:4px 8px;border-radius:6px;background:color-mix(in oklab, oklch(0.627 0.194 149.214) 14%, transparent);color:oklch(0.5 0.16 149)">Signed in</span>
+</div>
+</sc-if>
+
+<sc-if value="{{ notSignedIn }}" hint-placeholder-val="{{ true }}">
+<div style="padding:20px 22px 22px">
+<p style="margin:0 0 16px;font-size:14px;line-height:1.5;color:oklch(0.269 0 0)">Your cart is saved. Sign in so we can unlock your chapters on your account right after you pay.</p>
+<button onClick="{{ google }}" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;height:48px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);cursor:pointer;font:inherit;font-size:15px;font-weight:700;color:oklch(0.145 0 0)" style-hover="background:oklch(0.97 0 0)">
+<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"></path><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"></path><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"></path><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"></path></svg>
+Continue with Google
+</button>
+<div style="display:flex;align-items:center;gap:12px;margin:18px 0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:oklch(0.554 0.046 257.417)"><span style="flex:1;height:1px;background:oklch(0.929 0.013 255.508)"></span>or<span style="flex:1;height:1px;background:oklch(0.929 0.013 255.508)"></span></div>
+<div style="display:flex;gap:2px;padding:4px;border-radius:8px;background:oklch(0.968 0.007 247.896)">
+<sc-for list="{{ methodTabs }}" as="m" hint-placeholder-count="2">
+<button onClick="{{ m.onClick }}" style="flex:1;border:0;cursor:pointer;font:inherit;padding:9px 12px;border-radius:6px;font-size:14px;font-weight:700;background:{{ m.bg }};color:{{ m.fg }};box-shadow:{{ m.shadow }}">{{ m.label }}</button>
+</sc-for>
+</div>
+
+<sc-if value="{{ isPhone }}" hint-placeholder-val="{{ true }}">
+<div style="margin-top:16px;display:grid;gap:12px">
+<label style="display:grid;gap:6px"><span style="font-size:13px;font-weight:700">Mobile number</span>
+<div style="display:flex;gap:8px"><span style="flex:none;display:grid;place-items:center;height:48px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.968 0.007 247.896);font-size:15px;font-weight:700">+91</span><input value="{{ phone }}" onInput="{{ onPhone }}" inputmode="numeric" placeholder="98765 43210" style="flex:1;min-width:0;height:48px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font:inherit;font-size:16px;letter-spacing:.02em"></div>
+</label>
+<sc-if value="{{ otpSent }}" hint-placeholder-val="{{ false }}">
+<label style="display:grid;gap:6px;animation:mfrise .3s both"><span style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>Enter the 6-digit OTP</span><button onClick="{{ sendOtp }}" style="border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:oklch(0.637 0.237 25.331)">Resend</button></span>
+<input value="{{ otp }}" onInput="{{ onOtp }}" inputmode="numeric" placeholder="••••••" style="height:52px;padding:0 16px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:22px;letter-spacing:.5em">
+<span style="font-size:12px;color:oklch(0.554 0.046 257.417)">Sent to +91 {{ phone }}. Any 6 digits work in this prototype.</span>
+</label>
+</sc-if>
+<button onClick="{{ phoneAction }}" style="height:48px;border-radius:8px;border:0;cursor:{{ phoneCursor }};font:inherit;font-size:15px;font-weight:700;background:{{ phoneBtnBg }};color:#fff;opacity:{{ phoneBtnOp }}">{{ phoneBtnLabel }}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isEmail }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:16px;display:grid;gap:12px">
+<label style="display:grid;gap:6px"><span style="font-size:13px;font-weight:700">Email</span><input value="{{ email }}" onInput="{{ onEmail }}" type="email" placeholder="you@example.com" style="height:48px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font:inherit;font-size:16px"></label>
+<label style="display:grid;gap:6px"><span style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>Password</span><a href="Login.dc.html" style="font-size:13px;font-weight:700">Forgot?</a></span><input value="{{ pass }}" onInput="{{ onPass }}" type="password" placeholder="At least 8 characters" style="height:48px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font:inherit;font-size:16px"></label>
+<button onClick="{{ emailAction }}" style="height:48px;border-radius:8px;border:0;cursor:{{ emailCursor }};font:inherit;font-size:15px;font-weight:700;background:{{ emailBtnBg }};color:#fff;opacity:{{ emailBtnOp }}">Continue</button>
+<span style="font-size:12px;color:oklch(0.554 0.046 257.417);text-align:center">New here? We'll create your account with this email.</span>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</section>
+
+<section data-screen-label="04 Payment" style="border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);opacity:{{ payOp }};transition:opacity .3s">
+<div style="display:flex;align-items:center;gap:12px;padding:20px 22px">
+<span style="width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:{{ payDotBg }};color:{{ payDotFg }};font-size:13px;font-weight:800">3</span>
+<h2 style="margin:0;font-size:19px;font-weight:800;letter-spacing:-0.02em">Payment</h2>
+</div>
+<div style="padding:0 22px 22px">
+<p style="margin:0;font-size:14px;line-height:1.5;color:oklch(0.269 0 0)">{{ payNote }}</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
+<sc-for list="{{ payMethods }}" as="pm" hint-placeholder-count="4"><span style="font-size:13px;font-weight:700;padding:8px 12px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0)">{{ pm }}</span></sc-for>
+</div>
+</div>
+</section>
+</div>
+
+<aside style="flex:1 1 340px;max-width:{{ asideMax }};min-width:0;position:{{ asidePos }};top:24px">
+<div style="border-radius:12px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);box-shadow:0 24px 48px -32px rgba(80,20,0,.4);overflow:hidden">
+<div style="padding:20px 22px 0"><h2 style="margin:0;font-size:19px;font-weight:800;letter-spacing:-0.02em">Order summary</h2></div>
+<div style="padding:14px 22px 0;display:grid;gap:10px">
+<sc-for list="{{ summaryLines }}" as="l" hint-placeholder-count="3">
+<div style="display:flex;justify-content:space-between;gap:12px;font-size:14px"><span style="color:oklch(0.269 0 0);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ l.label }}</span><span style="flex:none;font-weight:700;color:{{ l.color }}">{{ l.value }}</span></div>
+</sc-for>
+</div>
+
+<div style="margin:16px 22px 0;padding-top:16px;border-top:1px solid oklch(0.929 0.013 255.508)">
+<sc-if value="{{ couponOn }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1.5px dashed oklch(0.627 0.194 149.214);background:color-mix(in oklab, oklch(0.627 0.194 149.214) 7%, oklch(0.995 0 0))">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.5 0.16 149)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+<span style="flex:1;font-size:13px"><b style="font-family:'JetBrains Mono',ui-monospace,monospace">WELCOME20</b> applied · 20% off</span>
+<button onClick="{{ removeCoupon }}" style="border:0;background:transparent;cursor:pointer;font:inherit;font-size:12px;font-weight:700;color:oklch(0.554 0.046 257.417);text-decoration:underline;text-underline-offset:3px">Remove</button>
+</div>
+</sc-if>
+<sc-if value="{{ couponOff }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:8px"><input value="{{ couponInput }}" onInput="{{ onCoupon }}" placeholder="Coupon code" style="flex:1;min-width:0;height:42px;padding:0 12px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;text-transform:uppercase"><button onClick="{{ applyCoupon }}" style="flex:none;height:42px;padding:0 14px;border-radius:8px;border:1px solid oklch(0.145 0 0);background:oklch(0.995 0 0);cursor:pointer;font:inherit;font-size:13px;font-weight:700;color:oklch(0.145 0 0)">Apply</button></div>
+<sc-if value="{{ couponErr }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;font-weight:600;color:oklch(0.577 0.245 27.325);margin-top:6px">That code isn't valid. Try WELCOME20.</div></sc-if>
+</sc-if>
+</div>
+
+<div style="margin:16px 22px 0;padding-top:16px;border-top:1px solid oklch(0.929 0.013 255.508);display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+<span style="font-size:16px;font-weight:800">Total</span>
+<span style="font-size:34px;font-weight:800;letter-spacing:-0.04em;line-height:1">₹{{ totalLabel }}</span>
+</div>
+<div style="padding:6px 22px 0;text-align:right;font-size:13px;font-weight:700;color:oklch(0.5 0.16 149)">{{ saveLabel }}</div>
+
+<div style="padding:18px 22px 22px">
+<button onClick="{{ pay }}" style="width:100%;height:54px;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:8px;border:0;cursor:{{ payCursor }};font:inherit;font-size:16px;font-weight:700;background:{{ payBtnBg }};color:{{ payBtnFg }};box-shadow:{{ payShadow }};transition:background .2s" style-hover="filter:brightness(1.06)">
+<sc-if value="{{ paying }}" hint-placeholder-val="{{ false }}"><span style="width:16px;height:16px;border-radius:999px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;animation:mfspin .8s linear infinite"></span></sc-if>
+{{ payLabel }}
+</button>
+<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;font-size:12px;color:oklch(0.554 0.046 257.417)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Payments secured by Razorpay · <a href="Refund Policy.dc.html" style="color:oklch(0.554 0.046 257.417);text-decoration:underline;text-underline-offset:3px">Refund policy</a></div>
+</div>
+</div>
+
+<div style="display:grid;gap:12px;margin-top:18px;padding:0 4px">
+<sc-for list="{{ trust }}" as="t" hint-placeholder-count="3">
+<div style="display:flex;gap:10px;font-size:13px;line-height:1.45;color:oklch(0.269 0 0)"><svg style="flex:none;margin-top:2px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="oklch(0.627 0.194 149.214)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg><span>{{ t }}</span></div>
+</sc-for>
+</div>
+</aside>
+</div>
+</main>
+
+<sc-if value="{{ mobileBar }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;align-items:center;gap:14px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:oklch(0.995 0 0);border-top:1px solid oklch(0.929 0.013 255.508);box-shadow:0 -12px 30px -18px rgba(0,0,0,.3)">
+<div style="flex:none"><div style="font-size:12px;color:oklch(0.554 0.046 257.417)">Total</div><div style="font-size:22px;font-weight:800;letter-spacing:-0.03em;line-height:1.1">₹{{ totalLabel }}</div></div>
+<button onClick="{{ pay }}" style="flex:1;height:50px;border-radius:8px;border:0;cursor:{{ payCursor }};font:inherit;font-size:15px;font-weight:700;background:{{ payBtnBg }};color:{{ payBtnFg }}">{{ payLabel }}</button>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    w: 1280, items: null, call: true, coupon: true, couponInput: "", couponErr: false,
+    method: "phone", phone: "", otp: "", otpSent: false, email: "", pass: "", auth: null, paying: false,
+  };
+
+  componentDidMount() {
+    this.onResize = () => { const w = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0); if (w > 100 && w !== this.state.w) this.setState({ w }); };
+    window.addEventListener("resize", this.onResize);
+    if ("ResizeObserver" in window) { this.ro = new ResizeObserver(() => this.onResize()); this.ro.observe(document.documentElement); }
+    this.onResize();
+    [300, 1000].forEach(t => setTimeout(() => this.onResize && this.onResize(), t));
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this.onResize); this.ro && this.ro.disconnect(); clearTimeout(this.pt); }
+
+  catalog() {
+    return {
+      c11: { key: "c11", kind: "Course", title: "Class 11 complete", sub: "20 chapters · 60+ hours", price: 2999, mrp: 5999, sym: "11", bg: "linear-gradient(135deg, #1a0610, #FF2E63)", cls: 11, course: true },
+      c12: { key: "c12", kind: "Course", title: "Class 12 complete", sub: "15 chapters · 45+ hours", price: 2999, mrp: 5999, sym: "12", bg: "linear-gradient(135deg, #1a0610, #FF8A3D)", cls: 12, course: true },
+      combo: { key: "combo", kind: "Combo", title: "Class 11 + 12 combo", sub: "All 35 chapters · 105+ hours · free 1:1 call", price: 4999, mrp: 11998, sym: "11+12", bg: "linear-gradient(135deg, #FF2E63, #FF8A3D)", combo: true },
+      "12-11": { key: "12-11", kind: "Chapter", title: "3D Geometry", sub: "Class 12 · 3 parts · DPPs, PYQs, notes", price: 399, mrp: 798, sym: "xyz", bg: "linear-gradient(155deg, #10B981, #0EA5E9)", cls: 12 },
+      "12-7": { key: "12-7", kind: "Chapter", title: "Definite Integrals", sub: "Class 12 · 3 parts · DPPs, PYQs, notes", price: 399, mrp: 798, sym: "∫", bg: "linear-gradient(155deg, #1a0610, #FF2E63)", cls: 12 },
+      "11-5": { key: "11-5", kind: "Chapter", title: "Complex Numbers", sub: "Class 11 · 3 parts · DPPs, PYQs, notes", price: 399, mrp: 798, sym: "i", bg: "linear-gradient(155deg, #7C3AED, #FF2E63)", cls: 11 },
+      "11-6": { key: "11-6", kind: "Chapter", title: "Sequence & Series", sub: "Class 11 · 3 parts · DPPs, PYQs, notes", price: 399, mrp: 798, sym: "Σ", bg: "linear-gradient(155deg, #F59E0B, #DC2626)", cls: 11 },
+      "12-5": { key: "12-5", kind: "Chapter", title: "Application of Derivatives", sub: "Class 12 · 3 parts · DPPs, PYQs, notes", price: 399, mrp: 798, sym: "f′", bg: "linear-gradient(155deg, #0EA5E9, #6366F1)", cls: 12 },
+      "12-12": { key: "12-12", kind: "Chapter", title: "Probability", sub: "Class 12 · 3 parts · DPPs, PYQs, notes", price: 399, mrp: 798, sym: "P", bg: "linear-gradient(155deg, #6366F1, #EC4899)", cls: 12 },
+    };
+  }
+
+  renderVals() {
+    const s = this.state, cat = this.catalog();
+    const ink = "oklch(0.145 0 0)", red = "oklch(0.637 0.237 25.331)", bd = "oklch(0.929 0.013 255.508)", white = "oklch(0.995 0 0)", mut = "oklch(0.968 0.007 247.896)", mute = "oklch(0.554 0.046 257.417)", ok = "oklch(0.627 0.194 149.214)";
+    const narrow = s.w < 760, wide = !narrow, sideBySide = s.w >= 980;
+    const fmt = n => n.toLocaleString("en-IN");
+    const qs = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const fromCall = !!(qs && qs.get("call")), slot = qs ? qs.get("slot") : null;
+    const keys = s.items ?? (fromCall ? [] : ["c11", "12-11", "12-12"]);
+    const items = keys.map(k => cat[k]).filter(Boolean);
+    const hasCombo = items.some(i => i.combo);
+    const sub = items.reduce((t, i) => t + i.price, 0), mrp = items.reduce((t, i) => t + i.mrp, 0);
+    const callFree = hasCombo, callOn = s.call || callFree;
+    const callCost = s.call && !callFree ? 300 : 0;
+    const disc = s.coupon ? Math.round(sub * 0.2) : 0;
+    const total = sub - disc + callCost;
+    const signedIn = !!s.auth, empty = items.length === 0 && !(fromCall && s.call);
+
+    let upgrade = null;
+    const courses = items.filter(i => i.course), chapters = items.filter(i => !i.course && !i.combo);
+    if (!hasCombo && courses.length) {
+      const diff = 4999 - sub;
+      upgrade = diff > 0
+        ? { title: "Get all 35 chapters for ₹" + fmt(diff) + " more", body: "Switch to the Class 11 + 12 combo. You also get the 1:1 call with Karan free.", cta: "Switch to combo" }
+        : { title: "The combo is ₹" + fmt(-diff) + " cheaper", body: "Switch to the Class 11 + 12 combo and get all 35 chapters plus a free 1:1 call.", cta: "Switch and save" };
+      upgrade.apply = () => this.setState({ items: ["combo"] });
+    } else if (!hasCombo && chapters.length) {
+      const byCls = {}; chapters.forEach(c => { byCls[c.cls] = (byCls[c.cls] || 0) + c.price; });
+      const cls = Object.keys(byCls).sort((a, b) => byCls[b] - byCls[a])[0];
+      const diff = 2999 - byCls[cls];
+      if (byCls[cls] >= 700) {
+        upgrade = { title: "All of Class " + cls + " for ₹" + fmt(diff) + " more", body: "Swap these chapters for the full Class " + cls + " course and get every chapter.", cta: "Upgrade",
+          apply: () => this.setState({ items: [...keys.filter(k => !(cat[k].cls == cls && !cat[k].course)), "c" + cls] }) };
+      }
+    }
+
+    const summaryLines = [
+      ...items.map(i => ({ label: i.title, value: "₹" + fmt(i.price), color: ink })),
+      ...(callOn ? [{ label: "1:1 call with Karan", value: callFree ? "Free" : "₹300", color: callFree ? "oklch(0.5 0.16 149)" : ink }] : []),
+      ...(disc ? [{ label: "WELCOME20 (20% off)", value: "−₹" + fmt(disc), color: "oklch(0.5 0.16 149)" }] : []),
+    ];
+
+    const stepState = !signedIn ? 1 : 2;
+    const steps = ["Cart", "Sign in", "Pay"].map((label, i) => {
+      const done = i < stepState, cur = i === stepState;
+      return { label, mark: done ? "✓" : String(i + 1), line: i < 2, fg: done || cur ? ink : mute,
+        dotBg: done ? ok : cur ? ink : mut, dotFg: done || cur ? "#fff" : mute, lineBg: done ? ok : bd };
+    });
+
+    const digits = s.phone.replace(/\D/g, "");
+    const phoneReady = s.otpSent ? s.otp.replace(/\D/g, "").length === 6 : digits.length === 10;
+    const emailReady = /.+@.+\..+/.test(s.email) && s.pass.length >= 8;
+    const sendOtp = () => { if (digits.length === 10) this.setState({ otpSent: true, otp: "" }); };
+
+    const canPay = signedIn && !empty && !s.paying;
+    const payLabel = empty ? "Your cart is empty" : !signedIn ? "Sign in to pay ₹" + fmt(total) : s.paying ? "Opening secure payment…" : "Pay ₹" + fmt(total);
+
+    return {
+      wide, narrow, steps, thumbW: narrow ? "84px" : "120px", callThumbW: narrow ? "100%" : "190px",
+      items: items.map(i => ({ ...i, priceLabel: fmt(i.price), mrpLabel: fmt(i.mrp), symSize: i.sym.length > 3 ? "14px" : i.sym.length > 1 ? "20px" : "28px",
+        tagBg: i.combo ? red : i.course ? ink : mut, tagFg: i.course || i.combo ? "#fff" : "oklch(0.269 0 0)",
+        remove: () => this.setState({ items: keys.filter(k => k !== i.key) }) })),
+      itemCountLabel: items.length + (items.length === 1 ? " item" : " items"), empty,
+      restore: () => this.setState({ items: null }),
+      hasUpgrade: !!upgrade && !empty, upgrade: upgrade || { title: "", body: "", cta: "", apply: () => {} },
+      addOns: ["12-7", "11-5", "11-6", "12-5", "12-11", "12-12"].filter(k => !keys.includes(k) && !hasCombo && !items.some(i => i.course && i.cls === cat[k].cls)).slice(0, 3).map(k => ({ ...cat[k], priceLabel: fmt(cat[k].price), mrpLabel: fmt(cat[k].mrp), symSize: cat[k].sym.length > 1 ? "15px" : "20px", add: () => this.setState({ items: [...keys, k] }) })),
+      hasAddOns: !hasCombo, addOnTitle: items.length ? "Students who bought these also add" : "Add a chapter to your call",
+      callOn, toggleCall: () => { if (!callFree) this.setState(st => ({ call: !st.call })); }, callCursor: callFree ? "default" : "pointer",
+      callLabel: slot && callOn && !callFree ? "Booked · " + slot : callFree ? "Included with your combo" : callOn ? "Added to your order" : "Add to my order", callPrice: callFree ? "Free" : "₹300", callPriceC: callFree ? "oklch(0.5 0.16 149)" : ink,
+      callBorder: callOn ? red : bd, callBg: callOn ? "color-mix(in oklab, " + red + " 5%, " + white + ")" : white, callBoxBorder: callOn ? red : "oklch(0.8 0.01 260)", callBoxBg: callOn ? red : white,
+      signedIn, notSignedIn: !signedIn, authTitle: signedIn ? "Signed in" : "Sign in to continue", authMark: signedIn ? "✓" : "2", authDotBg: signedIn ? ok : ink, authBorder: signedIn ? bd : ink,
+      userName: s.auth ? s.auth.name : "", userId: s.auth ? s.auth.id : "",
+      signOut: () => this.setState({ auth: null, otpSent: false, otp: "" }),
+      google: () => this.setState({ auth: { name: "Riya Sharma", id: "riya.sharma@gmail.com · Google" } }),
+      methodTabs: [["phone", "Phone"], ["email", "Email"]].map(([k, label]) => ({ label, onClick: () => this.setState({ method: k }), bg: s.method === k ? white : "transparent", fg: s.method === k ? ink : mute, shadow: s.method === k ? "0 1px 3px rgba(0,0,0,.12)" : "none" })),
+      isPhone: s.method === "phone", isEmail: s.method === "email",
+      phone: s.phone, onPhone: e => this.setState({ phone: e.target.value.replace(/[^\d ]/g, "").slice(0, 11) }),
+      otp: s.otp, onOtp: e => this.setState({ otp: e.target.value.replace(/\D/g, "").slice(0, 6) }), otpSent: s.otpSent, sendOtp,
+      phoneBtnLabel: s.otpSent ? "Verify and continue" : "Send OTP", phoneBtnBg: phoneReady ? ink : "oklch(0.8 0.01 260)", phoneBtnOp: 1, phoneCursor: phoneReady ? "pointer" : "default",
+      phoneAction: () => { if (!phoneReady) return; if (!s.otpSent) sendOtp(); else this.setState({ auth: { name: "Riya", id: "+91 " + s.phone } }); },
+      email: s.email, onEmail: e => this.setState({ email: e.target.value }), pass: s.pass, onPass: e => this.setState({ pass: e.target.value }),
+      emailBtnBg: emailReady ? ink : "oklch(0.8 0.01 260)", emailBtnOp: 1, emailCursor: emailReady ? "pointer" : "default",
+      emailAction: () => { if (emailReady) this.setState({ auth: { name: s.email.split("@")[0], id: s.email } }); },
+      payOp: signedIn ? 1 : 0.55, payDotBg: signedIn ? ink : mut, payDotFg: signedIn ? "#fff" : mute,
+      payNote: signedIn ? "You'll pay on Razorpay's secure page. Your chapters unlock on your account as soon as the payment goes through." : "Sign in first. Then you'll pay on Razorpay's secure page.",
+      payMethods: ["UPI", "Debit / credit card", "Netbanking", "Wallets"],
+      summaryLines, couponOn: s.coupon, couponOff: !s.coupon, couponErr: s.couponErr, couponInput: s.couponInput,
+      onCoupon: e => this.setState({ couponInput: e.target.value, couponErr: false }),
+      applyCoupon: () => { if (s.couponInput.trim().toUpperCase() === "WELCOME20") this.setState({ coupon: true, couponInput: "" }); else this.setState({ couponErr: true }); },
+      removeCoupon: () => this.setState({ coupon: false }),
+      totalLabel: fmt(total), saveLabel: empty ? "" : "You save ₹" + fmt(mrp - sub + disc) + " on this order",
+      payLabel, paying: s.paying, payCursor: canPay ? "pointer" : signedIn ? "default" : "pointer",
+      payBtnBg: canPay || s.paying ? red : !signedIn && !empty ? ink : "oklch(0.8 0.01 260)", payBtnFg: "#fff",
+      payShadow: canPay ? "0 12px 26px -12px oklch(0.637 0.237 25.331 / .8)" : "none",
+      pay: () => {
+        if (empty || s.paying) return;
+        if (!signedIn) { window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+        this.setState({ paying: true });
+        this.pt = setTimeout(() => { window.location.href = "Thank You.dc.html"; }, 1600);
+      },
+      trust: ["Chapters unlock on your account the moment you pay", "365 days of access on phone and laptop", "Need help? WhatsApp +91 XXXXX XXXXX, Mon–Sat 10am–7pm"],
+      asidePos: sideBySide ? "sticky" : "static", asideMax: sideBySide ? "380px" : "100%",
+      mobileBar: narrow && !empty, pageBottom: narrow && !empty ? "84px" : "0",
+    };
+  }
+}
+</script>
+</body>
+</html>

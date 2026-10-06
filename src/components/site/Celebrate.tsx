@@ -63,26 +63,26 @@ export function CelebrateProvider({ children, sound }: { children: React.ReactNo
           <div
             role="dialog"
             aria-modal
-            className="card animate-pop w-full max-w-sm p-7 text-center shadow-2xl"
+            className="w-full max-w-sm animate-mf-pop rounded-xl border border-border bg-card p-7 text-center text-foreground shadow-[0_40px_80px_-30px_rgb(0_0_0/0.5)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mx-auto mb-3 grid size-20 place-items-center rounded-full bg-brand-gradient text-4xl shadow-lg">
+            <div className="mx-auto mb-3 grid size-20 place-items-center rounded-full bg-gradient-to-br from-primary to-brand-2 text-4xl shadow-[0_14px_30px_-12px_rgb(255_46_99/0.6)]">
               {current.emoji ?? "🎉"}
             </div>
-            <h2 className="font-display text-2xl font-extrabold">{current.title}</h2>
-            {current.subtitle && <p className="mt-1 text-muted">{current.subtitle}</p>}
+            <h2 className="text-[26px] font-extrabold leading-tight tracking-[-0.03em]">{current.title}</h2>
+            {current.subtitle && <p className="mt-1 text-muted-foreground">{current.subtitle}</p>}
             {!!current.xp && (
               <p className="mt-4 inline-flex items-center gap-1 rounded-full bg-xp/15 px-4 py-1.5 font-bold text-xp">+{current.xp} XP</p>
             )}
             {!!current.badges?.length && (
               <div className="mt-5 space-y-2">
                 {current.badges.map((b) => (
-                  <div key={b.name} className="flex items-center gap-3 rounded-2xl bg-surface-2 p-3 text-left">
+                  <div key={b.name} className="flex items-center gap-3 rounded-lg bg-muted p-3 text-left">
                     <span className="text-3xl">{b.emoji}</span>
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wider text-gold">New badge</p>
                       <p className="font-bold">{b.name}</p>
-                      <p className="text-xs text-muted">{b.description}</p>
+                      <p className="text-xs text-muted-foreground">{b.description}</p>
                     </div>
                   </div>
                 ))}
@@ -90,11 +90,11 @@ export function CelebrateProvider({ children, sound }: { children: React.ReactNo
             )}
             <div className="mt-6 flex flex-col gap-2">
               {current.cta && (
-                <a href={current.cta.href} className="btn btn-primary">
+                <a href={current.cta.href} className="inline-flex items-center justify-center rounded-lg bg-primary px-4.5 py-3 text-[15px] font-bold text-primary-foreground shadow-cta hover:brightness-108">
                   {current.cta.label}
                 </a>
               )}
-              <button className="btn btn-ghost" onClick={() => setCurrent(null)}>
+              <button className="inline-flex items-center justify-center rounded-lg border border-border bg-secondary px-4.5 py-3 text-[15px] font-bold text-secondary-foreground hover:brightness-97" onClick={() => setCurrent(null)}>
                 {current.cta ? "Later" : "Let's go!"}
               </button>
             </div>
