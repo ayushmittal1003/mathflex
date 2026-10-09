@@ -37,3 +37,31 @@ The hook is marked in `src/app/(site)/(public)/page.tsx`.
 ## 3. Invoices
 
 `/plans` says "ask support" for invoices because there is no invoice backend.
+
+---
+
+# SEO — Report for Ayush
+
+From the Phase 0 audit (`docs/seo-audit.md`, branch `feature/seo`). Nothing here has been implemented.
+
+## Environment / config
+- Confirm `APP_URL` is set to the canonical public origin in Vercel Production and Preview. The root layout uses it for `metadataBase` and falls back to `http://localhost:3000` when it is missing, which would put wrong URLs into canonicals, Open Graph tags and the sitemap.
+- Confirm the canonical host (`mathflex.in` vs `www.mathflex.in`) and that the other one redirects with a 301/308 in Vercel.
+- Decide whether `/admin` should get an `X-Robots-Tag: noindex` header (`next.config`) or a `noindex` in the admin layout. For now the plan is only `Disallow: /admin` in `robots.txt`.
+- Google Search Console and Bing Webmaster verification tokens (owner to supply; none are invented).
+
+## Schema / admin fields missing
+- `Course`: no `updatedAt` (the sitemap cannot give real `lastModified`), no `publishedAt`.
+- `Chapter`, `Course`, blog posts: `seoTitle`, `metaDescription`, `ogImage`, editable slug with slug history for 301s, `noindex` toggle.
+- Image alt text fields (chapter/course cover, banners, blog cover) and the admin form inputs. `Chapter.coverImage` exists but the public site does not use it yet.
+- `Part` (video): no `uploadDate` or thumbnail URL; the pending `previewSrc` / `previewVideoProvider` + `previewVideoRef` fields on `Chapter` (see section 2 above).
+- Chapter relations (prerequisite / next) for related-chapter links.
+- Author/mentor model (name, slug, bio, credentials, photo, sameAs).
+
+## Content sources
+- Blog (`src/lib/blog.ts`) is 9 placeholder posts; the plan was Sanity. Real posts, real dates and an `updatedAt` are needed before blog URLs can be indexed. Until then they will be `noindex` and left out of the sitemap.
+- Free practice (`src/lib/free-practice.ts`) is a placeholder starter set; same treatment.
+- Registered address, CIN and GSTIN are placeholders; YouTube link is `#`.
+
+## Hooks
+- On publish/unpublish of chapters, courses and posts: `revalidatePath`/`revalidateTag` for the affected pages and the sitemap, and an optional IndexNow ping.
