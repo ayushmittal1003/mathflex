@@ -1,3 +1,4 @@
+import { StatusForm } from "@/components/admin/StatusForm";
 import Link from "next/link";
 import { requireStaff } from "@/lib/auth";
 import { notFound } from "next/navigation";
@@ -168,7 +169,7 @@ function PartsTab({ chapter, parts }: { chapter: Chapter; parts: (Part & { _coun
 
 function PartForm({ chapterId, part: p, bunny, nextOrder }: { chapterId: string; part: Part | null; bunny: boolean; nextOrder?: number }) {
   return (
-    <form action={savePart} className="space-y-4">
+    <StatusForm action={savePart} label={p ? "Save part" : "Add part"} resetOnOk={!p}>
       <input type="hidden" name="chapterId" value={chapterId} />
       {p && <input type="hidden" name="id" value={p.id} />}
       <div className="grid gap-4 sm:grid-cols-[90px_1fr]">
@@ -204,8 +205,7 @@ function PartForm({ chapterId, part: p, bunny, nextOrder }: { chapterId: string;
         </Field>
       </div>
       <Toggle name="isFreePreview" label="Free preview" hint="Anyone can watch the first minutes of this part. The rest unlocks when they buy." defaultChecked={p?.isFreePreview} />
-      <SubmitButton>{p ? "Save part" : "Add part"}</SubmitButton>
-    </form>
+    </StatusForm>
   );
 }
 

@@ -78,8 +78,19 @@ export async function deleteChapter(id: string) {
 
 /* ---------------- Parts ---------------- */
 
-export async function savePart(form: FormData) {
+export type PartState = { ok?: string; error?: string } | undefined;
+
+export async function savePart(_: PartState, form: FormData): Promise<PartState> {
   const me = await requireStaff("content");
+  try {
+    return await savePartInner(me, form);
+  } catch (e) {
+    console.error("[savePart]", e);
+    return { error: `Couldn't save this part: ${e instanceof Error ? e.message.split("\n").filter(Boolean).at(-1) : "unknown error"}` };
+  }
+}
+
+async function savePartInner(me: Awaited<ReturnType<typeof requireStaff>>, form: FormData): Promise<PartState> {
   const id = str(form, "id");
   const chapterId = str(form, "chapterId");
   const order = int(form, "order", 1);
@@ -117,6 +128,7 @@ export async function savePart(form: FormData) {
   });
   await audit(me, id ? "part.update" : "part.create", `${id ? "Updated" : "Added"} Part ${order} “${data.title}”`, { entity: "chapter", id: chapterId });
   refreshSite();
+  return { ok: id ? "Saved." : "Part added." };
 }
 
 export async function deletePart(id: string) {
