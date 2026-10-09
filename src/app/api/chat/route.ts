@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { allow, clientIp } from "@/lib/rate-limit";
+import { offlineAnswer } from "@/lib/offline-answer";
 import {
   FALLBACK_BETA,
   buildPlatformKnowledge,
@@ -61,7 +62,7 @@ export async function POST(req: Request) {
   });
 
   if (!claudeConfigured()) {
-    const answer = attached ? "I can't read images in offline mode. Please type the problem, or contact the team." : await offlineAnswer(question);
+    const answer = attached ? "I can't read images in offline mode. Please type the problem, or contact the team." : await offlineAnswer(question, user?.id);
     await db.chatLog.create({ data: { userId: user?.id, question, answer } });
     return new Response(answer, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
   }
@@ -112,20 +113,4 @@ export async function POST(req: Request) {
     },
   });
   return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
-}
-
-// Works without an API key: keyword match over the admin FAQ + chapter catalogue.
-async function offlineAnswer(q: string) {
-  const s = await getSettings();
-  const text = q.toLowerCase();
-  const faqs = await db.knowledgeEntry.findMany({ where: { isActive: true } });
-  const words = text.split(/\W+/).filter((w) => w.length > 3);
-  const best = faqs
-    .map((f) => ({ f, score: words.filter((w) => f.question.toLowerCase().includes(w)).length }))
-    .sort((a, b) => b.score - a.score)[0];
-  if (best && best.score > 0) return best.f.answer;
-  const chapters = await db.chapter.findMany({ where: { isPublished: true } });
-  const hit = chapters.find((c) => text.includes(c.title.toLowerCase().split(" ")[0]));
-  if (hit) return `${hit.title} is ₹${hit.price} (MRP ₹${hit.mrp}) with ~${hit.jeeWeightage}% JEE weightage. Check it out at /chapter/${hit.slug}`;
-  return `I'm in offline mode right now. You can browse chapters on the home page, or reach the team at ${s.supportEmail} / WhatsApp +${s.whatsappNumber}.`;
 }
