@@ -2,8 +2,10 @@ import Link from "next/link";
 import { requireStaff } from "@/lib/auth";
 import { ChevronDown } from "lucide-react";
 import { db } from "@/lib/db";
-import { claudeConfigured, buildPlatformKnowledge } from "@/lib/flexcare";
-import { getSettings } from "@/lib/settings";
+import { requestNow } from "@/lib/time";
+import { claudeConfigured, buildPlatformKnowledge, systemPrompt } from "@/lib/flexcare";
+import { BotStudio } from "@/components/admin/BotStudio";
+import { getSettings, BOT_PROMPT_MAX } from "@/lib/settings";
 import { Card, Field, PageHeader, Toggle, SubmitButton, Badge } from "@/components/admin/ui";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
 import { saveKnowledge, deleteKnowledge, saveBotBrain } from "../actions";
@@ -13,12 +15,15 @@ export const metadata = { title: "MathMate" };
 
 export default async function MathMateAdmin() {
   await requireStaff("flexcare");
-  const [faqs, logs, resources, knowledge, settings] = await Promise.all([
+  const [faqs, logs, resources, knowledge, settings, versions, chats7, chats30] = await Promise.all([
     db.knowledgeEntry.findMany({ orderBy: { createdAt: "asc" } }),
     db.chatLog.findMany({ orderBy: { createdAt: "desc" }, take: 50, include: { user: { select: { name: true } } } }),
     db.resource.findMany({ where: { includeInChatbot: true }, include: { chapter: { select: { id: true, title: true } } }, orderBy: { createdAt: "desc" } }),
     buildPlatformKnowledge(),
     getSettings(),
+    db.botPromptVersion.findMany({ orderBy: { createdAt: "desc" }, take: 30 }),
+    db.chatLog.count({ where: { createdAt: { gte: new Date(requestNow() - 7 * 86_400_000) } } }),
+    db.chatLog.count({ where: { createdAt: { gte: new Date(requestNow() - 30 * 86_400_000) } } }),
   ]);
   const ai = claudeConfigured();
   return (
@@ -36,15 +41,25 @@ export default async function MathMateAdmin() {
         </div>
       </Card>
 
-      <Card title="Prompt & knowledge">
-        <StatusForm action={saveBotBrain} label="Save prompt & knowledge">
-          <p className="text-sm text-muted">
-            {settings.chatbot.name} only discusses JEE / Class 11–12 maths and {settings.siteName}. That limit is built in and can&apos;t be edited here. Use these two boxes to shape how it talks and what it knows.
-          </p>
-          <Field label="Extra instructions" hint="Tone, do's and don'ts. Example: “Always end a solved problem by suggesting the matching practice set. Never share coupon codes that aren't listed.”">
-            <textarea name="instructions" rows={5} maxLength={4000} defaultValue={settings.chatbot.instructions} className="input" />
-          </Field>
-          <Field label="Knowledge notes" hint="Facts the bot should know: timings, policies, announcements, how-to steps. For single Q&As use the FAQ list below.">
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Card><p className="text-sm text-muted">Questions, last 7 days</p><p className="mt-1 text-2xl font-extrabold">{chats7}</p></Card>
+        <Card><p className="text-sm text-muted">Questions, last 30 days</p><p className="mt-1 text-2xl font-extrabold">{chats30}</p></Card>
+        <Card><p className="text-sm text-muted">Model</p><p className="mt-1 truncate font-mono text-sm font-bold">{settings.chatbot.model}</p></Card>
+      </div>
+
+      <BotStudio
+        published={settings.chatbot.instructions}
+        draft={settings.chatbot.draft}
+        builtIn={systemPrompt(settings.chatbot.name, settings.siteName)}
+        versions={versions.map((v) => ({ id: v.id, when: v.createdAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }), author: v.authorName, note: v.note, content: v.content }))}
+        max={BOT_PROMPT_MAX}
+        aiOn={ai}
+        botName={settings.chatbot.name}
+      />
+
+      <Card title="Knowledge notes">
+        <StatusForm action={saveBotBrain} label="Save knowledge notes">
+          <Field label="Facts the bot should know" hint="Timings, policies, announcements, how-to steps. For single Q&As use the FAQ list below.">
             <textarea name="knowledge" rows={8} maxLength={20000} defaultValue={settings.chatbot.knowledge} className="input" />
           </Field>
         </StatusForm>

@@ -489,3 +489,14 @@ model RateLimit {
   count       Int      @default(0)
   windowStart DateTime @default(now())
 }
+
+// Every published version of the chatbot's base prompt, so the team can compare and restore.
+model BotPromptVersion {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  authorName String
+  note       String   @default("")
+  content    String
+
+  @@index([createdAt])
+}

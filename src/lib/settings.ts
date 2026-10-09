@@ -58,12 +58,17 @@ export const DEFAULT_SETTINGS = {
     model: "claude-opus-5",
     // Extra rules and tone the admin adds on top of the built-in ones (never replaces the topic limits).
     instructions: "",
+    // Unpublished edits to the base prompt (null = no draft). Students only ever see `instructions`.
+    draft: null as string | null,
     // Free-text facts the bot should know (timings, policies, announcements). Q&A pairs live in the FAQ list.
     knowledge: "",
   },
 };
 
 export type Settings = typeof DEFAULT_SETTINGS;
+
+// Character limit of the chatbot's editable base prompt.
+export const BOT_PROMPT_MAX = 4500;
 
 function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);

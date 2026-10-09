@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import { requireStaff } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { can, isStaff } from "@/lib/permissions";
-import { saveSetting, getSettings, type Settings } from "@/lib/settings";
+import { saveSetting, getSettings, BOT_PROMPT_MAX, type Settings } from "@/lib/settings";
 import { saveFile, readStoredFile, keyFromUrl, urlForKey, deleteStoredFile } from "@/lib/storage";
 import { bunnyConfigured, bunnyHealth, bunnyVideoInfo, createBunnyUpload, normalizeBunnyRef } from "@/lib/video";
 import { extractKnowledge } from "@/lib/flexcare";
@@ -685,16 +685,37 @@ export async function saveKnowledge(form: FormData) {
 
 export type BotBrainState = { ok?: string; error?: string } | undefined;
 
-// The editable half of the bot's prompt: extra instructions and free-text knowledge.
+// Free-text knowledge the bot should know (the base prompt is edited separately, with drafts and versions).
 export async function saveBotBrain(_: BotBrainState, form: FormData): Promise<BotBrainState> {
   const me = await requireStaff("flexcare");
-  const instructions = str(form, "instructions").slice(0, 4000);
   const knowledge = str(form, "knowledge").slice(0, 20000);
   const cur = await getSettings();
-  await saveSetting("chatbot", { ...cur.chatbot, instructions, knowledge });
-  await audit(me, "settings.chatbot", "Updated the chatbot instructions and knowledge notes", { entity: "settings", id: "chatbot" });
+  await saveSetting("chatbot", { ...cur.chatbot, knowledge });
+  await audit(me, "settings.chatbot", "Updated the chatbot knowledge notes", { entity: "settings", id: "chatbot" });
   refreshSite();
   return { ok: "Saved. The bot uses this from its next reply." };
+}
+
+// Keep edits as a working draft; students keep getting the published prompt until it is published.
+export async function saveBotDraft(text: string): Promise<BotBrainState> {
+  const me = await requireStaff("flexcare");
+  if (text.length > BOT_PROMPT_MAX) return { error: `The prompt is limited to ${BOT_PROMPT_MAX} characters.` };
+  const cur = await getSettings();
+  await saveSetting("chatbot", { ...cur.chatbot, draft: text === cur.chatbot.instructions ? null : text });
+  await audit(me, "settings.chatbot", "Saved a draft of the chatbot base prompt", { entity: "settings", id: "chatbot" });
+  revalidatePath("/admin/flexcare");
+  return { ok: "Draft saved. Students still get the published prompt." };
+}
+
+export async function publishBotPrompt(text: string, note: string): Promise<BotBrainState> {
+  const me = await requireStaff("flexcare");
+  if (text.length > BOT_PROMPT_MAX) return { error: `The prompt is limited to ${BOT_PROMPT_MAX} characters.` };
+  const cur = await getSettings();
+  await db.botPromptVersion.create({ data: { authorName: me.name, note: note.trim().slice(0, 120), content: text } });
+  await saveSetting("chatbot", { ...cur.chatbot, instructions: text, draft: null });
+  await audit(me, "settings.chatbot", `Published a new chatbot base prompt${note.trim() ? ` · ${note.trim().slice(0, 80)}` : ""}`, { entity: "settings", id: "chatbot" });
+  refreshSite();
+  return { ok: "Published. The bot uses it from its next reply." };
 }
 
 export async function deleteKnowledge(id: string) {
