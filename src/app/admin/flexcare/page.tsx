@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { requestNow } from "@/lib/time";
 import { claudeConfigured, buildPlatformKnowledge, systemPrompt } from "@/lib/flexcare";
 import { BotStudio } from "@/components/admin/BotStudio";
-import { getSettings, BOT_PROMPT_MAX } from "@/lib/settings";
+import { getSettings, BOT_PROMPT_MAX, BOT_KNOWLEDGE_MAX } from "@/lib/settings";
 import { Card, Field, PageHeader, Toggle, SubmitButton, Badge } from "@/components/admin/ui";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
 import { saveKnowledge, deleteKnowledge, saveBotBrain } from "../actions";
@@ -60,7 +60,7 @@ export default async function MathMateAdmin() {
       <Card title="Knowledge notes">
         <StatusForm action={saveBotBrain} label="Save knowledge notes">
           <Field label="Facts the bot should know" hint="Timings, policies, announcements, how-to steps. For single Q&As use the FAQ list below.">
-            <textarea name="knowledge" rows={8} maxLength={20000} defaultValue={settings.chatbot.knowledge} className="input" />
+            <textarea name="knowledge" rows={8} maxLength={BOT_KNOWLEDGE_MAX} defaultValue={settings.chatbot.knowledge} className="input" />
           </Field>
         </StatusForm>
       </Card>

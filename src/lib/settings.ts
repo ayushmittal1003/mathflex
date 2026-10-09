@@ -68,7 +68,9 @@ export const DEFAULT_SETTINGS = {
 export type Settings = typeof DEFAULT_SETTINGS;
 
 // Character limit of the chatbot's editable base prompt.
-export const BOT_PROMPT_MAX = 4500;
+export const BOT_PROMPT_MAX = 50_000;
+// Character limit of the free-text knowledge notes.
+export const BOT_KNOWLEDGE_MAX = 50_000;
 
 function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);

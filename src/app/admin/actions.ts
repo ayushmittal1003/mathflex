@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import { requireStaff } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { can, isStaff } from "@/lib/permissions";
-import { saveSetting, getSettings, BOT_PROMPT_MAX, type Settings } from "@/lib/settings";
+import { saveSetting, getSettings, BOT_PROMPT_MAX, BOT_KNOWLEDGE_MAX, type Settings } from "@/lib/settings";
 import { saveFile, readStoredFile, keyFromUrl, urlForKey, deleteStoredFile } from "@/lib/storage";
 import { bunnyConfigured, bunnyHealth, bunnyVideoInfo, createBunnyUpload, normalizeBunnyRef } from "@/lib/video";
 import { extractKnowledge } from "@/lib/flexcare";
@@ -688,7 +688,7 @@ export type BotBrainState = { ok?: string; error?: string } | undefined;
 // Free-text knowledge the bot should know (the base prompt is edited separately, with drafts and versions).
 export async function saveBotBrain(_: BotBrainState, form: FormData): Promise<BotBrainState> {
   const me = await requireStaff("flexcare");
-  const knowledge = str(form, "knowledge").slice(0, 20000);
+  const knowledge = str(form, "knowledge").slice(0, BOT_KNOWLEDGE_MAX);
   const cur = await getSettings();
   await saveSetting("chatbot", { ...cur.chatbot, knowledge });
   await audit(me, "settings.chatbot", "Updated the chatbot knowledge notes", { entity: "settings", id: "chatbot" });
