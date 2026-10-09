@@ -9,8 +9,9 @@ import { accuracyOf, fmtTime, strengthOf, DIFFICULTY_LABEL, FORMAT_LABEL, type S
 import { PracticeTrend } from "@/components/site/web/practice/PracticeTrend";
 import { Eyebrow, Mark, posterBg } from "@/components/site/web/primitives";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Practice" };
+export const metadata = privateMetadata("Practice");
 
 const STRENGTH: Record<Strength, { label: string; cls: string }> = {
   strong: { label: "Strong", cls: "bg-ok/12 text-ok" },

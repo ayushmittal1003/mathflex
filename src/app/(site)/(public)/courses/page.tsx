@@ -12,8 +12,9 @@ import { CourseCards, CourseCalculator, CourseInside, type CourseView } from "@/
 import { COURSE_INCLUDE, toCourseView } from "@/components/site/web/courses/course-view";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Complete courses" };
+export const metadata = buildMetadata({ title: "Complete JEE Maths Courses", description: "Course bundles that put several JEE maths chapters together at one price, with video lessons, practice questions and notes.", path: "/courses" });
 
 // Courses (dipankar-design/designs/Courses.dc.html). Every course, price, highlight and
 // chapter list comes from admin-managed data; hours are summed from part lengths. The

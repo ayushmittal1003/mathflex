@@ -3,12 +3,16 @@ import { LEVELS, getPracticeSet } from "@/lib/free-practice";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { PracticeArena } from "@/components/site/web/free-practice/PracticeArena";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = {
-  title: "Free practice",
-  description: "Free JEE maths practice questions, Easy to Hard, with instant answers and worked solutions.",
-  alternates: { canonical: "/free-practice" },
-};
+// Noindex: the question set is a placeholder starter set. Switch to indexable when the real
+// questions go live (see seo.md).
+export const metadata = buildMetadata({
+  title: "Free JEE Maths Practice Questions by Level",
+  description: "Free JEE maths practice questions from Easy to Hard, with instant answers and worked solutions.",
+  path: "/free-practice",
+  noindex: true,
+});
 
 // Free practice (Resources): public question sets by subject and level, checked in the
 // browser. Questions come from lib/free-practice (placeholder set until a CMS is connected).

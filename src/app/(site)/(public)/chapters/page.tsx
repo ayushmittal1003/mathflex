@@ -3,8 +3,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { getCatalog } from "@/lib/catalog";
 import { getSettings } from "@/lib/settings";
 import { ChaptersView } from "@/components/site/web/chapters/ChaptersView";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "All chapters" };
+export const metadata = buildMetadata({ title: "JEE Maths Chapters – Class 11 & 12 Video Lessons", description: "Browse JEE maths chapters for Class 11 and 12, each with video lessons, practice questions and notes. Buy only the chapters you need.", path: "/chapters" });
 
 // Chapters (dipankar-design/designs/Chapters.dc.html). Catalog, ownership and progress come
 // from the existing getCatalog; free-preview flags and the hero peek's parts from the DB.

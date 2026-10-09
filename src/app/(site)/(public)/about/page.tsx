@@ -11,8 +11,9 @@ import { AboutPillars } from "@/components/site/web/about/AboutPillars";
 import { StoryTimeline } from "@/components/site/web/about/StoryTimeline";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "About us", alternates: { canonical: "/about" } };
+export const metadata = buildMetadata({ title: "About Us", description: "Who is behind MathFlex, how the chapter-by-chapter JEE maths videos are made, and how to reach us.", path: "/about" });
 
 // About. Structure inspired by allen.in/about-us (proof cards → timeline → offerings), built
 // on our design system and kept honest for a new platform: every number is live, and the

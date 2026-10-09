@@ -16,10 +16,22 @@ import { FaqList } from "@/components/site/web/FaqList";
 import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { button, container, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
+import { buildMetadata, stripHtml } from "@/lib/seo/metadata";
+import { getCourseSeo } from "@/lib/seo/queries";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const c = await db.course.findUnique({ where: { slug: (await params).slug }, select: { title: true, subtitle: true, isPublished: true } });
-  return c?.isPublished ? { title: c.title, description: c.subtitle || undefined } : {};
+  const { slug } = await params;
+  const c = await getCourseSeo(slug);
+  if (!c) return {};
+  const about = c.subtitle || stripHtml(c.description);
+  return buildMetadata({
+    title: `${c.title} – JEE Maths Course`,
+    description: about
+      ? `${about} ${c._count.chapters} chapters with video lessons, practice and notes.`
+      : `${c.title}: ${c._count.chapters} JEE maths chapters with video lessons, practice questions and notes.`,
+    path: `/courses/${slug}`,
+    defaultImage: false,
+  });
 }
 
 // Course detail, built from the Chapter Detail and Courses designs. Price, highlights,

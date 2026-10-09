@@ -12,8 +12,9 @@ import { duration } from "@/lib/format";
 import { PlayIcon, posterBg } from "@/components/site/web/primitives";
 import { ChapterCard } from "@/components/site/web/ChapterCard";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "My Learning" };
+export const metadata = privateMetadata("My Learning");
 
 const DAY = 86_400_000;
 

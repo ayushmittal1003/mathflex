@@ -11,8 +11,9 @@ import { InsideMathflex } from "@/components/site/web/home/InsideMathflex";
 import { PricingTiers, PriceBuilder, CopyCode, type BuilderChapter, type BuilderCourse } from "@/components/site/web/pricing/PricingParts";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Pricing" };
+export const metadata = buildMetadata({ title: "Pricing – Chapters, Courses & 1:1 Calls", description: "See what each MathFlex chapter, course and 1:1 mentor call costs, and what is included.", path: "/pricing" });
 
 // Pricing (dipankar-design/designs/Pricing.dc.html). Prices, courses, coupons, the call
 // add-on and GST all come from admin-managed data and settings. The design's photo slots

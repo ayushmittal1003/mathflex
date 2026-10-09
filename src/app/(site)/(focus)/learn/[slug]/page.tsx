@@ -6,6 +6,9 @@ import { computePartStates, hasChapterAccess } from "@/lib/access";
 import { playbackFor } from "@/lib/video";
 import { LearnClient } from "@/components/learn/LearnClient";
 import type { QuizQuestion } from "@/components/learn/Quiz";
+import { privateMetadata } from "@/lib/seo/metadata";
+
+export const metadata = privateMetadata("Learn");
 
 export default async function LearnPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ part?: string }> }) {
   const [{ slug }, { part: partParam }] = await Promise.all([params, searchParams]);

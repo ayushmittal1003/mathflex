@@ -7,10 +7,13 @@ import { instructor } from "@/lib/site-content";
 import { BlogCard, BlogCover } from "@/components/site/web/blog/BlogCard";
 import { ReadingProgress, ShareButtons, Toc } from "@/components/site/web/blog/ArticleChrome";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { buildMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const post = await getPost((await params).slug);
-  return post ? { title: post.title, description: post.excerpt, alternates: { canonical: `/blog/${post.slug}` } } : {};
+  if (!post) return {};
+  // Sample posts stay out of search results until they are replaced with real articles.
+  return buildMetadata({ title: post.title, description: post.excerpt, path: `/blog/${post.slug}`, type: "article", noindex: !!post.placeholder });
 }
 
 // "**bold**" -> <strong>. Stands in for Portable Text marks until Sanity is connected.

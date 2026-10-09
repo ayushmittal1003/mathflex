@@ -2,8 +2,9 @@ import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
 import { CartView, type CheckoutMeta } from "@/components/site/CartView";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Checkout" };
+export const metadata = privateMetadata("Checkout");
 
 // Checkout: the existing CartView (getQuote / placeOrder / Cashfree SDK, unchanged) with the
 // redesigned layout. Chapter and course details here are display-only; every price shown in

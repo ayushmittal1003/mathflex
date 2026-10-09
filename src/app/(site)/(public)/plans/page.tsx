@@ -8,8 +8,9 @@ import { inr } from "@/lib/format";
 import { Eyebrow, Mark, posterBg } from "@/components/site/web/primitives";
 import { BuyButton } from "@/components/site/web/BuyButton";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Plan validity & renewal" };
+export const metadata = privateMetadata("Plan validity & renewal");
 
 const DAY = 86_400_000;
 const RENEW_WINDOW = 30; // days; matches pricing.ts, where plans this close to expiry can be bought again

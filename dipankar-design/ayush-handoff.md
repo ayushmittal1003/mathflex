@@ -65,3 +65,9 @@ From the Phase 0 audit (`docs/seo-audit.md`, branch `feature/seo`). Nothing here
 
 ## Hooks
 - On publish/unpublish of chapters, courses and posts: `revalidatePath`/`revalidateTag` for the affected pages and the sitemap, and an optional IndexNow ping.
+
+## SEO Phase 1 additions
+- **Leaderboard privacy:** `/leaderboard` is public and lists students' full names with XP. It is now `noindex`, but should the page show first name + last initial only (e.g. "Aarav S.")? Display is unchanged; this needs a decision and, if yes, a change where the rows are built.
+- **Chapter descriptions:** the seeded `Chapter.description` text (admin-managed) says "taught … by IIT Delhi & NIT Jalandhar alumni". It is used as the meta description for chapter pages. The owner has to confirm the correct credential wording and update it in admin.
+- **Sitemap/robots caching:** `sitemap.ts` is `force-dynamic` (always fresh, one small DB read per request). When publish hooks (`revalidatePath`/`revalidateTag`) exist it can switch to `revalidate = 3600`.
+- **Switch-on list when real content goes live:** blog posts (`placeholder: true` flag in `lib/blog.ts` controls noindex and sitemap automatically), `/free-practice` (hard-coded `noindex: true` in its `page.tsx`).

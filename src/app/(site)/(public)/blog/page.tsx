@@ -4,12 +4,19 @@ import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { BlogCover } from "@/components/site/web/blog/BlogCard";
 import { BlogBrowser } from "@/components/site/web/blog/BlogBrowser";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = {
-  title: "Blog",
-  description: "Chapter guides, exam strategy and study tips for JEE maths from Karan bhaiya and the Mathflex team.",
-  alternates: { canonical: "/blog" },
-};
+// Noindex while every post is sample content (placeholder: true in lib/blog). It switches to
+// indexable by itself as soon as one real post exists.
+export async function generateMetadata() {
+  const posts = await getPosts();
+  return buildMetadata({
+    title: "JEE Maths Blog – Chapter Guides & Study Tips",
+    description: "Chapter guides, exam strategy and study tips for JEE maths from the MathFlex team.",
+    path: "/blog",
+    noindex: posts.every((p) => p.placeholder),
+  });
+}
 
 // Blog listing (dipankar-design/designs/Blog.dc.html): the latest post as a big banner, then
 // older posts by category with tag chips and search. Posts come from lib/blog (placeholder

@@ -6,8 +6,9 @@ import { getSettings } from "@/lib/settings";
 import { levelFromXp } from "@/lib/gamification";
 import { Mark } from "@/components/site/web/primitives";
 import { LeaderboardView, type LbRow } from "@/components/site/web/leaderboard/LeaderboardView";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Leaderboard" };
+export const metadata = privateMetadata("Leaderboard");
 
 const PERIODS = { week: "This week", month: "This month", all: "All time" } as const;
 const WORD = { week: "this week", month: "this month", all: "of all time" } as const;

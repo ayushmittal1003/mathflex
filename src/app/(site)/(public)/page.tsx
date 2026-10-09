@@ -18,6 +18,8 @@ import type { HomeChapter, HomeCourse } from "@/components/site/web/home/types";
 // Home (dipankar-design/designs/Landing Page v2.dc.html). Everything shown comes from the
 // database or settings; static copy lives in lib/site-content.ts. The design's college
 // carousel and student reviews are hidden until they have a backend.
+export const metadata = { alternates: { canonical: "/" } };
+
 export default async function Home() {
   const settings = await getSettings();
   const [chapterRows, courseRows, coupon, mindMaps, inside] = await Promise.all([

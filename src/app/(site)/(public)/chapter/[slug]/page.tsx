@@ -17,11 +17,22 @@ import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { ChapterCard } from "@/components/site/web/ChapterCard";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { clock } from "@/components/site/web/home/types";
+import { buildMetadata, stripHtml } from "@/lib/seo/metadata";
+import { getChapterSeo } from "@/lib/seo/queries";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const c = await db.chapter.findUnique({ where: { slug }, select: { title: true, tagline: true } });
-  return c ? { title: c.title, description: c.tagline } : {};
+  const c = await getChapterSeo(slug);
+  if (!c) return {};
+  const about = stripHtml(c.description) || c.tagline;
+  return buildMetadata({
+    title: `${c.title}: Class ${c.classLevel} JEE Maths Video Lessons`,
+    description: about
+      ? `${about} ${c._count.parts} video lessons with practice questions and notes.`
+      : `Class ${c.classLevel} JEE maths chapter ${c.title}: ${c._count.parts} video lessons with practice questions and notes.`,
+    path: `/chapter/${slug}`,
+    defaultImage: false,
+  });
 }
 
 // Chapter detail (dipankar-design/designs/Chapter Detail.dc.html). Same data and access

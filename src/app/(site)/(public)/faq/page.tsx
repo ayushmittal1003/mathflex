@@ -7,8 +7,9 @@ import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { FaqBrowser } from "@/components/site/web/FaqBrowser";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "FAQs", alternates: { canonical: "/faq" } };
+export const metadata = buildMetadata({ title: "MathFlex FAQs", description: "Answers about buying chapters, course access and validity, practice questions, payments and refunds.", path: "/faq" });
 
 // FAQ (dipankar-design/designs/FAQ.dc.html). The approved answers in lib/site-content.ts,
 // with settings filled in. The 1:1 call group only shows while the call add-on is on.

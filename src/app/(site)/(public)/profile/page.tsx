@@ -8,8 +8,9 @@ import { levelFromXp } from "@/lib/gamification";
 import { logout } from "@/app/actions/auth";
 import { ProfileForm } from "@/components/site/web/ProfileForm";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Profile" };
+export const metadata = privateMetadata("Profile");
 
 const card = "rounded-xl border border-border bg-card shadow-[0_1px_2px_rgb(0_0_0/0.04),0_24px_48px_-38px_rgb(80_20_0/0.4)]";
 const fmtDate = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });

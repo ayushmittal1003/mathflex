@@ -9,11 +9,12 @@ import { accuracyOf, fmtTime, FORMAT_LABEL } from "@/lib/grading";
 import { PracticePlayer, type PracticeQuestion } from "@/components/site/web/practice/PracticePlayer";
 import { posterBg } from "@/components/site/web/primitives";
 import { container, cx } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const c = await db.chapter.findUnique({ where: { slug }, select: { title: true } });
-  return { title: c ? `${c.title} · Practice` : "Practice" };
+  return privateMetadata(c ? `${c.title} · Practice` : "Practice");
 }
 
 type Search = { status?: string; difficulty?: string; type?: string; format?: string; topic?: string };

@@ -10,8 +10,9 @@ import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { FaqList } from "@/components/site/web/FaqList";
 import { MentorSection } from "@/components/site/web/home/MentorSection";
 import { button, cx, tone } from "@/components/site/web/ui";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Book a 1:1 call", alternates: { canonical: "/book-a-call" } };
+export const metadata = buildMetadata({ title: "Book a 1:1 JEE Maths Call", description: "Book a one-to-one call with the MathFlex mentor to plan your JEE maths preparation.", path: "/book-a-call" });
 
 // Soft warm tints behind the illustrations and the portrait (body sections, not the hero wash).
 const TINT = "radial-gradient(80% 70% at 50% 0%, color-mix(in oklab, var(--brand-2) 16%, transparent), transparent 70%), var(--muted)";

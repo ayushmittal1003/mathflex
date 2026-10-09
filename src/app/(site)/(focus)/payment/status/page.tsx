@@ -11,8 +11,9 @@ import { SiteLogo } from "@/components/site/web/SiteLogo";
 import { Caret, CheckIcon, Mark, PlayIcon } from "@/components/site/web/primitives";
 import { CheckStatusNow } from "@/components/site/web/CheckStatusNow";
 import { button, cx, tone } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Payment status" };
+export const metadata = privateMetadata("Payment status");
 
 // Payment status + thank you (Payment Status.dc.html, Thank You.dc.html). Same lookup and
 // polling as before: the order must belong to the signed-in user, PaymentPoller asks the
