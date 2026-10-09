@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { GOOGLE_STATE_COOKIE, googleAuthUrl, googleConfigured } from "@/lib/google";
 
 const base = () => process.env.APP_URL ?? "http://localhost:3000";
-const safeNext = (n: string | null) => (n && n.startsWith("/") && !n.startsWith("//") ? n : "");
+const safeNext = (n: string | null) => (n && n.startsWith("/") && !n.startsWith("//") && !n.includes("\\") ? n : "");
 
 // Step 1: remember a one-time state (and where to go after) in a short-lived cookie, then
 // send the browser to Google's account picker.

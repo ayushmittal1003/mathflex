@@ -482,3 +482,10 @@ model StaffInvite {
 
   @@index([email])
 }
+
+// Fixed-window counters behind login, sign-up and chat limits (serverless has no shared memory).
+model RateLimit {
+  key         String   @id
+  count       Int      @default(0)
+  windowStart DateTime @default(now())
+}

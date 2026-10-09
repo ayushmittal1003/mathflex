@@ -5,6 +5,7 @@ import { createSession, getCurrentUser, hashPassword } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { ROLE_LABEL } from "@/lib/permissions";
 import { findOpenInvite } from "@/lib/invites";
+import { allow, clientIp } from "@/lib/rate-limit";
 
 // Signed in with the invited email: take the role.
 export async function acceptInvite(token: string) {
@@ -23,6 +24,7 @@ export type InviteSignupState = { error?: string } | undefined;
 
 // No account yet: create one with the invited email and role.
 export async function signupWithInvite(token: string, _: InviteSignupState, form: FormData): Promise<InviteSignupState> {
+  if (!(await allow(`invite:ip:${await clientIp()}`, 20, 3600))) return { error: "Too many attempts. Please try again later." };
   const inv = await findOpenInvite(token);
   if (!inv) return { error: "This invite has expired or was revoked. Ask for a new one." };
   const name = String(form.get("name") ?? "").trim();

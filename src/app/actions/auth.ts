@@ -5,6 +5,10 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { createSession, destroySession, hashPassword, verifyPassword } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
+import { allow, clientIp } from "@/lib/rate-limit";
+
+// Compared against when the email is unknown, so response time doesn't reveal which emails have accounts.
+const DUMMY_HASH = "$2b$10$X3JZmmyNzQ2K5OUExlckcOK3FKv/I0h5pE17c4UW/Nym6beKJfdJa";
 
 export type AuthState = { error?: string } | undefined;
 
@@ -12,14 +16,20 @@ const AVATAR_COLORS = ["#F43F5E", "#FB923C", "#8B5CF6", "#0EA5E9", "#10B981", "#
 
 function safeNext(next: FormDataEntryValue | null) {
   const n = typeof next === "string" ? next : "/";
-  return n.startsWith("/") && !n.startsWith("//") ? n : "/";
+  return n.startsWith("/") && !n.startsWith("//") && !n.includes("\\") ? n : "/";
 }
 
 export async function login(_: AuthState, form: FormData): Promise<AuthState> {
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   const password = String(form.get("password") ?? "");
+  const ip = await clientIp();
+  // 8 tries per email and 30 per address every 15 minutes, whether or not the email exists.
+  if (!(await allow(`login:e:${email}`, 8, 900)) || !(await allow(`login:ip:${ip}`, 30, 900))) {
+    return { error: "Too many attempts. Please wait 15 minutes and try again." };
+  }
   const user = await db.user.findUnique({ where: { email } });
-  if (!user || !(await verifyPassword(password, user.passwordHash))) return { error: "Wrong email or password." };
+  const ok = await verifyPassword(password, user?.passwordHash ?? DUMMY_HASH);
+  if (!user || !ok) return { error: "Wrong email or password." };
   if (user.isBlocked) return { error: "This account is suspended. Please contact support." };
   await createSession(user.id, user.role);
   const next = safeNext(form.get("next"));
@@ -38,6 +48,7 @@ const SignupSchema = z.object({
 export async function signup(_: AuthState, form: FormData): Promise<AuthState> {
   const settings = await getSettings();
   if (!settings.features.signupOpen) return { error: "New sign-ups are paused right now." };
+  if (!(await allow(`signup:ip:${await clientIp()}`, 10, 3600))) return { error: "Too many sign-ups from this network. Please try again later." };
   const parsed = SignupSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const { name, email, phone, password, classLevel } = parsed.data;

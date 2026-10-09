@@ -44,7 +44,9 @@ export async function setSessionCookie(token: string, maxAge = MAX_AGE, name = C
 }
 
 export async function createSession(userId: string, role: string) {
-  await setSessionCookie(await signSession(userId, role));
+  // Team members get a shorter session than students: 7 days instead of 30.
+  const maxAge = isStaff(role) ? 60 * 60 * 24 * 7 : MAX_AGE;
+  await setSessionCookie(await signSession(userId, role, maxAge), maxAge);
 }
 
 export async function destroySession() {

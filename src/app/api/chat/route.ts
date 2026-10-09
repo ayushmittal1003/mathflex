@@ -2,6 +2,7 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
+import { allow, clientIp } from "@/lib/rate-limit";
 import {
   FALLBACK_BETA,
   buildPlatformKnowledge,
@@ -23,6 +24,12 @@ export const maxDuration = 60;
 export async function POST(req: Request) {
   const settings = await getSettings();
   if (!settings.features.chatbot) return new Response("Chat is turned off", { status: 403 });
+
+  // The chatbot costs money per message: 15 a minute and 120 an hour per visitor (signed-in or not).
+  const who = (await getCurrentUser())?.id ?? `ip:${await clientIp()}`;
+  if (!(await allow(`chat:m:${who}`, 15, 60)) || !(await allow(`chat:h:${who}`, 120, 3600))) {
+    return new Response("You're sending messages too fast. Please wait a minute and try again.", { status: 429 });
+  }
 
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return new Response("Bad request", { status: 400 });
