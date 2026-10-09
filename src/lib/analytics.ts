@@ -1,5 +1,6 @@
 import { db } from "./db";
-import type { Series } from "@/components/site/ActivityChart";
+// One point per day/week/month: XP earned and questions answered.
+export type Series = { label: string; full: string; xp: number; questions: number }[];
 
 const IST = 330 * 60_000;
 const istDate = (d: Date) => new Date(d.getTime() + IST);

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:oklch(0.995 0 0);color:oklch(0.145 0 0);font-family:Inter,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:oklch(0.637 0.237 25.331);text-decoration:none}
+a:hover{color:oklch(0.55 0.22 25.331)}
+::selection{background:color-mix(in oklab,oklch(0.637 0.237 25.331) 30%,transparent)}
+@keyframes mfblink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes mfpulse{0%{box-shadow:0 0 0 0 oklch(0.637 0.237 25.331 / .6)}70%{box-shadow:0 0 0 8px oklch(0.637 0.237 25.331 / 0)}100%{box-shadow:0 0 0 0 oklch(0.637 0.237 25.331 / 0)}}
+@keyframes mfrise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:oklch(0.995 0 0);overflow-x:clip">
+<div style="position:relative;z-index:40">
+<nav style="position:relative;z-index:5;display:grid;grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr);align-items:center;gap:16px;padding:22px 32px;width:min(1240px, 100%);margin:0 auto">
+<a href="Landing Page v2.dc.html" style="grid-column:1;justify-self:start;display:flex;align-items:center;gap:8px;color:oklch(0.145 0 0)">
+<img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:27px;width:auto">
+</a>
+<sc-if value="{{ navWide }}" hint-placeholder-val="{{ true }}">
+<div style="grid-column:2;justify-self:center;flex:none;display:flex;gap:2px;padding:4px;border-radius:8px;background:oklch(0.145 0 0);white-space:nowrap">
+<a href="Landing Page v2.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Home</a>
+<a href="Chapters.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Chapters</a>
+<a href="Courses.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Courses</a>
+<a href="Pricing.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Pricing</a>
+<a href="Leaderboard.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Leaderboard</a>
+</div>
+</sc-if>
+<div style="grid-column:3;justify-self:end;display:flex;align-items:center;gap:8px">
+<a href="Checkout.dc.html" aria-label="Cart" style="position:relative;width:42px;height:42px;border-radius:8px;display:grid;place-items:center;background:oklch(0.995 0 0);border:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0)" style-hover="background:oklch(0.995 0 0);color:oklch(0.145 0 0)">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+<sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:-6px;top:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;display:grid;place-items:center;background:oklch(0.637 0.237 25.331);color:#fff;font-size:11px;font-weight:800;border:2px solid oklch(0.995 0 0)">{{ cartCount }}</span></sc-if>
+</a>
+<sc-if value="{{ navWide }}" hint-placeholder-val="{{ true }}">
+<a href="Login.dc.html" style="flex:none;white-space:nowrap;padding:10px 16px;border-radius:8px;background:oklch(0.995 0 0);border:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0);font-size:14px;font-weight:700" style-hover="background:oklch(0.995 0 0);color:oklch(0.145 0 0)">Log in</a>
+<a href="Login.dc.html?mode=signup" style="flex:none;white-space:nowrap;padding:10px 18px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-size:14px;font-weight:700;border:1px solid oklch(0.637 0.237 25.331)" style-hover="filter:brightness(1.08);color:#fff">Start free</a>
+</sc-if>
+<sc-if value="{{ navNarrow }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ toggleMenu }}" aria-label="Menu" style="width:42px;height:42px;border-radius:8px;border:0;cursor:pointer;display:grid;place-items:center;background:oklch(0.145 0 0);color:#fff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+</sc-if>
+</div>
+</nav>
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:16px;right:16px;top:80px;z-index:20;padding:10px;border-radius:12px;background:oklch(0.145 0 0);color:#fff;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);animation:mfrise .3s both">
+<a href="Landing Page v2.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Home</a>
+<a href="Chapters.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Chapters</a>
+<a href="Courses.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Courses</a>
+<a href="Pricing.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Pricing</a>
+<a href="Leaderboard.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Leaderboard</a>
+<div style="display:flex;gap:8px;padding:10px 2px 2px"><a href="Login.dc.html" style="flex:1;text-align:center;padding:13px;border-radius:8px;background:rgba(255,255,255,.12);color:#fff;font-weight:700">Log in</a><a href="Login.dc.html?mode=signup" style="flex:1;text-align:center;padding:13px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-weight:700">Start free</a></div>
+</div>
+</sc-if>
+</div>
+
+<section data-screen-label="01 Legal header" style="padding:40px 24px 0;text-align:center">
+<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:oklch(0.968 0.007 247.896);border:1px solid oklch(0.929 0.013 255.508);font-size:13px;font-weight:600;color:oklch(0.269 0 0)"><span style="width:6px;height:6px;border-radius:999px;background:oklch(0.554 0.046 257.417)"></span>Last updated {{ updated }}</div>
+<h1 style="margin:22px auto 0;font-size:clamp(40px, 6vw, 76px);line-height:1;font-weight:800;letter-spacing:-0.045em;max-width:900px;text-wrap:balance">{{ docTitle }}</h1>
+<p style="margin:18px auto 0;max-width:560px;font-size:17px;line-height:1.55;color:oklch(0.269 0 0);text-wrap:pretty">{{ docIntro }}</p>
+<div style="display:inline-flex;gap:2px;padding:4px;border-radius:8px;background:oklch(0.145 0 0);margin-top:28px;max-width:100%;overflow-x:auto">
+<sc-for list="{{ docTabs }}" as="t" hint-placeholder-count="3">
+<a href="{{ t.href }}" onClick="{{ t.onClick }}" style="padding:8px 14px;border-radius:6px;font-size:14px;font-weight:700;white-space:nowrap;background:{{ t.bg }};color:{{ t.fg }}" style-hover="color:{{ t.hoverFg }}">{{ t.label }}</a>
+</sc-for>
+</div>
+</section>
+
+<section data-screen-label="02 Legal content" style="padding:56px 0 88px">
+<div style="width:min(1120px, calc(100% - 48px));margin:0 auto;display:flex;gap:56px;align-items:flex-start">
+<sc-if value="{{ showToc }}" hint-placeholder-val="{{ true }}">
+<aside style="flex:0 0 240px;position:sticky;top:24px">
+<div style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:oklch(0.554 0.046 257.417);padding:0 0 12px">On this page</div>
+<div style="display:grid;gap:2px;border-left:2px solid oklch(0.929 0.013 255.508)">
+<sc-for list="{{ sections }}" as="sec" hint-placeholder-count="8">
+<a href="#{{ sec.id }}" style="display:block;margin-left:-2px;padding:7px 0 7px 14px;border-left:2px solid transparent;font-size:14px;font-weight:600;color:oklch(0.269 0 0)" style-hover="color:oklch(0.145 0 0);border-left-color:oklch(0.145 0 0)">{{ sec.n }}. {{ sec.h }}</a>
+</sc-for>
+</div>
+<div style="margin-top:24px;padding-top:18px;border-top:1px solid oklch(0.929 0.013 255.508);font-size:13px;line-height:1.55;color:oklch(0.554 0.046 257.417)">Questions? <a href="Contact.dc.html">Contact us</a></div>
+</aside>
+</sc-if>
+<article style="flex:1;min-width:0;max-width:720px">
+<sc-for list="{{ sections }}" as="sec" hint-placeholder-count="8">
+<div id="{{ sec.id }}" style="padding:0 0 36px;scroll-margin-top:24px">
+<h2 style="margin:0;font-size:clamp(22px, 2.4vw, 26px);font-weight:800;letter-spacing:-0.025em"><span style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;font-weight:700;color:oklch(0.637 0.237 25.331);margin-right:10px">{{ sec.nPad }}</span>{{ sec.h }}</h2>
+<sc-for list="{{ sec.p }}" as="para" hint-placeholder-count="2">
+<p style="margin:14px 0 0;font-size:16px;line-height:1.7;color:oklch(0.269 0 0);text-wrap:pretty">{{ para }}</p>
+</sc-for>
+<sc-if value="{{ sec.hasList }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;gap:10px;margin-top:14px">
+<sc-for list="{{ sec.list }}" as="li" hint-placeholder-count="3"><div style="display:flex;gap:12px;font-size:16px;line-height:1.6;color:oklch(0.269 0 0)"><span style="flex:none;width:6px;height:6px;border-radius:999px;background:oklch(0.637 0.237 25.331);margin-top:11px"></span><span>{{ li }}</span></div></sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+<div style="margin-top:8px;padding-top:24px;border-top:1px solid oklch(0.929 0.013 255.508);font-size:14px;line-height:1.6;color:oklch(0.554 0.046 257.417)">Mathflex Learning Pvt. Ltd. · [Registered address] · <a href="mailto:support@mathflex.in">support@mathflex.in</a></div>
+</article>
+</div>
+</section>
+
+<footer data-screen-label="03 Footer" style="position:relative;background:oklch(0.995 0 0);border-top:1px solid oklch(0.929 0.013 255.508);overflow:hidden">
+<div style="width:min(1120px, calc(100% - 48px));margin:0 auto;padding:56px 0 0;display:grid;grid-template-columns:{{ footCols }};gap:40px 32px">
+<div style="grid-column:{{ footSpan }};min-width:0">
+<div style="display:inline-flex;align-items:center;gap:8px"><img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:29px;width:auto"></div>
+<p style="margin:14px 0 0;max-width:340px;font-size:14px;line-height:1.55;color:oklch(0.554 0.046 257.417)">Chapter-wise JEE maths for Class 11 and 12, taught by IIT Delhi alumnus Karan Mittal.</p>
+<p style="margin:14px 0 0;max-width:340px;font-size:13px;line-height:1.55;color:oklch(0.554 0.046 257.417)"><b style="color:oklch(0.269 0 0)">Registered address</b><br>Mathflex Learning Pvt. Ltd., [address line], [city, state, PIN]</p>
+</div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Learn</div><div style="display:grid;gap:10px"><a href="Chapters.dc.html" style="color:oklch(0.269 0 0)">All chapters</a><a href="Courses.dc.html" style="color:oklch(0.269 0 0)">Complete courses</a><a href="Pricing.dc.html" style="color:oklch(0.269 0 0)">Pricing</a></div></div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Company</div><div style="display:grid;gap:10px"><a href="About.dc.html" style="color:oklch(0.269 0 0)">About us</a><a href="Contact.dc.html" style="color:oklch(0.269 0 0)">Contact us</a><a href="FAQ.dc.html" style="color:oklch(0.269 0 0)">FAQs</a><a href="Blog.dc.html" style="color:oklch(0.269 0 0)">Blog</a></div></div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Support</div><div style="display:grid;gap:10px"><a href="tel:+910000000000" style="color:oklch(0.269 0 0)">+91 XXXXX XXXXX</a><a href="mailto:support@mathflex.in" style="color:oklch(0.269 0 0)">support@mathflex.in</a><a href="Contact.dc.html" style="color:oklch(0.269 0 0)">WhatsApp</a></div></div>
+</div>
+<div style="width:min(1120px, calc(100% - 48px));margin:48px auto 0;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:20px 0;border-top:1px solid oklch(0.929 0.013 255.508);font-size:13px;color:oklch(0.554 0.046 257.417)"><span>© 2026 Mathflex · mathflex.in</span><div style="display:flex;gap:20px"><a href="Terms.dc.html" style="color:oklch(0.554 0.046 257.417)">Terms &amp; conditions</a><a href="Privacy Policy.dc.html" style="color:oklch(0.554 0.046 257.417)">Privacy policy</a><a href="Refund Policy.dc.html" style="color:oklch(0.554 0.046 257.417)">Refund policy</a></div></div>
+<div aria-hidden="true" style="text-align:center;font-size:clamp(90px, 21vw, 300px);font-weight:900;letter-spacing:-0.06em;line-height:.78;margin-bottom:-0.06em;background:linear-gradient(180deg, oklch(0.968 0.007 247.896), color-mix(in oklab, oklch(0.705 0.213 47.604) 22%, oklch(0.995 0 0)));-webkit-background-clip:text;background-clip:text;color:transparent;user-select:none;white-space:nowrap">mathflex</div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { w: 1280, menu: false, doc: null };
+  componentDidMount() {
+    this.onResize = () => { const w = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0); if (w > 100 && w !== this.state.w) this.setState({ w }); };
+    window.addEventListener("resize", this.onResize);
+    if ("ResizeObserver" in window) { this.ro = new ResizeObserver(() => this.onResize()); this.ro.observe(document.documentElement); }
+    this.onResize();
+    [300, 1000].forEach(t => setTimeout(() => this.onResize && this.onResize(), t));
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this.onResize); this.ro && this.ro.disconnect(); }
+
+  docs() {
+    return {
+      terms: { title: "Terms & conditions", intro: "The rules for using Mathflex. By creating an account or buying a chapter, you agree to these terms.", s: [
+        ["About Mathflex", ["Mathflex is an online learning platform run by Mathflex Learning Pvt. Ltd. (\"Mathflex\", \"we\", \"us\"). We sell chapter-wise maths video lessons, practice problems and notes for JEE and Class 11–12 students."]],
+        ["Your account", ["You need an account to buy and watch paid content. Keep your login details private. You are responsible for activity on your account."], ["If you are under 18, a parent or guardian should read these terms with you and approve your purchase.", "One account is for one student. Sharing an account or its content is not allowed.", "We may suspend accounts that break these terms."]],
+        ["Purchases and access", ["When you buy a chapter or course, you get personal, non-transferable access for 365 days from the date of purchase, unless the product page says otherwise. Prices are shown in Indian rupees and include applicable taxes."]],
+        ["How you can use the content", ["All videos, notes, DPPs and other material belong to Mathflex or its instructors."], ["Do not download, record, copy, resell or share any content.", "Do not try to get around access controls or limits on devices.", "You may print notes for your own study."]],
+        ["Leaderboard and XP", ["XP, streaks and leaderboard rankings are for motivation only. They have no cash value. We may reset or adjust them to fix errors or prevent misuse."]],
+        ["1:1 calls", ["Calls are booked through your account. Please join on time; missed calls may not be rescheduled. Calls are guidance sessions and do not guarantee any exam result."]],
+        ["No guaranteed results", ["We work hard to help you prepare, but your exam result depends on many things. We do not promise any rank, score or admission."]],
+        ["Changes and contact", ["We may update these terms. If we make important changes, we will let you know by email or on the site. For questions, write to support@mathflex.in."]],
+      ]},
+      privacy: { title: "Privacy policy", intro: "What we collect, why we collect it and how we keep it safe.", s: [
+        ["What we collect", ["We collect only what we need to run Mathflex."], ["Account details: name, phone number, email, class.", "Purchase details: what you bought and payment status. Card and UPI details are handled by our payment partner, Razorpay, not stored by us.", "Learning data: videos watched, DPP answers, XP and streaks.", "Device data: browser, device type and IP address, for security and to fix problems."]],
+        ["How we use it", [], ["To give you access to what you bought.", "To show your progress, XP and leaderboard rank.", "To send receipts, important account messages and, if you agree, study reminders.", "To improve our lessons and the website."]],
+        ["Who we share it with", ["We never sell your data. We share it only with services that help us run Mathflex, such as payment processing, video hosting, email and SMS, and only as much as they need."]],
+        ["Leaderboard", ["Your first name, city and XP may appear on the public leaderboard. You can hide your name in your account settings."]],
+        ["Cookies", ["We use cookies to keep you signed in, remember your cart and understand how the site is used. You can block cookies in your browser, but some features may stop working."]],
+        ["Keeping data safe", ["Data is encrypted in transit and stored with trusted providers. Only team members who need access can see it."]],
+        ["Your choices", [], ["Ask for a copy of your data.", "Correct wrong details in your account.", "Ask us to delete your account and data, unless we must keep some records by law."]],
+        ["Contact", ["For privacy questions or requests, email privacy@mathflex.in. We reply within 7 working days."]],
+      ]},
+      refund: { title: "Refund policy", intro: "Watch Part 1 free before you buy. If something still isn't right, here's how refunds work.", s: [
+        ["Try before you buy", ["Part 1 of chapters marked free can be watched with no payment. We encourage you to watch it before buying."]],
+        ["When you can get a refund", ["You can ask for a full refund within 7 days of purchase if you have watched less than 20% of the content you bought."], ["Courses and combos: less than 20% of the total videos watched.", "Single chapters: less than 20% of that chapter's videos watched.", "1:1 calls: cancelled at least 24 hours before the booked time."]],
+        ["When refunds aren't possible", [], ["More than 7 days have passed since purchase.", "More than 20% of the content has been watched.", "The account broke our terms, for example by sharing content.", "Missed 1:1 calls or calls cancelled less than 24 hours before."]],
+        ["Coupons and upgrades", ["If you used a coupon, the refund is the amount you actually paid. If you upgraded from chapters to a course, the refund covers the upgrade payment."]],
+        ["How to ask for a refund", ["Email support@mathflex.in or use the Contact us page with your order ID and the reason. We reply within 2 working days."]],
+        ["How you get your money", ["Approved refunds go back to the original payment method within 5–7 working days. Access to the refunded content ends once the refund is processed."]],
+        ["Payment problems", ["If money was deducted but the content didn't unlock, contact us with your order ID. We'll either unlock it or refund you in full."]],
+      ]},
+    };
+  }
+  renderVals() {
+    const s = this.state;
+    const ink = "oklch(0.145 0 0)", white = "oklch(0.995 0 0)";
+    const qd = "privacy";
+    const key = qd;
+    const d = this.docs()[key];
+    return {
+      navWide: s.w >= 1024, navNarrow: s.w < 1024, wide: s.w >= 760, narrow: s.w < 760, menuOpen: s.menu, toggleMenu: () => this.setState(st => ({ menu: !st.menu })),
+      footCols: s.w < 760 ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 2fr) repeat(3, minmax(0, 1fr))", footSpan: s.w < 760 ? "1 / -1" : "auto",
+      updated: "1 October 2026", docTitle: d.title, docIntro: d.intro, showToc: s.w >= 960,
+      docTabs: [["terms", "Terms"], ["privacy", "Privacy"], ["refund", "Refunds"]].map(([k, label]) => ({ label, href: {"terms":"Terms.dc.html","privacy":"Privacy Policy.dc.html","refund":"Refund Policy.dc.html"}[k], onClick: () => {},
+        bg: key === k ? white : "transparent", fg: key === k ? ink : "rgba(255,255,255,.75)", hoverFg: key === k ? ink : "#fff" })),
+      sections: d.s.map(([h, p, list], i) => ({ id: key + "-" + (i + 1), n: i + 1, nPad: String(i + 1).padStart(2, "0"), h, p: p || [], list: list || [], hasList: !!(list && list.length) })),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:oklch(0.995 0 0);color:oklch(0.145 0 0);font-family:Inter,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:oklch(0.637 0.237 25.331);text-decoration:none}
+a:hover{color:oklch(0.55 0.22 25.331)}
+::selection{background:color-mix(in oklab,oklch(0.637 0.237 25.331) 30%,transparent)}
+@keyframes mfblink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes mfpulse{0%{box-shadow:0 0 0 0 oklch(0.637 0.237 25.331 / .6)}70%{box-shadow:0 0 0 8px oklch(0.637 0.237 25.331 / 0)}100%{box-shadow:0 0 0 0 oklch(0.637 0.237 25.331 / 0)}}
+@keyframes mfrise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:oklch(0.995 0 0);overflow-x:clip">
+<div style="position:relative;z-index:40">
+<nav style="position:relative;z-index:5;display:grid;grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr);align-items:center;gap:16px;padding:22px 32px;width:min(1240px, 100%);margin:0 auto">
+<a href="Landing Page v2.dc.html" style="grid-column:1;justify-self:start;display:flex;align-items:center;gap:8px;color:oklch(0.145 0 0)">
+<img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:27px;width:auto">
+</a>
+<sc-if value="{{ navWide }}" hint-placeholder-val="{{ true }}">
+<div style="grid-column:2;justify-self:center;flex:none;display:flex;gap:2px;padding:4px;border-radius:8px;background:oklch(0.145 0 0);white-space:nowrap">
+<a href="Landing Page v2.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Home</a>
+<a href="Chapters.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Chapters</a>
+<a href="Courses.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Courses</a>
+<a href="Pricing.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Pricing</a>
+<a href="Leaderboard.dc.html" style="padding:7px 14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.75)" style-hover="color:#fff">Leaderboard</a>
+</div>
+</sc-if>
+<div style="grid-column:3;justify-self:end;display:flex;align-items:center;gap:8px">
+<a href="Checkout.dc.html" aria-label="Cart" style="position:relative;width:42px;height:42px;border-radius:8px;display:grid;place-items:center;background:oklch(0.995 0 0);border:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0)" style-hover="background:oklch(0.995 0 0);color:oklch(0.145 0 0)">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+<sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:-6px;top:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;display:grid;place-items:center;background:oklch(0.637 0.237 25.331);color:#fff;font-size:11px;font-weight:800;border:2px solid oklch(0.995 0 0)">{{ cartCount }}</span></sc-if>
+</a>
+<sc-if value="{{ navWide }}" hint-placeholder-val="{{ true }}">
+<a href="Login.dc.html" style="flex:none;white-space:nowrap;padding:10px 16px;border-radius:8px;background:oklch(0.995 0 0);border:1px solid oklch(0.929 0.013 255.508);color:oklch(0.145 0 0);font-size:14px;font-weight:700" style-hover="background:oklch(0.995 0 0);color:oklch(0.145 0 0)">Log in</a>
+<a href="Login.dc.html?mode=signup" style="flex:none;white-space:nowrap;padding:10px 18px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-size:14px;font-weight:700;border:1px solid oklch(0.637 0.237 25.331)" style-hover="filter:brightness(1.08);color:#fff">Start free</a>
+</sc-if>
+<sc-if value="{{ navNarrow }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ toggleMenu }}" aria-label="Menu" style="width:42px;height:42px;border-radius:8px;border:0;cursor:pointer;display:grid;place-items:center;background:oklch(0.145 0 0);color:#fff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+</sc-if>
+</div>
+</nav>
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:16px;right:16px;top:80px;z-index:20;padding:10px;border-radius:12px;background:oklch(0.145 0 0);color:#fff;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);animation:mfrise .3s both">
+<a href="Landing Page v2.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Home</a>
+<a href="Chapters.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Chapters</a>
+<a href="Courses.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Courses</a>
+<a href="Pricing.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Pricing</a>
+<a href="Leaderboard.dc.html" style="display:block;padding:14px 12px;font-size:16px;font-weight:600;color:rgba(255,255,255,.8)">Leaderboard</a>
+<div style="display:flex;gap:8px;padding:10px 2px 2px"><a href="Login.dc.html" style="flex:1;text-align:center;padding:13px;border-radius:8px;background:rgba(255,255,255,.12);color:#fff;font-weight:700">Log in</a><a href="Login.dc.html?mode=signup" style="flex:1;text-align:center;padding:13px;border-radius:8px;background:oklch(0.637 0.237 25.331);color:#fff;font-weight:700">Start free</a></div>
+</div>
+</sc-if>
+</div>
+
+<section data-screen-label="01 Blog header" style="padding:32px 24px 0;text-align:center">
+<div style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:oklch(0.968 0.007 247.896);border:1px solid oklch(0.929 0.013 255.508);font-size:13px;font-weight:600;color:oklch(0.269 0 0)"><span style="width:6px;height:6px;border-radius:999px;background:oklch(0.637 0.237 25.331)"></span>Mathflex Blog</div>
+<h1 style="margin:22px auto 0;font-size:clamp(42px, 6.4vw, 84px);line-height:1;font-weight:800;letter-spacing:-0.045em;max-width:900px;text-wrap:balance">Study smarter for <span style="display:inline-block;padding:0 14px 6px;background:color-mix(in oklab, oklch(0.705 0.213 47.604) 16%, oklch(0.995 0 0));box-shadow:0 10px 30px -12px rgba(120,40,0,.25)">JEE</span></h1>
+<p style="margin:20px auto 0;max-width:560px;font-size:17px;line-height:1.55;color:oklch(0.269 0 0);text-wrap:pretty">Chapter guides, exam strategy and study tips from Karan and the Mathflex team.</p>
+</section>
+
+<div style="padding:40px 16px 0">
+<a href="{{ feat.href }}" data-screen-label="02 Latest article" style="display:block;width:min(1240px, 100%);margin:0 auto;border-radius:12px;overflow:hidden;background:transparent;color:oklch(0.145 0 0);transition:none" style-hover="color:oklch(0.145 0 0)">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:28px 48px;padding:0 8px">
+<div style="flex:1.2 1 420px;min-width:0;border-radius:12px;border:6px solid oklch(0.145 0 0);background:oklch(0.145 0 0);box-shadow:0 30px 60px -30px rgba(80,20,0,.5);overflow:hidden">
+<div style="position:relative;aspect-ratio:16/10;background:{{ feat.bg }};overflow:hidden">
+<div style="position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-size:clamp(150px, 20vw, 260px);font-weight:900;line-height:1;letter-spacing:-0.05em;color:rgba(255,255,255,.18);white-space:nowrap">{{ feat.sym }}</div>
+<span style="position:absolute;left:16px;bottom:14px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:rgba(255,255,255,.8);padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.3)">cover image · 1600×1000</span>
+</div>
+</div>
+<div style="flex:1 1 340px;min-width:0">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+<span style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border-radius:6px;background:oklch(0.637 0.237 25.331);color:#fff">Latest</span>
+<span style="font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px;background:oklch(0.968 0.007 247.896);border:1px solid oklch(0.929 0.013 255.508)">{{ feat.cat }}</span>
+</div>
+<h2 style="margin:18px 0 0;font-size:clamp(30px, 3.6vw, 46px);line-height:1.06;font-weight:800;letter-spacing:-0.04em;text-wrap:balance">{{ feat.title }}</h2>
+<p style="margin:14px 0 0;font-size:17px;line-height:1.6;color:oklch(0.269 0 0);text-wrap:pretty">{{ feat.excerpt }}</p>
+<div style="display:flex;align-items:center;gap:12px;margin-top:22px">
+<span style="flex:none;width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(135deg, oklch(0.637 0.237 25.331), oklch(0.705 0.213 47.604));color:#fff;font-size:15px;font-weight:800">{{ feat.ai }}</span>
+<span style="font-size:14px;line-height:1.35"><b>{{ feat.author }}</b><br><span style="color:oklch(0.269 0 0)">{{ feat.dateLabel }} · {{ feat.read }} min read</span></span>
+</div>
+<span style="display:inline-flex;align-items:center;gap:8px;margin-top:24px;padding:12px 18px;border-radius:8px;background:oklch(0.145 0 0);color:#fff;font-size:14px;font-weight:700">Read article →</span>
+</div>
+</div>
+</a>
+</div>
+
+<div style="position:sticky;top:0;z-index:30;margin-top:48px;background:color-mix(in oklab, oklch(0.995 0 0) 90%, transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid oklch(0.929 0.013 255.508);border-bottom:1px solid oklch(0.929 0.013 255.508)">
+<div style="width:min(1240px, calc(100% - 48px));margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:12px 0">
+<div style="flex:1 1 auto;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none">
+<sc-for list="{{ cats }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.onClick }}" style="flex:none;cursor:pointer;font:inherit;padding:8px 13px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button></sc-for>
+</div>
+<div style="flex:0 1 260px;min-width:180px;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-radius:8px;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0)">
+<svg style="flex:none" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="oklch(0.554 0.046 257.417)" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+<input value="{{ query }}" onInput="{{ onQuery }}" placeholder="Search articles" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font:inherit;font-size:15px;color:oklch(0.145 0 0)">
+</div>
+</div>
+</div>
+
+<section data-screen-label="03 All articles" style="padding:40px 0 96px">
+<div style="width:min(1240px, calc(100% - 48px));margin:0 auto;display:grid;gap:56px">
+<sc-for list="{{ months }}" as="m" hint-placeholder-count="3">
+<div style="min-width:0;border-top:{{ m.line }};padding-top:{{ m.pad }}">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px"><h3 style="margin:0;font-size:clamp(24px, 2.6vw, 32px);font-weight:800;letter-spacing:-0.03em">{{ m.label }}</h3><span style="font-size:13px;font-weight:600;color:oklch(0.554 0.046 257.417)">{{ m.count }}</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr));gap:32px 24px;margin-top:24px">
+<sc-for list="{{ m.posts }}" as="p" hint-placeholder-count="3">
+<a href="{{ p.href }}" style="display:flex;flex-direction:column;color:oklch(0.145 0 0);animation:mfrise .45s cubic-bezier(0.22, 1, 0.36, 1) both" style-hover="color:oklch(0.145 0 0)">
+<span style="position:relative;display:block;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:{{ p.bg }};box-shadow:0 14px 30px -22px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(0.22, 1, 0.36, 1)" style-hover="transform:translateY(-4px)">
+<span style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-size:{{ p.glyph }};font-weight:900;line-height:1;letter-spacing:-0.05em;color:rgba(255,255,255,.2);white-space:nowrap">{{ p.sym }}</span>
+<span style="position:absolute;left:12px;top:12px;font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.92);color:oklch(0.145 0 0)">{{ p.cat }}</span>
+</span>
+<span style="display:flex;gap:8px;margin-top:16px;font-size:13px;font-weight:600;color:oklch(0.554 0.046 257.417)"><span>{{ p.dateLabel }}</span><span>·</span><span>{{ p.read }} min read</span></span>
+<span style="display:block;margin-top:8px;font-size:20px;font-weight:800;letter-spacing:-0.025em;line-height:1.25;text-wrap:balance">{{ p.title }}</span>
+<span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px;font-size:15px;line-height:1.55;color:oklch(0.269 0 0)">{{ p.excerpt }}</span>
+</a>
+</sc-for>
+</div>
+</div>
+</sc-for>
+<sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}"><div style="padding:56px 24px;text-align:center"><div style="font-size:22px;font-weight:800;letter-spacing:-0.02em">No articles match “{{ query }}”</div><p style="margin:8px 0 0;font-size:15px;color:oklch(0.554 0.046 257.417)">Try another word or category.</p></div></sc-if>
+<sc-if value="{{ hasMore }}" hint-placeholder-val="{{ true }}"><div style="display:flex;justify-content:center"><button onClick="{{ more }}" style="height:48px;padding:0 22px;border-radius:8px;cursor:pointer;font:inherit;font-size:15px;font-weight:700;border:1px solid oklch(0.929 0.013 255.508);background:oklch(0.995 0 0);color:oklch(0.145 0 0)" style-hover="background:oklch(0.97 0 0)">Load older articles</button></div></sc-if>
+</div>
+</section>
+
+<footer data-screen-label="04 Footer" style="position:relative;background:oklch(0.995 0 0);border-top:1px solid oklch(0.929 0.013 255.508);overflow:hidden">
+<div style="width:min(1120px, calc(100% - 48px));margin:0 auto;padding:56px 0 0;display:grid;grid-template-columns:{{ footCols }};gap:40px 32px">
+<div style="grid-column:{{ footSpan }};min-width:0">
+<div style="display:inline-flex;align-items:center;gap:8px"><img src="brand/mathflex-logo-black.png" alt="Mathflex" style="display:block;height:29px;width:auto"></div>
+<p style="margin:14px 0 0;max-width:340px;font-size:14px;line-height:1.55;color:oklch(0.554 0.046 257.417)">Chapter-wise JEE maths for Class 11 and 12, taught by IIT Delhi alumnus Karan Mittal.</p>
+<p style="margin:14px 0 0;max-width:340px;font-size:13px;line-height:1.55;color:oklch(0.554 0.046 257.417)"><b style="color:oklch(0.269 0 0)">Registered address</b><br>Mathflex Learning Pvt. Ltd., [address line], [city, state, PIN]</p>
+</div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Learn</div><div style="display:grid;gap:10px"><a href="Chapters.dc.html" style="color:oklch(0.269 0 0)">All chapters</a><a href="Courses.dc.html" style="color:oklch(0.269 0 0)">Complete courses</a><a href="Pricing.dc.html" style="color:oklch(0.269 0 0)">Pricing</a></div></div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Company</div><div style="display:grid;gap:10px"><a href="About.dc.html" style="color:oklch(0.269 0 0)">About us</a><a href="Contact.dc.html" style="color:oklch(0.269 0 0)">Contact us</a><a href="FAQ.dc.html" style="color:oklch(0.269 0 0)">FAQs</a><a href="Blog.dc.html" style="color:oklch(0.269 0 0)">Blog</a></div></div>
+<div style="font-size:14px"><div style="font-weight:800;margin-bottom:14px">Support</div><div style="display:grid;gap:10px"><a href="tel:+910000000000" style="color:oklch(0.269 0 0)">+91 XXXXX XXXXX</a><a href="mailto:support@mathflex.in" style="color:oklch(0.269 0 0)">support@mathflex.in</a><a href="Contact.dc.html" style="color:oklch(0.269 0 0)">WhatsApp</a></div></div>
+</div>
+<div style="width:min(1120px, calc(100% - 48px));margin:48px auto 0;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:20px 0;border-top:1px solid oklch(0.929 0.013 255.508);font-size:13px;color:oklch(0.554 0.046 257.417)"><span>© 2026 Mathflex · mathflex.in</span><div style="display:flex;gap:20px"><a href="Terms.dc.html" style="color:oklch(0.554 0.046 257.417)">Terms &amp; conditions</a><a href="Privacy Policy.dc.html" style="color:oklch(0.554 0.046 257.417)">Privacy policy</a><a href="Refund Policy.dc.html" style="color:oklch(0.554 0.046 257.417)">Refund policy</a></div></div>
+<div aria-hidden="true" style="text-align:center;font-size:clamp(90px, 21vw, 300px);font-weight:900;letter-spacing:-0.06em;line-height:.78;margin-bottom:-0.06em;background:linear-gradient(180deg, oklch(0.968 0.007 247.896), color-mix(in oklab, oklch(0.705 0.213 47.604) 22%, oklch(0.995 0 0)));-webkit-background-clip:text;background-clip:text;color:transparent;user-select:none;white-space:nowrap">mathflex</div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { w: 1280, menu: false, cat: "all", q: "", limit: 2 };
+  componentDidMount() {
+    this.onResize = () => { const w = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0); if (w > 100 && w !== this.state.w) this.setState({ w }); };
+    window.addEventListener("resize", this.onResize);
+    if ("ResizeObserver" in window) { this.ro = new ResizeObserver(() => this.onResize()); this.ro.observe(document.documentElement); }
+    this.onResize();
+    [300, 1000].forEach(t => setTimeout(() => this.onResize && this.onResize(), t));
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this.onResize); this.ro && this.ro.disconnect(); }
+
+  data() {
+    return [
+      ["start", "Getting started", [
+        ["What is Mathflex?", "Chapter-wise JEE maths videos for Class 11 and 12, taught by Karan Mittal (B.Tech, IIT Delhi). Each chapter has 2–3 video parts, DPPs, PYQs, short notes and a mind map."],
+        ["Can I watch anything for free?", "Yes. Part 1 of chapters marked free can be watched without signing up or paying."],
+        ["Who is it for?", "Class 11 and 12 students preparing for JEE Main, JEE Advanced and Boards. Droppers use it to revise weak chapters."],
+        ["Do I need an account to buy?", "You can add chapters to your cart without an account. You sign in with Google, phone OTP or email just before you pay."],
+      ]],
+      ["buy", "Chapters & courses", [
+        ["Should I buy chapters or a full course?", "Buy chapters if you only need a few. If you need 11 or more from one class, the full course is cheaper. The checkout suggests the better deal automatically."],
+        ["What's in each chapter?", "2–3 video parts of 20–30 minutes each, DPPs after every part with video solutions, previous-year JEE questions, short notes and a mind map."],
+        ["How do parts unlock?", "Inside a chapter you own, each part opens after you watch most of the previous one and try its DPP."],
+        ["How long do I get access?", "365 days from the date of purchase, on phone and laptop."],
+      ]],
+      ["pay", "Payments & refunds", [
+        ["How can I pay?", "UPI, debit or credit card, netbanking and wallets, through our secure payment partner."],
+        ["Is there a discount for new students?", "Yes. Use WELCOME20 at checkout for 20% off your first order."],
+        ["Money was deducted but my chapter didn't unlock.", "This is usually fixed within a few minutes. If not, contact us with your order ID and we'll unlock it or refund you in full."],
+        ["Can I get a refund?", "Yes, within 7 days if you've watched less than 20% of what you bought. See the refund policy for details."],
+      ]],
+      ["account", "Account & access", [
+        ["I didn't get my OTP.", "Wait 30 seconds and tap Resend. Check that the number is correct and has network. You can also sign in with Google or email."],
+        ["Can I use Mathflex on more than one device?", "Yes, on your own phone and laptop. Sharing your account with others is not allowed."],
+        ["How do I change my phone number or email?", "Go to My Learning, then Settings. If you can't sign in, contact us and we'll help."],
+        ["Can I hide my name on the leaderboard?", "Yes, from Settings in your account."],
+      ]],
+      ["call", "1:1 calls with Karan", [
+        ["What happens on a 1:1 call?", "A 30-minute video call with Karan to plan your prep, pick which chapters to fix first and answer strategy questions."],
+        ["How do I book?", "Add the call at checkout for ₹300 (free with the combo), then pick a slot from My Learning."],
+        ["Can I reschedule?", "Yes, up to 24 hours before the call."],
+      ]],
+    ];
+  }
+  posts() {
+    const G = [["#FF2E63", "#FF8A3D"], ["#6366F1", "#EC4899"], ["#10B981", "#0EA5E9"], ["#F59E0B", "#DC2626"], ["#7C3AED", "#FF2E63"], ["#0EA5E9", "#6366F1"], ["#EC4899", "#F59E0B"], ["#1a0610", "#FF2E63"]];
+    const P = [
+      ["2026-10-02", "strategy", "Your 100-day JEE Main plan, chapter by chapter", "Which chapters to finish first, when to start mocks and how to fit revision around school.", 9, "100", "Karan Mittal"],
+      ["2026-09-26", "chapters", "Definite Integrals: the 6 properties that solve most JEE questions", "King's rule, periodicity and the rest, with the PYQs where each one shows up.", 7, "∫", "Karan Mittal"],
+      ["2026-09-19", "tips", "How to review a mock test in 30 minutes", "A simple three-column method to turn every wrong answer into marks next time.", 5, "✓", "Mathflex Team"],
+      ["2026-09-11", "updates", "JEE Main 2027: dates, pattern and what has changed", "Everything we know so far about the January and April sessions.", 4, "27", "Mathflex Team"],
+      ["2026-09-03", "chapters", "3D Geometry in one weekend", "Lines, planes and shortest distance, in the order that makes the most sense.", 8, "xyz", "Karan Mittal"],
+      ["2026-08-27", "tips", "Silly mistakes cost more marks than hard questions", "The five mistakes we see most often in mock tests, and how to stop making them.", 6, "!", "Karan Mittal"],
+      ["2026-08-18", "strategy", "Class 11 or Class 12 first? How to split your prep", "A realistic plan for students who are behind on Class 11 chapters.", 7, "11", "Karan Mittal"],
+      ["2026-08-08", "news", "Mathflex is live: chapter-wise JEE maths from ₹149", "Why we built Mathflex, and what you get with every chapter.", 3, "M", "Mathflex Team"],
+      ["2026-07-30", "chapters", "Probability: Bayes' theorem without the confusion", "A visual way to set up Bayes questions so you never mix up the conditions.", 6, "P", "Karan Mittal"],
+      ["2026-07-22", "tips", "Formula sheets that actually help you remember", "How to build your own one-page sheet for every chapter.", 4, "Σ", "Mathflex Team"],
+      ["2026-07-14", "strategy", "How many hours should a JEE aspirant study maths?", "What matters more than hours, and a weekly routine that works with school.", 5, "⏱", "Karan Mittal"],
+    ];
+    return P.map(([d, cat, title, excerpt, read, sym, author], i) => ({ id: i, d, cat, title, excerpt, read, sym, author, href: "Blog Article.dc.html", bg: "linear-gradient(155deg, " + G[i % 8][0] + ", " + G[i % 8][1] + ")" }));
+  }
+  renderVals() {
+    const s = this.state;
+    const ink = "oklch(0.145 0 0)", white = "oklch(0.995 0 0)", bd = "oklch(0.929 0.013 255.508)";
+    const CATS = { strategy: "JEE strategy", chapters: "Chapter guides", tips: "Study tips", updates: "Exam updates", news: "Mathflex news" };
+    const all = this.posts().sort((a, b) => b.d.localeCompare(a.d)).map(p => ({ ...p, catKey: p.cat, cat: CATS[p.cat], dateLabel: new Date(p.d).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }), glyph: p.sym.length > 2 ? "90px" : p.sym.length > 1 ? "130px" : "170px", ai: p.author[0] }));
+    const feat = all[0];
+    const q = s.q.trim().toLowerCase();
+    const rest = all.slice(1).filter(p => (s.cat === "all" || p.catKey === s.cat) && (!q || (p.title + " " + p.excerpt).toLowerCase().includes(q)));
+    const byMonth = [];
+    rest.forEach(p => { const key = p.d.slice(0, 7); let g = byMonth.find(x => x.key === key); if (!g) { g = { key, label: new Date(p.d).toLocaleDateString("en-IN", { month: "long", year: "numeric" }), posts: [] }; byMonth.push(g); } g.posts.push(p); });
+    const filtering = s.cat !== "all" || !!q;
+    const months = (filtering ? byMonth : byMonth.slice(0, s.limit)).map((m, i) => ({ ...m, line: i ? "1px solid " + bd : "0", pad: i ? "56px" : "0", count: m.posts.length + (m.posts.length === 1 ? " article" : " articles") }));
+    return {
+      navWide: s.w >= 1024, navNarrow: s.w < 1024, wide: s.w >= 760, narrow: s.w < 760, menuOpen: s.menu, toggleMenu: () => this.setState(st => ({ menu: !st.menu })),
+      footCols: s.w < 760 ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 2fr) repeat(3, minmax(0, 1fr))", footSpan: s.w < 760 ? "1 / -1" : "auto",
+      feat,
+      cats: [["all", "All"], ...Object.entries(CATS)].map(([k, label]) => ({ label, onClick: () => this.setState({ cat: k }), bg: s.cat === k ? ink : white, fg: s.cat === k ? "#fff" : ink, border: s.cat === k ? ink : bd })),
+      query: s.q, onQuery: e => this.setState({ q: e.target.value }),
+      months, empty: rest.length === 0, hasMore: !filtering && byMonth.length > s.limit, more: () => this.setState(st => ({ limit: st.limit + 2 })),
+    };
+  }
+}
+</script>
+</body>
+</html>
