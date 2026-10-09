@@ -55,7 +55,7 @@ export const DEFAULT_SETTINGS = {
   chatbot: {
     name: "MathMate",
     greeting: "Hey! I'm MathMate 👋 Ask me about JEE maths, chapters, prices or your progress.",
-    model: "claude-opus-5",
+    model: "claude-sonnet-5-5",
     // Extra rules and tone the admin adds on top of the built-in ones (never replaces the topic limits).
     instructions: "",
     // Unpublished edits to the base prompt (null = no draft). Students only ever see `instructions`.
@@ -85,6 +85,8 @@ export const getSettings = cache(async (): Promise<Settings> => {
   // The bot used to be called FlexCare; a name saved under that label now reads as MathMate.
   const bot = merged.chatbot as Settings["chatbot"];
   if (bot.name === "FlexCare") bot.name = "MathMate";
+  // The earlier default was Opus; the bot now defaults to Sonnet, which is faster and far cheaper.
+  if (bot.model === "claude-opus-5") bot.model = "claude-sonnet-5-5";
   if (bot.greeting.includes("FlexCare")) bot.greeting = bot.greeting.replaceAll("FlexCare", "MathMate");
   return merged as Settings;
 });

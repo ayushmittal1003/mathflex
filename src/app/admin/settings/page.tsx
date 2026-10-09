@@ -104,7 +104,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <Card title="MathMate chatbot">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Bot name"><input name="chatbot.name" defaultValue={s.chatbot.name} className="input" /></Field>
-            <Field label="Claude model" hint="Default claude-opus-5"><input name="chatbot.model" defaultValue={s.chatbot.model} className="input font-mono" /></Field>
+            <Field label="Claude model" hint="Default claude-sonnet-5-5"><input name="chatbot.model" defaultValue={s.chatbot.model} className="input font-mono" /></Field>
             <Field label="Greeting" className="sm:col-span-2"><input name="chatbot.greeting" defaultValue={s.chatbot.greeting} className="input" /></Field>
           </div>
         </Card>

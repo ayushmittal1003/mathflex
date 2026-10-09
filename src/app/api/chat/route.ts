@@ -12,11 +12,19 @@ import {
   systemPrompt,
 } from "@/lib/flexcare";
 
+// Screenshots of problems: only the newest user message's images are sent to the model. The widget
+// shrinks them first, so a few hundred KB each; the caps below keep a request under the host's body limit.
+const Image = z.object({
+  mediaType: z.enum(["image/jpeg", "image/png", "image/webp"]),
+  data: z.string().regex(/^[A-Za-z0-9+/=]+$/).max(1_400_000),
+});
 const Body = z.object({
   messages: z
-    .array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().min(1).max(4000) }))
+    .array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(4000), images: z.array(Image).max(3).optional() }))
     .min(1)
-    .max(30),
+    .max(30)
+    .refine((m) => m.every((x) => x.content.length > 0 || (x.images?.length ?? 0) > 0), "empty message")
+    .refine((m) => m.reduce((n, x) => n + (x.images?.reduce((k, i) => k + i.data.length, 0) ?? 0), 0) < 3_800_000, "images too large"),
 });
 
 export const maxDuration = 60;
@@ -33,12 +41,27 @@ export async function POST(req: Request) {
 
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return new Response("Bad request", { status: 400 });
-  const { messages } = parsed.data;
+  const { messages: raw } = parsed.data;
   const user = await getCurrentUser();
-  const question = messages[messages.length - 1].content;
+  const last = raw[raw.length - 1];
+  const attached = last.role === "user" ? (last.images?.length ?? 0) : 0;
+  const question = `${last.content}${attached ? ` [${attached} image${attached > 1 ? "s" : ""} attached]` : ""}`.trim();
+  // Earlier turns go as text only; the newest user message carries its images.
+  const messages = raw.map((m, i) => {
+    const imgs = i === raw.length - 1 && m.role === "user" ? (m.images ?? []) : [];
+    const text = m.content || "Please solve the problem in this image, step by step.";
+    if (!imgs.length) return { role: m.role, content: m.content || "(sent an image)" };
+    return {
+      role: m.role,
+      content: [
+        ...imgs.map((im) => ({ type: "image" as const, source: { type: "base64" as const, media_type: im.mediaType, data: im.data } })),
+        { type: "text" as const, text },
+      ],
+    };
+  });
 
   if (!claudeConfigured()) {
-    const answer = await offlineAnswer(question);
+    const answer = attached ? "I can't read images in offline mode. Please type the problem, or contact the team." : await offlineAnswer(question);
     await db.chatLog.create({ data: { userId: user?.id, question, answer } });
     return new Response(answer, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
   }
@@ -47,8 +70,8 @@ export async function POST(req: Request) {
 
   const stream = claude().beta.messages.stream({
     model: settings.chatbot.model,
-    max_tokens: 2000,
-    output_config: { effort: "low" },
+    max_tokens: 4000,
+    output_config: { effort: "medium" },
     betas: [FALLBACK_BETA],
     fallbacks: "default",
     system: [
