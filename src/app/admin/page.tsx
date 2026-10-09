@@ -47,7 +47,7 @@ export default async function Dashboard() {
   const setup = [
     { ok: cashfreeConfigured() && cashfreeMode() === "production", label: "Live Cashfree payments", href: "/admin/settings", fix: cashfreeConfigured() ? "Cashfree is in sandbox mode (no real money). Set CASHFREE_ENV=production to go live" : "Add CASHFREE_APP_ID and CASHFREE_SECRET_KEY" },
     { ok: bunnyConfigured(), label: "Bunny Stream video hosting", href: "/admin/video-hosting", fix: "Add Bunny keys to upload lectures" },
-    { ok: claudeConfigured(), label: "FlexCare AI answers", href: "/admin/flexcare", fix: "Add ANTHROPIC_API_KEY (FAQ-only mode now)" },
+    { ok: claudeConfigured(), label: "MathMate AI answers", href: "/admin/flexcare", fix: "Add ANTHROPIC_API_KEY (FAQ-only mode now)" },
   ];
 
   return (
@@ -113,7 +113,7 @@ export default async function Dashboard() {
         <Card title="Needs attention">
           <ul className="space-y-3 text-sm">
             {allow("mentorship") && <li><Link href="/admin/mentorship" className="flex justify-between"><span>Mentorship calls to schedule</span><Badge tone={pendingCalls ? "gold" : "muted"}>{pendingCalls}</Badge></Link></li>}
-            {allow("flexcare") && <li><Link href="/admin/flexcare" className="flex justify-between"><span>FlexCare questions this week</span><Badge>{chats7}</Badge></Link></li>}
+            {allow("flexcare") && <li><Link href="/admin/flexcare" className="flex justify-between"><span>MathMate questions this week</span><Badge>{chats7}</Badge></Link></li>}
             {allow("questions") && <li><Link href="/admin/questions?flag=key" className="flex justify-between"><span>Questions to review (answer key)</span><Badge tone="gold">Review</Badge></Link></li>}
             {allow("audit") && <li><Link href="/admin/audit" className="flex justify-between"><span>Admin changes today</span><Badge>{changesToday}</Badge></Link></li>}
           </ul>

@@ -6,11 +6,12 @@ import { claudeConfigured, buildPlatformKnowledge } from "@/lib/flexcare";
 import { getSettings } from "@/lib/settings";
 import { Card, Field, PageHeader, Toggle, SubmitButton, Badge } from "@/components/admin/ui";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
-import { saveKnowledge, deleteKnowledge } from "../actions";
+import { saveKnowledge, deleteKnowledge, saveBotBrain } from "../actions";
+import { StatusForm } from "@/components/admin/StatusForm";
 
-export const metadata = { title: "FlexCare" };
+export const metadata = { title: "MathMate" };
 
-export default async function FlexCareAdmin() {
+export default async function MathMateAdmin() {
   await requireStaff("flexcare");
   const [faqs, logs, resources, knowledge, settings] = await Promise.all([
     db.knowledgeEntry.findMany({ orderBy: { createdAt: "asc" } }),
@@ -28,11 +29,25 @@ export default async function FlexCareAdmin() {
           <span className={`size-3 rounded-full ${ai ? "bg-ok" : "bg-gold"}`} />
           <p className="flex-1 text-sm">
             {ai
-              ? <>AI mode is on (<code>{settings.chatbot.model}</code>). FlexCare answers from your chapters, prices, offers, FAQ and notes below — and from each student&apos;s own progress.</>
+              ? <>AI mode is on (<code>{settings.chatbot.model}</code>). MathMate answers from your chapters, prices, offers, FAQ and notes below — and from each student&apos;s own progress.</>
               : <>FAQ-only mode. Add <code>ANTHROPIC_API_KEY</code> to the server environment to switch on AI answers and automatic reading of uploaded notes.</>}
           </p>
           <Link href="/admin/settings#chatbot" className="btn btn-ghost !py-2 text-sm">Name & greeting</Link>
         </div>
+      </Card>
+
+      <Card title="Prompt & knowledge">
+        <StatusForm action={saveBotBrain} label="Save prompt & knowledge">
+          <p className="text-sm text-muted">
+            {settings.chatbot.name} only discusses JEE / Class 11–12 maths and {settings.siteName}. That limit is built in and can&apos;t be edited here. Use these two boxes to shape how it talks and what it knows.
+          </p>
+          <Field label="Extra instructions" hint="Tone, do's and don'ts. Example: “Always end a solved problem by suggesting the matching practice set. Never share coupon codes that aren't listed.”">
+            <textarea name="instructions" rows={5} maxLength={4000} defaultValue={settings.chatbot.instructions} className="input" />
+          </Field>
+          <Field label="Knowledge notes" hint="Facts the bot should know: timings, policies, announcements, how-to steps. For single Q&As use the FAQ list below.">
+            <textarea name="knowledge" rows={8} maxLength={20000} defaultValue={settings.chatbot.knowledge} className="input" />
+          </Field>
+        </StatusForm>
       </Card>
 
       <section className="space-y-3">
@@ -53,7 +68,7 @@ export default async function FlexCareAdmin() {
         <Card title="Add FAQ"><KnowledgeForm f={null} /></Card>
       </section>
 
-      <Card title="Notes & mind maps FlexCare has read">
+      <Card title="Notes & mind maps MathMate has read">
         <ul className="divide-y divide-border text-sm">
           {resources.map((r) => (
             <li key={r.id} className="flex items-center gap-3 py-2.5">
@@ -80,7 +95,7 @@ export default async function FlexCareAdmin() {
       </Card>
 
       <details className="card group overflow-hidden">
-        <summary className="cursor-pointer list-none p-4 text-sm font-bold">See exactly what FlexCare knows ({Math.round(knowledge.length / 1000)}k characters)</summary>
+        <summary className="cursor-pointer list-none p-4 text-sm font-bold">See exactly what MathMate knows ({Math.round(knowledge.length / 1000)}k characters)</summary>
         <pre className="max-h-[480px] overflow-auto whitespace-pre-wrap border-t border-border p-4 text-xs text-muted">{knowledge}</pre>
       </details>
     </div>

@@ -16,7 +16,7 @@ export default async function Coupons() {
   const coupons = await db.coupon.findMany({ orderBy: { createdAt: "desc" } });
   return (
     <div className="max-w-4xl space-y-4">
-      <PageHeader title="Coupons" subtitle="Percent or flat discounts, with limits and schedules. Public coupons are shown by FlexCare." />
+      <PageHeader title="Coupons" subtitle="Percent or flat discounts, with limits and schedules. Public coupons are shown by MathMate." />
       {coupons.map((c) => (
         <details key={c.id} className="card group overflow-hidden">
           <summary className="flex cursor-pointer list-none flex-wrap items-center gap-3 p-4">

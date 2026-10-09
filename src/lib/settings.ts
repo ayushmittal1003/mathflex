@@ -51,11 +51,15 @@ export const DEFAULT_SETTINGS = {
     dailyStreakBonus: 20,
   },
 
-  // FlexCare chatbot
+  // MathMate chatbot
   chatbot: {
-    name: "FlexCare",
-    greeting: "Hey! I'm FlexCare 👋 Ask me about chapters, prices, your progress, or any maths doubt.",
+    name: "MathMate",
+    greeting: "Hey! I'm MathMate 👋 Ask me about JEE maths, chapters, prices or your progress.",
     model: "claude-opus-5",
+    // Extra rules and tone the admin adds on top of the built-in ones (never replaces the topic limits).
+    instructions: "",
+    // Free-text facts the bot should know (timings, policies, announcements). Q&A pairs live in the FAQ list.
+    knowledge: "",
   },
 };
 
@@ -73,6 +77,10 @@ export const getSettings = cache(async (): Promise<Settings> => {
     const base = merged[key];
     merged[key] = isObject(base) && isObject(value) ? { ...base, ...value } : value;
   }
+  // The bot used to be called FlexCare; a name saved under that label now reads as MathMate.
+  const bot = merged.chatbot as Settings["chatbot"];
+  if (bot.name === "FlexCare") bot.name = "MathMate";
+  if (bot.greeting.includes("FlexCare")) bot.greeting = bot.greeting.replaceAll("FlexCare", "MathMate");
   return merged as Settings;
 });
 

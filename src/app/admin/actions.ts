@@ -311,7 +311,7 @@ const ALLOWED_RESOURCE_TYPES = ["application/pdf", "image/png", "image/jpeg", "i
 
 type ResourceMeta = { chapterId: string; type: string; title: string; requiresPurchase: boolean; includeInChatbot: boolean };
 
-// Shared by both upload paths: create the row, then teach FlexCare what's inside.
+// Shared by both upload paths: create the row, then teach MathMate what's inside.
 async function registerResource(me: { id: string; name: string; email: string }, meta: ResourceMeta, stored: { url: string; mimeType: string; size: number }, bytes: () => Promise<Buffer>) {
   const res = await db.resource.create({
     data: {
@@ -672,21 +672,35 @@ export async function updateBooking(form: FormData) {
   revalidatePath("/admin/mentorship");
 }
 
-/* ---------------- FlexCare knowledge ---------------- */
+/* ---------------- MathMate knowledge ---------------- */
 
 export async function saveKnowledge(form: FormData) {
   const me = await requireStaff("flexcare");
   const id = str(form, "id");
   const data = { question: str(form, "question"), answer: str(form, "answer"), isActive: bool(form, "isActive") };
   const k = id ? await db.knowledgeEntry.update({ where: { id }, data }) : await db.knowledgeEntry.create({ data });
-  await audit(me, id ? "flexcare.update" : "flexcare.create", `${id ? "Edited" : "Added"} FlexCare answer: “${k.question.slice(0, 80)}”`, { entity: "flexcare", id: k.id });
+  await audit(me, id ? "flexcare.update" : "flexcare.create", `${id ? "Edited" : "Added"} MathMate answer: “${k.question.slice(0, 80)}”`, { entity: "flexcare", id: k.id });
   revalidatePath("/admin/flexcare");
+}
+
+export type BotBrainState = { ok?: string; error?: string } | undefined;
+
+// The editable half of the bot's prompt: extra instructions and free-text knowledge.
+export async function saveBotBrain(_: BotBrainState, form: FormData): Promise<BotBrainState> {
+  const me = await requireStaff("flexcare");
+  const instructions = str(form, "instructions").slice(0, 4000);
+  const knowledge = str(form, "knowledge").slice(0, 20000);
+  const cur = await getSettings();
+  await saveSetting("chatbot", { ...cur.chatbot, instructions, knowledge });
+  await audit(me, "settings.chatbot", "Updated the chatbot instructions and knowledge notes", { entity: "settings", id: "chatbot" });
+  refreshSite();
+  return { ok: "Saved. The bot uses this from its next reply." };
 }
 
 export async function deleteKnowledge(id: string) {
   const me = await requireStaff("flexcare");
   const k = await db.knowledgeEntry.delete({ where: { id } });
-  await audit(me, "flexcare.delete", `Deleted FlexCare answer: “${k.question.slice(0, 80)}”`, { entity: "flexcare", id });
+  await audit(me, "flexcare.delete", `Deleted MathMate answer: “${k.question.slice(0, 80)}”`, { entity: "flexcare", id });
   revalidatePath("/admin/flexcare");
 }
 
@@ -711,7 +725,7 @@ export async function saveSettings(form: FormData) {
     saveSetting("features", features),
     saveSetting("xp", xp),
     saveSetting("marking", marking),
-    saveSetting("chatbot", { name: str(form, "chatbot.name") || "FlexCare", greeting: str(form, "chatbot.greeting"), model: str(form, "chatbot.model") || cur.chatbot.model }),
+    saveSetting("chatbot", { ...cur.chatbot, name: str(form, "chatbot.name") || "MathMate", greeting: str(form, "chatbot.greeting"), model: str(form, "chatbot.model") || cur.chatbot.model }),
   ]);
   const flipped = (Object.keys(features) as (keyof Settings["features"])[]).filter((k) => features[k] !== cur.features[k]).map((k) => `${k} ${features[k] ? "on" : "off"}`);
   await audit(me, "settings.update", `Saved settings${flipped.length ? `: ${flipped.join(", ")}` : ""}`, { entity: "settings" });

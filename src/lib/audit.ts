@@ -21,6 +21,6 @@ export async function audit(
 
 export const ACTION_LABEL: Record<string, string> = {
   chapter: "Chapter", part: "Part", question: "Question", resource: "Notes", course: "Course", coupon: "Coupon", banner: "Banner",
-  order: "Order", user: "Student", access: "Access", mentorship: "Mentorship", flexcare: "FlexCare", settings: "Settings",
+  order: "Order", user: "Student", access: "Access", mentorship: "Mentorship", flexcare: "MathMate", settings: "Settings",
   team: "Team", impersonate: "Impersonation", video: "Video",
 };

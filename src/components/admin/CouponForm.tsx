@@ -37,10 +37,10 @@ export function CouponForm({ c }: { c: CouponValues | null }) {
         <Field label="Starts (IST)"><input name="startsAt" type="datetime-local" defaultValue={c?.startsAt ?? ""} className="input" /></Field>
         <Field label="Ends (IST)"><input name="endsAt" type="datetime-local" defaultValue={c?.endsAt ?? ""} className="input" /></Field>
       </div>
-      <Field label="Description" hint="Shown to students and FlexCare"><input name="description" defaultValue={c?.description} className="input" /></Field>
+      <Field label="Description" hint="Shown to students and MathMate"><input name="description" defaultValue={c?.description} className="input" /></Field>
       <div className="grid gap-1 sm:grid-cols-2">
         <Toggle name="isActive" label="Active" defaultChecked={c?.isActive ?? true} />
-        <Toggle name="isPublic" label="Public" hint="FlexCare can tell students about it" defaultChecked={c?.isPublic} />
+        <Toggle name="isPublic" label="Public" hint="MathMate can tell students about it" defaultChecked={c?.isPublic} />
       </div>
       {state?.error && <p className="rounded-xl bg-bad/10 px-3 py-2 text-sm font-medium text-bad">{state.error}</p>}
       {state?.ok && <p className="rounded-xl bg-ok/10 px-3 py-2 text-sm font-medium text-ok">{state.ok}</p>}

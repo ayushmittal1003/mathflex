@@ -7,7 +7,7 @@ import { saveSettings } from "../actions";
 export const metadata = { title: "Settings" };
 
 const FEATURE_LABELS: Record<keyof typeof DEFAULT_SETTINGS.features, [string, string]> = {
-  chatbot: ["FlexCare chatbot", "Bottom-right assistant on every page"],
+  chatbot: ["MathMate chatbot", "Bottom-right assistant on every page"],
   leaderboard: ["Leaderboard", "Weekly / monthly / all-time rankings"],
   mentorshipUpsell: ["Mentorship upsell", "Offer the 1:1 call at checkout and on home"],
   coupons: ["Coupon codes", "Coupon field at checkout"],
@@ -101,7 +101,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       </Card>
 
       <div id="chatbot">
-        <Card title="FlexCare chatbot">
+        <Card title="MathMate chatbot">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Bot name"><input name="chatbot.name" defaultValue={s.chatbot.name} className="input" /></Field>
             <Field label="Claude model" hint="Default claude-opus-5"><input name="chatbot.model" defaultValue={s.chatbot.model} className="input font-mono" /></Field>

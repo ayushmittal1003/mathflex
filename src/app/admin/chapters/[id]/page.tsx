@@ -298,7 +298,7 @@ function NotesTab({ chapter, resources }: { chapter: Chapter; resources: Resourc
             <FileText className="size-5 text-brand" />
             <span className="min-w-0 flex-1 truncate font-bold">{r.title}</span>
             <Badge>{r.type.replace("_", " ")}</Badge>
-            {r.includeInChatbot && (r.knowledgeText ? <Badge tone="ok">In FlexCare</Badge> : <Badge tone="gold">Not read yet</Badge>)}
+            {r.includeInChatbot && (r.knowledgeText ? <Badge tone="ok">In MathMate</Badge> : <Badge tone="gold">Not read yet</Badge>)}
             <ChevronDown className="size-5 transition group-open:rotate-180" />
           </summary>
           <form action={updateResource} className="space-y-4 border-t border-border p-4">
@@ -311,11 +311,11 @@ function NotesTab({ chapter, resources }: { chapter: Chapter; resources: Resourc
                 </select>
               </Field>
             </div>
-            <Field label="What FlexCare knows from this file" hint="Auto-extracted on upload. Edit freely — this is exactly what the chatbot reads.">
+            <Field label="What MathMate knows from this file" hint="Auto-extracted on upload. Edit freely — this is exactly what the chatbot reads.">
               <textarea name="knowledgeText" rows={8} defaultValue={r.knowledgeText} className="input font-mono text-xs" />
             </Field>
             <div className="grid gap-1 sm:grid-cols-3">
-              <Toggle name="includeInChatbot" label="Teach FlexCare" defaultChecked={r.includeInChatbot} />
+              <Toggle name="includeInChatbot" label="Teach MathMate" defaultChecked={r.includeInChatbot} />
               <Toggle name="requiresPurchase" label="Buyers only" defaultChecked={r.requiresPurchase} />
               <Toggle name="isPublished" label="Published" defaultChecked={r.isPublished} />
             </div>

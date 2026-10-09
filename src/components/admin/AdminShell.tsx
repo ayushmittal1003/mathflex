@@ -23,7 +23,7 @@ const NAV: { group: string; items: Item[] }[] = [
     { href: "/admin/students", label: "Students", icon: Users, perm: "students" },
     { href: "/admin/access", label: "Grant access", icon: KeyRound, perm: "access" },
     { href: "/admin/mentorship", label: "Mentorship calls", icon: PhoneCall, perm: "mentorship" },
-    { href: "/admin/flexcare", label: "FlexCare chatbot", icon: Bot, perm: "flexcare" },
+    { href: "/admin/flexcare", label: "MathMate chatbot", icon: Bot, perm: "flexcare" },
   ] },
   { group: "Commerce & marketing", items: [
     { href: "/admin/orders", label: "Orders & payments", icon: Receipt, perm: "orders" },

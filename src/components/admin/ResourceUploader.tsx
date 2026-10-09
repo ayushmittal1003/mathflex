@@ -64,7 +64,7 @@ export function ResourceUploader({ chapterId, direct }: { chapterId: string; dir
       </label>
       <div className="flex flex-wrap gap-4 text-sm">
         <label className="flex items-center gap-2"><input type="checkbox" name="requiresPurchase" defaultChecked /> Only for students who bought the chapter</label>
-        <label className="flex items-center gap-2"><input type="checkbox" name="includeInChatbot" defaultChecked /> Teach FlexCare this content</label>
+        <label className="flex items-center gap-2"><input type="checkbox" name="includeInChatbot" defaultChecked /> Teach MathMate this content</label>
       </div>
       <button disabled={pending} className="btn btn-primary !py-2 text-sm">
         {pct !== null ? `Uploading… ${pct}%` : pending ? "Reading the file…" : "Upload"}
@@ -73,7 +73,7 @@ export function ResourceUploader({ chapterId, direct }: { chapterId: string; dir
       {state && "ok" in state && (
         <p className="text-sm text-ok">
           Uploaded.{" "}
-          {state.extracted ? "FlexCare has read it and can now answer questions from it." : "FlexCare couldn't read it automatically (is ANTHROPIC_API_KEY set?). You can paste the text below."}
+          {state.extracted ? "MathMate has read it and can now answer questions from it." : "MathMate couldn't read it automatically (is ANTHROPIC_API_KEY set?). You can paste the text below."}
         </p>
       )}
     </form>

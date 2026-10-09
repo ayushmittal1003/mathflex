@@ -47,12 +47,12 @@ export async function POST(req: Request) {
 
   const stream = claude().beta.messages.stream({
     model: settings.chatbot.model,
-    max_tokens: 4000,
+    max_tokens: 2000,
     output_config: { effort: "low" },
     betas: [FALLBACK_BETA],
     fallbacks: "default",
     system: [
-      { type: "text", text: systemPrompt(settings.chatbot.name, settings.siteName) },
+      { type: "text", text: systemPrompt(settings.chatbot.name, settings.siteName, settings.chatbot.instructions) },
       // Platform knowledge is identical for every student -> cached.
       { type: "text", text: knowledge, cache_control: { type: "ephemeral" } },
       // Per-student context goes after the breakpoint so it doesn't break the cache.
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
           controller.enqueue(encoder.encode(answer));
         }
       } catch (err) {
-        console.error("FlexCare error", err);
+        console.error("MathMate error", err);
         const msg = `\n\nSorry, I'm having trouble right now. Please try again, or WhatsApp us at +${settings.whatsappNumber}.`;
         answer += msg;
         controller.enqueue(encoder.encode(msg));

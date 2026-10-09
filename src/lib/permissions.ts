@@ -15,7 +15,7 @@ export const PERMISSIONS = {
   students: "Students",
   access: "Grant & revoke access",
   mentorship: "Mentorship calls",
-  flexcare: "FlexCare chatbot",
+  flexcare: "MathMate chatbot",
   video: "Video hosting",
   settings: "Settings & features",
   team: "Team & roles",
