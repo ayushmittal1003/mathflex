@@ -83,6 +83,10 @@ export async function savePart(form: FormData) {
   const id = str(form, "id");
   const chapterId = str(form, "chapterId");
   const order = int(form, "order", 1);
+  const thumb = form.get("thumbFile");
+  let thumbnailUrl: string | null | undefined = undefined;
+  if (thumb instanceof File && thumb.size > 0) thumbnailUrl = (await saveFile(thumb, "images")).url;
+  if (bool(form, "removeThumb")) thumbnailUrl = null;
   const data = {
     title: str(form, "title"),
     summary: str(form, "summary"),
@@ -91,6 +95,9 @@ export async function savePart(form: FormData) {
     videoRef: str(form, "videoProvider") === "BUNNY" ? normalizeBunnyRef(str(form, "videoRef")) : str(form, "videoRef"),
     durationSec: Math.round(num(form, "durationMin") * 60),
     isFreePreview: bool(form, "isFreePreview"),
+    // Free viewers get this much of the video, from 2 to 5 minutes.
+    previewSec: Math.min(300, Math.max(120, Math.round(num(form, "previewMin", 3) * 60))),
+    ...(thumbnailUrl !== undefined ? { thumbnailUrl } : {}),
     xpReward: int(form, "xpReward", 100),
     watchThreshold: Math.min(1, Math.max(0.1, num(form, "watchThresholdPct", 90) / 100)),
   };

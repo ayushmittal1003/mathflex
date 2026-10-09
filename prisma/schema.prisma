@@ -147,6 +147,10 @@ model Part {
   videoRef       String        @default("") // Bunny video GUID, YouTube id, or URL
   durationSec    Int           @default(0)
   isFreePreview  Boolean       @default(false)
+  // Seconds of the video anyone can watch when isFreePreview is on (admin picks 2 to 5 minutes).
+  previewSec     Int           @default(180)
+  // Uploaded poster for this part; falls back to the chapter cover.
+  thumbnailUrl   String?
   xpReward       Int           @default(100)
   // Share of the video a student must watch before the part counts as watched.
   watchThreshold Float         @default(0.9)

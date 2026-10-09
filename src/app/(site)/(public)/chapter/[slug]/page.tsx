@@ -12,6 +12,8 @@ import { getPublicCoupon } from "@/components/site/web/data";
 import { WashHero } from "@/components/site/web/WashHero";
 import { CheckIcon, LockIcon, PlayIcon, posterBg } from "@/components/site/web/primitives";
 import { AddToCartButton, BuyNow } from "@/components/site/web/CartButtons";
+import { HoverPreview } from "@/components/site/web/HoverPreview";
+import { playbackFor } from "@/lib/video";
 import { FaqList } from "@/components/site/web/FaqList";
 import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { ChapterCard } from "@/components/site/web/ChapterCard";
@@ -159,8 +161,15 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
           {/* Player poster: opens the existing player (free preview, or resume when owned). */}
           <div className="order-1 min-w-0 flex-[1.15_1_360px] overflow-hidden rounded-xl border-[6px] border-foreground bg-foreground shadow-[0_40px_80px_-30px_rgb(80_20_0/0.5)]">
+            <HoverPreview
+              playback={!owned && preview ? playbackFor(preview.videoProvider, preview.videoRef) : { kind: "none" }}
+              limitSec={preview?.previewSec ?? 180}
+              upgradeHref="#pricing"
+            >
             <div className="relative aspect-[16/10] overflow-hidden text-white" style={posterBg(chapter.coverFrom, chapter.coverTo)}>
-              <div className={cx("absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", chapter.symbol.length > 2 ? "text-[160px] tablet:text-[200px]" : "text-[240px] tablet:text-[320px]")}>{chapter.symbol}</div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {heroPart?.thumbnailUrl && <img src={heroPart.thumbnailUrl} alt="" className="absolute inset-0 size-full object-cover" />}
+              {!heroPart?.thumbnailUrl && <div className={cx("absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", chapter.symbol.length > 2 ? "text-[160px] tablet:text-[200px]" : "text-[240px] tablet:text-[320px]")}>{chapter.symbol}</div>}
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.65))]" />
               <span className="absolute left-4.5 top-4 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em] text-black">
                 {owned ? "Your chapter" : preview ? `Part ${preview.order} · Free preview` : "Preview"}
@@ -179,6 +188,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                 </div>
               )}
             </div>
+            </HoverPreview>
           </div>
         </div>
       </WashHero>

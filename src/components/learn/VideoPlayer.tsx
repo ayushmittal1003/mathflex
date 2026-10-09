@@ -1,26 +1,45 @@
 "use client";
-import { useCallback, useEffect, useRef } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Playback } from "@/lib/video";
 
 type Props = {
   playback: Playback;
   initialWatched: number;
   onProgress: (watchedSec: number, durationSec: number, final: boolean) => void;
+  // Free preview: stop at this many seconds and offer the purchase instead.
+  limitSec?: number;
+  upgradeHref?: string;
 };
 
-type PlayerJs = { on: (ev: string, cb: (d?: { seconds: number; duration: number }) => void) => void };
+type PlayerJs = { on: (ev: string, cb: (d?: { seconds: number; duration: number }) => void) => void; pause?: () => void };
 declare global {
   interface Window { playerjs?: { Player: new (el: HTMLIFrameElement) => PlayerJs } }
 }
 
 // Counts seconds actually watched (not the scrub position), so skipping to the end
 // doesn't unlock the practice set. Reports to the server periodically.
-export function VideoPlayer({ playback, initialWatched, onProgress }: Props) {
+export function VideoPlayer({ playback, initialWatched, onProgress, limitSec, upgradeHref }: Props) {
   const watched = useRef(initialWatched);
   const lastPos = useRef<number | null>(null);
   const duration = useRef(0);
   const lastReport = useRef(0);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const playerRef = useRef<PlayerJs | null>(null);
+  const [locked, setLocked] = useState(false);
+
+  // Past the free preview: pause and cover the player. The overlay blocks the controls,
+  // so seeking further is not possible from the page.
+  const enforceLimit = useCallback(
+    (pos: number) => {
+      if (!limitSec || pos < limitSec) return;
+      setLocked(true);
+      playerRef.current?.pause?.();
+      videoRef.current?.pause();
+    },
+    [limitSec],
+  );
 
   const report = useCallback(
     (final = false) => {
@@ -50,8 +69,13 @@ export function VideoPlayer({ playback, initialWatched, onProgress }: Props) {
     const attach = () => {
       if (cancelled || !iframeRef.current || !window.playerjs) return;
       const p = new window.playerjs.Player(iframeRef.current);
+      playerRef.current = p;
       p.on("ready", () => {
-        p.on("timeupdate", (d) => d && tick(d.seconds, d.duration));
+        p.on("timeupdate", (d) => {
+          if (!d) return;
+          enforceLimit(d.seconds);
+          tick(d.seconds, d.duration);
+        });
         p.on("pause", () => report());
         p.on("ended", () => report(true));
       });
@@ -64,7 +88,7 @@ export function VideoPlayer({ playback, initialWatched, onProgress }: Props) {
       document.head.appendChild(s);
     }
     return () => { cancelled = true; };
-  }, [playback, tick, report]);
+  }, [playback, tick, report, enforceLimit]);
 
   // YouTube embeds don't expose time without the heavy IFrame API: count visible,
   // focused time instead (the server still requires the part's full duration).
@@ -100,6 +124,7 @@ export function VideoPlayer({ playback, initialWatched, onProgress }: Props) {
     <div className="relative aspect-video w-full overflow-hidden bg-black sm:rounded-2xl" onContextMenu={(e) => e.preventDefault()}>
       {playback.kind === "file" ? (
         <video
+          ref={videoRef}
           key={playback.src}
           src={playback.src}
           controls
@@ -109,7 +134,7 @@ export function VideoPlayer({ playback, initialWatched, onProgress }: Props) {
           disablePictureInPicture={false}
           className="size-full"
           onLoadedMetadata={(e) => (duration.current = e.currentTarget.duration)}
-          onTimeUpdate={(e) => tick(e.currentTarget.currentTime, e.currentTarget.duration)}
+          onTimeUpdate={(e) => { enforceLimit(e.currentTarget.currentTime); tick(e.currentTarget.currentTime, e.currentTarget.duration); }}
           onSeeked={(e) => (lastPos.current = e.currentTarget.currentTime)}
           onPause={() => report()}
           onEnded={() => report(true)}
@@ -123,6 +148,16 @@ export function VideoPlayer({ playback, initialWatched, onProgress }: Props) {
           allowFullScreen
           loading="lazy"
         />
+      )}
+      {locked && (
+        <div className="absolute inset-0 z-10 grid place-items-center bg-black/85 p-6 text-center text-white">
+          <div className="max-w-sm">
+            <p className="text-sm font-semibold text-white/70">That was your free preview</p>
+            <p className="mt-1 text-2xl font-extrabold tracking-tight">Subscribe to watch the complete video</p>
+            <p className="mt-2 text-sm text-white/70">Unlock the chapter to continue this part, save your progress and open the practice set.</p>
+            {upgradeHref && <Link href={upgradeHref} className="mt-5 inline-flex h-11 items-center rounded-lg bg-primary px-6 text-sm font-bold text-primary-foreground hover:brightness-110">Unlock chapter</Link>}
+          </div>
+        </div>
       )}
     </div>
   );

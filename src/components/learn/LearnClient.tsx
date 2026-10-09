@@ -25,6 +25,8 @@ export function LearnClient(props: {
   questions: QuizQuestion[];
   resources: { id: string; title: string; type: string; url: string }[];
   isPreviewOnly: boolean;
+  // Seconds of free video before the paywall; only set for a free preview.
+  previewSec?: number;
   sound: boolean;
   related: { slug: string; title: string }[];
   user: { name: string; avatarColor: string; streak: number; xp: number } | null;
@@ -135,7 +137,7 @@ export function LearnClient(props: {
         <div className="mt-4 flex flex-wrap items-start gap-6">
           <div className="min-w-0 flex-[1_1_640px]">
             <div className="overflow-hidden rounded-xl shadow-[0_30px_60px_-34px_rgb(80_20_0/0.55)]">
-              <VideoPlayer playback={props.playback} initialWatched={props.initialWatched} onProgress={onProgress} />
+              <VideoPlayer playback={props.playback} initialWatched={props.initialWatched} onProgress={onProgress} limitSec={props.isPreviewOnly ? props.previewSec : undefined} upgradeHref={`/chapter/${chapter.slug}`} />
             </div>
             <div className="mt-4.5 flex flex-wrap items-start justify-between gap-x-5 gap-y-3">
               <div className="min-w-0">

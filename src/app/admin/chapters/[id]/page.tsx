@@ -186,7 +186,24 @@ function PartForm({ chapterId, part: p, bunny, nextOrder }: { chapterId: string;
         <Field label="XP reward"><input name="xpReward" type="number" defaultValue={p?.xpReward ?? 100} className="input" /></Field>
         <Field label="Must watch (%)" hint="Before practice unlocks"><input name="watchThresholdPct" type="number" min={10} max={100} defaultValue={Math.round((p?.watchThreshold ?? 0.9) * 100)} className="input" /></Field>
       </div>
-      <Toggle name="isFreePreview" label="Free preview" hint="Anyone can watch this part without buying" defaultChecked={p?.isFreePreview} />
+      <div className="grid gap-4 sm:grid-cols-[1fr_1fr]">
+        <Field label="Thumbnail" hint="Poster shown on the chapter page and when someone hovers the preview. 16:9 works best.">
+          {p?.thumbnailUrl && (
+            <div className="mb-2 flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={p.thumbnailUrl} alt="" className="h-14 w-24 rounded-md border border-border object-cover" />
+              <label className="flex items-center gap-1.5 text-xs text-muted"><input type="checkbox" name="removeThumb" /> Remove</label>
+            </div>
+          )}
+          <input name="thumbFile" type="file" accept="image/png,image/jpeg,image/webp" className="input" />
+        </Field>
+        <Field label="Free preview length (minutes)" hint="How much of the video non-buyers can watch, 2 to 5. Needs “Free preview” on.">
+          <select name="previewMin" defaultValue={String((p?.previewSec ?? 180) / 60)} className="input">
+            {[2, 2.5, 3, 3.5, 4, 4.5, 5].map((m) => <option key={m} value={m}>{m} minutes</option>)}
+          </select>
+        </Field>
+      </div>
+      <Toggle name="isFreePreview" label="Free preview" hint="Anyone can watch the first minutes of this part. The rest unlocks when they buy." defaultChecked={p?.isFreePreview} />
       <SubmitButton>{p ? "Save part" : "Add part"}</SubmitButton>
     </form>
   );
