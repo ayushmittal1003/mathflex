@@ -164,7 +164,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
             <HoverPreview
               playback={!owned && preview ? playbackFor(preview.videoProvider, preview.videoRef) : { kind: "none" }}
               limitSec={preview?.previewSec ?? 180}
-              upgradeHref="#pricing"
+              upgradeHref="#"
             >
             <div className="relative aspect-[16/10] overflow-hidden text-white" style={posterBg(chapter.coverFrom, chapter.coverTo)}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
