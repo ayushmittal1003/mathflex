@@ -1,21 +1,13 @@
-import { useId } from "react";
-
-// MathFlex mark: an "M" drawn as a rising graph that ends in an arrow —
-// maths + growth, in a play-button tile.
+// MathFlex mark: an "M" drawn as a rising graph that ends in an arrow, on a solid red tile
+// (the same artwork as public/brand/mathflex-mark.svg). Used in the admin panel; the public
+// site uses SiteLogo's PNG.
 export function LogoMark({ size = 32, className = "" }: { size?: number; className?: string }) {
-  const id = useId();
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" className={className} aria-hidden>
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#FF2E63" />
-          <stop offset="1" stopColor="#FF8A3D" />
-        </linearGradient>
-      </defs>
-      <rect width="64" height="64" rx="16" fill={`url(#${id})`} />
-      <g fill="none" stroke="#fff" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M15 47V22l15 16 18-20" />
-        <path d="M37.5 18H48v10.5" />
+    <svg width={size} height={size * (783 / 806)} viewBox="0 0 806 783" className={className} aria-hidden>
+      <rect width="806" height="783" rx="170" fill="#BF070C" />
+      <g fill="none" stroke="#fff" strokeWidth="64.3" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M150 605.999V227.784L383.595 469.841L612.591 218.316" />
+        <path d="M500.064 167H663.58V325.85" />
       </g>
     </svg>
   );
@@ -23,11 +15,9 @@ export function LogoMark({ size = 32, className = "" }: { size?: number; classNa
 
 export function Logo({ size = 32, className = "" }: { size?: number; className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-2 ${className}`} aria-label="MathFlex">
+    <span className={`inline-flex items-center gap-2 ${className}`} aria-label="Mathflex">
       <LogoMark size={size} />
-      <span className="font-display font-extrabold tracking-tight" style={{ fontSize: size * 0.62 }}>
-        math<span className="text-gradient">flex</span>
-      </span>
+      <span className="font-display font-extrabold tracking-tight" style={{ fontSize: size * 0.62 }}>Mathflex</span>
     </span>
   );
 }
