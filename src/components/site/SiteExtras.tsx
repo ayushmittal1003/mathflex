@@ -12,7 +12,7 @@ export async function SiteExtras({ settings, lifted = true }: { settings: Settin
   const popups = await activeBanners("POPUP");
   return (
     <>
-      {f.chatbot && <ChatWidget name={settings.chatbot.name} greeting={settings.chatbot.greeting} lifted={lifted} />}
+      {f.chatbot && <ChatWidget name={settings.chatbot.name} greeting={settings.chatbot.greeting} avatar={settings.chatbot.avatar} starters={settings.chatbot.starters} lifted={lifted} />}
       <PromoPopup promo={popups[0] ?? null} />
     </>
   );

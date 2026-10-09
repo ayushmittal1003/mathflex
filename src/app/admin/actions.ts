@@ -683,6 +683,33 @@ export async function saveKnowledge(form: FormData) {
   revalidatePath("/admin/flexcare");
 }
 
+export type BotWidgetState = { ok?: string; error?: string } | undefined;
+
+// How the chat bubble looks: the photo, name, greeting and the starter questions.
+export async function saveBotWidget(_: BotWidgetState, form: FormData): Promise<BotWidgetState> {
+  const me = await requireStaff("flexcare");
+  const cur = await getSettings();
+  const file = form.get("avatarFile");
+  let avatar = cur.chatbot.avatar;
+  if (file instanceof File && file.size > 0) {
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) return { error: "Please upload a PNG, JPG or WebP photo." };
+    if (file.size > 3 * 1024 * 1024) return { error: "That photo is over 3 MB. Please use a smaller one." };
+    avatar = (await saveFile(file, "images")).url;
+  }
+  if (bool(form, "removeAvatar")) avatar = "";
+  const starters = list(form, "starters").map((x) => x.slice(0, 80)).slice(0, 6);
+  await saveSetting("chatbot", {
+    ...cur.chatbot,
+    name: str(form, "name").slice(0, 30) || cur.chatbot.name,
+    greeting: str(form, "greeting").slice(0, 300) || cur.chatbot.greeting,
+    avatar,
+    starters,
+  });
+  await audit(me, "settings.chatbot", "Updated the chatbot photo, name, greeting and starter questions", { entity: "settings", id: "chatbot" });
+  refreshSite();
+  return { ok: "Saved. The chat bubble on the site is updated." };
+}
+
 export type BotBrainState = { ok?: string; error?: string } | undefined;
 
 // Free-text knowledge the bot should know (the base prompt is edited separately, with drafts and versions).

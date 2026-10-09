@@ -8,7 +8,7 @@ import { BotStudio } from "@/components/admin/BotStudio";
 import { getSettings, BOT_PROMPT_MAX, BOT_KNOWLEDGE_MAX } from "@/lib/settings";
 import { Card, Field, PageHeader, Toggle, SubmitButton, Badge } from "@/components/admin/ui";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
-import { saveKnowledge, deleteKnowledge, saveBotBrain } from "../actions";
+import { saveKnowledge, deleteKnowledge, saveBotBrain, saveBotWidget } from "../actions";
 import { StatusForm } from "@/components/admin/StatusForm";
 
 export const metadata = { title: "MathMate" };
@@ -39,6 +39,34 @@ export default async function MathMateAdmin() {
           </p>
           <Link href="/admin/settings#chatbot" className="btn btn-ghost !py-2 text-sm">Name & greeting</Link>
         </div>
+      </Card>
+
+      <Card title="Chat bubble">
+        <StatusForm action={saveBotWidget} label="Save chat bubble">
+          <div className="flex flex-wrap items-start gap-5">
+            <div className="shrink-0">
+              {settings.chatbot.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={settings.chatbot.avatar} alt="" className="size-20 rounded-full object-cover ring-4 ring-brand" />
+              ) : (
+                <div className="grid size-20 place-items-center rounded-full bg-surface-2 text-xs text-muted ring-4 ring-border">No photo</div>
+              )}
+            </div>
+            <div className="min-w-0 flex-1 space-y-3">
+              <Field label="Photo" hint="Square or portrait, PNG/JPG/WebP up to 3 MB. Shown in a circle with a green online dot.">
+                <input name="avatarFile" type="file" accept="image/png,image/jpeg,image/webp" className="input" />
+              </Field>
+              {settings.chatbot.avatar && <label className="flex items-center gap-1.5 text-xs text-muted"><input type="checkbox" name="removeAvatar" /> Remove the photo</label>}
+            </div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Name"><input name="name" defaultValue={settings.chatbot.name} maxLength={30} className="input" /></Field>
+            <Field label="Greeting"><input name="greeting" defaultValue={settings.chatbot.greeting} maxLength={300} className="input" /></Field>
+          </div>
+          <Field label="Starter questions" hint="One per line, up to 6. Students tap one to start the chat.">
+            <textarea name="starters" rows={4} defaultValue={settings.chatbot.starters.join("\n")} className="input" />
+          </Field>
+        </StatusForm>
       </Card>
 
       <div className="grid gap-3 sm:grid-cols-3">

@@ -57,6 +57,10 @@ export const DEFAULT_SETTINGS = {
     greeting: "Hey! I'm MathMate 👋 Ask me about JEE maths, chapters, prices or your progress.",
     model: "claude-sonnet-5-5",
     // Extra rules and tone the admin adds on top of the built-in ones (never replaces the topic limits).
+    // Uploaded photo for the chat bubble and header ("" = a sparkle icon).
+    avatar: "",
+    // Tappable questions shown under the greeting before the student has typed anything.
+    starters: ["Which chapters have the highest JEE weightage?", "What's in the Class 12 course?", "Explain L'Hôpital's rule"] as string[],
     instructions: "",
     // Unpublished edits to the base prompt (null = no draft). Students only ever see `instructions`.
     draft: null as string | null,
