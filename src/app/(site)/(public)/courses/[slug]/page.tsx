@@ -18,6 +18,8 @@ import { button, container, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
 import { buildMetadata, stripHtml } from "@/lib/seo/metadata";
 import { getCourseSeo } from "@/lib/seo/queries";
+import { JsonLd } from "@/components/seo/JsonLd";
+import * as schema from "@/lib/seo/schema";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -89,6 +91,17 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
   return (
     <>
+      {course.isPublished && (
+        <JsonLd
+          data={schema.course({
+            path: `/courses/${course.slug}`,
+            name: v.title,
+            description: v.subtitle || stripHtml(course.description),
+            price: v.price,
+            teaches: v.chapters.map((c) => c.title),
+          })}
+        />
+      )}
       <WashHero className="!pb-[128px]">
         <div className="mx-auto mt-8 flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-16 gap-y-10 tablet:mt-12">
           <div className="order-2 min-w-0 flex-[1_1_340px] min-[900px]:order-1">

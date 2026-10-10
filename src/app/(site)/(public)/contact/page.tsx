@@ -4,7 +4,7 @@ import { knownSocials, placeholders } from "@/lib/site-content";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = buildMetadata({ title: "Contact Us", description: "Questions about a chapter, a payment or your access? Reach the MathFlex team by phone, WhatsApp or email.", path: "/contact" });
+export const metadata = buildMetadata({ title: "Contact MathFlex – JEE Maths Support", description: "Questions about a chapter, a payment or your access? Reach the MathFlex team by phone, WhatsApp or email.", path: "/contact" });
 
 // Contact (dipankar-design/designs/Contact.dc.html). There's no backend for the design's
 // form, so it's replaced by direct Email / WhatsApp / Call actions from settings (phone and

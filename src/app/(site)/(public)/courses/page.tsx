@@ -13,6 +13,8 @@ import { COURSE_INCLUDE, toCourseView } from "@/components/site/web/courses/cour
 import { button, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import * as schema from "@/lib/seo/schema";
 
 export const metadata = buildMetadata({ title: "Complete JEE Maths Courses", description: "Course bundles that put several JEE maths chapters together at one price, with video lessons, practice questions and notes.", path: "/courses" });
 
@@ -48,6 +50,7 @@ export default async function Courses() {
 
   return (
     <>
+      <JsonLd data={schema.itemList("MathFlex JEE maths courses", views.map((c) => ({ path: `/courses/${c.slug}`, name: c.title })))} />
       <WashHero>
         <div className="px-6 pt-10 text-center">
           <Eyebrow dot="ok" onWash>Complete courses · Class 11 &amp; 12</Eyebrow>

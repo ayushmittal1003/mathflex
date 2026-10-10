@@ -17,14 +17,16 @@ import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { ChapterCard } from "@/components/site/web/ChapterCard";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { clock } from "@/components/site/web/home/types";
-import { buildMetadata, stripHtml } from "@/lib/seo/metadata";
+import { buildMetadata, chapterBlurb } from "@/lib/seo/metadata";
 import { getChapterSeo } from "@/lib/seo/queries";
+import { JsonLd } from "@/components/seo/JsonLd";
+import * as schema from "@/lib/seo/schema";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const c = await getChapterSeo(slug);
   if (!c) return {};
-  const about = stripHtml(c.description) || c.tagline;
+  const about = chapterBlurb(c);
   return buildMetadata({
     title: `${c.title}: Class ${c.classLevel} JEE Maths Video Lessons`,
     description: about
@@ -105,8 +107,22 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
   const playHref = !chapter.parts.length ? null : owned ? `/learn/${chapter.slug}?part=${resumePart?.order ?? 1}` : preview ? `/learn/${chapter.slug}?part=${preview.order}` : null;
   const heroPart = owned ? resumePart : preview ?? chapter.parts[0];
 
+  const published = chapter.isPublished;
+
   return (
     <>
+      {published && (
+        <JsonLd
+          data={schema.course({
+            path: `/chapter/${chapter.slug}`,
+            name: chapter.title,
+            description: chapterBlurb(chapter),
+            price: chapter.price,
+            level: `Class ${chapter.classLevel}`,
+            teaches: learn,
+          })}
+        />
+      )}
       <WashHero className="!pb-[104px]">
         <div className="mx-auto mt-5 flex w-[min(1180px,calc(100%-48px))] flex-wrap items-center gap-8">
           {/* Info */}

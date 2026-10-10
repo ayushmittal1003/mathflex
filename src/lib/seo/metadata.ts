@@ -18,6 +18,8 @@ type Input = {
   path: string; // canonical path, no query string
   type?: "website" | "article";
   noindex?: boolean;
+  // true for the home page: skips the "%s | MathFlex" title template.
+  absoluteTitle?: boolean;
   // false when the route has its own opengraph-image file (chapter, course).
   defaultImage?: boolean;
 };
@@ -25,11 +27,11 @@ type Input = {
 // Metadata for a public page. The canonical never carries a query string, so filtered or
 // sorted listing URLs all point back at the clean one. Setting openGraph here replaces the
 // site-wide one, so the default social image is added explicitly unless the route has its own.
-export function buildMetadata({ title, description, path, type = "website", noindex, defaultImage = true }: Input): Metadata {
+export function buildMetadata({ title, description, path, type = "website", noindex, absoluteTitle, defaultImage = true }: Input): Metadata {
   const t = truncate(title, 60);
   const d = truncate(description || DEFAULT_DESCRIPTION, 160);
   return {
-    title: t,
+    title: absoluteTitle ? { absolute: t } : t,
     description: d,
     alternates: { canonical: path },
     openGraph: { title: t, description: d, url: path, siteName: SITE_NAME, locale: LOCALE, type, ...(defaultImage ? { images: ["/opengraph-image"] } : {}) },
@@ -41,3 +43,12 @@ export function buildMetadata({ title, description, path, type = "website", noin
 // Pages that belong to one signed-in person (or to checkout): keep out of search results.
 // "follow" stays on, and these paths are NOT blocked in robots.txt, so Google can read the noindex.
 export const privateMetadata = (title: string): Metadata => ({ title, robots: { index: false, follow: true } });
+
+// Chapter blurb for meta descriptions and schema. Admin-written descriptions are used when
+// present, except text that makes a teacher-credential claim, which is held back until the
+// owner has confirmed the wording (then remove this guard). Falls back to the tagline.
+const CREDENTIAL_CLAIM = /alumn/i;
+export function chapterBlurb({ description, tagline }: { description: string; tagline: string }) {
+  const d = stripHtml(description);
+  return d && !CREDENTIAL_CLAIM.test(d) ? d : tagline;
+}
