@@ -25,7 +25,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
           <div className="mx-auto flex w-[min(760px,100%)] items-end justify-center gap-3 tablet:gap-6">
             {podium.map((r) => {
               const first = r.rank === 1;
-              const medal = r.rank === 1 ? "text-gold" : r.rank === 2 ? "text-[oklch(0.7_0.02_255)]" : "text-[oklch(0.62_0.12_55)]";
+              const medal = r.rank === 1 ? "text-foreground" : r.rank === 2 ? "text-[oklch(0.7_0.02_255)]" : "text-[oklch(0.62_0.12_55)]";
               const ring = r.rank === 1 ? "var(--gold)" : r.rank === 2 ? "oklch(0.7 0.02 255)" : "oklch(0.62 0.12 55)";
               return (
                 <div key={r.id} className="flex min-w-0 max-w-[220px] flex-1 flex-col items-center text-center">
@@ -93,7 +93,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
                 className={cx("flex h-16 animate-mf-rise items-center gap-3.5 border-b border-border px-4", r.me && "rounded-lg bg-selected")}
                 style={{ animationDelay: `${Math.min(i, 15) * 25}ms` }}
               >
-                <span className={cx("w-12 shrink-0 text-base font-extrabold", r.rank <= 3 ? "text-gold" : "text-muted-foreground")}>{r.rank}</span>
+                <span className={cx("w-12 shrink-0 text-base font-extrabold", r.rank <= 3 ? "text-foreground" : "text-muted-foreground")}>{r.rank}</span>
                 <span className="grid size-[38px] shrink-0 place-items-center rounded-full text-sm font-extrabold text-white" style={{ background: r.avatarColor }}>{r.name[0]}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[15px] font-bold">{r.name}{r.me && " (you)"}</span>

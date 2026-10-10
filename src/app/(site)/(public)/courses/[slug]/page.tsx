@@ -129,7 +129,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
             {owned ? (
               <div className="mt-7 max-w-md">
-                <div className="inline-flex rounded-full bg-ok/12 px-3 py-1.5 text-sm font-bold text-[oklch(0.5_0.16_149)]">
+                <div className="inline-flex rounded-full bg-ok/12 px-3 py-1.5 text-sm font-bold text-ok-strong">
                   ✓ You own this course · till {ent!.expiresAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                 </div>
                 <div className="mb-2 mt-5 flex justify-between text-sm font-semibold"><span>Your progress</span><span>{doneParts}/{parts} parts</span></div>

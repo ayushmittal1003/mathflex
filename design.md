@@ -22,7 +22,7 @@ Each token is a CSS variable (`--primary`) and a Tailwind colour (`bg-primary`, 
 | `primary` / `primary-foreground` | `oklch(0.637 0.237 25.331)` / `0.985` | same | Main actions (Buy, Continue), active states, links, progress |
 | `secondary` / `secondary-foreground` | `oklch(0.97 0 0)` / `0.269` | `oklch(0.269 0 0)` / `0.985` | Secondary buttons (`btn-ghost`), neutral chips |
 | `muted` | `oklch(0.968 0.007 247.896)` | `oklch(0.274 0.006 286.033)` | Subtle backgrounds: hover rows, empty slots, skeletons |
-| `muted-foreground` | `oklch(0.554 0.046 257.417)` | `oklch(0.923 0.003 48.717)` | Secondary text: captions, hints, meta info |
+| `muted-foreground` | `oklch(0.554 0.046 257.417)` (public site: `oklch(0.52 0.046 257.417)`) | `oklch(0.923 0.003 48.717)` | Secondary text: captions, hints, meta info |
 | `accent` / `accent-foreground` | `oklch(0.637 0.237 25.331)` / `0.985` | same | Highlights that should match the brand (same as primary today) |
 | `destructive` / `destructive-foreground` | `oklch(0.577 0.245 27.325)` / white | `oklch(0.704 0.191 22.216)` / `0.985` | Errors, wrong answers, delete actions |
 | `border` | `oklch(0.929 0.013 255.508)` | `oklch(0.371 0 0)` | Borders and dividers (`border-border`, `divide-border`) |
@@ -51,9 +51,10 @@ These are MathFlex-specific colours that the base system doesn't have. They are 
 | Token | Light | Dark | Use it for |
 |---|---|---|---|
 | `brand-2` | `oklch(0.705 0.213 47.604)` | `oklch(0.75 0.183 55.934)` | Warm orange: the second stop in brand gradients, streak flame |
-| `xp` | `oklch(0.606 0.25 292.717)` | `oklch(0.702 0.183 293.541)` | XP, levels |
-| `gold` | `oklch(0.795 0.184 86.047)` | `oklch(0.852 0.199 91.936)` | Badges, top-3 ranks, "partially correct", pending, expiring soon |
-| `ok` | `oklch(0.627 0.194 149.214)` | `oklch(0.723 0.219 149.579)` | Correct answers, paid, success, discounts |
+| `xp` | `oklch(0.606 0.25 292.717)` (public site: `oklch(0.56 0.25 292.717)`) | `oklch(0.702 0.183 293.541)` | XP, levels |
+| `gold` | `oklch(0.795 0.184 86.047)` | `oklch(0.852 0.199 91.936)` | Fills only: badges, top-3 rank backgrounds, "partially correct", pending, expiring soon. Never use `text-gold` for text on a light surface (1.9:1); use `text-foreground`, or gold on a dark surface |
+| `ok` | `oklch(0.627 0.194 149.214)` (public site: `oklch(0.53 0.17 149.214)`) | `oklch(0.723 0.219 149.579)` | Correct answers, paid, success, discounts |
+| `ok-strong` | = `ok` (public site: `oklch(0.48 0.16 149.214)`) | = `ok` | Green **text on a pale green tint** (`bg-ok/10…15` chips: Free preview, Paid, Save 50%, Strong). Use `text-ok-strong` there, `text-ok` everywhere else |
 | `bad` | = `destructive` | = `destructive` | Wrong answers, failed, expired (same as `destructive`) |
 | `surface-2` | = `muted` | = `muted` | Subtle filled background (same as `muted`) |
 

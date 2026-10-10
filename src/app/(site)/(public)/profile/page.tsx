@@ -118,7 +118,7 @@ export default async function Profile() {
                   <p className="truncate font-bold">{o.items.map((it) => it.title).join(", ")}</p>
                   <p className="text-muted-foreground">{o.orderNo} · {fmtDate(o.createdAt)}</p>
                 </div>
-                <span className={cx("rounded-full px-2.5 py-1 text-xs font-bold", o.status === "PAID" ? "bg-ok/12 text-ok" : o.status === "PENDING" ? "bg-gold/18" : "bg-bad/10 text-bad")}>{o.status.toLowerCase()}</span>
+                <span className={cx("rounded-full px-2.5 py-1 text-xs font-bold", o.status === "PAID" ? "bg-ok/12 text-ok-strong" : o.status === "PENDING" ? "bg-gold/18" : "bg-bad/10 text-bad")}>{o.status.toLowerCase()}</span>
                 <span className="w-20 text-right text-[15px] font-extrabold">{inr(o.total)}</span>
               </div>
             ))}

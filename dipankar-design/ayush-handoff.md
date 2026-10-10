@@ -75,6 +75,9 @@ From the Phase 0 audit (`docs/seo-audit.md`, branch `feature/seo`). Nothing here
 ## Teacher credential wording (admin text)
 The owner confirmed the correct claim is **"IIT Delhi alumnus"**. "NIT Jalandhar" is on hold until confirmed. Please update in admin: the `description` of all 35 chapters currently says "…by IIT Delhi & NIT Jalandhar alumni". The SEO meta description rewrites that phrase on the fly (`chapterBlurb()` in `src/lib/seo/metadata.ts`); that workaround can be removed once the data is fixed. Also still mentioning NIT Jalandhar in code (visible copy, not changed): `src/lib/legal/about.ts`, and the root-layout description was already replaced.
 
+## Dark-mode `primary` contrast (admin and learner player)
+White text on the brand red (`--primary` `oklch(0.637 0.237 25.331)`) is 3.66:1, below the 4.5:1 AA minimum for normal-size text. The public website (always light) is being fixed separately, scoped to `.site-light`. Dark mode and `/admin` still use the base value in `:root` / `.dark`, so primary buttons in admin and the learner player have the same issue. Deliberately not changed: it alters admin's look. If you want it fixed, lower `--primary` lightness to about 0.58 in `:root` and `.dark` (and the `--ring` / `--accent` / `--sidebar-primary` copies).
+
 ## Speed Insights and copy that lives in admin/seed
 - **Vercel Speed Insights:** `@vercel/speed-insights` is added and `<SpeedInsights />` is in the root layout (it only sends data when deployed on Vercel). Please enable Speed Insights for the project in the Vercel dashboard and check that it fits our plan (data-point limits). Until it is enabled, nothing is collected.
 - **Marquee text:** the live marquee banner "🎬 Limits & Derivatives: Part 1 is free to watch" is admin data (seeded by `prisma/seed.ts`, not touched). Please change it in admin, and the seed, to match the new wording, e.g. "Free 3–4 minute preview: Limits & Derivatives".

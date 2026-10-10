@@ -104,7 +104,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
           <div className="hidden border-l border-border px-4 py-4.5 text-left tablet:block">
             <div className="text-sm font-bold">{mockLabels.you} · Level 6</div>
             <div className="mt-3 grid grid-cols-3 gap-1.5 text-center">
-              {[["7", "streak", "text-brand-2"], ["2.3k", "XP", "text-xp"], ["#3", "rank", "text-gold"]].map(([v, l, c]) => (
+              {[["7", "streak", "text-brand-2"], ["2.3k", "XP", "text-xp"], ["#3", "rank", "text-foreground"]].map(([v, l, c]) => (
                 <div key={l} className="rounded-lg bg-muted px-1 py-2">
                   <div className={cx("text-base font-extrabold", c)}>{v}</div>
                   <div className="text-[10px] text-muted-foreground">{l}</div>

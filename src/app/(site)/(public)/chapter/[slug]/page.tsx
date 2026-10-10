@@ -284,7 +284,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                       <span className="text-[17px] font-bold tracking-[-0.015em]">{p.title}</span>
-                      {isFree && <span className="rounded bg-ok/14 px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.04em] text-[oklch(0.5_0.16_149)]">Free preview</span>}
+                      {isFree && <span className="rounded bg-ok/14 px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.04em] text-ok-strong">Free preview</span>}
                     </div>
                     {p.summary && <p className="mt-1 line-clamp-2 text-sm text-secondary-foreground">{p.summary}</p>}
                     <div className="mt-1 text-[13px] text-muted-foreground">

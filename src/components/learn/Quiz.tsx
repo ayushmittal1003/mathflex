@@ -115,7 +115,7 @@ export function Quiz({
         <div className="card relative p-5 sm:p-6">
           {xpPop && <span className="animate-pop absolute right-5 top-5 flex items-center gap-1 rounded-full bg-xp px-3 py-1 text-sm font-bold text-white"><Zap className="size-4" /> +{xpPop} XP</span>}
           <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
-            <span className={`rounded-md px-2 py-0.5 ${q.type === "PYQ" ? "bg-gold/20 text-gold" : "bg-primary/10 text-primary"}`}>{q.type}</span>
+            <span className={`rounded-md px-2 py-0.5 ${q.type === "PYQ" ? "bg-gold/20 text-foreground" : "bg-primary/10 text-primary"}`}>{q.type}</span>
             {q.exam && <span className="rounded-md bg-surface-2 px-2 py-0.5 text-muted-foreground">{q.exam}{q.year ? ` ${q.year}` : ""}</span>}
             <span className="text-muted-foreground">{["", "Easy", "Medium", "Hard"][q.difficulty]}</span>
             <button

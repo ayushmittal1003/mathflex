@@ -320,7 +320,7 @@ export function CartView(props: {
                     <div className="truncate text-[15px] font-bold">{meta.user.name}</div>
                     <div className="truncate text-[13px] text-muted-foreground">{meta.user.email}</div>
                   </div>
-                  <span className="ml-auto shrink-0 rounded-md bg-ok/14 px-2 py-1 text-xs font-bold text-[oklch(0.5_0.16_149)]">Signed in</span>
+                  <span className="ml-auto shrink-0 rounded-md bg-ok/14 px-2 py-1 text-xs font-bold text-ok-strong">Signed in</span>
                 </div>
               ) : (
                 <InlineLogin next={`/checkout${mentor ? "?mentorship=1" : ""}`} />
@@ -375,7 +375,7 @@ export function CartView(props: {
                 {!!quote?.discount && (
                   <div className="flex justify-between gap-3 text-sm">
                     <span className="min-w-0 truncate text-secondary-foreground">{quote.coupon?.code ?? "Coupon"}</span>
-                    <span className="shrink-0 font-bold text-[oklch(0.5_0.16_149)]">−{inr(quote.discount)}</span>
+                    <span className="shrink-0 font-bold text-ok-strong">−{inr(quote.discount)}</span>
                   </div>
                 )}
                 {!!quote?.tax && (
@@ -390,7 +390,7 @@ export function CartView(props: {
                 <div className="mx-5.5 mt-4 border-t border-border pt-4">
                   {quote?.coupon ? (
                     <div className="flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed border-ok bg-ok/7 px-3 py-2.5">
-                      <CheckIcon className="size-4 text-[oklch(0.5_0.16_149)]" strokeWidth={2.5} />
+                      <CheckIcon className="size-4 text-ok-strong" strokeWidth={2.5} />
                       <span className="flex-1 text-[13px]"><b className="font-mono">{quote.coupon.code}</b> applied · {quote.coupon.message}</span>
                       <button type="button" onClick={() => { setCoupon(null); setCouponInput(""); }} className="text-xs font-bold text-muted-foreground underline underline-offset-[3px]">Remove</button>
                     </div>
@@ -418,7 +418,7 @@ export function CartView(props: {
                 <span className="text-base font-extrabold">Total</span>
                 <span className="text-[34px] font-extrabold leading-none tracking-[-0.04em]">{inr(quote?.total ?? 0)}</span>
               </div>
-              {saved > 0 && <div className="px-5.5 pt-1.5 text-right text-[13px] font-bold text-[oklch(0.5_0.16_149)]">You save {inr(saved)}{mrpTotal > 0 && ` (${pctOff(quote!.total, mrpTotal)}%)`}</div>}
+              {saved > 0 && <div className="px-5.5 pt-1.5 text-right text-[13px] font-bold text-ok-strong">You save {inr(saved)}{mrpTotal > 0 && ` (${pctOff(quote!.total, mrpTotal)}%)`}</div>}
 
               <div className="px-5.5 pb-5.5 pt-4.5">
                 {error && (

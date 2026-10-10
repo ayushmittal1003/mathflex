@@ -63,7 +63,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
                 <div className="flex gap-4 text-xs">
                   <div><b className="text-base text-brand-2">7</b> day streak</div>
                   <div><b className="text-base text-xp">2,340</b> XP</div>
-                  <div><b className="text-base text-gold">4</b> badges</div>
+                  <div><b className="text-base text-foreground">4</b> badges</div>
                 </div>
               </div>
             </div>
@@ -126,7 +126,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
               <div className="mt-2 grid gap-1">
                 {leaders.length ? leaders.map((l, i) => (
                   <div key={l.id} className="flex items-center gap-2 rounded-md px-1.5 py-2 text-xs">
-                    <b className={cx("w-3.5", i < 3 ? "text-gold" : "text-muted-foreground")}>{i + 1}</b>
+                    <b className={cx("w-3.5", i < 3 ? "text-foreground" : "text-muted-foreground")}>{i + 1}</b>
                     <span className="grid size-5.5 place-items-center rounded-full text-[10px] font-bold text-white" style={{ background: l.avatarColor }}>{l.name[0]}</span>
                     <span className="truncate font-semibold">{l.name}</span>
                     <b className="ml-auto text-xp">{l.xp.toLocaleString("en-IN")}</b>
@@ -149,9 +149,9 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
             type="button"
             onMouseEnter={() => setFeat(i)}
             onClick={() => setFeat(i)}
-            className={cx("border-t-2 pt-4 text-left text-foreground transition duration-300", i === feat ? "border-primary opacity-100" : "border-border opacity-55")}
+            className={cx("border-t-2 pt-4 text-left text-foreground transition duration-300", i === feat ? "border-primary" : "border-border")}
           >
-            <div className="text-[15px] font-extrabold tracking-[-0.01em]">{f.title}</div>
+            <div className={cx("text-[15px] font-extrabold tracking-[-0.01em]", i !== feat && "text-foreground/70")}>{f.title}</div>
             <div className="mt-1 text-[13px] leading-[1.45] text-muted-foreground">{f.body}</div>
           </button>
         ))}

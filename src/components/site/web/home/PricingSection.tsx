@@ -53,7 +53,7 @@ export function PricingSection({ chapters, courses, coupon }: { chapters: HomeCh
             <div key={c.id} className="flex flex-col rounded-xl border border-border bg-card p-6 shadow-[0_1px_4px_0_rgb(0_0_0/0.08)]">
               <div className="flex items-center justify-between gap-2">
                 <div className="text-xs font-extrabold uppercase tracking-[0.14em] text-muted-foreground">{c.title}</div>
-                {off > 0 && <span className="shrink-0 whitespace-nowrap rounded-md bg-ok/15 px-2 py-0.5 text-[11px] font-bold text-ok">Save {off}%</span>}
+                {off > 0 && <span className="shrink-0 whitespace-nowrap rounded-md bg-ok/15 px-2 py-0.5 text-[11px] font-bold text-ok-strong">Save {off}%</span>}
               </div>
               <Price price={c.price} mrp={c.mrp} />
               <div className="text-[13px] text-muted-foreground">{c.subtitle || `${c.chapterCount} chapters`}</div>

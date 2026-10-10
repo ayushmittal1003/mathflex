@@ -165,7 +165,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
             <span className="inline-grid size-[84px] animate-mf-pop place-items-center rounded-full bg-ok shadow-[0_0_0_12px_color-mix(in_oklab,var(--ok)_18%,transparent),0_20px_40px_-14px_color-mix(in_oklab,var(--ok)_70%,transparent)]">
               <CheckIcon className="size-9.5 text-white" />
             </span>
-            <div className="mt-6.5 text-sm font-bold text-[oklch(0.5_0.16_149)]">Payment successful · {inr(paid.total)}</div>
+            <div className="mt-6.5 text-sm font-bold text-ok-strong">Payment successful · {inr(paid.total)}</div>
             <h1 className="mx-auto mt-3.5 max-w-[960px] text-[clamp(42px,6.6vw,84px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
               You&apos;re in, {firstName}. Let&apos;s get you that <Mark onWash>seat<Caret /></Mark>
             </h1>
@@ -188,7 +188,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                   <div className="min-w-0 flex-[1_1_200px]">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                       <span className={cx("rounded px-1.5 py-0.5 text-[11px] font-extrabold uppercase tracking-[0.06em]", it.kind === "Course" ? "bg-primary text-white" : "bg-muted text-secondary-foreground")}>{it.kind}</span>
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-[oklch(0.5_0.16_149)]"><CheckIcon className="size-[11px]" strokeWidth={3.5} />Unlocked</span>
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-ok-strong"><CheckIcon className="size-[11px]" strokeWidth={3.5} />Unlocked</span>
                     </div>
                     <div className="mt-1.5 text-base font-bold tracking-[-0.015em]">{it.title}</div>
                     <div className="mt-0.5 text-[13px] text-muted-foreground">{it.sub}</div>
@@ -263,7 +263,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
               {paid.discount > 0 && (
                 <div className="flex justify-between gap-4 border-b border-border py-3 text-sm">
                   <span className="text-secondary-foreground">{paid.couponCode ?? "Discount"}</span>
-                  <span className="font-bold text-[oklch(0.5_0.16_149)]">−{inr(paid.discount)}</span>
+                  <span className="font-bold text-ok-strong">−{inr(paid.discount)}</span>
                 </div>
               )}
               {tax > 0 && (

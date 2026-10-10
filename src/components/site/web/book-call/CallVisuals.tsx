@@ -52,7 +52,7 @@ export function PlanVisual({ chapters }: { chapters: string[] }) {
     { w: "Week 4", t: "Full mock test", st: "next" as const },
   ];
   return (
-    <Window title="study-plan" badge={<span className="rounded bg-ok/14 px-1.5 py-0.5 text-[10px] font-extrabold text-[oklch(0.5_0.16_149)]">4 weeks</span>}>
+    <Window title="study-plan" badge={<span className="rounded bg-ok/14 px-1.5 py-0.5 text-[10px] font-extrabold text-ok-strong">4 weeks</span>}>
       <ol className="relative grid gap-2">
         <span aria-hidden className="absolute bottom-3 left-[9px] top-3 w-px bg-border" />
         {weeks.map((x) => (

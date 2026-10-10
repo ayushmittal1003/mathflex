@@ -143,7 +143,7 @@ export function LearnClient(props: {
                 <h1 className="mt-1 text-[clamp(24px,3vw,32px)] font-extrabold leading-[1.15] tracking-[-0.03em]">{part.title}</h1>
               </div>
               {(videoDone || props.practiceDone) && (
-                <span className="flex h-11 shrink-0 items-center gap-2 rounded-lg border border-ok/40 bg-ok/12 px-4 text-sm font-bold text-[oklch(0.5_0.16_149)]">
+                <span className="flex h-11 shrink-0 items-center gap-2 rounded-lg border border-ok/40 bg-ok/12 px-4 text-sm font-bold text-ok-strong">
                   <CheckCircle2 className="size-4" /> {videoDone && props.practiceDone ? "Part complete" : videoDone ? "Video watched" : "Practice done"}
                 </span>
               )}

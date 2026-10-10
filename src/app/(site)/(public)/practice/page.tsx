@@ -14,7 +14,7 @@ import { privateMetadata } from "@/lib/seo/metadata";
 export const metadata = privateMetadata("Practice");
 
 const STRENGTH: Record<Strength, { label: string; cls: string }> = {
-  strong: { label: "Strong", cls: "bg-ok/12 text-ok" },
+  strong: { label: "Strong", cls: "bg-ok/12 text-ok-strong" },
   weak: { label: "Needs work", cls: "bg-bad/10 text-bad" },
   building: { label: "Building", cls: "bg-gold/18 text-[color-mix(in_oklab,var(--gold)_55%,black)]" },
   new: { label: "Not started", cls: "bg-muted text-muted-foreground" },

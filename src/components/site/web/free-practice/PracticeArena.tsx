@@ -24,7 +24,7 @@ const write = (next: Answers) => {
 const subscribe = (f: () => void) => { subs.add(f); return () => subs.delete(f); };
 
 const LETTERS = ["A", "B", "C", "D", "E"];
-const LEVEL_TONE: Record<Level, string> = { easy: "bg-ok/12 text-ok", medium: "bg-gold/18 text-[color-mix(in_oklab,var(--gold)_55%,black)]", hard: "bg-primary/10 text-primary" };
+const LEVEL_TONE: Record<Level, string> = { easy: "bg-ok/12 text-ok-strong", medium: "bg-gold/18 text-[color-mix(in_oklab,var(--gold)_55%,black)]", hard: "bg-primary/10 text-primary" };
 
 export function PracticeArena({ questions }: { questions: PracticeQ[] }) {
   const answers = useSyncExternalStore(subscribe, read, () => EMPTY);

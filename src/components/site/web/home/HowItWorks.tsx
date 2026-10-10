@@ -204,7 +204,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
                   )}
                 </div>
                 <div className="mt-3.5 grid grid-cols-3 gap-2">
-                  {[["+120", "XP earned", "text-xp"], ["7 days", "streak", "text-brand-2"], ["#3", "this week", "text-gold"]].map(([v, l, c]) => (
+                  {[["+120", "XP earned", "text-xp"], ["7 days", "streak", "text-brand-2"], ["#3", "this week", "text-foreground"]].map(([v, l, c]) => (
                     <div key={l} className="rounded-lg bg-muted p-3">
                       <div className={cx("text-xl font-extrabold", c)}>{v}</div>
                       <div className="text-[11px] text-muted-foreground">{l}</div>

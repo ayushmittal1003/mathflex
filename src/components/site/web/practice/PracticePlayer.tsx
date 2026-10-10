@@ -239,10 +239,10 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
               </label>
             ) : (
               <div className="flex flex-wrap gap-3 text-sm">
-                <span className={cx("rounded-lg px-3 py-2 font-bold", r!.isCorrect ? "bg-ok/10 text-ok" : r!.skipped ? "bg-muted" : "bg-bad/10 text-bad")}>
+                <span className={cx("rounded-lg px-3 py-2 font-bold", r!.isCorrect ? "bg-ok/10 text-ok-strong" : r!.skipped ? "bg-muted" : "bg-bad/10 text-bad")}>
                   You: {res.answer.numericValue ?? "—"}
                 </span>
-                <span className="rounded-lg bg-ok/10 px-3 py-2 font-bold text-ok">
+                <span className="rounded-lg bg-ok/10 px-3 py-2 font-bold text-ok-strong">
                   Answer: {r!.key.numericAnswer}{r!.key.tolerance ? ` (±${r!.key.tolerance})` : ""}
                 </span>
               </div>

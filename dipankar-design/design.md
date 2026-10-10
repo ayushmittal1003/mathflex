@@ -37,14 +37,17 @@ Reference designs: the `.dc.html` files in this project. `Landing Page v2.dc.htm
 | `card` | `oklch(0.995 0 0)` | Page background, highlight box, form fields |
 | `secondary-foreground` | `oklch(0.269 0 0)` | Body copy on wash and white |
 | `muted` | `oklch(0.968 0.007 247.896)` | Eyebrow pills, chips, empty bars, icon buttons |
-| `muted-foreground` | `oklch(0.554 0.046 257.417)` | Meta text, captions, outlined rank numbers |
+| `muted-foreground` | `oklch(0.52 0.046 257.417)` | Meta text, captions, outlined rank numbers |
 | `border` | `oklch(0.929 0.013 255.508)` | Hairlines between sections, rows, cards |
 | `primary` | `oklch(0.637 0.237 25.331)` | Main CTA (Start free, Buy now, Pay), live dots, caret, active tab underline |
 | `brand-2` | `oklch(0.705 0.213 47.604)` | Second gradient stop, highlight tint |
-| `ok` | `oklch(0.627 0.194 149.214)` | Free, discounts, "Added", success, checkmarks |
-| `gold` | `oklch(0.795 0.184 86.047)` | Top-3 ranks, "highest weightage" eyebrow dot |
-| `xp` | `oklch(0.606 0.25 292.717)` | XP numbers on the leaderboard |
+| `ok` | `oklch(0.53 0.17 149.214)` | Free, discounts, "Added", success, checkmarks |
+| `ok-strong` | `oklch(0.48 0.16 149.214)` | Green text on the pale green tint of chips (Free preview, Save 50%). Use `text-ok-strong` there |
+| `gold` | `oklch(0.795 0.184 86.047)` | Fills and dots only (top-3 rank backgrounds, "highest weightage" eyebrow dot). Rank numbers and stats in text use `foreground` |
+| `xp` | `oklch(0.56 0.25 292.717)` | XP numbers on the leaderboard |
 | `bad` | = `destructive` | Failed payment, rank drop arrows |
+
+**Contrast (WCAG 2.2 AA, 4.5:1).** The values above for `muted-foreground`, `ok`, `ok-strong` and `xp` are the public-site values. They are set in a `.site-light { … }` override in `globals.css`, so `/admin` and dark mode keep the base values. `primary` is covered separately (pending sign-off).
 
 **New token: `wash`.** `--wash: oklch(0.975 0.012 50)`. This is the warm base of the hero frame. Add it to `globals.css` and `@theme` with a dark value of `oklch(0.2 0.02 40)`.
 

@@ -205,7 +205,7 @@ Local numbers only: the database is on the same machine, so TTFB (90–160 ms) i
 
 | Page | Before (perf / LCP / TBT / weight) | After |
 |---|---|---|
-| Home | 66 / 4.4 s / 540 ms / 502 KiB | 84 / 4.0 s / 90 ms / 455 KiB |
+| Home | 66 / 4.4 s / 540 ms / 502 KiB | 87–88 / 3.7 s / 0–20 ms / 455 KiB (3 runs after the H1 entrance animation was removed; first run 84) |
 | Chapters | 90 / 3.5 s / 10 ms / 457 KiB | 83 / 3.9 s / 80 ms / 410 KiB |
 | Chapter | 82 / 4.1 s / 30 ms / 494 KiB | 87 / 3.8 s / 10 ms / 449 KiB |
 | Course | 86 / 4.0 s / 10 ms / 486 KiB | 82 / 4.2 s / 30 ms / 440 KiB |
@@ -215,3 +215,7 @@ Accessibility 93–96, Best practices 100, SEO 100 on all (blog sample post SEO 
 Change made: the header/footer logo was a 3511×783 px PNG (61 KB) shown at ~130 px wide; now 520×116 px copies (15 KB). About 45 KiB less on every public page.
 
 Observed, not changed: ~188 KB of fonts on home (Inter plus JetBrains Mono used for small labels); one shared JS chunk (70 KB) takes ~1.2 s scripting under 4× CPU throttling on home; the hero text uses an entrance animation that delays LCP; all public pages render per request (see layout options in the Phase 3 report).
+
+### Phase 4 contrast results (local build, Lighthouse 12.2.1 mobile)
+
+After the `muted-foreground`, `ok`, `ok-strong`, `xp` and `text-gold` changes (primary not yet applied): home 88 / 97 (perf / a11y), chapters 85 / 96, chapter 87 / 96, course 86 / 96. Every remaining `color-contrast` failure is a `primary` pair (white on primary 3.64, red text 3.74). Best-practices shows 96 locally only because `/_vercel/speed-insights/script.js` 404s off Vercel. Heading order checked: one H1 on book-a-call, invite and every payment/status state.
