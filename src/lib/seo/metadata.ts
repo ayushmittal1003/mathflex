@@ -44,11 +44,14 @@ export function buildMetadata({ title, description, path, type = "website", noin
 // "follow" stays on, and these paths are NOT blocked in robots.txt, so Google can read the noindex.
 export const privateMetadata = (title: string): Metadata => ({ title, robots: { index: false, follow: true } });
 
-// Chapter blurb for meta descriptions and schema. Admin-written descriptions are used when
-// present, except text that makes a teacher-credential claim, which is held back until the
-// owner has confirmed the wording (then remove this guard). Falls back to the tagline.
-const CREDENTIAL_CLAIM = /alumn/i;
+// Chapter blurb for meta descriptions and schema. Admin-written descriptions are used as
+// written, with one correction: the seeded text says "IIT Delhi & NIT Jalandhar alumni", but
+// only "IIT Delhi alumnus" is confirmed, so that phrase is rewritten here. Any other mention of
+// NIT Jalandhar falls back to the tagline until the owner confirms it. The admin text itself
+// should be corrected in admin (see dipankar-design/ayush-handoff.md); then this can go.
 export function chapterBlurb({ description, tagline }: { description: string; tagline: string }) {
-  const d = stripHtml(description);
-  return d && !CREDENTIAL_CLAIM.test(d) ? d : tagline;
+  const d = stripHtml(description)
+    .replace(/by IIT Delhi\s*(?:&|and)\s*NIT Jalandhar alumni/gi, "by an IIT Delhi alumnus")
+    .trim();
+  return d && !/jalandhar/i.test(d) ? d : tagline;
 }

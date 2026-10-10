@@ -21,6 +21,7 @@ import { buildMetadata, chapterBlurb } from "@/lib/seo/metadata";
 import { getChapterSeo } from "@/lib/seo/queries";
 import { JsonLd } from "@/components/seo/JsonLd";
 import * as schema from "@/lib/seo/schema";
+import { Breadcrumbs } from "@/components/site/web/Breadcrumbs";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -124,7 +125,12 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
         />
       )}
       <WashHero className="!pb-[104px]">
-        <div className="mx-auto mt-5 flex w-[min(1180px,calc(100%-48px))] flex-wrap items-center gap-8">
+        <Breadcrumbs
+          className="mx-auto w-[min(1180px,calc(100%-48px))] pt-3"
+          schemaOn={published}
+          items={[{ name: "Home", path: "/" }, { name: "Chapters", path: "/chapters" }, { name: chapter.title, path: `/chapter/${chapter.slug}` }]}
+        />
+        <div className="mx-auto mt-3 flex w-[min(1180px,calc(100%-48px))] flex-wrap items-center gap-8">
           {/* Info */}
           <div className="order-2 min-w-0 flex-[1_1_320px]">
             <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-secondary-foreground">

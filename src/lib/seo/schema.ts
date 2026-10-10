@@ -59,3 +59,12 @@ export function itemList(name: string, items: { path: string; name: string }[]):
     itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, url: absoluteUrl(it.path) })),
   };
 }
+
+// Must match the visible breadcrumb trail on the page.
+export function breadcrumbs(items: { name: string; path: string }[]): Json {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, item: absoluteUrl(it.path) })),
+  };
+}

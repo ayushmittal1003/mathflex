@@ -20,6 +20,7 @@ import { buildMetadata, stripHtml } from "@/lib/seo/metadata";
 import { getCourseSeo } from "@/lib/seo/queries";
 import { JsonLd } from "@/components/seo/JsonLd";
 import * as schema from "@/lib/seo/schema";
+import { Breadcrumbs } from "@/components/site/web/Breadcrumbs";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -103,7 +104,12 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         />
       )}
       <WashHero className="!pb-[128px]">
-        <div className="mx-auto mt-8 flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-16 gap-y-10 tablet:mt-12">
+        <Breadcrumbs
+          className="mx-auto w-[min(1240px,calc(100%-48px))] pt-3"
+          schemaOn={course.isPublished}
+          items={[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: v.title, path: `/courses/${course.slug}` }]}
+        />
+        <div className="mx-auto mt-5 flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-16 gap-y-10 tablet:mt-12">
           <div className="order-2 min-w-0 flex-[1_1_340px] min-[900px]:order-1">
             <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-secondary-foreground">
               <Link href="/courses" className="hover:text-primary">Complete courses</Link>

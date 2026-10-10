@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { inr } from "@/lib/format";
+import { DEFAULT_DESCRIPTION } from "@/lib/seo/config";
 import { instructor, mockLabels } from "@/lib/site-content";
 import { Caret, CheckIcon, Eyebrow, Mark, PlayIcon, posterBg } from "../primitives";
 import { button, cx, tone } from "../ui";
@@ -18,16 +19,20 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
           <div className="animate-mf-rise">
             <Eyebrow dot="ok" onWash>For Class 11 &amp; 12 · JEE Main, Advanced &amp; Boards</Eyebrow>
           </div>
-          <h1 className="mx-auto mt-6.5 max-w-[1000px] animate-mf-rise text-[clamp(48px,7.5vw,96px)] font-extrabold leading-none tracking-[-0.045em] text-balance [animation-delay:60ms]">
-            Crack JEE maths,
-            <br />
-            one{" "}
+          <h1 className="mx-auto mt-6.5 max-w-[1120px] animate-mf-rise text-[clamp(38px,6.2vw,80px)] font-extrabold leading-none tracking-[-0.045em] text-balance [animation-delay:60ms]">
+            IIT starts with{" "}
             <Mark onWash pointer>
-              chapter
+              maths,
               <Caret />
-            </Mark>{" "}
-            at a time.
+            </Mark>
+            <br className="hidden lg:block" /> crack JEE Main &amp; Advanced
           </h1>
+          {/* Same two sentences as the page's meta description; one per line from tablet up. */}
+          <p className="mx-auto mt-6 max-w-[720px] animate-mf-rise text-[17px] leading-[1.55] text-secondary-foreground text-pretty [animation-delay:120ms]">
+            {DEFAULT_DESCRIPTION.split(/(?<=\.)\s+/).map((sentence) => (
+              <span key={sentence} className="tablet:block">{sentence}{" "}</span>
+            ))}
+          </p>
 
           <div className="mt-7.5 flex flex-wrap justify-center gap-x-7 gap-y-3 text-base text-secondary-foreground">
             <Proof>

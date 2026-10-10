@@ -71,3 +71,6 @@ From the Phase 0 audit (`docs/seo-audit.md`, branch `feature/seo`). Nothing here
 - **Chapter descriptions:** the seeded `Chapter.description` text (admin-managed) says "taught … by IIT Delhi & NIT Jalandhar alumni". It is used as the meta description for chapter pages. The owner has to confirm the correct credential wording and update it in admin.
 - **Sitemap/robots caching:** `sitemap.ts` is `force-dynamic` (always fresh, one small DB read per request). When publish hooks (`revalidatePath`/`revalidateTag`) exist it can switch to `revalidate = 3600`.
 - **Switch-on list when real content goes live:** blog posts (`placeholder: true` flag in `lib/blog.ts` controls noindex and sitemap automatically), `/free-practice` (hard-coded `noindex: true` in its `page.tsx`).
+
+## Teacher credential wording (admin text)
+The owner confirmed the correct claim is **"IIT Delhi alumnus"**. "NIT Jalandhar" is on hold until confirmed. Please update in admin: the `description` of all 35 chapters currently says "…by IIT Delhi & NIT Jalandhar alumni". The SEO meta description rewrites that phrase on the fly (`chapterBlurb()` in `src/lib/seo/metadata.ts`); that workaround can be removed once the data is fixed. Also still mentioning NIT Jalandhar in code (visible copy, not changed): `src/lib/legal/about.ts`, and the root-layout description was already replaced.

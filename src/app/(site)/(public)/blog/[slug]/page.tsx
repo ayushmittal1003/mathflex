@@ -2,12 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
-import { categoryTitle, formatPostDate, getPost, getPosts, type BlogBlock } from "@/lib/blog";
+import { formatPostDate, getPost, getPosts, type BlogBlock } from "@/lib/blog";
 import { instructor } from "@/lib/site-content";
 import { BlogCard, BlogCover } from "@/components/site/web/blog/BlogCard";
 import { ReadingProgress, ShareButtons, Toc } from "@/components/site/web/blog/ArticleChrome";
 import { button, container, cx, tone } from "@/components/site/web/ui";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { Breadcrumbs } from "@/components/site/web/Breadcrumbs";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const post = await getPost((await params).slug);
@@ -55,11 +56,10 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
       <ReadingProgress />
 
       <header className={cx(container.listing, "pt-[calc(86px+40px)]")}>
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-          <Link href="/blog" className="hover:text-foreground">Blog</Link>
-          <span aria-hidden>/</span>
-          <span className="text-primary">{categoryTitle(post.category)}</span>
-        </nav>
+        <Breadcrumbs
+          schemaOn={!post.placeholder}
+          items={[{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }, { name: post.title, path: `/blog/${post.slug}` }]}
+        />
         <h1 className="mt-5 max-w-[920px] text-[clamp(36px,5.4vw,64px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">{post.title}</h1>
         <p className="mt-5 max-w-[720px] text-[19px] leading-[1.55] text-secondary-foreground text-pretty">{post.excerpt}</p>
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-y border-border py-5">
