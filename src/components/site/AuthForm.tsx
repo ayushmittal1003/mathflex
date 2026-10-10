@@ -8,7 +8,7 @@ import { Mark } from "./web/primitives";
 import { cx } from "./web/ui";
 
 export type AuthPanel = {
-  tagline: string[]; // e.g. ["Part 1 free", "From ₹149 a chapter", ...]
+  tagline: string[]; // e.g. ["Free previews", "From ₹149 a chapter", ...]
   rows: { title: string; symbol: string; coverFrom: string; coverTo: string }[];
 };
 
@@ -36,7 +36,7 @@ export function AuthForm({ mode, next, panel, paused = false, googleReady = fals
           <Link href="/" aria-label="Mathflex home"><SiteLogo /></Link>
           <Link href="/" className="text-sm font-bold text-secondary-foreground hover:text-foreground">← Back to home</Link>
         </header>
-        <main className="grid flex-1 place-items-center px-4 py-10">
+        <main id="main" className="grid flex-1 place-items-center px-4 py-10">
           <div className="w-[min(420px,100%)] animate-mf-rise">
             <h1 className="text-[clamp(32px,4vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{isSignup ? "Start your streak" : "Welcome back"}</h1>
             <p className="mt-2.5 text-base leading-[1.5] text-secondary-foreground">
@@ -69,7 +69,7 @@ export function AuthForm({ mode, next, panel, paused = false, googleReady = fals
             {isSignup && paused ? (
               <div className="mt-6 rounded-xl bg-wash p-6 text-center">
                 <div className="text-lg font-extrabold tracking-[-0.02em]">New sign-ups are paused right now</div>
-                <p className="mt-1.5 text-sm leading-[1.6] text-secondary-foreground">Already have an account? Log in. Otherwise check back soon, or watch a free Part 1 without an account.</p>
+                <p className="mt-1.5 text-sm leading-[1.6] text-secondary-foreground">Already have an account? Log in. Otherwise check back soon, or watch a free 3–4 minute preview without an account.</p>
                 <div className="mt-5 flex flex-wrap justify-center gap-2">
                   <Link href={`/login${q}`} className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground">Log in</Link>
                   <Link href="/chapters" className="rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-bold">Browse chapters</Link>

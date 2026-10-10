@@ -19,7 +19,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
           <div className="animate-mf-rise">
             <Eyebrow dot="ok" onWash>For Class 11 &amp; 12 · JEE Main, Advanced &amp; Boards</Eyebrow>
           </div>
-          <h1 className="mx-auto mt-6.5 max-w-[1120px] animate-mf-rise text-[clamp(38px,6.2vw,80px)] font-extrabold leading-none tracking-[-0.045em] text-balance [animation-delay:60ms]">
+          <h1 className="mx-auto mt-6.5 max-w-[1120px] text-[clamp(38px,6.2vw,80px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
             IIT starts with{" "}
             <Mark onWash pointer>
               maths,

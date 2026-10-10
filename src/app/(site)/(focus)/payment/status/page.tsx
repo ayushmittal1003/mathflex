@@ -79,7 +79,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
     return (
       <div className="flex min-h-dvh flex-col">
         {header}
-        <main className="grid flex-1 place-items-center px-4 pb-18 pt-12">
+        <main id="main" className="grid flex-1 place-items-center px-4 pb-18 pt-12">
           <div className="w-[min(560px,100%)] text-center">
             {status === "PENDING" ? (
               <div className="animate-mf-rise">

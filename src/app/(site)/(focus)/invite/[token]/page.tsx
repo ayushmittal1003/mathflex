@@ -20,7 +20,7 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
       <header className="px-6 pt-6">
         <Link href="/" aria-label="Mathflex home"><SiteLogo /></Link>
       </header>
-      <main className="grid flex-1 place-items-center px-4 pb-18 pt-10">
+      <main id="main" className="grid flex-1 place-items-center px-4 pb-18 pt-10">
         <div className="w-[min(460px,100%)] animate-mf-rise rounded-xl border border-border bg-card p-7 shadow-[0_30px_60px_-40px_rgb(80_20_0/0.45)] tablet:p-9">
           <span className="grid size-14 place-items-center rounded-xl bg-gradient-to-br from-primary to-brand-2 text-white" aria-hidden>
             <svg className="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></svg>

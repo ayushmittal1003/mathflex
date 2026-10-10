@@ -162,7 +162,7 @@ export function CartView(props: {
         </div>
       </header>
 
-      <main className="mx-auto w-[min(1160px,calc(100%-48px))] pb-28 pt-10 tablet:pb-20">
+      <main id="main" className="mx-auto w-[min(1160px,calc(100%-48px))] pb-28 pt-10 tablet:pb-20">
         <div className="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2">
           <h1 className="text-[clamp(32px,4vw,48px)] font-extrabold leading-[1.05] tracking-[-0.04em]">Checkout</h1>
           <Link href="/chapters" className="text-sm font-bold text-primary">← Keep browsing</Link>

@@ -12,7 +12,7 @@ import { cx } from "../ui";
 export type BuilderChapter = { id: string; slug: string; title: string; classLevel: number; price: number; free: boolean };
 export type BuilderCourse = { id: string; slug: string; title: string; subtitle: string; price: number; mrp: number; highlights: string[]; validityDays: number; chapterIds: string[] };
 
-// Hero tiers: Free (when any chapter has a free Part 1), single chapter, then every course.
+// Hero tiers: Free (when any chapter has a free preview), single chapter, then every course.
 // The course with the most chapters is the dark "Best value" card.
 export function PricingTiers({ courses, minPrice, maxPrice, freeChapter }: { courses: BuilderCourse[]; minPrice: number | null; maxPrice: number | null; freeChapter: BuilderChapter | null }) {
   const best = courses.length > 1 ? [...courses].sort((a, b) => b.chapterIds.length - a.chapterIds.length)[0].id : null;
@@ -20,7 +20,7 @@ export function PricingTiers({ courses, minPrice, maxPrice, freeChapter }: { cou
   const btn = (dark: boolean, first: boolean) => cx("flex w-full justify-center rounded-lg border p-3.5 text-[15px] font-bold transition hover:brightness-108", dark ? "border-primary bg-primary text-white" : first ? "border-border bg-card text-foreground" : "border-foreground bg-foreground text-white");
 
   const tiers: Tier[] = [
-    ...(freeChapter ? [{ key: "free", kicker: "Free", name: "Part 1 of a chapter", price: "₹0", note: "No card, no sign-up. Just press play.", feats: ["Part 1 of every chapter marked free", "The same player as paid chapters"], cta: <Link href="/chapters" className={btn(false, true)}>Watch free</Link> }] : []),
+    ...(freeChapter ? [{ key: "free", kicker: "Free", name: "Free chapter preview", price: "₹0", note: "No card, no sign-up. Just press play.", feats: ["A free 3–4 minute preview of chapters marked free", "The same player as paid chapters"], cta: <Link href="/chapters" className={btn(false, true)}>Watch free</Link> }] : []),
     ...(minPrice !== null ? [{ key: "chapter", kicker: "One chapter", name: "Single chapter", from: minPrice !== maxPrice ? "from" : undefined, price: inr(minPrice), note: minPrice !== maxPrice ? `${inr(minPrice)}–${inr(maxPrice!)}, depending on the chapter.` : "Every chapter, one price.", feats: ["Every part of the chapter", "DPPs and PYQs with solutions", "Notes for the chapter"], cta: <Link href="/chapters" className={btn(false, !freeChapter)}>Pick a chapter</Link> }] : []),
     ...courses.map((c) => ({
       key: c.id,

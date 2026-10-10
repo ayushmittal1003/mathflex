@@ -48,7 +48,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
     <>
       <WashHero peek={!!peek}>
         <div className="px-6 pt-10 text-center">
-          <Eyebrow dot="ok" onWash>{chapters.length} chapters · Class {classes.join(" & ")}{anyFree && " · Part 1 free"}</Eyebrow>
+          <Eyebrow dot="ok" onWash>{chapters.length} chapters · Class {classes.join(" & ")}{anyFree && " · Free previews"}</Eyebrow>
           <h1 className={cx(heroH1, "mt-6 max-w-[980px]")}>
             Find the chapter that&apos;s costing you{" "}
             <Mark onWash>marks<Caret /></Mark>
@@ -138,7 +138,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
               <span className={cx("relative h-5 w-9 rounded-full transition-colors", freeOnly ? "bg-ok" : "bg-border")}>
                 <span className={cx("absolute top-0.5 size-4 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.25)] transition-[left]", freeOnly ? "left-[18px]" : "left-0.5")} />
               </span>
-              Part 1 free
+              Free preview
             </button>
           )}
           <span className="ml-auto shrink-0 whitespace-nowrap text-[13px] font-semibold text-muted-foreground">

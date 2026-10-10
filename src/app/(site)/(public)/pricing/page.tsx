@@ -118,7 +118,7 @@ export default async function PricingPage() {
           {freeChapter ? <>Start with <Mark>₹0</Mark>. Pay when you&apos;re sure.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
         <div className="mt-8 flex flex-wrap justify-center gap-2.5">
-          {freeChapter && <Link href={`/chapter/${freeChapter.slug}`} className={cx(button.md, tone.primaryFlat)}>Watch a free Part 1</Link>}
+          {freeChapter && <Link href={`/chapter/${freeChapter.slug}`} className={cx(button.md, tone.primaryFlat)}>Watch a free preview</Link>}
           <Link href="/chapters" className={cx(button.md, freeChapter ? tone.secondary : tone.primaryFlat)}>Browse chapters</Link>
         </div>
       </CtaBand>

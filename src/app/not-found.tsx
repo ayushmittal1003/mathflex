@@ -7,6 +7,7 @@ import { getSiteNavProps } from "@/components/site/web/data";
 import { inr } from "@/lib/format";
 import { SiteNav } from "@/components/site/web/SiteNav";
 import { SiteFooter } from "@/components/site/web/SiteFooter";
+import { SkipLink } from "@/components/site/web/SkipLink";
 import { ToastProvider } from "@/components/site/web/Toast";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { WashHero, heroLead } from "@/components/site/web/WashHero";
@@ -43,9 +44,10 @@ export default async function NotFound() {
   return (
     <div className="site-light min-h-dvh overflow-x-clip bg-card pb-[calc(64px+env(safe-area-inset-bottom))] text-foreground tablet:pb-0">
       <ToastProvider>
+        <SkipLink />
         <div className="relative">
           <SiteNav {...nav} />
-          <main>
+          <main id="main">
             <WashHero>
               <div className="px-6 pt-8 text-center">
                 <div aria-hidden className="select-none text-[clamp(120px,22vw,240px)] font-black leading-[0.8] tracking-[0.02em] text-transparent [-webkit-text-stroke:3px_var(--muted-foreground)]">

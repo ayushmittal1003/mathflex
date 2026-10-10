@@ -23,7 +23,7 @@ export type CardChapter = {
   free: boolean;
 };
 
-// design.md §4 Chapter card (listing): 16:9 poster, "Part 1 free" chip, round add-to-cart
+// design.md §4 Chapter card (listing): 16:9 poster, "Free preview" chip, round add-to-cart
 // that turns into a green check. Owned chapters show progress and link to the player.
 export function ChapterCard({ c, index = 0 }: { c: CardChapter; index?: number }) {
   const { has, toggle } = useAddToCart();
@@ -46,7 +46,7 @@ export function ChapterCard({ c, index = 0 }: { c: CardChapter; index?: number }
           ) : (
             c.free && (
               <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold text-black">
-                <PlayIcon className="size-2.5" /> Part 1 free
+                <PlayIcon className="size-2.5" /> Free preview
               </span>
             )
           )}

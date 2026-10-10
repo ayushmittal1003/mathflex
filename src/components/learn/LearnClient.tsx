@@ -125,7 +125,7 @@ export function LearnClient(props: {
         </nav>
       </header>
 
-      <main className="mx-auto w-[min(1240px,calc(100%-32px))] pb-20 pt-5">
+      <main id="main" className="mx-auto w-[min(1240px,calc(100%-32px))] pb-20 pt-5">
         <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-muted-foreground">
           <Link href="/my-learning" className="hover:text-foreground">My Learning</Link>
           <span>/</span>

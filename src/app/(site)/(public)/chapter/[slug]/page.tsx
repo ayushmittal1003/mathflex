@@ -134,8 +134,6 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
           {/* Info */}
           <div className="order-2 min-w-0 flex-[1_1_320px]">
             <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-secondary-foreground">
-              <Link href="/chapters" className="hover:text-primary">Chapters</Link>
-              <span className="opacity-50">/</span>
               <Link href={`/chapters?class=${chapter.classLevel}`} className="hover:text-primary">Class {chapter.classLevel}</Link>
               {!chapter.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-[11px] font-bold text-foreground">Unpublished · staff preview</span>}
             </div>

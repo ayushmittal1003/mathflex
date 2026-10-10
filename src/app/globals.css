@@ -124,6 +124,10 @@
 
 .site-light { color-scheme: light; }
 
+/* Visible keyboard focus for links and controls on the public site (admin is unaffected). Zero
+   specificity (:where), so components that style their own focus state still win. */
+.site-light :where(a, button, summary, [role="button"], [tabindex]):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
 @theme inline {
   /* Colours */
   --color-background: var(--background);

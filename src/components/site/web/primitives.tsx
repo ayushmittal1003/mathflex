@@ -32,7 +32,7 @@ export function Mark({ children, onWash = false, pointer = false }: { children: 
       {pointer && (
         <span
           aria-hidden
-          className="absolute -right-1.5 -top-4 size-0 border-x-[9px] border-t-[13px] border-x-transparent border-t-primary"
+          className="absolute -right-1.5 -top-4 hidden size-0 md:block border-x-[9px] border-t-[13px] border-x-transparent border-t-primary"
         />
       )}
     </span>

@@ -38,9 +38,9 @@ export function CompareTable({ fullPrice, callPrice }: { fullPrice: number | nul
                     )}
                   >
                     {cell === true ? (
-                      <span className="grid size-6.5 place-items-center rounded-full bg-ok/15 text-ok" aria-label="Yes"><CheckIcon className="size-3.5" strokeWidth={3.5} /></span>
+                      <span role="img" className="grid size-6.5 place-items-center rounded-full bg-ok/15 text-ok" aria-label="Yes"><CheckIcon className="size-3.5" strokeWidth={3.5} /></span>
                     ) : cell === false ? (
-                      <span className="grid size-6.5 place-items-center rounded-full bg-muted text-muted-foreground" aria-label="No">
+                      <span role="img" className="grid size-6.5 place-items-center rounded-full bg-muted text-muted-foreground" aria-label="No">
                         <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg>
                       </span>
                     ) : (

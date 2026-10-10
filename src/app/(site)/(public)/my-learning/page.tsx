@@ -116,7 +116,7 @@ export default async function MyLearning() {
         <div className="min-w-0">
           <h1 className="text-[clamp(30px,3.6vw,42px)] font-extrabold leading-[1.08] tracking-[-0.04em]">Welcome back, {first}</h1>
           <p className="mt-1.5 text-[15px] text-secondary-foreground">
-            {user.streak > 0 ? `You're on a ${user.streak}-day streak. Keep it going today.` : mine.length ? "Watch a part or solve a question today to start a streak." : "Start with a free Part 1, no payment needed."}
+            {user.streak > 0 ? `You're on a ${user.streak}-day streak. Keep it going today.` : mine.length ? "Watch a part or solve a question today to start a streak." : "Start with a free preview, no payment needed."}
           </p>
         </div>
         <div className="flex w-full items-center gap-3.5 rounded-xl border border-border bg-card px-4 py-3 min-[600px]:w-auto min-[600px]:min-w-[340px]">

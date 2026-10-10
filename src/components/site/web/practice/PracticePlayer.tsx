@@ -177,7 +177,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
           {q.exam && <span className="rounded-full bg-muted px-2.5 py-1 text-secondary-foreground">{q.exam}{q.year ? ` ${q.year}` : ""}</span>}
           <span className="rounded-full bg-muted px-2.5 py-1 text-secondary-foreground">{DIFFICULTY_LABEL[q.difficulty]}</span>
           {q.topic && <span className="text-muted-foreground">· {q.topic}</span>}
-          <span className="ml-auto flex items-center gap-1 font-mono tabular-nums text-muted-foreground" aria-label="Time on this question">
+          <span className="ml-auto flex items-center gap-1 font-mono tabular-nums text-muted-foreground" role="timer" aria-label="Time on this question">
             {!res && <><Clock className="size-3.5" /> {fmtTime(elapsed)}</>}
           </span>
           <button
