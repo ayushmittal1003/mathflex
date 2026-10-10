@@ -196,3 +196,22 @@ Note: the public site is forced light (`.site-light`), so the **light failures a
 ## Report for Ayush (SEO items found in this audit)
 
 Listed in `dipankar-design/ayush-handoff.md` under "SEO — Report for Ayush".
+
+---
+
+## Phase 3 results (2026-10-11, local production build, Lighthouse 12.2.1 mobile defaults, one run each)
+
+Local numbers only: the database is on the same machine, so TTFB (90–160 ms) is not representative of Vercel. Single Lighthouse runs vary a lot (home TBT went 540 ms → 90 ms between two runs of nearly identical code), so treat the score changes below as noise except for byte weight, which is deterministic.
+
+| Page | Before (perf / LCP / TBT / weight) | After |
+|---|---|---|
+| Home | 66 / 4.4 s / 540 ms / 502 KiB | 84 / 4.0 s / 90 ms / 455 KiB |
+| Chapters | 90 / 3.5 s / 10 ms / 457 KiB | 83 / 3.9 s / 80 ms / 410 KiB |
+| Chapter | 82 / 4.1 s / 30 ms / 494 KiB | 87 / 3.8 s / 10 ms / 449 KiB |
+| Course | 86 / 4.0 s / 10 ms / 486 KiB | 82 / 4.2 s / 30 ms / 440 KiB |
+
+Accessibility 93–96, Best practices 100, SEO 100 on all (blog sample post SEO 69 because it is noindex on purpose). CLS 0–0.001.
+
+Change made: the header/footer logo was a 3511×783 px PNG (61 KB) shown at ~130 px wide; now 520×116 px copies (15 KB). About 45 KiB less on every public page.
+
+Observed, not changed: ~188 KB of fonts on home (Inter plus JetBrains Mono used for small labels); one shared JS chunk (70 KB) takes ~1.2 s scripting under 4× CPU throttling on home; the hero text uses an entrance animation that delays LCP; all public pages render per request (see layout options in the Phase 3 report).
