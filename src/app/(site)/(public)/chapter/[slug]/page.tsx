@@ -157,14 +157,14 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
               <span className="text-sm leading-[1.3]">
                 Taught by <b className="underline underline-offset-[3px]">{names.full}</b>
                 <br />
-                <span className="text-[13px] text-secondary-foreground">{instructor.title}</span>
+                <span className="text-xs text-secondary-foreground sm:text-[13px]">
+                  IIT Delhi alumnus
+                  {chapter.isPublished && (
+                    <> · Updated <time dateTime={chapter.updatedAt.toISOString().slice(0, 10)}>{chapter.updatedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" })}</time></>
+                  )}
+                </span>
               </span>
             </a>
-            {chapter.isPublished && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                Taught by an IIT Delhi alumnus · Updated <time dateTime={chapter.updatedAt.toISOString().slice(0, 10)}>{chapter.updatedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" })}</time>
-              </p>
-            )}
 
             {owned ? (
               <div className="mt-7 max-w-md">

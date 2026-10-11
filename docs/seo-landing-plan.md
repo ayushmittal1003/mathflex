@@ -1,6 +1,6 @@
 # SEO landing pages: proposal (Phase 6)
 
-Status: **proposal only. Nothing in this document has been built.** Written 2026-10-12 on `feature/seo`. Every page below needs your approval, and most need content that only the mentor can write or sign off.
+Status: **plan accepted, nothing built.** Pages will be built later on `feature/seo-landing-pages`, not on `feature/seo`. Written 2026-10-12 on `feature/seo`. Every page below needs your approval, and most need content that only the mentor can write or sign off.
 
 ## 1. What already exists (checked before proposing anything)
 
@@ -188,7 +188,9 @@ Same structure as 3.3 with Class 12 chapters, courses `class-12-complete` and `c
 - **Free vs paid:** PYQ and formula pages must not give away what the paid chapters sell. Decide the boundary first.
 - **Claims:** anything that implies a Class 10 or dropper product, or ranking and result claims, is out unless it is real.
 
-## 9. Decisions needed from you
+## 9. Pending decisions
+
+Status 2026-10-12: plan accepted. **No landing pages are built on `feature/seo`.** They will be built on a separate branch, `feature/seo-landing-pages`, once the mentor supplies content. The decisions below are still open.
 
 1. Approve building the Class 11 and Class 12 pillars first (priority 1), once the mentor supplies the intro and approach text?
 2. Who writes and who verifies exam facts (NTA source checks) for `/jee-main-maths` and the syllabus page?

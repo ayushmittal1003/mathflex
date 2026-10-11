@@ -84,3 +84,32 @@ White text on the brand red (`--primary` `oklch(0.637 0.237 25.331)`) is 3.66:1,
 
 ## SEO Phase 6 (landing-page plan, nothing built)
 See `docs/seo-landing-plan.md`, section 6, for the backend/admin needs: content store (MDX or Sanity) for formula/syllabus/hub copy, PYQ metadata (year, session, shift, solution, public flag), the method behind `Chapter.jeeWeightage`, chapter prerequisite relation, author model, and a product decision on Class 10 / dropper offers.
+
+## SEO final checklist (owner / Ayush, after the branch is merged and deployed)
+Nothing here was done in code. Details of each item are in the sections above.
+
+**Config / infra**
+- [ ] Set `APP_URL` in production to the canonical origin (https, chosen host). Canonicals, sitemap, robots and OG all read it.
+- [ ] Canonical host redirect (apex ↔ www) on Vercel.
+- [ ] `X-Robots-Tag: noindex` for `/admin` (headers in `next.config.ts` or Vercel); security headers.
+- [ ] Enable Vercel Speed Insights for the project and check the plan fits.
+- [ ] Replace placeholder company address, CIN, GSTIN in the legal/footer data, and the YouTube `#` link.
+
+**Search consoles (owner)**
+- [ ] Google Search Console: Domain property (DNS verification), submit `/sitemap.xml`, URL Inspection on home, `/chapters`, one chapter, one course; confirm the "Search generative AI features" setting; then watch Page indexing, Core Web Vitals and the generative AI performance report.
+- [ ] Bing Webmaster Tools: import from GSC, submit the sitemap, monitor AI Performance.
+- [ ] IndexNow: key file plus a publish ping from admin (backend hook).
+
+**Schema / admin data**
+- [ ] `Course`, `Chapter`, blog: unique editable `slug` with slug history (301s), `seoTitle`, `metaDescription`, `ogImage`, `noindex` toggle, `publishedAt`, `updatedAt` on Course.
+- [ ] Alt-text fields for covers, banners, thumbnails and blog images.
+- [ ] Video fields: duration, upload date, free-preview flag, chapter timestamps, public thumbnail, the `previewSrc` admin field.
+- [ ] Author/mentor model; chapter prerequisite/next relations.
+- [ ] Revalidate hooks on publish (pages plus sitemap).
+- [ ] Fix the 35 chapter descriptions ("IIT Delhi & NIT Jalandhar alumni" → "IIT Delhi alumnus"), the marquee text, and `src/lib/legal/about.ts`.
+- [ ] Decide on leaderboard names (first name + last initial).
+- [ ] Optional: fix dark-mode `primary` contrast for admin and the learner player.
+
+**Content (owner)**
+- [ ] Switch on real blog posts and `/free-practice` when real content exists (`seo.md` section 8).
+- [ ] Landing pages: see `docs/seo-landing-plan.md`, "Pending decisions" (separate branch later).
