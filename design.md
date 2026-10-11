@@ -19,15 +19,15 @@ Each token is a CSS variable (`--primary`) and a Tailwind colour (`bg-primary`, 
 | `foreground` | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` | Default text |
 | `card` / `card-foreground` | `oklch(0.995 0 0)` / `0.145` | `oklch(0.21 0.006 285.885)` / `0.985` | Cards, panels, list containers |
 | `popover` / `popover-foreground` | `oklch(0.995 0 0)` / `0.145` | `oklch(0.269 0 0)` / `0.985` | Menus, dropdowns, tooltips, modals |
-| `primary` / `primary-foreground` | `oklch(0.637 0.237 25.331)` / `0.985` | same | Main actions (Buy, Continue), active states, links, progress |
+| `primary` / `primary-foreground` | `oklch(0.637 0.237 25.331)` (public site: `oklch(0.58 0.24 25.331)`) / `0.985` | same | Main actions (Buy, Continue), active states, links, progress |
 | `secondary` / `secondary-foreground` | `oklch(0.97 0 0)` / `0.269` | `oklch(0.269 0 0)` / `0.985` | Secondary buttons (`btn-ghost`), neutral chips |
 | `muted` | `oklch(0.968 0.007 247.896)` | `oklch(0.274 0.006 286.033)` | Subtle backgrounds: hover rows, empty slots, skeletons |
 | `muted-foreground` | `oklch(0.554 0.046 257.417)` (public site: `oklch(0.52 0.046 257.417)`) | `oklch(0.923 0.003 48.717)` | Secondary text: captions, hints, meta info |
-| `accent` / `accent-foreground` | `oklch(0.637 0.237 25.331)` / `0.985` | same | Highlights that should match the brand (same as primary today) |
+| `accent` / `accent-foreground` | `oklch(0.637 0.237 25.331)` (public site: `oklch(0.58 0.24 25.331)`) / `0.985` | same | Highlights that should match the brand (same as primary today) |
 | `destructive` / `destructive-foreground` | `oklch(0.577 0.245 27.325)` / white | `oklch(0.704 0.191 22.216)` / `0.985` | Errors, wrong answers, delete actions |
 | `border` | `oklch(0.929 0.013 255.508)` | `oklch(0.371 0 0)` | Borders and dividers (`border-border`, `divide-border`) |
 | `input` | `oklch(0.929 0.013 255.508)` | `oklch(0.371 0 0)` | Form field borders |
-| `ring` | `oklch(0.637 0.237 25.331)` | same | Focus rings and outlines |
+| `ring` | `oklch(0.637 0.237 25.331)` (public site: `oklch(0.58 0.24 25.331)`) | same | Focus rings and outlines |
 | `chart-1` … `chart-5` | red · orange · teal · green · violet | brighter versions | Chart series, in that order. Single-series charts use `chart-1`. |
 | `sidebar`, `sidebar-foreground`, `sidebar-primary(-foreground)`, `sidebar-accent(-foreground)`, `sidebar-border`, `sidebar-ring` | see `globals.css` | see `globals.css` | Side navigation |
 

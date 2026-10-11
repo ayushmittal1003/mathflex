@@ -18,7 +18,7 @@ export function CompareTable({ fullPrice, callPrice }: { fullPrice: number | nul
         <div className="grid min-w-[760px] grid-cols-[1.5fr_repeat(4,minmax(0,1fr))]">
           <div />
           <div className="rounded-t-xl border-2 border-b-0 border-primary bg-selected px-3 py-5 text-center">
-            <div className="text-lg font-extrabold tracking-[-0.025em]">math<span className="text-primary">flex</span></div>
+            <div className="text-lg font-extrabold tracking-[-0.025em]">math<span className="text-[color-mix(in_oklab,var(--primary)_90%,black)]">flex</span></div>
           </div>
           {comparison.columns.map((c) => <div key={c} className="px-3 py-5 text-center text-[15px] font-bold text-muted-foreground">{c}</div>)}
 

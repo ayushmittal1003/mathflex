@@ -39,7 +39,7 @@ Reference designs: the `.dc.html` files in this project. `Landing Page v2.dc.htm
 | `muted` | `oklch(0.968 0.007 247.896)` | Eyebrow pills, chips, empty bars, icon buttons |
 | `muted-foreground` | `oklch(0.52 0.046 257.417)` | Meta text, captions, outlined rank numbers |
 | `border` | `oklch(0.929 0.013 255.508)` | Hairlines between sections, rows, cards |
-| `primary` | `oklch(0.637 0.237 25.331)` | Main CTA (Start free, Buy now, Pay), live dots, caret, active tab underline |
+| `primary` | `oklch(0.58 0.24 25.331)` | Main CTA (Start free, Buy now, Pay), live dots, caret, active tab underline |
 | `brand-2` | `oklch(0.705 0.213 47.604)` | Second gradient stop, highlight tint |
 | `ok` | `oklch(0.53 0.17 149.214)` | Free, discounts, "Added", success, checkmarks |
 | `ok-strong` | `oklch(0.48 0.16 149.214)` | Green text on the pale green tint of chips (Free preview, Save 50%). Use `text-ok-strong` there |
@@ -47,7 +47,7 @@ Reference designs: the `.dc.html` files in this project. `Landing Page v2.dc.htm
 | `xp` | `oklch(0.56 0.25 292.717)` | XP numbers on the leaderboard |
 | `bad` | = `destructive` | Failed payment, rank drop arrows |
 
-**Contrast (WCAG 2.2 AA, 4.5:1).** The values above for `muted-foreground`, `ok`, `ok-strong` and `xp` are the public-site values. They are set in a `.site-light { … }` override in `globals.css`, so `/admin` and dark mode keep the base values. `primary` is covered separately (pending sign-off).
+**Contrast (WCAG 2.2 AA, 4.5:1).** The values above for `muted-foreground`, `ok`, `ok-strong` and `xp` are the public-site values. They are set in a `.site-light { … }` override in `globals.css`, so `/admin` and dark mode keep the base values. `primary` (also `ring`, `accent`, `sidebar-primary`) is `oklch(0.58 0.24 25.331)` on the public site: white text on it is 4.57:1 and red text on a card is 4.70:1. The base `:root` / `.dark` value is unchanged (see the Ayush handoff).
 
 **New token: `wash`.** `--wash: oklch(0.975 0.012 50)`. This is the warm base of the hero frame. Add it to `globals.css` and `@theme` with a dark value of `oklch(0.2 0.02 40)`.
 

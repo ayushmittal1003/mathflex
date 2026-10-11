@@ -127,6 +127,11 @@
 
 /* Public-site contrast (WCAG 2.2 AA, 4.5:1). Scoped here so /admin and dark mode keep the base values. */
 .site-light {
+  --primary: oklch(0.58 0.24 25.331);
+  --ring: oklch(0.58 0.24 25.331);
+  --accent: oklch(0.58 0.24 25.331);
+  --sidebar-primary: oklch(0.58 0.24 25.331);
+  --sidebar-ring: oklch(0.58 0.24 25.331);
   --ok: oklch(0.53 0.17 149.214);
   --ok-strong: oklch(0.48 0.16 149.214);
   --xp: oklch(0.56 0.25 292.717);

@@ -80,7 +80,15 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
   const names = instructorNames(settings);
   const item = { type: "CHAPTER" as const, id: chapter.id };
   const freeIds = new Set(freeOn ? (await db.part.findMany({ where: { isFreePreview: true }, select: { chapterId: true } })).map((p) => p.chapterId) : []);
-  const related = catalog.filter((c) => c.classLevel === chapter.classLevel && c.id !== chapter.id).slice(0, 4).map((c) => ({ ...c, free: freeIds.has(c.id) }));
+  // Neighbours in the syllabus order (same class, closest sortOrder first, the next chapter before the previous one).
+  const sameClass = catalog.filter((c) => c.classLevel === chapter.classLevel);
+  const at = sameClass.findIndex((c) => c.id === chapter.id);
+  const related = sameClass
+    .map((c, i) => ({ c, d: at < 0 ? i : Math.abs(i - at) + (i < at ? 0.5 : 0) }))
+    .filter(({ c }) => c.id !== chapter.id)
+    .sort((x, y) => x.d - y.d)
+    .slice(0, 4)
+    .map(({ c }) => ({ ...c, free: freeIds.has(c.id) }));
 
   const stats = [
     { big: `${chapter.parts.length} parts`, small: totalSec ? `${duration(totalSec)} of video` : "Video lessons" },
@@ -152,6 +160,11 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                 <span className="text-[13px] text-secondary-foreground">{instructor.title}</span>
               </span>
             </a>
+            {chapter.isPublished && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Taught by an IIT Delhi alumnus · Updated <time dateTime={chapter.updatedAt.toISOString().slice(0, 10)}>{chapter.updatedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" })}</time>
+              </p>
+            )}
 
             {owned ? (
               <div className="mt-7 max-w-md">
@@ -396,7 +409,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
         <section className="pb-24 pt-18">
           <div className="mx-auto w-[min(1180px,calc(100%-48px))]">
             <div className="flex items-baseline justify-between gap-4">
-              <h2 className="text-[clamp(28px,3vw,38px)] font-extrabold tracking-[-0.035em]">More from Class {chapter.classLevel}</h2>
+              <h2 className="text-[clamp(28px,3vw,38px)] font-extrabold tracking-[-0.035em]">More Class {chapter.classLevel} chapters</h2>
               <Link href={`/chapters?class=${chapter.classLevel}`} className="whitespace-nowrap text-sm font-bold text-primary">All chapters →</Link>
             </div>
             <div className="mt-7 grid grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))] gap-5">
