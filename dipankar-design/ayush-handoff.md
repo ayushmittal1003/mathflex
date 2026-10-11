@@ -81,3 +81,6 @@ White text on the brand red (`--primary` `oklch(0.637 0.237 25.331)`) is 3.66:1,
 ## Speed Insights and copy that lives in admin/seed
 - **Vercel Speed Insights:** `@vercel/speed-insights` is added and `<SpeedInsights />` is in the root layout (it only sends data when deployed on Vercel). Please enable Speed Insights for the project in the Vercel dashboard and check that it fits our plan (data-point limits). Until it is enabled, nothing is collected.
 - **Marquee text:** the live marquee banner "🎬 Limits & Derivatives: Part 1 is free to watch" is admin data (seeded by `prisma/seed.ts`, not touched). Please change it in admin, and the seed, to match the new wording, e.g. "Free 3–4 minute preview: Limits & Derivatives".
+
+## SEO Phase 6 (landing-page plan, nothing built)
+See `docs/seo-landing-plan.md`, section 6, for the backend/admin needs: content store (MDX or Sanity) for formula/syllabus/hub copy, PYQ metadata (year, session, shift, solution, public flag), the method behind `Chapter.jeeWeightage`, chapter prerequisite relation, author model, and a product decision on Class 10 / dropper offers.
