@@ -122,3 +122,10 @@ New rule from the owner: single chapter = 3 months (each chapter bought separate
 - Existing entitlements keep their current expiry; only new purchases and renewals use the new values. Decide whether anything needs back-filling.
 - Seed copy to update: the FAQ answer in `prisma/seed.ts` (~line 250) says "365 days by default".
 - The frontend now shows the length as "3 months / 1 year / 2 years" (`validity()` in `src/lib/format.ts`); it follows whatever is in the database.
+
+## Upcoming
+- **Sanity Studio (after the `feature/seo` PR is merged, on its own branch):** connect Sanity for (1) blog posts, with author, date, cover and categories, replacing `getPosts()` / `getPost()` in `src/lib/blog.ts` and keeping the `BlogPost` shape; (2) an author profile for the mentor (name, bio, credential "IIT Delhi alumnus", photo); (3) later, static SEO page content for the landing pages (`docs/seo-landing-plan.md`). Chapters, courses, prices and users stay in the current database.
+  - Needed from the owner: Sanity project ID, dataset name (`production`), an optional read token for draft previews, and a webhook secret.
+  - Env vars: `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `SANITY_API_READ_TOKEN` (optional), `SANITY_REVALIDATE_SECRET`.
+  - Ayush: an `/api/revalidate` route plus a Sanity webhook so publishing refreshes the blog pages and sitemap; add the site domains under CORS origins in sanity.io/manage.
+  - Frontend (me): schemas for `post`, `author`, `category`, a `/studio` route, the Sanity client and queries. Remove `placeholder` flags post by post as real posts go live (see `seo.md` section 8).
