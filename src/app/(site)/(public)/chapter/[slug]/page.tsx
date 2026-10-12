@@ -6,7 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { computePartStates, hasChapterAccess } from "@/lib/access";
 import { getCatalog } from "@/lib/catalog";
-import { duration, inr, pctOff } from "@/lib/format";
+import { duration, inr, pctOff, validity } from "@/lib/format";
 import { chapterFaqs, instructor, instructorChapterLine, instructorNames } from "@/lib/site-content";
 import { getPublicCoupon } from "@/components/site/web/data";
 import { WashHero } from "@/components/site/web/WashHero";
@@ -95,7 +95,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
     ...(chapter.jeeWeightage > 0 ? [{ big: `${chapter.jeeWeightage}%`, small: "of JEE Main" }] : []),
     ...(dpp + pyq > 0 ? [{ big: `${dpp + pyq} questions`, small: "DPPs + PYQs" }] : []),
     ...(preview ? [{ big: `Part ${preview.order} free`, small: "No sign-up needed" }] : []),
-    { big: `${chapter.validityDays} days`, small: "of access" },
+    { big: validity(chapter.validityDays), small: "of access" },
   ];
   const includes = [
     { n: chapter.parts.length, label: "Video parts", sub: totalSec ? `${duration(totalSec)} in total` : "Short, focused parts" },
@@ -191,7 +191,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                     {chapter.mrp > chapter.price && <span className="text-base text-muted-foreground line-through">{inr(chapter.mrp)}</span>}
                     {off > 0 && <span className="rounded-md bg-ok px-2 py-0.5 text-xs font-extrabold text-white">{off}% OFF</span>}
                   </div>
-                  <div className="mt-0.5 text-[13px] text-secondary-foreground">{chapter.validityDays} days access · all parts, DPPs, PYQs &amp; notes</div>
+                  <div className="mt-0.5 text-[13px] text-secondary-foreground">{validity(chapter.validityDays)} access · all parts, DPPs, PYQs &amp; notes</div>
                 </div>
                 <div className="mt-5.5 flex flex-wrap gap-2.5">
                   <BuyNow item={item} />

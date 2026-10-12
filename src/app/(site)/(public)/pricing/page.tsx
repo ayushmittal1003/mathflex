@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
-import { inr } from "@/lib/format";
+import { inr, validity } from "@/lib/format";
 import { fillFaq, instructorNames, pricingFaqs } from "@/lib/site-content";
 import { getInsideData, getPublicCoupon } from "@/components/site/web/data";
 import { Caret, Eyebrow, Mark } from "@/components/site/web/primitives";
@@ -24,7 +24,7 @@ export default async function PricingPage() {
     db.chapter.findMany({
       where: { isPublished: true },
       orderBy: [{ classLevel: "asc" }, { sortOrder: "asc" }, { title: "asc" }],
-      select: { id: true, slug: true, title: true, classLevel: true, price: true, parts: { where: { isFreePreview: true }, select: { id: true } } },
+      select: { id: true, slug: true, title: true, classLevel: true, price: true, validityDays: true, parts: { where: { isFreePreview: true }, select: { id: true } } },
     }),
     db.course.findMany({
       where: { isPublished: true },
@@ -41,6 +41,8 @@ export default async function PricingPage() {
   const prices = chapters.map((c) => c.price);
   const minPrice = prices.length ? Math.min(...prices) : null;
   const maxPrice = prices.length ? Math.max(...prices) : null;
+  const chapterDays = [...new Set(chapterRows.map((c) => c.validityDays))];
+  const chapterAccess = chapterDays.length === 1 ? validity(chapterDays[0]) : null;
   const freeChapter = chapters.find((c) => c.free) ?? null;
   const names = instructorNames(settings);
   const mentorship = settings.features.mentorshipUpsell ? settings : null;
@@ -62,7 +64,7 @@ export default async function PricingPage() {
             Watch any chapter&apos;s free preview, then buy one chapter or a full course. You pay once, with no monthly fees.
           </p>
         </div>
-        <PricingTiers courses={courses} minPrice={minPrice} maxPrice={maxPrice} />
+        <PricingTiers courses={courses} minPrice={minPrice} maxPrice={maxPrice} chapterAccess={chapterAccess} />
       </WashHero>
 
       {chapters.length > 0 && <PriceBuilder chapters={chapters} courses={courses} coupon={coupon} />}

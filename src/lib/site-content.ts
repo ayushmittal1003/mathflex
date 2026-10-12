@@ -3,6 +3,7 @@
 // coupons and the call's price/length always come from the database or settings at
 // render time, never from this file.
 import type { Settings } from "./settings";
+import { validity } from "./format";
 
 // ---- Placeholders ---------------------------------------------------------------------
 // Shown, clearly marked, until real values exist. A matching setting (when Ayush adds one)
@@ -211,7 +212,7 @@ export function chapterFaqs(c: { classLevel: number; free: boolean; validityDays
         ? "Each part opens after you watch most of the previous one and clear its practice set."
         : "Once you own the chapter, every part is open. Watch them in any order.",
     },
-    { q: "How long do I get access?", a: `${c.validityDays} days from the date you buy it, on phone and laptop. You can renew early from your Profile page.` },
+    { q: "How long do I get access?", a: `${validity(c.validityDays)} from the date you buy it, on phone and laptop. You can renew early from your Profile page.` },
     { q: "Is this enough for Boards too?", a: `It follows the Class ${c.classLevel} syllabus, so it works for Boards as well as JEE.` },
   ];
 }

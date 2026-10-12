@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { inr, pctOff } from "@/lib/format";
+import { inr, pctOff, validity } from "@/lib/format";
 import { BuyButton } from "../BuyButton";
 import { CheckIcon, Eyebrow, Mark, SectionHead } from "../primitives";
 import { splitH2 } from "../WashHero";
@@ -49,7 +49,7 @@ export function CourseCards({ courses, bestId }: { courses: CourseView[]; bestId
             )}
             <div className={cx("my-5.5 h-px", best ? "bg-white/15" : "bg-border")} />
             <div className="grid gap-[11px]">
-              {[`All ${c.chapters.length} chapters, every part`, ...(c.hasPractice ? ["DPPs and PYQs with solutions"] : []), ...(c.hasNotes ? ["Notes for every chapter"] : []), ...c.highlights, `${c.validityDays} days of access`].map((f) => (
+              {[`All ${c.chapters.length} chapters, every part`, ...(c.hasPractice ? ["DPPs and PYQs with solutions"] : []), ...(c.hasNotes ? ["Notes for every chapter"] : []), ...c.highlights, `${validity(c.validityDays)} of access`].map((f) => (
                 <div key={f} className="flex gap-2.5 text-sm leading-[1.4]">
                   <CheckIcon className={cx("mt-0.5 size-[15px] shrink-0", best ? "text-[oklch(0.8_0.15_60)]" : "text-ok")} />
                   <span>{f}</span>

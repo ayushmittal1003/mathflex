@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { inr } from "@/lib/format";
+import { inr, validity } from "@/lib/format";
 import { cart } from "../../cart-store";
 import { BuyButton } from "../BuyButton";
 import { CheckIcon, Mark, SectionHead } from "../primitives";
@@ -14,13 +14,13 @@ export type BuilderCourse = { id: string; slug: string; title: string; subtitle:
 
 // Hero tiers: single chapter, then every course.
 // The course with the most chapters is the dark "Best value" card.
-export function PricingTiers({ courses, minPrice, maxPrice }: { courses: BuilderCourse[]; minPrice: number | null; maxPrice: number | null }) {
+export function PricingTiers({ courses, minPrice, maxPrice, chapterAccess }: { courses: BuilderCourse[]; minPrice: number | null; maxPrice: number | null; chapterAccess: string | null }) {
   const best = courses.length > 1 ? [...courses].sort((a, b) => b.chapterIds.length - a.chapterIds.length)[0].id : null;
   type Tier = { key: string; kicker: string; name: string; from?: string; price: string; mrp?: string; note: string; feats: string[]; best?: boolean; cta: React.ReactNode };
   const btn = (dark: boolean, first: boolean) => cx("flex w-full justify-center rounded-lg border p-3.5 text-[15px] font-bold transition hover:brightness-108", dark ? "border-primary bg-primary text-white" : first ? "border-border bg-card text-foreground" : "border-foreground bg-foreground text-white");
 
   const tiers: Tier[] = [
-    ...(minPrice !== null ? [{ key: "chapter", kicker: "One chapter", name: "Single chapter", from: minPrice !== maxPrice ? "from" : undefined, price: inr(minPrice), note: minPrice !== maxPrice ? `${inr(minPrice)}–${inr(maxPrice!)}, depending on the chapter.` : "Every chapter, one price.", feats: ["Every part of the chapter", "DPPs and PYQs with solutions", "Notes for the chapter"], cta: <Link href="/chapters" className={btn(false, true)}>Pick a chapter</Link> }] : []),
+    ...(minPrice !== null ? [{ key: "chapter", kicker: "One chapter", name: "Single chapter", from: minPrice !== maxPrice ? "from" : undefined, price: inr(minPrice), note: minPrice !== maxPrice ? `${inr(minPrice)}–${inr(maxPrice!)}, depending on the chapter.` : "Every chapter, one price.", feats: ["Every part of the chapter", "DPPs and PYQs with solutions", "Notes for the chapter", ...(chapterAccess ? [`${chapterAccess} of access`] : [])], cta: <Link href="/chapters" className={btn(false, true)}>Pick a chapter</Link> }] : []),
     ...courses.map((c) => ({
       key: c.id,
       kicker: "Full course",
@@ -28,7 +28,7 @@ export function PricingTiers({ courses, minPrice, maxPrice }: { courses: Builder
       price: inr(c.price),
       mrp: c.mrp > c.price ? inr(c.mrp) : undefined,
       note: c.subtitle || `All ${c.chapterIds.length} chapters.`,
-      feats: [`All ${c.chapterIds.length} chapters, every part`, ...c.highlights, `${c.validityDays} days of access`],
+      feats: [`All ${c.chapterIds.length} chapters, every part`, ...c.highlights, `${validity(c.validityDays)} of access`],
       best: c.id === best,
       cta: <BuyButton item={{ type: "COURSE", id: c.id }} className={btn(c.id === best, false)}>Get {c.title}</BuyButton>,
     })),

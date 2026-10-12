@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { getCatalog } from "@/lib/catalog";
 import { requestNow } from "@/lib/time";
-import { inr } from "@/lib/format";
+import { inr, validity } from "@/lib/format";
 import { Eyebrow, Mark, posterBg } from "@/components/site/web/primitives";
 import { BuyButton } from "@/components/site/web/BuyButton";
 import { button, container, cx, tone } from "@/components/site/web/ui";
@@ -136,7 +136,7 @@ export default async function PlansPage() {
                   <span className="flex flex-1 flex-col p-5">
                     <span className="text-xs font-extrabold uppercase tracking-[0.08em] text-primary">Upgrade to a course</span>
                     <span className="mt-1 text-lg font-extrabold tracking-[-0.02em]">{c.title}</span>
-                    <span className="mt-1 text-sm text-secondary-foreground">You have {have} of its {c.chapters.length} chapters. Get all of them for {c.validityDays} days.</span>
+                    <span className="mt-1 text-sm text-secondary-foreground">You have {have} of its {c.chapters.length} chapters. Get all of them for {validity(c.validityDays)}.</span>
                     <span className="mt-3 flex items-baseline gap-2">
                       <span className="text-xl font-extrabold">{inr(c.price)}</span>
                       {c.mrp > c.price && <span className="text-sm text-muted-foreground line-through">{inr(c.mrp)}</span>}
@@ -217,7 +217,7 @@ function PlanList({ title, plans }: { title: string; plans: Plan[] }) {
                     <BuyButton item={{ type: p.isCourse ? "COURSE" : "CHAPTER", id: p.item.id }} className={cx(button.sm, tone.primary)}>
                       {ended ? "Buy again" : "Renew"} · {inr(p.item.price)}
                     </BuyButton>
-                    <span className="text-center text-xs text-muted-foreground">Adds {p.item.validityDays} days{ended ? "" : " on top"}</span>
+                    <span className="text-center text-xs text-muted-foreground">Adds {validity(p.item.validityDays)}{ended ? "" : " on top"}</span>
                   </>
                 ) : ended ? (
                   <span className="text-center text-xs text-muted-foreground">No longer on sale</span>

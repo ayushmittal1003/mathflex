@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { getCatalog } from "@/lib/catalog";
 import { isStaff } from "@/lib/permissions";
-import { inr, pctOff } from "@/lib/format";
+import { inr, pctOff, validity } from "@/lib/format";
 import { courseFaqs, fillFaq, instructor, instructorNames } from "@/lib/site-content";
 import { WashHero } from "@/components/site/web/WashHero";
 import { CheckIcon, Mark, posterBg } from "@/components/site/web/primitives";
@@ -70,7 +70,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
     { big: `${v.chapters.length} chapters`, small: classes.length ? `Class ${classes.join(" & ")}` : "" },
     { big: `${parts} parts`, small: v.hours ? `${v.hours} of video` : "Video lessons" },
     ...(dpp + pyq > 0 ? [{ big: `${dpp + pyq} questions`, small: "DPPs + PYQs" }] : []),
-    { big: `${v.validityDays} days`, small: "of access" },
+    { big: validity(v.validityDays), small: "of access" },
   ];
   const includes = [
     `All ${v.chapters.length} chapters, every part`,
@@ -78,14 +78,14 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
     ...(notes > 0 ? ["Notes for the chapters"] : []),
     ...v.highlights,
     ...(settings.features.leaderboard ? ["XP, streaks and the weekly leaderboard"] : []),
-    `${v.validityDays} days of access on phone and laptop`,
+    `${validity(v.validityDays)} of access on phone and laptop`,
   ];
   const faqs = courseFaqs.map((f) => ({
     q: f.q,
     a: fillFaq(f.a, {
       breakevenLine: breakeven ? ` than buying ${breakeven} or more of its chapters separately` : "",
       unlockRule: settings.features.sequentialUnlock ? "each part opens after you watch most of the previous one and try its practice set." : "every part is open from the start.",
-      accessLine: `${v.validityDays} days`,
+      accessLine: validity(v.validityDays),
     }),
   }));
   const sectionH2 = "text-[clamp(28px,3.2vw,40px)] font-extrabold leading-tight tracking-[-0.04em]";
@@ -121,7 +121,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
             <div className="mt-5.5 flex flex-wrap gap-2">
               <Pill>{v.chapters.length} chapters</Pill>
               {v.hours && <Pill>{v.hours} of video</Pill>}
-              <Pill>{v.validityDays} days access</Pill>
+              <Pill>{validity(v.validityDays)} access</Pill>
             </div>
             {(course.description || v.subtitle) && (
               <p className="mt-4.5 max-w-[540px] whitespace-pre-line text-[17px] leading-[1.55] text-secondary-foreground text-pretty">{course.description || v.subtitle}</p>

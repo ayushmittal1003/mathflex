@@ -2,7 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
-import { inr } from "@/lib/format";
+import { inr, validity } from "@/lib/format";
 import { courseFaqs, fillFaq, instructorNames } from "@/lib/site-content";
 import { Caret, Eyebrow, Mark } from "@/components/site/web/primitives";
 import { WashHero, heroH1, heroLead } from "@/components/site/web/WashHero";
@@ -92,7 +92,7 @@ export default async function Courses() {
                   ["DPPs and PYQs", views.map((v) => (v.hasPractice ? "✓" : "—"))],
                   ["Notes", views.map((v) => (v.hasNotes ? "✓" : "—"))],
                   ...(settings.features.leaderboard ? [["XP, streaks and leaderboard", views.map(() => "✓")] as [string, string[]]] : []),
-                  ["Access", views.map((v) => `${v.validityDays} days`)],
+                  ["Access", views.map((v) => validity(v.validityDays))],
                   ["Price", views.map((v) => inr(v.price))],
                 ].map(([label, cells]) => (
                   <div key={label as string} className="grid items-center border-b border-border py-3.5 text-[15px]" style={{ gridTemplateColumns: `minmax(0,1.6fr) repeat(${views.length}, minmax(0,1fr))` }}>

@@ -113,3 +113,12 @@ Nothing here was done in code. Details of each item are in the sections above.
 **Content (owner)**
 - [ ] Switch on real blog posts and `/free-practice` when real content exists (`seo.md` section 8).
 - [ ] Landing pages: see `docs/seo-landing-plan.md`, "Pending decisions" (separate branch later).
+
+## Access length (validity) change: data, no code change needed
+New rule from the owner: single chapter = 3 months (each chapter bought separately gets its own 3 months, even in one order); Class 11 Complete = 1 year; Class 12 Complete = 1 year; Class 11 + 12 combo = 2 years.
+`fulfilOrder` (`src/lib/orders.ts`) already reads `validityDays` from each `Chapter` / `Course`, so this is a data change:
+- Set `Chapter.validityDays = 90` on all 35 chapters (admin, or one update). Also change the schema default (`prisma/schema.prisma`, currently `@default(365)`) so new chapters get 90.
+- Set `Course.validityDays`: Class 11 Complete 365, Class 12 Complete 365, Class 11 + 12 combo 730.
+- Existing entitlements keep their current expiry; only new purchases and renewals use the new values. Decide whether anything needs back-filling.
+- Seed copy to update: the FAQ answer in `prisma/seed.ts` (~line 250) says "365 days by default".
+- The frontend now shows the length as "3 months / 1 year / 2 years" (`validity()` in `src/lib/format.ts`); it follows whatever is in the database.
