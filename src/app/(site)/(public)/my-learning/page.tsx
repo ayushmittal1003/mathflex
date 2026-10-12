@@ -212,7 +212,7 @@ export default async function MyLearning() {
       {/* My chapters */}
       <section className="mt-16">
         <div className="mb-6 flex items-end justify-between gap-4">
-          <h2 className={h2}>{mine.length ? "My chapters" : "Start with a free Part 1"}</h2>
+          <h2 className={h2}>{mine.length ? "My chapters" : "Start with a free preview"}</h2>
           <Link href="/chapters" className="text-sm font-bold text-primary hover:underline">All chapters →</Link>
         </div>
         {mine.length ? (

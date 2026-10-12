@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { cx } from "../ui";
 
 export type LbRow = { id: string; name: string; avatarColor: string; streak: number; xp: number; totalXp: number; classLevel: number | null; rank: number; level: number; me: boolean };
@@ -12,6 +12,16 @@ const classLabel = (c: number | null) => (c === 13 ? "Dropper" : c ? `Class ${c}
 export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbRow[]; period: string; periods: Record<string, string>; signedIn: boolean }) {
   const [cls, setCls] = useState<"all" | number>("all");
   const [q, setQ] = useState("");
+  // The filter bar has no border until it sticks under the nav; then it gets a hairline.
+  const sentinel = useRef<HTMLDivElement>(null);
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting && e.boundingClientRect.top < 68), { rootMargin: "-68px 0px 0px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const classes = [...new Set(rows.map((r) => r.classLevel).filter((c): c is number => !!c))].sort();
   const filtered = useMemo(() => rows.filter((r) => (cls === "all" || r.classLevel === cls) && (!q.trim() || r.name.toLowerCase().includes(q.trim().toLowerCase()))), [rows, cls, q]);
   const me = rows.find((r) => r.me);
@@ -51,7 +61,8 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
         </section>
       )}
 
-      <div className="sticky top-[67px] z-30 border-y border-border bg-card/90 backdrop-blur-lg">
+      <div ref={sentinel} aria-hidden className="h-px" />
+      <div className={cx("sticky top-[67px] z-30 border-b transition-colors", stuck ? "border-border bg-card/90 backdrop-blur-lg" : "border-transparent")}>
         <div className="mx-auto flex w-[min(1000px,calc(100%-48px))] flex-wrap items-center gap-x-3 gap-y-2.5 py-3">
           <div className="flex shrink-0 gap-0.5 rounded-lg bg-foreground p-1">
             {Object.entries(periods).map(([k, label]) => (
@@ -86,7 +97,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
             <span className="hidden w-[90px] shrink-0 tablet:block">Streak</span>
             <span className="w-[100px] shrink-0 text-right">XP</span>
           </div>
-          <ol className="border-t border-border">
+          <ol>
             {filtered.map((r, i) => (
               <li
                 key={r.id}

@@ -62,7 +62,7 @@ export default async function PricingPage() {
             Watch any chapter&apos;s free preview, then buy one chapter or a full course. You pay once, with no monthly fees.
           </p>
         </div>
-        <PricingTiers courses={courses} minPrice={minPrice} maxPrice={maxPrice} freeChapter={freeChapter} />
+        <PricingTiers courses={courses} minPrice={minPrice} maxPrice={maxPrice} />
       </WashHero>
 
       {chapters.length > 0 && <PriceBuilder chapters={chapters} courses={courses} coupon={coupon} />}
@@ -115,7 +115,7 @@ export default async function PricingPage() {
 
       <CtaBand>
         <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
-          {freeChapter ? <>Start with <Mark>₹0</Mark>. Pay when you&apos;re sure.</> : <>Start with <Mark>one</Mark> chapter.</>}
+          {freeChapter ? <>Watch a <Mark>free</Mark> 3–4 minute preview first.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
         <div className="mt-8 flex flex-wrap justify-center gap-2.5">
           {freeChapter && <Link href={`/chapter/${freeChapter.slug}`} className={cx(button.md, tone.primaryFlat)}>Watch a free preview</Link>}

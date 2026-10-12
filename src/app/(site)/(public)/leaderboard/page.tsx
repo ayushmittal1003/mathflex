@@ -10,7 +10,7 @@ import { privateMetadata } from "@/lib/seo/metadata";
 
 export const metadata = privateMetadata("Leaderboard");
 
-const PERIODS = { week: "This week", month: "This month", all: "All time" } as const;
+const PERIODS = { all: "All time", month: "This month", week: "This week" } as const;
 const WORD = { week: "this week", month: "this month", all: "of all time" } as const;
 
 // Leaderboard (dipankar-design/designs/Leaderboard.dc.html). Same ranking query as before
