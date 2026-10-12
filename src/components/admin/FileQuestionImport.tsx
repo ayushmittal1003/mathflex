@@ -43,8 +43,8 @@ export function FileQuestionImport({ chapterId, parts, aiOn }: { chapterId: stri
     if (!rows) return;
     save(async () => {
       const res = await commitQuestionDrafts({
-        chapterId, type, partOrder, exam: exam.trim(), year: type === "PYQ" && year ? Number(year) : null, difficulty, publish,
-        drafts: ready.map((r) => ({ prompt: r.prompt, options: r.options, format: r.format, correctIndex: r.correctIndex, correctIndices: r.correctIndices, numericAnswer: r.numericAnswer, tolerance: r.tolerance, solution: r.solution })),
+        chapterId, type, partOrder, exam: exam.trim(), year: year ? Number(year) : null, difficulty, publish,
+        drafts: ready.map((r) => ({ prompt: r.prompt, options: r.options, format: r.format, correctIndex: r.correctIndex, correctIndices: r.correctIndices, numericAnswer: r.numericAnswer, tolerance: r.tolerance, solution: r.solution, exam: r.exam, year: r.year ?? null })),
       });
       setResult(res ?? null);
       if (res?.created) setRows((cur) => cur?.filter((r) => !ready.includes(r)) ?? null);
@@ -92,7 +92,7 @@ export function FileQuestionImport({ chapterId, parts, aiOn }: { chapterId: stri
               </select>
             </label>
             <label className="text-xs font-semibold">Exam <input value={exam} onChange={(e) => setExam(e.target.value)} placeholder={type === "PYQ" ? "JEE Main" : "optional"} className="input mt-1" /></label>
-            {type === "PYQ" && <label className="text-xs font-semibold">Year <input value={year} onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="2023" className="input mt-1" /></label>}
+            <label className="text-xs font-semibold">Year for all <input value={year} onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="if not in the file" className="input mt-1" /></label>
             <label className="text-xs font-semibold">Difficulty
               <select value={difficulty} onChange={(e) => setDifficulty(Number(e.target.value))} className="input mt-1"><option value={1}>Easy</option><option value={2}>Medium</option><option value={3}>Hard</option></select>
             </label>
@@ -110,6 +110,8 @@ export function FileQuestionImport({ chapterId, parts, aiOn }: { chapterId: stri
                     <select value={r.format} onChange={(e) => patch(r.key, { format: e.target.value as Draft["format"], options: e.target.value === "NUMERICAL" ? [] : r.options.length ? r.options : ["", "", "", ""] })} className="input !w-auto !py-1 text-xs">
                       <option value="SINGLE">One correct answer</option><option value="MULTIPLE">Several correct</option><option value="NUMERICAL">Numerical answer</option>
                     </select>
+                    <input value={r.exam ?? ""} onChange={(e) => patch(r.key, { exam: e.target.value })} placeholder="Exam" className="input !w-28 !py-1 text-xs" aria-label="Exam" />
+                    <input value={r.year ?? ""} onChange={(e) => { const v = e.target.value.replace(/\D/g, "").slice(0, 4); patch(r.key, { year: v ? Number(v) : undefined }); }} placeholder="Year" className="input !w-20 !py-1 text-xs" aria-label="Year" />
                     {bad.map((b) => <span key={b} className="rounded bg-gold/25 px-2 py-0.5 text-xs font-semibold">{b}</span>)}
                     {r.warnings.filter((w) => !bad.length && w).map((w) => <span key={w} className="rounded bg-surface-2 px-2 py-0.5 text-xs text-muted">{w}</span>)}
                   </div>

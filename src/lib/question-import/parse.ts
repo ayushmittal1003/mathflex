@@ -18,6 +18,9 @@ export type Draft = {
   numericAnswer: number | null;
   tolerance: number;
   solution: string;
+  // Picked up from a tag like “(JEE Main 2021)” in the question text, if there is one.
+  exam?: string;
+  year?: number;
   warnings: string[];
 };
 
@@ -155,6 +158,26 @@ export function parseKey(text: string): Map<number, KeyEntry> {
   return out;
 }
 
+// ---- exam / year tags -----------------------------------------------------------------------
+
+const EXAM_WORDS = /\b(JEE|IIT|AIEEE|BITSAT|CBSE|NEET|KVPY|ISC|ICSE|Main|Mains|Advanced|Board)\b/i;
+const TAG = /[(\[]\s*([^()\[\]\n]{0,70}?)\b((?:19[89]\d|20[0-4]\d))\b([^()\[\]\n]{0,45}?)\s*[)\]]/g;
+
+// Finds one “(JEE Main 2021)” / “[2019, JEE Advanced]” tag, returns it and the text without it.
+export function pullExamTag(text: string): { text: string; exam?: string; year?: number } {
+  let found: { at: number; len: number; exam: string; year: number } | null = null;
+  for (const m of text.matchAll(TAG)) {
+    const rest = `${m[1]} ${m[3]}`.replace(/\b(shift|session|slot|morning|evening|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\b.*$/i, "").replace(/[,;:\-–]+/g, " ").replace(/\b\d{1,2}\b/g, "").replace(/\s+/g, " ").trim();
+    if (!EXAM_WORDS.test(rest) && rest.length > 0) continue; // e.g. "(x = 2020)" is not a tag
+    // A bare "(2019)" only counts at the very start or end of the question, not mid-sentence.
+    const atEdge = m.index! <= 1 || m.index! + m[0].length >= text.trim().length - 1;
+    if (!rest && !atEdge) continue;
+    found = { at: m.index!, len: m[0].length, exam: rest.replace(/\bMains\b/i, "Main"), year: Number(m[2]) };
+  }
+  if (!found) return { text };
+  return { text: `${text.slice(0, found.at)} ${text.slice(found.at + found.len)}`.replace(/[ \t]+/g, " ").replace(/ ?\n ?/g, "\n").trim(), exam: found.exam || undefined, year: found.year };
+}
+
 // ---- main ---------------------------------------------------------------------------------
 
 export function parseQuestions(questionsText: string, solutionsText = ""): { drafts: Draft[]; warnings: string[] } {
@@ -194,7 +217,9 @@ export function parseQuestions(questionsText: string, solutionsText = ""): { dra
     const solution = own.solution || fromKey?.solution || "";
     const ans = answerRaw ? parseAnswerValue(answerRaw, options.length > 0) : null;
 
-    const d: Draft = { n, prompt, options, format: "SINGLE", correctIndex: 0, correctIndices: [], numericAnswer: null, tolerance: 0, solution, warnings: w };
+    const tag = pullExamTag(prompt);
+    prompt = tag.text;
+    const d: Draft = { n, prompt, exam: tag.exam, year: tag.year, options, format: "SINGLE", correctIndex: 0, correctIndices: [], numericAnswer: null, tolerance: 0, solution, warnings: w };
     if (!options.length) {
       d.format = "NUMERICAL";
       if (ans?.kind === "number") { d.numericAnswer = ans.value; d.tolerance = ans.tolerance; }

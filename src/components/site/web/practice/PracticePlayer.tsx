@@ -174,7 +174,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
           <span className="font-mono text-muted-foreground">Q{idx + 1} / {questions.length}</span>
           <span className={cx("rounded-full px-2.5 py-1", q.type === "PYQ" ? "bg-gold/20 text-[color-mix(in_oklab,var(--gold)_55%,black)]" : "bg-primary/10 text-primary")}>{q.type}</span>
           <span className="rounded-full bg-xp/10 px-2.5 py-1 text-xp">{FORMAT_LABEL[q.format]}</span>
-          {q.exam && <span className="rounded-full bg-muted px-2.5 py-1 text-secondary-foreground">{q.exam}{q.year ? ` ${q.year}` : ""}</span>}
+          {(q.exam || q.year) && <span className="rounded-full bg-gold/20 px-2.5 py-1 text-[color-mix(in_oklab,var(--gold)_55%,black)]">{[q.exam, q.year].filter(Boolean).join(" ")}</span>}
           <span className="rounded-full bg-muted px-2.5 py-1 text-secondary-foreground">{DIFFICULTY_LABEL[q.difficulty]}</span>
           {q.topic && <span className="text-muted-foreground">· {q.topic}</span>}
           <span className="ml-auto flex items-center gap-1 font-mono tabular-nums text-muted-foreground" aria-label="Time on this question">

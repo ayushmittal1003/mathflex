@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: c ? `${c.title} · Practice` : "Practice" };
 }
 
-type Search = { status?: string; difficulty?: string; type?: string; format?: string; topic?: string };
+type Search = { status?: string; difficulty?: string; type?: string; format?: string; topic?: string; year?: string };
 
 const STATUS_FILTERS: [string, string][] = [["all", "All"], ["new", "Unattempted"], ["mistakes", "Mistakes"], ["bookmarked", "Bookmarked"], ["solved", "Solved"]];
 
@@ -56,7 +56,8 @@ export default async function ChapterPractice({ params, searchParams }: { params
     (!sp.difficulty || q.difficulty === Number(sp.difficulty)) &&
     (!sp.type || q.type === sp.type) &&
     (!sp.format || q.format === sp.format) &&
-    (!sp.topic || q.topic?.toLowerCase() === sp.topic.toLowerCase()),
+    (!sp.topic || q.topic?.toLowerCase() === sp.topic.toLowerCase()) &&
+    (!sp.year || q.year === Number(sp.year)),
   );
   // Retrying mistakes or skipped ones starts clean: hide the old answer and key until they answer again.
   const fresh = status === "mistakes" || status === "new";
@@ -76,6 +77,10 @@ export default async function ChapterPractice({ params, searchParams }: { params
 
   const topics = [...new Set(questions.map((q) => q.topic).filter((t): t is string => !!t))].sort();
   const formats = [...new Set(questions.map((q) => q.format))];
+  // Years that have questions in this chapter, newest first, with how many each.
+  const yearCounts = new Map<number, number>();
+  for (const q of questions) if (q.year) yearCounts.set(q.year, (yearCounts.get(q.year) ?? 0) + 1);
+  const years = [...yearCounts.keys()].sort((a, b) => b - a);
   const href = (patch: Partial<Search>) => {
     const next = { ...sp, ...patch };
     const qs = new URLSearchParams(Object.entries(next).filter(([, v]) => v && v !== "all") as [string, string][]);
@@ -139,6 +144,12 @@ export default async function ChapterPractice({ params, searchParams }: { params
             </>
           )}
         </Chips>
+        {years.length > 0 && (
+          <Chips>
+            <Chip href={href({ year: undefined })} active={!sp.year}>All years</Chip>
+            {years.map((y) => <Chip key={y} href={href({ year: String(y) })} active={sp.year === String(y)}>{y} ({yearCounts.get(y)})</Chip>)}
+          </Chips>
+        )}
         {topics.length > 0 && (
           <Chips>
             <Chip href={href({ topic: undefined })} active={!sp.topic}>All topics</Chip>

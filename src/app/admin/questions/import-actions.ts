@@ -57,6 +57,8 @@ const DraftIn = z.object({
   numericAnswer: z.number().finite().nullable(),
   tolerance: z.number().finite().min(0),
   solution: z.string().max(6000),
+  exam: z.string().trim().max(60).optional(),
+  year: z.number().int().min(1990).max(2100).nullable().optional(),
 });
 const Commit = z.object({
   chapterId: z.string().min(1),
@@ -102,8 +104,9 @@ export async function commitQuestionDrafts(input: CommitInput): Promise<CommitSt
       numericAnswer: d.format === "NUMERICAL" ? d.numericAnswer : null,
       tolerance: d.format === "NUMERICAL" ? d.tolerance : 0,
       solution: d.solution,
-      exam: c.exam || null,
-      year: c.type === "PYQ" ? c.year : null,
+      // A year/exam read from the question wins over the batch default.
+      exam: d.exam || c.exam || null,
+      year: d.year ?? c.year,
       difficulty: c.difficulty,
       isPublished: c.publish,
     }];
