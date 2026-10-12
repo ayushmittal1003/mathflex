@@ -12,6 +12,7 @@ import { ConfirmButton, ActionButton } from "@/components/admin/ConfirmButton";
 import { VideoField } from "@/components/admin/VideoField";
 import { ResourceUploader } from "@/components/admin/ResourceUploader";
 import { QuestionImport } from "@/components/admin/QuestionImport";
+import { FileQuestionImport } from "@/components/admin/FileQuestionImport";
 import { SyncDuration } from "@/components/admin/SyncDuration";
 import { AnswerFields } from "@/components/admin/AnswerFields";
 import { FORMAT_LABEL } from "@/lib/grading";
@@ -243,7 +244,8 @@ function QuestionsTab({ chapter, parts, questions, partFilter }: { chapter: Chap
         </details>
       ))}
       <Card title="Add a question"><QuestionForm chapterId={chapter.id} parts={parts} q={null} defaultPart={partFilter} topics={topics} /></Card>
-      <Card title="Bulk import"><QuestionImport chapterId={chapter.id} /></Card>
+      <Card title="Import from a PDF or Word file"><FileQuestionImport chapterId={chapter.id} parts={parts.map((p) => ({ order: p.order, title: p.title }))} aiOn={claudeConfigured()} /></Card>
+      <Card title="Bulk import (paste rows)"><QuestionImport chapterId={chapter.id} /></Card>
     </div>
   );
 }
