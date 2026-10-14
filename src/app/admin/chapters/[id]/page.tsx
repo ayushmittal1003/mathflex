@@ -14,6 +14,7 @@ import { VideoField } from "@/components/admin/VideoField";
 import { ResourceUploader } from "@/components/admin/ResourceUploader";
 import { QuestionImport } from "@/components/admin/QuestionImport";
 import { FileQuestionImport } from "@/components/admin/FileQuestionImport";
+import { deleteChapterQuestions } from "@/app/admin/questions/import-actions";
 import { SyncDuration } from "@/components/admin/SyncDuration";
 import { AnswerFields } from "@/components/admin/AnswerFields";
 import { FORMAT_LABEL } from "@/lib/grading";
@@ -25,9 +26,9 @@ import type { Chapter, Part, Question, Resource } from "@/generated/prisma/clien
 // Reading a long PDF with Claude can take a while.
 export const maxDuration = 300;
 
-export default async function ChapterEditor({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string; part?: string }> }) {
+export default async function ChapterEditor({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string; part?: string; qtype?: string }> }) {
   await requireStaff("content");
-  const [{ id }, { tab = "details", part: partFilter }] = await Promise.all([params, searchParams]);
+  const [{ id }, { tab = "details", part: partFilter, qtype }] = await Promise.all([params, searchParams]);
   const isNew = id === "new";
   const chapter = isNew
     ? null
@@ -66,7 +67,7 @@ export default async function ChapterEditor({ params, searchParams }: { params: 
 
       {(isNew || tab === "details") && <DetailsForm chapter={chapter} />}
       {chapter && tab === "parts" && <PartsTab chapter={chapter} parts={chapter.parts} />}
-      {chapter && tab === "questions" && <QuestionsTab chapter={chapter} parts={chapter.parts} questions={chapter.questions} partFilter={partFilter} />}
+      {chapter && tab === "questions" && <QuestionsTab chapter={chapter} parts={chapter.parts} questions={chapter.questions} partFilter={partFilter} typeFilter={qtype === "DPP" || qtype === "PYQ" ? qtype : undefined} />}
       {chapter && tab === "notes" && <NotesTab chapter={chapter} resources={chapter.resources} />}
     </div>
   );
@@ -211,20 +212,36 @@ function PartForm({ chapterId, part: p, bunny, nextOrder }: { chapterId: string;
   );
 }
 
-function QuestionsTab({ chapter, parts, questions, partFilter }: { chapter: Chapter; parts: Part[]; questions: Question[]; partFilter?: string }) {
-  const shown = partFilter ? questions.filter((q) => q.partId === partFilter) : questions;
+function QuestionsTab({ chapter, parts, questions, partFilter, typeFilter }: { chapter: Chapter; parts: Part[]; questions: Question[]; partFilter?: string; typeFilter?: "DPP" | "PYQ" }) {
+  const shown = questions.filter((q) => (!partFilter || q.partId === partFilter) && (!typeFilter || q.type === typeFilter));
   const partName = (id: string | null) => parts.find((p) => p.id === id)?.order;
   // Suggestions for the topic field: the chapter's JEE topics, part topics, and topics already used.
   const topics = [...new Set([...chapter.topTopics, ...parts.flatMap((p) => p.topics), ...questions.map((q) => q.topic ?? "")].filter(Boolean))];
+  const dpp = questions.filter((q) => q.type === "DPP").length;
+  const pyq = questions.length - dpp;
+  const ai = claudeConfigured();
+  const chip = (label: string, href: string, on: boolean) => (
+    <Link key={label} href={href} className={`rounded-full px-3 py-1.5 ${on ? "bg-fg text-bg" : "bg-surface-2 text-muted"}`}>{label}</Link>
+  );
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2 text-sm font-semibold">
-        <Link href={`/admin/chapters/${chapter.id}?tab=questions`} className={`rounded-full px-3 py-1.5 ${!partFilter ? "bg-fg text-bg" : "bg-surface-2 text-muted"}`}>All ({questions.length})</Link>
-        {parts.map((p) => (
-          <Link key={p.id} href={`/admin/chapters/${chapter.id}?tab=questions&part=${p.id}`} className={`rounded-full px-3 py-1.5 ${partFilter === p.id ? "bg-fg text-bg" : "bg-surface-2 text-muted"}`}>
-            Part {p.order} ({questions.filter((q) => q.partId === p.id).length})
-          </Link>
-        ))}
+      <p className="text-sm text-muted">DPPs and PYQs belong to the whole chapter. Students practise them from the chapter&apos;s practice page, with instant answers or in exam mode.</p>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card title="Upload DPPs"><FileQuestionImport chapterId={chapter.id} kind="DPP" aiOn={ai} /></Card>
+        <Card title="Upload PYQs"><FileQuestionImport chapterId={chapter.id} kind="PYQ" aiOn={ai} /></Card>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
+        {chip(`All (${questions.length})`, `/admin/chapters/${chapter.id}?tab=questions`, !typeFilter && !partFilter)}
+        {chip(`DPPs (${dpp})`, `/admin/chapters/${chapter.id}?tab=questions&qtype=DPP`, typeFilter === "DPP")}
+        {chip(`PYQs (${pyq})`, `/admin/chapters/${chapter.id}?tab=questions&qtype=PYQ`, typeFilter === "PYQ")}
+        {questions.length > 0 && (
+          <span className="ml-auto flex flex-wrap gap-2">
+            {dpp > 0 && <ConfirmButton action={deleteChapterQuestions.bind(null, chapter.id, "DPP")} message={`Delete all ${dpp} DPP questions in “${chapter.title}”? Students' answers to them are deleted too. This can't be undone.`}>Delete all DPPs</ConfirmButton>}
+            {pyq > 0 && <ConfirmButton action={deleteChapterQuestions.bind(null, chapter.id, "PYQ")} message={`Delete all ${pyq} PYQ questions in “${chapter.title}”? Students' answers to them are deleted too. This can't be undone.`}>Delete all PYQs</ConfirmButton>}
+            <ConfirmButton action={deleteChapterQuestions.bind(null, chapter.id, "ALL")} message={`Delete ALL ${questions.length} questions in “${chapter.title}”? Students' answers to them are deleted too. This can't be undone.`}>Delete all {questions.length}</ConfirmButton>
+          </span>
+        )}
       </div>
       {shown.map((q, i) => (
         <details key={q.id} className="card group overflow-hidden">
@@ -245,7 +262,6 @@ function QuestionsTab({ chapter, parts, questions, partFilter }: { chapter: Chap
         </details>
       ))}
       <Card title="Add a question"><QuestionForm chapterId={chapter.id} parts={parts} q={null} defaultPart={partFilter} topics={topics} /></Card>
-      <Card title="Import from a PDF or Word file"><FileQuestionImport chapterId={chapter.id} parts={parts.map((p) => ({ order: p.order, title: p.title }))} aiOn={claudeConfigured()} /></Card>
       <Card title="Bulk import (paste rows)"><QuestionImport chapterId={chapter.id} /></Card>
     </div>
   );
@@ -292,7 +308,7 @@ function NotesTab({ chapter, resources }: { chapter: Chapter; resources: Resourc
   const ai = claudeConfigured();
   return (
     <div className="space-y-4">
-      <Card title="Upload short notes, formula sheets or mind maps">
+      <Card title="Upload handwritten notes, short notes, formula sheets or mind maps">
         <ResourceUploader chapterId={chapter.id} direct={blobEnabled()} />
       </Card>
       {resources.map((r) => (
@@ -310,7 +326,7 @@ function NotesTab({ chapter, resources }: { chapter: Chapter; resources: Resourc
               <Field label="Title"><input name="title" defaultValue={r.title} className="input" /></Field>
               <Field label="Type">
                 <select name="type" defaultValue={r.type} className="input">
-                  <option value="NOTES">Short notes</option><option value="MINDMAP">Mind map</option><option value="FORMULA_SHEET">Formula sheet</option><option value="OTHER">Other</option>
+                  <option value="NOTES">Short notes</option><option value="HANDWRITTEN">Handwritten notes</option><option value="DPP_SHEET">DPP PDF</option><option value="PYQ_SHEET">PYQ PDF</option><option value="MINDMAP">Mind map</option><option value="FORMULA_SHEET">Formula sheet</option><option value="OTHER">Other</option>
                 </select>
               </Field>
             </div>

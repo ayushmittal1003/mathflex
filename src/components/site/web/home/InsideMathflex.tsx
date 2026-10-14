@@ -1,11 +1,12 @@
 "use client";
+import type { ResourceType } from "@/generated/prisma/enums";
 import { useEffect, useRef, useState } from "react";
 import { chapterIncludes, mockLabels } from "@/lib/site-content";
 import { Mark, SectionHead, posterBg } from "../primitives";
 import { cx } from "../ui";
 import type { HomeChapter, Leader } from "./types";
 
-type ResourceRow = { title: string; type: "NOTES" | "MINDMAP" | "FORMULA_SHEET" | "OTHER" };
+type ResourceRow = { title: string; type: ResourceType };
 type FeatKey = (typeof chapterIncludes)[number]["key"];
 
 // 06 Inside Mathflex: a framed My Learning dashboard with five feature captions that take

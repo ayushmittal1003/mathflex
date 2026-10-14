@@ -52,6 +52,7 @@ export function ResourceUploader({ chapterId, direct }: { chapterId: string; dir
         <input name="title" placeholder="Title, e.g. “Limits — 2-page formula sheet”" className="input" />
         <select name="type" className="input" defaultValue="NOTES">
           <option value="NOTES">Short notes</option>
+          <option value="HANDWRITTEN">Handwritten notes</option>
           <option value="MINDMAP">Mind map</option>
           <option value="FORMULA_SHEET">Formula sheet</option>
           <option value="OTHER">Other</option>

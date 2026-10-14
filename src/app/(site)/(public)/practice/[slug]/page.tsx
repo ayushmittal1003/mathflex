@@ -7,6 +7,8 @@ import { getSettings } from "@/lib/settings";
 import { questionStatuses, type QuestionStatus } from "@/lib/qbank";
 import { accuracyOf, fmtTime, FORMAT_LABEL } from "@/lib/grading";
 import { PracticePlayer, type PracticeQuestion } from "@/components/site/web/practice/PracticePlayer";
+import { ExamMode } from "@/components/site/web/practice/ExamMode";
+import { Download } from "lucide-react";
 import { posterBg } from "@/components/site/web/primitives";
 import { container, cx } from "@/components/site/web/ui";
 
@@ -16,7 +18,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: c ? `${c.title} · Practice` : "Practice" };
 }
 
-type Search = { status?: string; difficulty?: string; type?: string; format?: string; topic?: string; year?: string };
+type Search = { status?: string; difficulty?: string; type?: string; format?: string; topic?: string; year?: string; mode?: string };
+
+const RESOURCE_LABEL: Record<string, string> = { DPP_SHEET: "DPP", PYQ_SHEET: "PYQ", HANDWRITTEN: "Handwritten notes", NOTES: "Short notes", FORMULA_SHEET: "Formula sheet", MINDMAP: "Mind map", OTHER: "PDF" };
 
 const STATUS_FILTERS: [string, string][] = [["all", "All"], ["new", "Unattempted"], ["mistakes", "Mistakes"], ["bookmarked", "Bookmarked"], ["solved", "Solved"]];
 
@@ -29,10 +33,13 @@ export default async function ChapterPractice({ params, searchParams }: { params
   if (!chapter) notFound();
   if (!(await hasChapterAccess(user.id, chapter.id))) redirect(`/chapter/${slug}`);
 
-  const [questions, bookmarks] = await Promise.all([
+  const [questions, bookmarks, files] = await Promise.all([
     db.question.findMany({ where: { chapterId: chapter.id, isPublished: true }, orderBy: [{ difficulty: "asc" }, { createdAt: "asc" }] }),
     db.bookmark.findMany({ where: { userId: user.id, question: { chapterId: chapter.id } }, select: { questionId: true } }),
+    // Downloadable PDFs for this chapter: DPP / PYQ sheets and notes (the page already requires access).
+    db.resource.findMany({ where: { chapterId: chapter.id, isPublished: true }, orderBy: [{ type: "asc" }, { createdAt: "asc" }], select: { id: true, title: true, type: true, fileUrl: true } }),
   ]);
+  const exam = sp.mode === "exam";
   const rows = await questionStatuses(user.id, questions, settings.marking);
   const marked = new Set(bookmarks.map((b) => b.questionId));
 
@@ -121,20 +128,45 @@ export default async function ChapterPractice({ params, searchParams }: { params
         </div>
       </header>
 
+      {files.length > 0 && (
+        <section className="mt-6" aria-label="Downloads">
+          <h2 className="mb-2 text-sm font-bold uppercase tracking-[0.06em] text-muted-foreground">Download PDFs</h2>
+          <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+            {files.map((f) => (
+              <a key={f.id} href={f.fileUrl} target="_blank" rel="noreferrer" className="flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2.5 text-sm font-semibold hover:border-foreground/40">
+                <Download className="size-4 text-primary" />
+                <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-extrabold uppercase text-primary">{RESOURCE_LABEL[f.type] ?? "PDF"}</span>
+                <span className="max-w-[220px] truncate">{f.title}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* How to practise: instant feedback, or a timed test in the JEE computer-based layout. */}
+      <div className="mt-8 inline-flex rounded-lg bg-foreground p-1" role="tablist" aria-label="Practice mode">
+        {([["instant", "Instant answers"], ["exam", "Exam mode"]] as const).map(([k, label]) => (
+          <Link key={k} href={href({ mode: k === "exam" ? "exam" : undefined, status: k === "exam" ? undefined : sp.status })} scroll={false} role="tab" aria-selected={(k === "exam") === exam}
+            className={cx("rounded-md px-4 py-2 text-sm font-bold transition", (k === "exam") === exam ? "bg-card text-foreground" : "text-card/75 hover:text-card")}>{label}</Link>
+        ))}
+      </div>
+      <p className="mt-2 text-sm text-muted-foreground">{exam ? "A timed test: answers and explanations appear when you end the test." : "See the answer and explanation right after each question."}</p>
+
       {/* Filters */}
-      <nav className="mt-8 space-y-3" aria-label="Filters">
-        <Chips>
+      <nav className="mt-6 space-y-3" aria-label="Filters">
+        {!exam && <Chips>
           {STATUS_FILTERS.map(([k, label]) => (
             <Chip key={k} href={href({ status: k })} active={status === k}>
               {label}{k === "mistakes" && mistakes ? ` (${mistakes})` : ""}
             </Chip>
           ))}
-        </Chips>
+        </Chips>}
         <Chips>
           <Chip href={href({ difficulty: undefined })} active={!sp.difficulty}>Any level</Chip>
           {["1", "2", "3"].map((d) => <Chip key={d} href={href({ difficulty: d })} active={sp.difficulty === d}>{["", "Easy", "Medium", "Hard"][+d]}</Chip>)}
           <span className="mx-1 w-px self-stretch bg-border" />
           <Chip href={href({ type: undefined })} active={!sp.type}>DPP + PYQ</Chip>
+          <Chip href={href({ type: "DPP" })} active={sp.type === "DPP"}>DPPs only</Chip>
           <Chip href={href({ type: "PYQ" })} active={sp.type === "PYQ"}>PYQs only</Chip>
           {formats.length > 1 && (
             <>
@@ -159,7 +191,17 @@ export default async function ChapterPractice({ params, searchParams }: { params
       </nav>
 
       <div className="mt-8">
-        {questions.length ? (
+        {questions.length && exam ? (
+          <ExamMode
+            key={JSON.stringify(sp)}
+            chapterId={chapter.id}
+            chapterTitle={chapter.title}
+            section={sp.type === "PYQ" ? "PYQs" : sp.type === "DPP" ? "DPPs" : "DPPs + PYQs"}
+            candidate={user.name}
+            marking={settings.marking}
+            questions={shown.map(({ q }) => ({ id: q.id, type: q.type, format: q.format, exam: q.exam, year: q.year, prompt: q.prompt, options: q.options }))}
+          />
+        ) : questions.length ? (
           <PracticePlayer key={JSON.stringify(sp)} questions={player} sound={settings.features.celebrationSound} />
         ) : (
           <div className="rounded-xl border border-dashed border-border bg-muted/50 px-6 py-14 text-center text-muted-foreground">Questions for this chapter are on the way.</div>

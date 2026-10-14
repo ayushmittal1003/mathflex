@@ -9,8 +9,22 @@ import { claudeConfigured } from "@/lib/flexcare";
 import { extractFileText, fileKind } from "@/lib/question-import/extract";
 import { extractWithAi } from "@/lib/question-import/ai";
 import { parseQuestions, parseKey, type Draft } from "@/lib/question-import/parse";
+import { saveFile } from "@/lib/storage";
 
-export type PreviewState = { error?: string; drafts?: Draft[]; warnings?: string[]; via?: "text" | "ai"; filename?: string } | undefined;
+type KeptFile = { url: string; size: number; mimeType: "application/pdf"; name: string };
+
+export type PreviewState = { error?: string; drafts?: Draft[]; warnings?: string[]; via?: "text" | "ai"; filename?: string; kept?: KeptFile[] } | undefined;
+
+// Store the uploaded PDFs so students can download them next to the practice (saved as resources on import).
+async function keep(files: (File | null)[]): Promise<KeptFile[]> {
+  const out: KeptFile[] = [];
+  for (const f of files) {
+    if (!f || f.size === 0 || f.type !== "application/pdf") continue;
+    const saved = await saveFile(f, "resources");
+    out.push({ url: saved.url, size: f.size, mimeType: "application/pdf", name: f.name.replace(/\.pdf$/i, "") });
+  }
+  return out;
+}
 
 // Step 1: read the uploaded file(s) and return the questions found, for the admin to review. Nothing is saved yet.
 export async function previewQuestionFile(_: PreviewState, form: FormData): Promise<PreviewState> {
@@ -21,6 +35,7 @@ export async function previewQuestionFile(_: PreviewState, form: FormData): Prom
   if (!(file instanceof File) || file.size === 0) return { error: "Choose a PDF or Word file first." };
   const sol = solutions instanceof File && solutions.size > 0 ? solutions : null;
   const wantAi = form.get("useAi") === "on";
+  const keepPdf = form.get("keepPdf") === "on";
 
   try {
     const kind = fileKind(file.name, file.type);
@@ -29,7 +44,7 @@ export async function previewQuestionFile(_: PreviewState, form: FormData): Prom
     if (wantAi || kind === "image") {
       if (!claudeConfigured()) return { error: kind === "image" ? "Reading photos needs the AI. Add ANTHROPIC_API_KEY, or upload a PDF/Word file with selectable text." : "AI reading needs ANTHROPIC_API_KEY to be set." };
       const r = await extractWithAi(file, sol);
-      return { drafts: r.drafts, warnings: r.warnings, via: "ai", filename: file.name };
+      return { drafts: r.drafts, warnings: r.warnings, via: "ai", filename: file.name, kept: keepPdf ? await keep([file, sol]) : [] };
     }
 
     const main = await extractFileText(file);
@@ -41,7 +56,7 @@ export async function previewQuestionFile(_: PreviewState, form: FormData): Prom
     const solText = sol ? (await extractFileText(sol)).text : "";
     const { drafts, warnings } = parseQuestions(main.text, solText);
     if (sol && solText.trim() && parseKey(solText).size === 0) warnings.push("Nothing could be read from the solutions file.");
-    return { drafts, warnings, via: "text", filename: file.name };
+    return { drafts, warnings, via: "text", filename: file.name, kept: keepPdf ? await keep([file, sol]) : [] };
   } catch (e) {
     console.error("[question-import]", e);
     return { error: e instanceof Error ? e.message : "Couldn't read that file." };
@@ -69,6 +84,8 @@ const Commit = z.object({
   difficulty: z.number().int().min(1).max(3),
   publish: z.boolean(),
   drafts: z.array(DraftIn).min(1).max(400),
+  // PDFs stored at preview time, to list for download. Only our own /api/files/resources/ URLs.
+  kept: z.array(z.object({ url: z.string().regex(/^\/api\/files\/resources\/[\w-]+\.pdf$/), size: z.number().int().min(0), mimeType: z.literal("application/pdf"), name: z.string().max(200) })).max(2).default([]),
 });
 export type CommitInput = z.input<typeof Commit>;
 export type CommitState = { error?: string; created?: number; skipped?: string[] } | undefined;
@@ -113,8 +130,34 @@ export async function commitQuestionDrafts(input: CommitInput): Promise<CommitSt
   });
   if (!rows.length) return { error: "None of the questions are complete enough to import.", skipped };
   await db.question.createMany({ data: rows });
+  if (c.kept.length) {
+    await db.resource.createMany({
+      data: c.kept.map((k, i) => ({
+        chapterId: c.chapterId,
+        type: c.type === "PYQ" ? ("PYQ_SHEET" as const) : ("DPP_SHEET" as const),
+        title: k.name || `${c.type} ${i ? "solutions" : "questions"}`,
+        fileUrl: k.url,
+        mimeType: k.mimeType,
+        sizeBytes: k.size,
+        includeInChatbot: false,
+        requiresPurchase: true,
+        isPublished: c.publish,
+      })),
+    });
+  }
   await audit(me, "question.import", `Imported ${rows.length} ${c.type} questions from a file into “${chapter.title}”${skipped.length ? ` (${skipped.length} skipped)` : ""}`, { entity: "chapter", id: c.chapterId });
   revalidatePath(`/admin/chapters/${c.chapterId}`);
   revalidatePath("/admin/questions");
   return { created: rows.length, skipped };
+}
+
+// Remove a chapter's questions in one go (all, or only DPPs / PYQs). Students' attempts on them go too.
+export async function deleteChapterQuestions(chapterId: string, type: "ALL" | "DPP" | "PYQ") {
+  const me = await requireStaff("questions");
+  const chapter = await db.chapter.findUniqueOrThrow({ where: { id: chapterId }, select: { title: true } });
+  const where = { chapterId, ...(type === "ALL" ? {} : { type }) };
+  const { count } = await db.question.deleteMany({ where });
+  await audit(me, "question.delete", `Deleted ${count} ${type === "ALL" ? "" : `${type} `}questions from “${chapter.title}”`, { entity: "chapter", id: chapterId });
+  revalidatePath(`/admin/chapters/${chapterId}`);
+  revalidatePath("/admin/questions");
 }

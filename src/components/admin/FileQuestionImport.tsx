@@ -16,12 +16,12 @@ function problems(d: Draft): string[] {
 }
 
 // Upload a PDF / Word file of DPP or PYQ questions, review what was found, then import.
-export function FileQuestionImport({ chapterId, parts, aiOn }: { chapterId: string; parts: { order: number; title: string }[]; aiOn: boolean }) {
+// Questions belong to the whole chapter (not a part). `kind` fixes the section: DPPs or PYQs.
+export function FileQuestionImport({ chapterId, kind, aiOn }: { chapterId: string; kind: "DPP" | "PYQ"; aiOn: boolean }) {
   const [state, run, reading] = useActionState<PreviewState, FormData>(previewQuestionFile, undefined);
   const [rows, setRows] = useState<Row[] | null>(null);
   const [seen, setSeen] = useState<PreviewState>(undefined);
-  const [type, setType] = useState<"DPP" | "PYQ">("DPP");
-  const [partOrder, setPartOrder] = useState(parts[0]?.order ?? 0);
+  const type = kind;
   const [exam, setExam] = useState("");
   const [year, setYear] = useState("");
   const [difficulty, setDifficulty] = useState(2);
@@ -43,7 +43,7 @@ export function FileQuestionImport({ chapterId, parts, aiOn }: { chapterId: stri
     if (!rows) return;
     save(async () => {
       const res = await commitQuestionDrafts({
-        chapterId, type, partOrder, exam: exam.trim(), year: year ? Number(year) : null, difficulty, publish,
+        chapterId, type, partOrder: 0, kept: state?.kept ?? [], exam: exam.trim(), year: year ? Number(year) : null, difficulty, publish,
         drafts: ready.map((r) => ({ prompt: r.prompt, options: r.options, format: r.format, correctIndex: r.correctIndex, correctIndices: r.correctIndices, numericAnswer: r.numericAnswer, tolerance: r.tolerance, solution: r.solution, exam: r.exam, year: r.year ?? null })),
       });
       setResult(res ?? null);
@@ -58,7 +58,7 @@ export function FileQuestionImport({ chapterId, parts, aiOn }: { chapterId: stri
         className="space-y-3"
       >
         <p className="text-sm text-muted">
-          Upload a <b>PDF or Word (.docx)</b> of practice problems. MathFlex reads the questions, options, answers and explanations and turns them into interactive practice, so students never download anything. You review everything before it goes live.
+          Upload the {kind === "PYQ" ? "previous-year questions" : "daily practice problems"} as a <b>PDF or Word (.docx)</b>: one file with questions and solutions, or a questions file plus a solutions file. They become interactive {kind} practice for the whole chapter. You review everything before it goes live.
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-sm font-semibold">Questions file
@@ -68,11 +68,15 @@ export function FileQuestionImport({ chapterId, parts, aiOn }: { chapterId: stri
             <input name="solutions" type="file" accept=".pdf,.docx,.txt,.md,image/png,image/jpeg,image/webp" className="input mt-1" />
           </label>
         </div>
+        <label className="flex items-start gap-2 text-sm">
+          <input name="keepPdf" type="checkbox" defaultChecked className="mt-1" />
+          <span><b>Let students download the PDF</b> too, from the chapter&apos;s practice page (only students who bought the chapter).</span>
+        </label>
         <label className={`flex items-start gap-2 text-sm ${aiOn ? "" : "opacity-60"}`}>
           <input name="useAi" type="checkbox" disabled={!aiOn} className="mt-1" />
           <span><b>Read with AI</b> for scanned pages, photos and handwritten or formula-heavy files. {aiOn ? "Costs a few cents per file." : "Needs the Anthropic API key, which isn't set. Text-based PDFs and Word files work without it."}</span>
         </label>
-        <button disabled={reading} className="btn btn-primary !py-2 text-sm">{reading ? "Reading the file…" : "Read questions"}</button>
+        <button disabled={reading} className="btn btn-primary !py-2 text-sm">{reading ? "Reading the file…" : `Read ${kind} questions`}</button>
         {state?.error && <p role="alert" className="rounded-xl bg-bad/10 px-3 py-2 text-sm font-medium text-bad">{state.error}</p>}
       </form>
 
@@ -81,16 +85,7 @@ export function FileQuestionImport({ chapterId, parts, aiOn }: { chapterId: stri
           <p className="text-sm"><b>{rows.length} question{rows.length === 1 ? "" : "s"} found</b> in {state?.filename} ({state?.via === "ai" ? "read with AI" : "read from text"}). Check each one, fix anything wrong, untick any you don&apos;t want.</p>
           {state?.warnings?.map((w) => <p key={w} className="rounded-xl bg-gold/20 px-3 py-2 text-sm">{w}</p>)}
 
-          <div className="grid gap-3 rounded-xl bg-surface-2 p-3 sm:grid-cols-3 lg:grid-cols-6">
-            <label className="text-xs font-semibold">Type
-              <select value={type} onChange={(e) => setType(e.target.value as "DPP" | "PYQ")} className="input mt-1"><option value="DPP">DPP (daily practice)</option><option value="PYQ">PYQ (previous year)</option></select>
-            </label>
-            <label className="text-xs font-semibold">Attach to part
-              <select value={partOrder} onChange={(e) => setPartOrder(Number(e.target.value))} className="input mt-1">
-                <option value={0}>Whole chapter</option>
-                {parts.map((p) => <option key={p.order} value={p.order}>Part {p.order}: {p.title}</option>)}
-              </select>
-            </label>
+          <div className="grid gap-3 rounded-xl bg-surface-2 p-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-xs font-semibold">Exam <input value={exam} onChange={(e) => setExam(e.target.value)} placeholder={type === "PYQ" ? "JEE Main" : "optional"} className="input mt-1" /></label>
             <label className="text-xs font-semibold">Year for all <input value={year} onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="if not in the file" className="input mt-1" /></label>
             <label className="text-xs font-semibold">Difficulty
@@ -148,7 +143,7 @@ export function FileQuestionImport({ chapterId, parts, aiOn }: { chapterId: stri
           </ul>
 
           {result?.error && <p role="alert" className="rounded-xl bg-bad/10 px-3 py-2 text-sm font-medium text-bad">{result.error}</p>}
-          {result?.created ? <p className="rounded-xl bg-ok/10 px-3 py-2 text-sm font-medium text-ok">{result.created} question{result.created === 1 ? "" : "s"} imported{publish ? " and live for students" : " as drafts"}.{result.skipped?.length ? ` Skipped: ${result.skipped.join(", ")}.` : ""}</p> : null}
+          {result?.created ? <p className="rounded-xl bg-ok/10 px-3 py-2 text-sm font-medium text-ok">{result.created} {type} question{result.created === 1 ? "" : "s"} imported{publish ? " and live for students" : " as drafts"}{state?.kept?.length ? `, and the PDF${state.kept.length > 1 ? "s are" : " is"} available to download` : ""}.{result.skipped?.length ? ` Skipped: ${result.skipped.join(", ")}.` : ""}</p> : null}
           <button type="button" disabled={saving || ready.length === 0} onClick={importNow} className="btn btn-primary !py-2 text-sm">{saving ? "Importing…" : `Import ${ready.length} question${ready.length === 1 ? "" : "s"}`}</button>
           {rows.some((r) => r.include && problems(r).length) && <p className="text-xs text-muted">Questions that still need fixing are left out until they&apos;re complete.</p>}
         </div>

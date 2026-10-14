@@ -41,6 +41,9 @@ enum ResourceType {
   MINDMAP
   FORMULA_SHEET
   OTHER
+  HANDWRITTEN // handwritten notes
+  DPP_SHEET // the original DPP PDF, downloadable next to the interactive practice
+  PYQ_SHEET // the original PYQ PDF
 }
 
 enum BannerKind {

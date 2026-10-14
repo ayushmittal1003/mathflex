@@ -169,7 +169,16 @@ export function LearnClient(props: {
             </div>
             <div className="animate-mf-rise py-5" key={tab}>
               {tab === "practice" && (
-                <Quiz questions={props.questions} locked={!videoDone || props.isPreviewOnly} sound={props.sound} onAllAnswered={onAllAnswered} />
+                props.questions.length || props.isPreviewOnly ? (
+                  <Quiz questions={props.questions} locked={!videoDone || props.isPreviewOnly} sound={props.sound} onAllAnswered={onAllAnswered} />
+                ) : (
+                  // DPPs and PYQs live at chapter level: send students to the chapter's practice page.
+                  <div className="rounded-xl border border-border bg-card p-6 text-center">
+                    <p className="font-bold">Practise this chapter&apos;s DPPs and PYQs</p>
+                    <p className="mt-1 text-sm text-muted-foreground">Instant answers after every question, or a timed test in the JEE exam layout. PDFs are there to download too.</p>
+                    <Link href={`/practice/${chapter.slug}`} className="mt-4 inline-flex h-11 items-center rounded-lg bg-primary px-5 text-sm font-bold text-primary-foreground hover:brightness-108">Open chapter practice</Link>
+                  </div>
+                )
               )}
               {tab === "notes" && (
                 props.resources.length ? (
