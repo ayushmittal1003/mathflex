@@ -152,7 +152,10 @@ model Part {
   // Uploaded poster for this part; falls back to the chapter cover.
   thumbnailUrl   String?
   xpReward       Int           @default(100)
-  // Share of the video a student must watch before the part counts as watched.
+  // On: the student must really watch `watchThreshold` of the video (skipping ahead doesn't count).
+  // Off: they can drag anywhere, and reaching the end counts as watched.
+  requireWatch   Boolean       @default(true)
+  // Share of the video a student must watch before the part counts as watched (when requireWatch is on).
   watchThreshold Float         @default(0.9)
 
   questions Question[]

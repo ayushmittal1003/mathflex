@@ -110,7 +110,9 @@ async function savePartInner(me: Awaited<ReturnType<typeof requireStaff>>, form:
     previewSec: Math.min(300, Math.max(120, Math.round(num(form, "previewMin", 3) * 60))),
     ...(thumbnailUrl !== undefined ? { thumbnailUrl } : {}),
     xpReward: int(form, "xpReward", 100),
-    watchThreshold: Math.min(1, Math.max(0.1, num(form, "watchThresholdPct", 90) / 100)),
+    requireWatch: bool(form, "requireWatch"),
+    // The percentage box only exists while the rule is on; when it's off, keep the saved value.
+    ...(form.has("watchThresholdPct") ? { watchThreshold: Math.min(1, Math.max(0.1, num(form, "watchThresholdPct", 90) / 100)) } : {}),
   };
   await db.$transaction(async (tx) => {
     // Swap orders if another part already uses this number.

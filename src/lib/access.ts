@@ -25,7 +25,7 @@ export type PartState = "locked" | "open" | "done";
 
 // Sequential unlock: Part N opens once Part N-1's video AND its practice set are done.
 export function computePartStates(
-  parts: { id: string; order: number }[],
+  parts: { id: string; order: number; requireWatch?: boolean }[],
   progress: Map<string, { videoDone: boolean; practiceDone: boolean }>,
   opts: { hasAccess: boolean; sequential: boolean; freePreviewIds: Set<string> },
 ): Map<string, PartState> {
@@ -34,13 +34,15 @@ export function computePartStates(
   for (const p of [...parts].sort((a, b) => a.order - b.order)) {
     const pr = progress.get(p.id);
     const complete = !!pr?.videoDone && !!pr?.practiceDone;
+    // Without a must-watch rule, finishing the video is enough to open the next part.
+    const unlocksNext = complete || (p.requireWatch === false && !!pr?.videoDone);
     let state: PartState;
     if (!opts.hasAccess) state = opts.freePreviewIds.has(p.id) ? "open" : "locked";
     else if (complete) state = "done";
     else if (!opts.sequential || prevComplete) state = "open";
     else state = "locked";
     states.set(p.id, state);
-    prevComplete = complete;
+    prevComplete = unlocksNext;
   }
   return states;
 }

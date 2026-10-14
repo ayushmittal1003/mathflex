@@ -86,6 +86,7 @@ export default async function LearnPage({ params, searchParams }: { params: Prom
       questions={quiz}
       resources={owned ? chapter.resources.map((r) => ({ id: r.id, title: r.title, type: r.type, url: r.fileUrl })) : []}
       isPreviewOnly={!owned || !user}
+      requireWatch={part.requireWatch}
       previewSec={!owned && part.isFreePreview ? part.previewSec : undefined}
       sound={settings.features.celebrationSound}
       related={related}

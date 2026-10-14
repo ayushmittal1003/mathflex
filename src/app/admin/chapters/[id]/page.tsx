@@ -1,4 +1,5 @@
 import { StatusForm } from "@/components/admin/StatusForm";
+import { WatchRule } from "@/components/admin/WatchRule";
 import Link from "next/link";
 import { requireStaff } from "@/lib/auth";
 import { notFound } from "next/navigation";
@@ -183,11 +184,11 @@ function PartForm({ chapterId, part: p, bunny, nextOrder }: { chapterId: string;
         <p className="mb-1 text-sm font-semibold">Video</p>
         <VideoField defaultProvider={p?.videoProvider ?? (bunny ? "BUNNY" : "URL")} defaultRef={p?.videoRef ?? ""} bunnyReady={bunny} title={p?.title ?? "Lecture"} />
       </div>
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Duration (minutes)" hint="Auto-filled for Bunny"><input name="durationMin" type="number" step="0.5" defaultValue={p ? Math.round(p.durationSec / 6) / 10 : 60} className="input" /></Field>
         <Field label="XP reward"><input name="xpReward" type="number" defaultValue={p?.xpReward ?? 100} className="input" /></Field>
-        <Field label="Must watch (%)" hint="Before practice unlocks"><input name="watchThresholdPct" type="number" min={10} max={100} defaultValue={Math.round((p?.watchThreshold ?? 0.9) * 100)} className="input" /></Field>
       </div>
+      <WatchRule defaultOn={p?.requireWatch ?? true} defaultPct={Math.round((p?.watchThreshold ?? 0.9) * 100)} />
       <div className="grid gap-4 sm:grid-cols-[1fr_1fr]">
         <Field label="Thumbnail" hint="Poster shown on the chapter page and when someone hovers the preview. 16:9 works best.">
           {p?.thumbnailUrl && (

@@ -62,7 +62,10 @@ export async function reportWatch(partId: string, watchedSec: number, durationSe
   const total = part.durationSec || durationSec;
   const existing = await db.partProgress.findUnique({ where: { userId_partId: { userId: user.id, partId } } });
   const best = Math.max(existing?.watchedSec ?? 0, Math.round(watchedSec));
-  const reached = total > 0 && best >= total * part.watchThreshold;
+  // With "must watch" off the student may drag anywhere; getting to the end (95%, to allow for
+  // players that stop a moment early) is what counts.
+  const need = part.requireWatch ? part.watchThreshold : 0.95;
+  const reached = total > 0 && best >= total * need;
 
   if (existing?.videoDone) {
     if (best > existing.watchedSec) await db.partProgress.update({ where: { id: existing.id }, data: { watchedSec: best } });

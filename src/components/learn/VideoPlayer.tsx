@@ -10,6 +10,8 @@ type Props = {
   // Free preview: stop at this many seconds and offer the purchase instead.
   limitSec?: number;
   upgradeHref?: string;
+  // Must-watch off: how far the student has got counts, so dragging to the end is enough.
+  countSeeks?: boolean;
 };
 
 type PlayerJs = { on: (ev: string, cb: (d?: { seconds: number; duration: number }) => void) => void; pause?: () => void };
@@ -19,11 +21,12 @@ declare global {
 
 // Counts seconds actually watched (not the scrub position), so skipping to the end
 // doesn't unlock the practice set. Reports to the server periodically.
-export function VideoPlayer({ playback, initialWatched, onProgress, limitSec, upgradeHref }: Props) {
+export function VideoPlayer({ playback, initialWatched, onProgress, limitSec, upgradeHref, countSeeks = false }: Props) {
   const watched = useRef(initialWatched);
   const lastPos = useRef<number | null>(null);
   const duration = useRef(0);
   const lastReport = useRef(0);
+  const endSent = useRef(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<PlayerJs | null>(null);
@@ -56,10 +59,18 @@ export function VideoPlayer({ playback, initialWatched, onProgress, limitSec, up
       const prev = lastPos.current;
       // Only count small forward steps — i.e. normal playback, not seeks.
       if (prev !== null && pos > prev && pos - prev < 2.5) watched.current += pos - prev;
+      if (countSeeks) {
+        watched.current = Math.max(watched.current, pos);
+        // Dragged (or played) to the end: tell the server straight away so practice and the next part unlock.
+        if (dur && pos >= dur * 0.95 && !endSent.current) {
+          endSent.current = true;
+          report(true);
+        }
+      }
       lastPos.current = pos;
       if (Date.now() - lastReport.current > 20_000) report();
     },
-    [report],
+    [report, countSeeks],
   );
 
   // Bunny Stream exposes the player.js protocol for its iframe.
