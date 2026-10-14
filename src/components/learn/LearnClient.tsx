@@ -168,6 +168,17 @@ export function LearnClient(props: {
               ))}
             </div>
             <div className="animate-mf-rise py-5" key={tab}>
+              {tab === "practice" && !props.isPreviewOnly && (
+                // Entry to the chapter-wide practice page: instant answers or the timed JEE-style test.
+                <div className="mb-5 flex flex-wrap items-center gap-3 rounded-xl border border-primary/25 bg-selected p-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold">Practise like the real exam</p>
+                    <p className="text-sm text-muted-foreground">A timed test in the JEE computer-based layout, with your score and full solutions at the end.</p>
+                  </div>
+                  <Link href={`/practice/${chapter.slug}?mode=exam`} className="inline-flex h-11 shrink-0 items-center rounded-lg bg-primary px-5 text-sm font-bold text-primary-foreground hover:brightness-108">Take a timed test</Link>
+                  <Link href={`/practice/${chapter.slug}`} className="inline-flex h-11 shrink-0 items-center rounded-lg border border-border bg-card px-4 text-sm font-bold hover:border-foreground/40">All DPPs &amp; PYQs</Link>
+                </div>
+              )}
               {tab === "practice" && (
                 props.questions.length || props.isPreviewOnly ? (
                   <Quiz questions={props.questions} locked={!videoDone || props.isPreviewOnly} sound={props.sound} onAllAnswered={onAllAnswered} />
@@ -250,6 +261,7 @@ export function LearnClient(props: {
               <div className="mt-3 grid gap-2">
                 <button type="button" onClick={() => setTab("notes")} className="flex items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-left text-sm font-bold">Notes<span className="text-xs font-semibold text-muted-foreground">{props.resources.length || "—"}</span></button>
                 <button type="button" onClick={() => setTab("practice")} className="flex items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-left text-sm font-bold">Practice questions<span className="text-xs font-semibold text-muted-foreground">{props.questions.length || "—"}</span></button>
+                {!props.isPreviewOnly && <Link href={`/practice/${chapter.slug}?mode=exam`} className="flex items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-sm font-bold hover:bg-selected">Exam mode<span className="text-xs font-semibold text-primary">Timed test →</span></Link>}
               </div>
             </div>
           </aside>
