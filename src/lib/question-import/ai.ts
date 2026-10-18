@@ -54,7 +54,7 @@ Use an empty options array for questions with no options (numerical answer). Do 
     const options = (r.options ?? []).map((o) => String(o).trim()).filter(Boolean).slice(0, 6);
     const w: string[] = [];
     const ans = r.answer ? parseAnswerValue(String(r.answer), options.length > 0) : null;
-    const d: Draft = { n: r.n ?? i + 1, prompt: String(r.prompt ?? "").trim(), options, format: "SINGLE", correctIndex: 0, correctIndices: [], numericAnswer: null, tolerance: 0, solution: String(r.solution ?? "").trim(), warnings: w };
+    const d: Draft = { n: r.n ?? i + 1, prompt: String(r.prompt ?? "").trim(), options, format: "SINGLE", correctIndex: -1, correctIndices: [], numericAnswer: null, tolerance: 0, solution: String(r.solution ?? "").trim(), warnings: w };
     if (!options.length) {
       d.format = "NUMERICAL";
       if (ans?.kind === "number") { d.numericAnswer = ans.value; d.tolerance = ans.tolerance; } else w.push("No numeric answer found.");

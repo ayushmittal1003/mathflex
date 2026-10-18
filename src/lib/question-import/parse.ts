@@ -10,10 +10,12 @@
 
 export type Draft = {
   n: number;
+  // Where it came from, e.g. "Set 2 · Q3" when one file holds several DPPs.
+  label?: string;
   prompt: string;
   options: string[];
   format: "SINGLE" | "MULTIPLE" | "NUMERICAL";
-  correctIndex: number;
+  correctIndex: number; // -1 = no answer found yet
   correctIndices: number[];
   numericAnswer: number | null;
   tolerance: number;
@@ -61,7 +63,7 @@ function numberedBlocks(text: string, first = 1): { n: number; body: string }[] 
 
 function markerRe(label: string, style: "paren" | "dot" | "both") {
   const l = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const paren = `\\(${l}\\)`;
+  const paren = `\\(${l}\\)[.:]?`; // (a)  (a).  (a):
   const dot = `${l}[.)]`;
   const body = style === "paren" ? paren : style === "dot" ? dot : `(?:${paren}|${dot})`;
   // must start a line or follow whitespace, and be followed by a space/newline
@@ -180,61 +182,178 @@ export function pullExamTag(text: string): { text: string; exam?: string; year?:
 
 // ---- main ---------------------------------------------------------------------------------
 
-export function parseQuestions(questionsText: string, solutionsText = ""): { drafts: Draft[]; warnings: string[] } {
-  let text = normalise(questionsText);
-  const warnings: string[] = [];
+// Page headers/footers repeat on every page ("www.site.com", "Page | 2", "ALL RIGHTS RESERVED").
+// Drop short lines that occur 3+ times, except section headings.
+function dropBoilerplate(text: string) {
+  const lines = text.split("\n");
+  const count = new Map<string, number>();
+  for (const l of lines) { const k = l.trim(); if (k) count.set(k, (count.get(k) ?? 0) + 1); }
+  return lines
+    .filter((l) => {
+      const k = l.trim();
+      if (!k) return true;
+      if (/^page\s*\|?\s*\d+(\s*(of|\/)\s*\d+)?$/i.test(k)) return false;
+      if (/^solutions?\s+(of|to|for)\b/i.test(k) || /^(?:[A-Z][\w &-]*\s)?DPP\s*#?\s*\d+$/i.test(k)) return false; // set titles
+      if (new RegExp(SECTION.source, "im").test(k)) return true;
+      return !((count.get(k) ?? 0) >= 3 && k.length < 120);
+    })
+    .join("\n");
+}
 
-  // An answer-key / solutions section at the end of the same file.
-  let keyText = solutionsText;
-  const sec = /\n[ \t]*(?:Answer\s*Keys?|Answers?|Solutions?|Hints?\s*(?:&|and)\s*Solutions?)\s*[:\-]?\s*\n/gi;
-  let cut = -1;
-  for (const m of text.matchAll(sec)) cut = m.index!;
-  if (cut > text.length * 0.4) {
-    keyText = `${text.slice(cut)}\n${keyText}`;
-    text = text.slice(0, cut);
+// Section headings that say how the following questions are answered.
+const SECTION = /^[ \t]*(?:section\s*[-–:]?\s*[A-Z0-9]+\s*[-–:]?\s*)?(single\s*(?:choice|correct)|only\s*one\s*(?:option\s*)?(?:is\s*)?correct|one\s*or\s*more|more\s*than\s*one|multiple\s*(?:choice|correct)|multi[-\s]*correct|subjective|integer|numerical|comprehension|paragraph|assertion|match(?:ing|\s*the)?)\b[^\n]*$/gim;
+function sectionHint(h: string): Draft["format"] | null {
+  const t = h.toLowerCase();
+  if (/one\s*or\s*more|more\s*than\s*one|multiple|multi/.test(t)) return "MULTIPLE";
+  if (/single|only\s*one/.test(t)) return "SINGLE";
+  if (/subjective|integer|numerical/.test(t)) return "NUMERICAL";
+  return null;
+}
+
+// "Solution 3:", "Sol. 3", "Ans 3)", "Solution to Q.3 -" at the start of a line.
+const SOL_START = /^[ \t]*(?:Solution|Sol|Ans(?:wer)?|Hint)s?[ \t]*\.?[ \t]*(?:to[ \t]*)?(?:Q(?:uestion)?[ \t]*\.?[ \t]*)?(\d{1,3})[ \t]*[:.)\-–][ \t]*/gim;
+
+type Ev = { at: number; end: number; kind: "q" | "sol" | "sec"; n: number; hint?: Draft["format"] | null };
+
+// "(c) ...", "(a, d) ...", "(6) ...", "Ans: B ..." at the start of a solution: the answer, then the working.
+function leadingAnswer(body: string): { answerRaw: string; rest: string } {
+  const paren = /^\s*(?:Ans(?:wer)?\s*[:.\-]?\s*)?\(([^()\n]{1,24})\)\s*/i.exec(body);
+  if (paren && parseAnswerValue(paren[1], true)) return { answerRaw: paren[1], rest: body.slice(paren[0].length) };
+  const bare = /^\s*(?:Ans(?:wer)?|Correct\s*(?:option|answer)?)\s*[:.\-]?\s*([A-Da-d](?:\s*[,&]\s*[A-Da-d])*|-?\d+(?:\.\d+)?)\b\s*/i.exec(body);
+  if (bare) return { answerRaw: bare[1], rest: body.slice(bare[0].length) };
+  const line = ANSWER_LINE.exec(body);
+  return { answerRaw: line?.[1] ?? "", rest: body };
+}
+
+// Group numbered items into sets: numbering going back to 1 (or down) starts a new set, as when
+// one file holds DPP #1, DPP #2, ... each starting at Q.1.
+function groupSets<T extends { n: number; head: string; body: string }>(items: T[]): T[][] {
+  const sets: T[][] = [];
+  for (const it of items) {
+    const cur = sets.at(-1);
+    const last = cur?.at(-1);
+    if (!cur || (it.n === 1 && last && last.n >= 1)) sets.push([it]);
+    else if (it.n === last!.n + 1) cur.push(it);
+    // Anything else is a number inside the text (e.g. a formula line "4 )100 is"): put it back.
+    else last!.body = `${last!.body}\n${it.head}${it.body}`.trim();
   }
-  const key = keyText.trim() ? parseKey(keyText) : new Map<number, KeyEntry>();
+  return sets;
+}
 
-  const blocks = numberedBlocks(text);
-  if (!blocks.length) warnings.push("No numbered questions were found. Questions should start with 1., 2., Q1) or similar.");
+export function parseQuestions(questionsText: string, solutionsText = ""): { drafts: Draft[]; warnings: string[] } {
+  const warnings: string[] = [];
+  // Solutions in a separate file are read as if they came after the questions.
+  const SPLIT = "@@MATHFLEX_SOLUTIONS_FILE@@";
+  const text = dropBoilerplate(normalise(solutionsText ? `${questionsText}\n\n${SPLIT}\n\n${solutionsText}` : questionsText));
+  const mainEnd = solutionsText ? text.indexOf(SPLIT) : Infinity;
 
-  const drafts = blocks.map(({ n, body }): Draft => {
-    const w: string[] = [];
-    const opts = findOptions(body);
-    let prompt: string;
-    let options: string[] = [];
-    let rest: string;
-    if (opts) {
-      ({ prompt, options, rest } = opts);
-    } else {
-      const stop = body.search(/\n[ \t]*(?:Correct\s+)?(?:Answer|Ans|Key|Solution|Sol|Explanation|Exp|Hint)\b/i);
-      prompt = (stop === -1 ? body : body.slice(0, stop)).trim();
-      rest = stop === -1 ? "" : body.slice(stop);
+  // 1. Every event in document order.
+  const evs: Ev[] = [];
+  for (const m of text.matchAll(SOL_START)) evs.push({ at: m.index!, end: m.index! + m[0].length, kind: "sol", n: Number(m[1]) });
+  for (const m of text.matchAll(SECTION)) evs.push({ at: m.index!, end: m.index! + m[0].length, kind: "sec", n: 0, hint: sectionHint(m[1]) });
+  for (const m of text.matchAll(START)) {
+    const at = m.index!;
+    if (evs.some((e) => e.kind === "sol" && e.at === at)) continue;
+    evs.push({ at, end: at + m[0].length, kind: "q", n: Number(m[1] ?? m[2]) });
+  }
+  evs.sort((a, b) => a.at - b.at);
+
+  // 2. Questions and solutions as separate streams. A numbered line inside a solution belongs to the
+  //    solution unless it is a new "Q.1" (the next set of questions starting).
+  type Item = { n: number; at: number; head: string; body: string; hint: Draft["format"] | null };
+  const qs: Item[] = [];
+  const sols: Item[] = [];
+  let hint: Draft["format"] | null = null;
+  let inSol = false;
+  for (let i = 0; i < evs.length; i++) {
+    const e = evs[i];
+    if (e.kind === "sec") { hint = e.hint ?? null; inSol = false; continue; }
+    // Everything in a separate solutions file is a solution, however it's numbered ("1. Ans: B").
+    if (e.kind === "q" && e.at > mainEnd) e.kind = "sol";
+    if (e.kind === "q" && inSol && e.n !== 1 && !/^[ \t]*Q/i.test(text.slice(e.at, e.end))) continue;
+    // body runs to the next event that isn't swallowed by this item
+    let j = i + 1;
+    while (j < evs.length && evs[j].kind === "q" && e.kind === "sol" && evs[j].at < mainEnd && evs[j].n !== 1 && !/^[ \t]*Q/i.test(text.slice(evs[j].at, evs[j].end))) j++;
+    const body = text.slice(e.end, j < evs.length ? evs[j].at : text.length).trim();
+    const head = text.slice(e.at, e.end);
+    if (e.kind === "sol") { sols.push({ n: e.n, at: e.at, head, body, hint: null }); inSol = true; }
+    else { qs.push({ n: e.n, at: e.at, head, body, hint }); inSol = false; }
+  }
+
+  // The old layouts: "Answer Key" / "Solutions" heading at the end, or a separate key file.
+  let key = new Map<number, KeyEntry>();
+  if (!sols.length) {
+    const sec = /\n[ \t]*(?:Answer\s*Keys?|Answers?|Solutions?|Hints?\s*(?:&|and)\s*Solutions?)\s*[:\-]?\s*\n/gi;
+    let cut = -1;
+    for (const m of text.matchAll(sec)) cut = m.index!;
+    const from = cut > text.length * 0.4 ? cut : -1;
+    if (from >= 0 && from < text.length) {
+      key = parseKey(text.slice(from));
+      for (let k = qs.length - 1; k >= 0; k--) if (qs[k].at >= from) qs.splice(k, 1);
     }
-    const own = splitTail(rest);
-    const fromKey = key.get(n);
-    const answerRaw = own.answerRaw || fromKey?.answerRaw || "";
-    const solution = own.solution || fromKey?.solution || "";
-    const ans = answerRaw ? parseAnswerValue(answerRaw, options.length > 0) : null;
+  }
 
-    const tag = pullExamTag(prompt);
-    prompt = tag.text;
-    const d: Draft = { n, prompt, exam: tag.exam, year: tag.year, options, format: "SINGLE", correctIndex: 0, correctIndices: [], numericAnswer: null, tolerance: 0, solution, warnings: w };
-    if (!options.length) {
-      d.format = "NUMERICAL";
-      if (ans?.kind === "number") { d.numericAnswer = ans.value; d.tolerance = ans.tolerance; }
-      else w.push("No options found and no numeric answer, so this can't be graded. Add the answer or delete the question.");
-    } else if (ans?.kind === "letters") {
-      if (ans.picks.length === 1) d.correctIndex = ans.picks[0];
-      else { d.format = "MULTIPLE"; d.correctIndices = ans.picks; }
-    } else if (ans?.kind === "number") {
-      w.push(`The answer “${answerRaw.trim()}” isn't one of the options. Pick the correct option.`);
-    } else {
-      w.push("No answer found. Pick the correct option before importing.");
+  const qSets = groupSets(qs);
+  const sSets = groupSets(sols);
+  if (!qSets.length) warnings.push("No numbered questions were found. Questions should start with 1., Q1), Q.1: or similar.");
+
+  // 3. Which solutions belong to which questions: the same count in the same order, or else each
+  //    set of solutions goes with the nearest set of questions before it.
+  const solFor = new Map<number, Item[]>();
+  if (sSets.length === qSets.length) sSets.forEach((ss, k) => solFor.set(k, ss));
+  else for (const ss of sSets) {
+    let k = -1;
+    qSets.forEach((qset, idx) => { if (qset[0].at < ss[0].at && !solFor.has(idx)) k = idx; });
+    if (k >= 0) solFor.set(k, ss);
+  }
+  const multi = qSets.length > 1;
+  if (multi) {
+    const missing = qSets.map((_, k) => k).filter((k) => !solFor.has(k) && !key.size);
+    if (missing.length) warnings.push(`No answers were found in the text for set${missing.length > 1 ? "s" : ""} ${missing.map((k) => k + 1).join(", ")}. If those solutions are pictures in the PDF, use “Read with AI”, or upload them as a separate solutions file.`);
+  }
+
+  const drafts: Draft[] = [];
+  qSets.forEach((set, k) => {
+    const solMap = new Map((solFor.get(k) ?? []).map((x) => [x.n, x]));
+    for (const item of set) {
+      const w: string[] = [];
+      const opts = findOptions(item.body);
+      let prompt: string;
+      let options: string[] = [];
+      let rest: string;
+      if (opts) ({ prompt, options, rest } = opts);
+      else {
+        const stop = item.body.search(/\n[ \t]*(?:Correct\s+)?(?:Answer|Ans|Key|Solution|Sol|Explanation|Exp|Hint)\b/i);
+        prompt = (stop === -1 ? item.body : item.body.slice(0, stop)).trim();
+        rest = stop === -1 ? "" : item.body.slice(stop);
+      }
+      const own = splitTail(rest);
+      const sol = solMap.get(item.n);
+      const lead = sol ? leadingAnswer(sol.body) : { answerRaw: "", rest: "" };
+      const fromKey = key.get(item.n);
+      const answerRaw = own.answerRaw || lead.answerRaw || fromKey?.answerRaw || "";
+      const solRest = lead.rest.trim();
+      const solution = own.solution || (sol ? SOLUTION_RE.exec(`\n${solRest}`)?.[1]?.trim() || solRest.replace(SPLIT, "").trim() : "") || fromKey?.solution || "";
+      const ans = answerRaw ? parseAnswerValue(answerRaw, options.length > 0) : null;
+
+      const tag = pullExamTag(prompt);
+      prompt = tag.text;
+      const d: Draft = { n: item.n, label: multi ? `Set ${k + 1} · Q${item.n}` : undefined, prompt, exam: tag.exam, year: tag.year, options, format: "SINGLE", correctIndex: -1, correctIndices: [], numericAnswer: null, tolerance: 0, solution, warnings: w };
+      if (!options.length) {
+        d.format = "NUMERICAL";
+        if (ans?.kind === "number") { d.numericAnswer = ans.value; d.tolerance = ans.tolerance; }
+        else w.push(answerRaw ? `The answer “${answerRaw.trim()}” isn't a number, so it can't be auto-graded.` : "No numeric answer found.");
+      } else if (ans?.kind === "letters") {
+        if (item.hint === "MULTIPLE" || ans.picks.length > 1) { d.format = "MULTIPLE"; d.correctIndices = ans.picks; }
+        else d.correctIndex = ans.picks[0];
+      } else {
+        if (item.hint === "MULTIPLE") d.format = "MULTIPLE";
+        w.push(ans?.kind === "number" ? `The answer “${answerRaw.trim()}” isn't one of the options.` : "No answer found.");
+      }
+      if (!d.solution) w.push("No explanation found.");
+      if (d.prompt.length < 4) w.push("The question text looks empty.");
+      drafts.push(d);
     }
-    if (!solution) w.push("No explanation found.");
-    if (prompt.length < 4) w.push("The question text looks empty.");
-    return d;
   });
 
   if (key.size && !drafts.some((d) => key.has(d.n))) warnings.push("An answer key was found but its question numbers don't match the questions.");

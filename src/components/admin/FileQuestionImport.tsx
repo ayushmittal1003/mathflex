@@ -11,7 +11,7 @@ function problems(d: Draft): string[] {
   if (!d.prompt.trim()) return ["Question text is empty."];
   if (d.format === "NUMERICAL") return d.numericAnswer === null || Number.isNaN(d.numericAnswer) ? ["Enter the numeric answer."] : [];
   if (opts.length < 2) return ["Needs at least 2 options."];
-  if (d.format === "SINGLE") return d.correctIndex >= opts.length ? ["Pick the correct option."] : [];
+  if (d.format === "SINGLE") return d.correctIndex < 0 || d.correctIndex >= opts.length ? ["Pick the correct option."] : [];
   return d.correctIndices.length ? [] : ["Tick the correct options."];
 }
 
@@ -124,7 +124,7 @@ export function FileQuestionImport({ chapterId, kind, aiOn, direct }: { chapterI
 
       {rows && (
         <div className="space-y-4 border-t border-border pt-4">
-          <p className="text-sm"><b>{rows.length} question{rows.length === 1 ? "" : "s"} found</b> in {state?.filename} ({state?.via === "ai" ? "read with AI" : "read from text"}). Check each one, fix anything wrong, untick any you don&apos;t want.</p>
+          <p className="text-sm"><b>{rows.length} question{rows.length === 1 ? "" : "s"} found, {rows.filter((r) => problems(r).length === 0).length} complete</b> in {state?.filename} ({state?.via === "ai" ? "read with AI" : "read from text"}). Check each one, fix anything wrong, untick any you don&apos;t want.</p>
           {state?.warnings?.map((w) => <p key={w} className="rounded-xl bg-gold/20 px-3 py-2 text-sm">{w}</p>)}
 
           <div className="grid gap-3 rounded-xl bg-surface-2 p-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -143,7 +143,7 @@ export function FileQuestionImport({ chapterId, kind, aiOn, direct }: { chapterI
               return (
                 <li key={r.key} className={`rounded-xl border p-3 ${bad.length ? "border-gold/60" : "border-border"} ${r.include ? "" : "opacity-50"}`}>
                   <div className="mb-2 flex flex-wrap items-center gap-2 text-sm">
-                    <label className="flex items-center gap-2 font-bold"><input type="checkbox" checked={r.include} onChange={() => setRows((cur) => cur?.map((x) => (x.key === r.key ? { ...x, include: !x.include } : x)) ?? null)} /> Question {r.n}</label>
+                    <label className="flex items-center gap-2 font-bold"><input type="checkbox" checked={r.include} onChange={() => setRows((cur) => cur?.map((x) => (x.key === r.key ? { ...x, include: !x.include } : x)) ?? null)} /> {r.label ?? `Question ${r.n}`}</label>
                     <select value={r.format} onChange={(e) => patch(r.key, { format: e.target.value as Draft["format"], options: e.target.value === "NUMERICAL" ? [] : r.options.length ? r.options : ["", "", "", ""] })} className="input !w-auto !py-1 text-xs">
                       <option value="SINGLE">One correct answer</option><option value="MULTIPLE">Several correct</option><option value="NUMERICAL">Numerical answer</option>
                     </select>
