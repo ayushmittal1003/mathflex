@@ -17,7 +17,11 @@ function problems(d: Draft): string[] {
 
 // Upload a PDF / Word file of DPP or PYQ questions, review what was found, then import.
 // Questions belong to the whole chapter (not a part). `kind` fixes the section: DPPs or PYQs.
-export function FileQuestionImport({ chapterId, kind, aiOn }: { chapterId: string; kind: "DPP" | "PYQ"; aiOn: boolean }) {
+const MIME: Record<string, string> = { pdf: "application/pdf", docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", txt: "text/plain", md: "text/markdown", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp" };
+
+// `direct`: storage is Vercel Blob, so files go from the browser straight to storage (the server only
+// gets their keys). That avoids the 4.5 MB limit on requests to the server.
+export function FileQuestionImport({ chapterId, kind, aiOn, direct }: { chapterId: string; kind: "DPP" | "PYQ"; aiOn: boolean; direct: boolean }) {
   const [state, run, reading] = useActionState<PreviewState, FormData>(previewQuestionFile, undefined);
   const [rows, setRows] = useState<Row[] | null>(null);
   const [seen, setSeen] = useState<PreviewState>(undefined);
@@ -27,6 +31,44 @@ export function FileQuestionImport({ chapterId, kind, aiOn }: { chapterId: strin
   const [difficulty, setDifficulty] = useState(2);
   const [publish, setPublish] = useState(true);
   const [saving, save] = useTransition();
+  const [sending, setSending] = useState<string | null>(null);
+  const [sendError, setSendError] = useState("");
+
+  async function submitFiles(form: HTMLFormElement) {
+    setSendError("");
+    const fd = new FormData(form);
+    if (direct) {
+      try {
+        const { upload } = await import("@vercel/blob/client");
+        for (const field of ["file", "solutions"] as const) {
+          const f = fd.get(field);
+          fd.delete(field);
+          if (!(f instanceof File) || f.size === 0) continue;
+          const ext = (f.name.split(".").pop() ?? "").toLowerCase();
+          if (!MIME[ext]) throw new Error(`“${f.name}”: use a PDF, Word (.docx), text file or a PNG/JPG photo.`);
+          if (f.size > 30 * 1024 * 1024) throw new Error(`“${f.name}” is over 30 MB. Split it into smaller files.`);
+          const key = `resources/${crypto.randomUUID()}.${ext}`;
+          setSending(`Uploading ${f.name}… 0%`);
+          await upload(key, f, {
+            access: "private",
+            handleUploadUrl: "/api/admin/blob-upload",
+            contentType: MIME[ext],
+            multipart: f.size > 8 * 1024 * 1024,
+            onUploadProgress: ({ percentage }) => setSending(`Uploading ${f.name}… ${Math.round(percentage)}%`),
+          });
+          fd.set(`${field}Key`, key);
+          fd.set(`${field}Name`, f.name);
+          fd.set(`${field}Type`, MIME[ext]);
+        }
+      } catch (e) {
+        setSending(null);
+        setSendError((e as Error).message || "The upload failed. Please try again.");
+        return;
+      }
+      setSending(null);
+    }
+    startTransition(() => run(fd));
+  }
   const [result, setResult] = useState<{ created?: number; error?: string; skipped?: string[] } | null>(null);
 
   // A new preview result arrived: load it into the editable list.
@@ -54,7 +96,7 @@ export function FileQuestionImport({ chapterId, kind, aiOn }: { chapterId: strin
   return (
     <div className="space-y-4">
       <form
-        onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(() => run(fd)); }}
+        onSubmit={(e) => { e.preventDefault(); void submitFiles(e.currentTarget); }}
         className="space-y-3"
       >
         <p className="text-sm text-muted">
@@ -76,8 +118,8 @@ export function FileQuestionImport({ chapterId, kind, aiOn }: { chapterId: strin
           <input name="useAi" type="checkbox" disabled={!aiOn} className="mt-1" />
           <span><b>Read with AI</b> for scanned pages, photos and handwritten or formula-heavy files. {aiOn ? "Costs a few cents per file." : "Needs the Anthropic API key, which isn't set. Text-based PDFs and Word files work without it."}</span>
         </label>
-        <button disabled={reading} className="btn btn-primary !py-2 text-sm">{reading ? "Reading the file…" : `Read ${kind} questions`}</button>
-        {state?.error && <p role="alert" className="rounded-xl bg-bad/10 px-3 py-2 text-sm font-medium text-bad">{state.error}</p>}
+        <button disabled={reading || !!sending} className="btn btn-primary !py-2 text-sm">{sending ?? (reading ? "Reading the file…" : `Read ${kind} questions`)}</button>
+        {(sendError || state?.error) && <p role="alert" className="rounded-xl bg-bad/10 px-3 py-2 text-sm font-medium text-bad">{sendError || state?.error}</p>}
       </form>
 
       {rows && (

@@ -6,22 +6,43 @@ import { requireStaff } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { allow } from "@/lib/rate-limit";
 import { claudeConfigured } from "@/lib/flexcare";
-import { extractFileText, fileKind } from "@/lib/question-import/extract";
+import { extractSourceText, fileKind, type Source } from "@/lib/question-import/extract";
 import { extractWithAi } from "@/lib/question-import/ai";
 import { parseQuestions, parseKey, type Draft } from "@/lib/question-import/parse";
-import { saveFile } from "@/lib/storage";
+import { saveFile, readStoredFile, deleteStoredFile, urlForKey } from "@/lib/storage";
 
 type KeptFile = { url: string; size: number; mimeType: "application/pdf"; name: string };
 
 export type PreviewState = { error?: string; drafts?: Draft[]; warnings?: string[]; via?: "text" | "ai"; filename?: string; kept?: KeptFile[] } | undefined;
 
-// Store the uploaded PDFs so students can download them next to the practice (saved as resources on import).
-async function keep(files: (File | null)[]): Promise<KeptFile[]> {
+const KEY = /^resources\/[\w-]+\.(pdf|docx|txt|md|png|jpe?g|webp)$/;
+
+// The two ways a file arrives: uploaded by the browser straight to storage (production, so big PDFs
+// skip the 4.5 MB request limit) and named by its key, or sent inside the form (local development).
+async function source(form: FormData, field: string): Promise<(Source & { key?: string }) | null> {
+  const key = String(form.get(`${field}Key`) ?? "");
+  if (key) {
+    if (!KEY.test(key)) throw new Error("That upload couldn't be found. Please choose the file again.");
+    return { key, name: String(form.get(`${field}Name`) ?? key), mime: String(form.get(`${field}Type`) ?? ""), buf: await readStoredFile(key) };
+  }
+  const f = form.get(field);
+  if (!(f instanceof File) || f.size === 0) return null;
+  return { name: f.name, mime: f.type, buf: Buffer.from(await f.arrayBuffer()) };
+}
+
+// PDFs students may download next to the practice (saved as resources on import). Files that aren't
+// kept are removed from storage again.
+async function keepOrDrop(srcs: ((Source & { key?: string }) | null)[], keepPdf: boolean): Promise<KeptFile[]> {
   const out: KeptFile[] = [];
-  for (const f of files) {
-    if (!f || f.size === 0 || f.type !== "application/pdf") continue;
-    const saved = await saveFile(f, "resources");
-    out.push({ url: saved.url, size: f.size, mimeType: "application/pdf", name: f.name.replace(/\.pdf$/i, "") });
+  for (const src of srcs) {
+    if (!src) continue;
+    const isPdf = fileKind(src.name, src.mime) === "pdf";
+    if (keepPdf && isPdf) {
+      const key = src.key ?? (await saveFile(new File([new Uint8Array(src.buf)], src.name, { type: "application/pdf" }), "resources")).key;
+      out.push({ url: urlForKey(key), size: src.buf.length, mimeType: "application/pdf", name: src.name.replace(/\.pdf$/i, "") });
+    } else if (src.key) {
+      await deleteStoredFile(src.key).catch(() => {});
+    }
   }
   return out;
 }
@@ -30,33 +51,33 @@ async function keep(files: (File | null)[]): Promise<KeptFile[]> {
 export async function previewQuestionFile(_: PreviewState, form: FormData): Promise<PreviewState> {
   const me = await requireStaff("questions");
   if (!(await allow(`qimport:${me.id}`, 30, 3600))) return { error: "Too many imports this hour. Please wait a bit." };
-  const file = form.get("file");
-  const solutions = form.get("solutions");
-  if (!(file instanceof File) || file.size === 0) return { error: "Choose a PDF or Word file first." };
-  const sol = solutions instanceof File && solutions.size > 0 ? solutions : null;
   const wantAi = form.get("useAi") === "on";
   const keepPdf = form.get("keepPdf") === "on";
 
   try {
-    const kind = fileKind(file.name, file.type);
+    const file = await source(form, "file");
+    if (!file) return { error: "Choose a PDF or Word file first." };
+    const sol = await source(form, "solutions");
+    const kind = fileKind(file.name, file.mime);
     if (kind === "unsupported") return { error: "Use a PDF, Word (.docx), text file, or a PNG/JPG photo. Old .doc files: open them in Word and Save As .docx." };
 
     if (wantAi || kind === "image") {
       if (!claudeConfigured()) return { error: kind === "image" ? "Reading photos needs the AI. Add ANTHROPIC_API_KEY, or upload a PDF/Word file with selectable text." : "AI reading needs ANTHROPIC_API_KEY to be set." };
       const r = await extractWithAi(file, sol);
-      return { drafts: r.drafts, warnings: r.warnings, via: "ai", filename: file.name, kept: keepPdf ? await keep([file, sol]) : [] };
+      return { drafts: r.drafts, warnings: r.warnings, via: "ai", filename: file.name, kept: await keepOrDrop([file, sol], keepPdf) };
     }
 
-    const main = await extractFileText(file);
+    const main = await extractSourceText(file);
     if (main.text.trim().length < 40) {
+      await keepOrDrop([file, sol], false);
       return { error: claudeConfigured()
         ? "This file has no selectable text (it looks scanned). Tick “Read with AI” and try again."
         : "This file has no selectable text (it looks scanned), so it can't be read without the AI. Upload a Word file or a PDF exported from Word." };
     }
-    const solText = sol ? (await extractFileText(sol)).text : "";
+    const solText = sol ? (await extractSourceText(sol)).text : "";
     const { drafts, warnings } = parseQuestions(main.text, solText);
     if (sol && solText.trim() && parseKey(solText).size === 0) warnings.push("Nothing could be read from the solutions file.");
-    return { drafts, warnings, via: "text", filename: file.name, kept: keepPdf ? await keep([file, sol]) : [] };
+    return { drafts, warnings, via: "text", filename: file.name, kept: await keepOrDrop([file, sol], keepPdf) };
   } catch (e) {
     console.error("[question-import]", e);
     return { error: e instanceof Error ? e.message : "Couldn't read that file." };

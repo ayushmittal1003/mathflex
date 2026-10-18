@@ -2,19 +2,22 @@ import "server-only";
 import { claude, claudeConfigured, FALLBACK_BETA } from "../flexcare";
 import { getSettings } from "../settings";
 import { parseAnswerValue, type Draft } from "./parse";
+import { fileKind, type Source } from "./extract";
 
 // Optional: let Claude read a PDF, Word-exported PDF or photo of questions (scans, handwriting,
 // formulas) and return them in the same draft shape as the text parser. Costs a few cents per file.
 
 type Raw = { n?: number; prompt?: string; options?: string[]; answer?: string; solution?: string };
 
-export async function extractWithAi(file: File, solutionsFile?: File | null): Promise<{ drafts: Draft[]; warnings: string[] }> {
+export async function extractWithAi(file: Source, solutionsFile?: Source | null): Promise<{ drafts: Draft[]; warnings: string[] }> {
   if (!claudeConfigured()) throw new Error("AI reading needs ANTHROPIC_API_KEY to be set on the server.");
-  const toBlock = async (f: File) => {
-    const data = Buffer.from(await f.arrayBuffer()).toString("base64");
-    return f.type === "application/pdf"
+  const toBlock = async (f: Source) => {
+    const data = f.buf.toString("base64");
+    const kind = fileKind(f.name, f.mime);
+    if (kind !== "pdf" && kind !== "image") throw new Error("AI reading works on PDFs and photos. For Word files, untick “Read with AI”.");
+    return kind === "pdf"
       ? ({ type: "document", source: { type: "base64", media_type: "application/pdf", data } } as const)
-      : ({ type: "image", source: { type: "base64", media_type: f.type as "image/png" | "image/jpeg" | "image/webp", data } } as const);
+      : ({ type: "image", source: { type: "base64", media_type: (f.mime || "image/jpeg") as "image/png" | "image/jpeg" | "image/webp", data } } as const);
   };
   const content = [
     await toBlock(file),

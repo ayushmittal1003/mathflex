@@ -2,7 +2,7 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { can } from "@/lib/permissions";
 import { getCurrentUser } from "@/lib/auth";
 
-// Issues short-lived upload tokens so an admin's browser can send large PDFs
+// Issues short-lived upload tokens so an admin's browser can send large PDFs (notes, DPP/PYQ files)
 // straight to Vercel Blob (serverless requests are capped at ~4.5 MB).
 export async function POST(request: Request) {
   const body = (await request.json()) as HandleUploadBody;
@@ -13,9 +13,9 @@ export async function POST(request: Request) {
       onBeforeGenerateToken: async (pathname) => {
         const user = await getCurrentUser();
         if (!can(user?.role, "content")) throw new Error("Content editors only");
-        if (!/^resources\/[\w-]+\.(pdf|png|jpe?g|webp)$/.test(pathname)) throw new Error("Bad path");
+        if (!/^resources\/[\w-]+\.(pdf|png|jpe?g|webp|docx|txt|md)$/.test(pathname)) throw new Error("Bad path");
         return {
-          allowedContentTypes: ["application/pdf", "image/png", "image/jpeg", "image/webp"],
+          allowedContentTypes: ["application/pdf", "image/png", "image/jpeg", "image/webp", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain", "text/markdown"],
           maximumSizeInBytes: 30 * 1024 * 1024,
           addRandomSuffix: false,
         };

@@ -26,6 +26,9 @@ import type { Chapter, Part, Question, Resource } from "@/generated/prisma/clien
 // Reading a long PDF with Claude can take a while.
 export const maxDuration = 300;
 
+// Reading a long DPP/PYQ PDF (or asking the AI to) can take a while.
+export const maxDuration = 60;
+
 export default async function ChapterEditor({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string; part?: string; qtype?: string }> }) {
   await requireStaff("content");
   const [{ id }, { tab = "details", part: partFilter, qtype }] = await Promise.all([params, searchParams]);
@@ -227,8 +230,8 @@ function QuestionsTab({ chapter, parts, questions, partFilter, typeFilter }: { c
     <div className="space-y-4">
       <p className="text-sm text-muted">DPPs and PYQs belong to the whole chapter. Students practise them from the chapter&apos;s practice page, with instant answers or in exam mode.</p>
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card title="Upload DPPs"><FileQuestionImport chapterId={chapter.id} kind="DPP" aiOn={ai} /></Card>
-        <Card title="Upload PYQs"><FileQuestionImport chapterId={chapter.id} kind="PYQ" aiOn={ai} /></Card>
+        <Card title="Upload DPPs"><FileQuestionImport chapterId={chapter.id} kind="DPP" aiOn={ai} direct={blobEnabled()} /></Card>
+        <Card title="Upload PYQs"><FileQuestionImport chapterId={chapter.id} kind="PYQ" aiOn={ai} direct={blobEnabled()} /></Card>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
