@@ -141,10 +141,20 @@ export async function deletePart(id: string) {
 }
 
 // Admin browser uploads straight to Bunny with this signed ticket.
-export async function startVideoUpload(title: string) {
+// Returns the reason instead of throwing: thrown messages are hidden in production
+// ("Minified React error #441"), which left admins guessing.
+export async function startVideoUpload(title: string): Promise<{ ticket: Awaited<ReturnType<typeof createBunnyUpload>> } | { error: string }> {
   await requireStaff("content");
-  if (!bunnyConfigured()) throw new Error("Bunny Stream isn't configured. Add BUNNY_LIBRARY_ID and BUNNY_API_KEY to the environment.");
-  return createBunnyUpload(title);
+  if (!bunnyConfigured()) return { error: "Bunny Stream isn't configured. Add BUNNY_LIBRARY_ID and BUNNY_API_KEY to the environment." };
+  try {
+    return { ticket: await createBunnyUpload(title) };
+  } catch (e) {
+    const m = e instanceof Error ? e.message : "";
+    console.error("[bunny] start upload:", m);
+    if (/\b(401|403)\b/.test(m)) return { error: "Bunny rejected the API key. In Bunny → Stream → your library → API, copy that library's API Key into BUNNY_API_KEY (not the account key), check BUNNY_LIBRARY_ID matches, then redeploy. Admin → Video hosting → Test connection checks it." };
+    if (/\b404\b/.test(m)) return { error: "Bunny can't find that video library. Check BUNNY_LIBRARY_ID (Bunny → Stream → your library → API → Library ID)." };
+    return { error: "Couldn't start the upload with Bunny. Please try again in a minute." };
+  }
 }
 
 export async function syncBunnyDuration(partId: string) {

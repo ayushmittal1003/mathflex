@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { UploadCloud, CheckCircle2 } from "lucide-react";
+import { UploadCloud, CheckCircle2, CircleAlert } from "lucide-react";
 import { startVideoUpload } from "@/app/admin/actions";
 
 // Provider + reference inputs for a video. For Bunny, the file uploads directly
@@ -21,13 +21,18 @@ export function VideoField({
   const [provider, setProvider] = useState(defaultProvider || "URL");
   const [ref, setRef] = useState(defaultRef);
   const [pct, setPct] = useState<number | null>(null);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
   async function upload(file: File) {
     setMsg(null);
     setPct(0);
     try {
-      const ticket = await startVideoUpload(title || file.name);
+      const started = await startVideoUpload(title || file.name);
+      if ("error" in started) {
+        setMsg({ text: started.error, ok: false });
+        return;
+      }
+      const ticket = started.ticket;
       const tus = await import("tus-js-client");
       await new Promise<void>((resolve, reject) => {
         const up = new tus.Upload(file, {
@@ -42,9 +47,9 @@ export function VideoField({
         up.start();
       });
       setRef(ticket.videoId);
-      setMsg("Uploaded! Bunny is encoding it now — save the part, then use “Sync duration” in a few minutes.");
+      setMsg({ text: "Uploaded! Bunny is encoding it now. Save the part, then use “Sync duration” in a few minutes.", ok: true });
     } catch (e) {
-      setMsg((e as Error).message);
+      setMsg({ text: (e as Error).message || "The upload failed. Please try again.", ok: false });
     } finally {
       setPct(null);
     }
@@ -74,7 +79,12 @@ export function VideoField({
           <p className="text-xs text-gold">Add your Bunny keys (see Video hosting) to upload from here.</p>
         )
       )}
-      {msg && <p className="flex items-start gap-1.5 text-xs text-muted"><CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-ok" />{msg}</p>}
+      {msg && (
+        <p role={msg.ok ? undefined : "alert"} className={`flex items-start gap-1.5 text-xs ${msg.ok ? "text-muted" : "rounded-lg bg-bad/10 px-2.5 py-2 font-medium text-bad"}`}>
+          {msg.ok ? <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-ok" /> : <CircleAlert className="mt-0.5 size-3.5 shrink-0" />}
+          {msg.text}
+        </p>
+      )}
     </div>
   );
 }
