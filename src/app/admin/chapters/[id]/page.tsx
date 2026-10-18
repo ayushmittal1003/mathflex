@@ -26,9 +26,6 @@ import type { Chapter, Part, Question, Resource } from "@/generated/prisma/clien
 // Reading a long PDF with Claude can take a while.
 export const maxDuration = 300;
 
-// Reading a long DPP/PYQ PDF (or asking the AI to) can take a while.
-export const maxDuration = 60;
-
 export default async function ChapterEditor({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string; part?: string; qtype?: string }> }) {
   await requireStaff("content");
   const [{ id }, { tab = "details", part: partFilter, qtype }] = await Promise.all([params, searchParams]);
