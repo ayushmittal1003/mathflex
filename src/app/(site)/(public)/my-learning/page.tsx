@@ -315,7 +315,7 @@ export default async function MyLearning() {
                 <Tile value={`${incorrect}`} label="Wrong" tone="text-bad" />
                 <Tile value={accuracy === null ? "–" : `${accuracy}%`} label="Accuracy" />
               </div>
-              {f.practice && mine.length > 0 && <Link href="/practice" className={cx(button.sm, tone.secondary, "mt-auto w-full")}>Open question bank →</Link>}
+              {f.practice && mine.length > 0 && <div className="mt-auto pt-6"><Link href="/practice" className={cx(button.sm, tone.secondary, "w-full")}>Open question bank →</Link></div>}
             </>
           ) : (
             <Link href="/free-practice" className={cx(button.sm, tone.secondary, "mt-6 self-start")}>Try free practice →</Link>

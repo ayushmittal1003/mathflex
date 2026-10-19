@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cx } from "../ui";
 
 export type Pillar = { key: string; kicker: string; big: string; small: string; body: string };
@@ -11,6 +11,18 @@ const GLYPH: Record<string, string> = { mentor: "★", chapters: "∑", hours: "
 export function AboutPillars({ pillars }: { pillars: Pillar[] }) {
   const row = useRef<HTMLDivElement>(null);
   const scroll = (dir: number) => row.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
+
+  // Soft white blur on the edge that still has cards beyond it, instead of cards being cut hard.
+  const [edge, setEdge] = useState({ left: false, right: true });
+  const sync = (el: HTMLElement) => setEdge({ left: el.scrollLeft > 8, right: el.scrollLeft < el.scrollWidth - el.clientWidth - 8 });
+  useEffect(() => {
+    const el = row.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setEdge({ left: el.scrollLeft > 8, right: el.scrollLeft < el.scrollWidth - el.clientWidth - 8 }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const fade = "pointer-events-none absolute inset-y-0 z-10 w-12 bg-card/80 backdrop-blur-[6px] transition-opacity duration-300 sm:w-16";
 
   return (
     <div className="relative">
@@ -29,8 +41,12 @@ export function AboutPillars({ pillars }: { pillars: Pillar[] }) {
           </button>
         ))}
       </div>
+      <div className="relative">
+      <span aria-hidden className={cx(fade, "left-0 [mask-image:linear-gradient(to_right,#000_25%,transparent)]", edge.left ? "opacity-100" : "opacity-0")} />
+      <span aria-hidden className={cx(fade, "right-0 [mask-image:linear-gradient(to_left,#000_25%,transparent)]", edge.right ? "opacity-100" : "opacity-0")} />
       <div
         ref={row}
+        onScroll={(e) => sync(e.currentTarget)}
         className="no-scrollbar -mt-2 flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain scroll-px-6 px-6 pb-16 pt-8 min-[1288px]:scroll-px-[calc((100%-1240px)/2)] min-[1288px]:px-[calc((100%-1240px)/2)]"
       >
         {pillars.map((p, i) => {
@@ -57,6 +73,7 @@ export function AboutPillars({ pillars }: { pillars: Pillar[] }) {
             </article>
           );
         })}
+      </div>
       </div>
     </div>
   );
