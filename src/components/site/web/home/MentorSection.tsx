@@ -19,7 +19,8 @@ export function MentorSection({ mentorship, names }: { mentorship: { price: numb
           <p className="mt-5 max-w-[520px] text-[17px] leading-[1.6] text-secondary-foreground text-pretty">
             {names.full} {instructor.bio}
           </p>
-          <div className="mt-6 flex flex-wrap gap-2.5">
+          <p className="mt-4 text-[15px] font-bold">{names.full} · <span className="font-semibold text-secondary-foreground">{instructor.jobTitle}</span></p>
+          <div className="mt-4 flex flex-wrap gap-2.5">
             {instructor.credentials.map((c) => (
               <div key={c.org} className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-[0_10px_24px_-20px_rgb(80_20_0/0.5)]">
                 <span aria-hidden className="grid size-10 place-items-center rounded-lg bg-foreground text-[13px] font-black text-white">IIT</span>

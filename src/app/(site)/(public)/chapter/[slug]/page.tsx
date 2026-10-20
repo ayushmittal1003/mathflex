@@ -129,6 +129,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
             price: chapter.price,
             level: `Class ${chapter.classLevel}`,
             teaches: learn,
+            instructorName: names.full,
           })}
         />
       )}

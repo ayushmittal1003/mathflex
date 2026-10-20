@@ -73,7 +73,7 @@ From the Phase 0 audit (`docs/seo-audit.md`, branch `feature/seo`). Nothing here
 - **Switch-on list when real content goes live:** blog posts (`placeholder: true` flag in `lib/blog.ts` controls noindex and sitemap automatically), `/free-practice` (hard-coded `noindex: true` in its `page.tsx`).
 
 ## Teacher credential wording (admin text)
-The owner confirmed the correct claim is **"IIT Delhi alumnus"**. "NIT Jalandhar" is on hold until confirmed. Please update in admin: the `description` of all 35 chapters currently says "…by IIT Delhi & NIT Jalandhar alumni". The SEO meta description rewrites that phrase on the fly (`chapterBlurb()` in `src/lib/seo/metadata.ts`); that workaround can be removed once the data is fixed. Also still mentioning NIT Jalandhar in code (visible copy, not changed): `src/lib/legal/about.ts`, and the root-layout description was already replaced.
+The owner confirmed the mentor: **Karan Mittal, B.Tech in Civil Engineering, IIT Delhi (graduated June 2023)**; short form **"IIT Delhi alumnus"**. NIT Jalandhar is **not** a claim we make. The frontend code no longer mentions it (`src/lib/legal/about.ts` is fixed). **Still to do in admin:** the `description` of all 35 chapters currently says "…by IIT Delhi & NIT Jalandhar alumni". The SEO meta description rewrites that phrase on the fly (`chapterBlurb()` in `src/lib/seo/metadata.ts`); that workaround stays until you fix the 35 descriptions, then it can be removed. The seed text in `prisma/seed.ts` needs the same fix.
 
 ## Dark-mode `primary` contrast (admin and learner player)
 White text on the brand red (`--primary` `oklch(0.637 0.237 25.331)`) is 3.66:1, below the 4.5:1 AA minimum for normal-size text. The public website (always light) is being fixed separately, scoped to `.site-light`. Dark mode and `/admin` still use the base value in `:root` / `.dark`, so primary buttons in admin and the learner player have the same issue. Deliberately not changed: it alters admin's look. If you want it fixed, lower `--primary` lightness to about 0.58 in `:root` and `.dark` (and the `--ring` / `--accent` / `--sidebar-primary` copies).
@@ -106,7 +106,8 @@ Nothing here was done in code. Details of each item are in the sections above.
 - [ ] Video fields: duration, upload date, free-preview flag, chapter timestamps, public thumbnail, the `previewSrc` admin field.
 - [ ] Author/mentor model; chapter prerequisite/next relations.
 - [ ] Revalidate hooks on publish (pages plus sitemap).
-- [ ] Fix the 35 chapter descriptions ("IIT Delhi & NIT Jalandhar alumni" → "IIT Delhi alumnus"), the marquee text, and `src/lib/legal/about.ts`.
+- [ ] Fix the 35 chapter descriptions ("IIT Delhi & NIT Jalandhar alumni" → "IIT Delhi alumnus", also in `prisma/seed.ts`) and the marquee text. Then remove the `chapterBlurb()` rewrite.
+- [ ] Mentor photo: add the file to `public/` and set `instructor.photo` in `src/lib/site-content.ts`; it then appears in the Person JSON-LD `image` automatically.
 - [ ] Decide on leaderboard names (first name + last initial).
 - [ ] Optional: fix dark-mode `primary` contrast for admin and the learner player.
 

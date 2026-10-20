@@ -100,6 +100,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
             description: v.subtitle || stripHtml(course.description),
             price: v.price,
             teaches: v.chapters.map((c) => c.title),
+            instructorName: names.full,
           })}
         />
       )}

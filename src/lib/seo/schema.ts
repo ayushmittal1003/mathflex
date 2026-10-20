@@ -8,6 +8,29 @@ import { SITE_NAME, SITE_URL, SOCIAL_PROFILES, absoluteUrl } from "./config";
 type Json = Record<string, unknown>;
 
 export const ORG_ID = `${SITE_URL}/#organization`;
+export const PERSON_ID = `${SITE_URL}/about#mentor`;
+
+const IIT_DELHI = { "@type": "CollegeOrUniversity", name: "Indian Institute of Technology Delhi" };
+
+// The mentor. Every value here is also visible on /about (MentorSection); do not add facts
+// that are not confirmed and shown there.
+export function person({ name, jobTitle, degree, image }: { name: string; jobTitle: string; degree: string; image?: string | null }): Json {
+  return {
+    "@type": "Person",
+    "@id": PERSON_ID,
+    name,
+    jobTitle,
+    url: absoluteUrl("/about"),
+    ...(image ? { image: absoluteUrl(image) } : {}),
+    alumniOf: IIT_DELHI,
+    hasCredential: { "@type": "EducationalOccupationalCredential", credentialCategory: "degree", name: degree, recognizedBy: IIT_DELHI },
+    sameAs: SOCIAL_PROFILES,
+  };
+}
+
+export function profilePage(path: string, name: string): Json {
+  return { "@type": "ProfilePage", "@id": `${absoluteUrl(path)}#profile`, url: absoluteUrl(path), name, inLanguage: "en-IN", isPartOf: { "@id": `${SITE_URL}/#website` }, mainEntity: { "@id": PERSON_ID } };
+}
 
 export function organization({ phone, email }: { phone?: string | null; email?: string | null }): Json {
   return {
@@ -30,10 +53,10 @@ export function graph(...nodes: Json[]): Json {
   return { "@context": "https://schema.org", "@graph": nodes };
 }
 
-type CourseInput = { path: string; name: string; description: string; price: number; level?: string; teaches?: string[] };
+type CourseInput = { path: string; name: string; description: string; price: number; level?: string; teaches?: string[]; instructorName?: string };
 
 // A purchasable video course (a chapter or a bundle of chapters).
-export function course({ path, name, description, price, level, teaches }: CourseInput): Json {
+export function course({ path, name, description, price, level, teaches, instructorName }: CourseInput): Json {
   const url = absoluteUrl(path);
   return {
     "@context": "https://schema.org",
@@ -46,7 +69,11 @@ export function course({ path, name, description, price, level, teaches }: Cours
     ...(level ? { educationalLevel: level } : {}),
     ...(teaches?.length ? { teaches } : {}),
     offers: { "@type": "Offer", url, price: String(price), priceCurrency: "INR", category: price > 0 ? "Paid" : "Free", availability: "https://schema.org/InStock" },
-    hasCourseInstance: { "@type": "CourseInstance", courseMode: "Online" },
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "Online",
+      ...(instructorName ? { instructor: { "@type": "Person", "@id": PERSON_ID, name: instructorName, url: absoluteUrl("/about") } } : {}),
+    },
   };
 }
 

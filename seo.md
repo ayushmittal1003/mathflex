@@ -33,7 +33,7 @@ Use `buildMetadata()` from `src/lib/seo/metadata.ts`. Do not hand-write `<title>
 - **Canonical:** absolute, self-referencing, from `APP_URL` (`SITE_URL` in `config.ts`). The canonical site address is **`https://mathflex.in`** (no `www`, no trailing slash); `APP_URL` must be set to exactly that in Vercel Production and Preview, and `www.mathflex.in` redirects to it. Never include tracking parameters (`utm_*`, `ref`), filters or invite codes. Internal links must point to canonical URLs.
 - **Open Graph / Twitter:** set by the helper. The site default image is `src/app/opengraph-image.tsx`. Chapter and course pages have their own `opengraph-image.tsx`, and pass `defaultImage: false` so the default is not added twice. A child page's `openGraph` replaces the parent's, so always go through the helper.
 - **Do not add:** `<meta name="keywords">`, `changeFrequency`/`priority` in the sitemap, `lastModified = now`.
-- **Credential wording:** only "IIT Delhi alumnus" is confirmed. Do not add other credentials until the owner confirms them.
+- **Credential wording:** the mentor is Karan Mittal, B.Tech in Civil Engineering, IIT Delhi (graduated June 2023). Short form for bylines, hero proof row and metadata: "IIT Delhi alumnus". On the About page / mentor section: "Karan Mittal · B.Tech, Civil Engineering, IIT Delhi (2023)". Do not add other credentials or employers until the owner confirms them. Never mention NIT Jalandhar.
 
 ## 3. JSON-LD per template
 
@@ -43,7 +43,8 @@ Rendered by `<JsonLd />` (server component, escapes `<`). Only on indexable page
 |---|---|
 | Home | Organization (name, logo, contact, `sameAs`) + WebSite (no SearchAction) |
 | `/chapters`, `/courses` | ItemList |
-| Chapter, course | Course (provider, Offer in INR, `hasCourseInstance` online, `inLanguage` en-IN, `teaches` from real topics) + BreadcrumbList |
+| `/about` | ProfilePage + Person (name, jobTitle "JEE Maths Mentor", `alumniOf` IIT Delhi, `hasCredential` B.Tech in Civil Engineering, `sameAs`); values must match the visible mentor section. `image` is added automatically once `instructor.photo` is set |
+| Chapter, course | Course (provider, Offer in INR, `hasCourseInstance` online, `inLanguage` en-IN, `teaches` from real topics, instructor on `hasCourseInstance` = the same Person `@id`) + BreadcrumbList |
 | Real blog post | BreadcrumbList (add Article only with a real author and dates) |
 
 Not used, on purpose: FAQPage / HowTo / Course-info rich-result markup (retired or restricted by Google), self-serving `AggregateRating` or reviews, markup on `noindex` pages, any claim not shown on the page. Validate new markup with the Rich Results Test and the Schema.org validator.
@@ -78,7 +79,7 @@ Not used, on purpose: FAQPage / HowTo / Course-info rich-result markup (retired 
 For whoever publishes chapters, courses and blog posts in admin:
 
 - [ ] Unique, descriptive title and a description of 1–2 plain sentences (no keyword lists)
-- [ ] Credential wording is exactly "IIT Delhi alumnus"; no unconfirmed claims, results or ratings
+- [ ] Credential wording is exactly "IIT Delhi alumnus" (see section 2); no unconfirmed claims, results or ratings
 - [ ] Prices, validity and what's included are accurate
 - [ ] Publish only when the page is complete: unpublished items stay out of the site and the sitemap
 - [ ] Cover images have meaningful alt text (when the field exists)

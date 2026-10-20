@@ -12,6 +12,8 @@ import { StoryTimeline } from "@/components/site/web/about/StoryTimeline";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import * as schema from "@/lib/seo/schema";
 
 export const metadata = buildMetadata({ title: "About MathFlex – JEE Maths Mentorship", description: "Who is behind MathFlex, how the chapter-by-chapter JEE maths videos are made, and how to reach us.", path: "/about" });
 
@@ -71,6 +73,12 @@ export default async function AboutPage() {
 
   return (
     <>
+      <JsonLd
+        data={schema.graph(
+          schema.profilePage("/about", "About MathFlex"),
+          schema.person({ name: names.full, jobTitle: instructor.jobTitle, degree: "B.Tech in Civil Engineering", image: instructor.photo }),
+        )}
+      />
       <WashHero>
         <div className="px-6 pt-10 text-center">
           <Eyebrow dot="ok" onWash>About Mathflex</Eyebrow>

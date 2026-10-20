@@ -46,9 +46,9 @@ export const privateMetadata = (title: string): Metadata => ({ title, robots: { 
 
 // Chapter blurb for meta descriptions and schema. Admin-written descriptions are used as
 // written, with one correction: the seeded text says "IIT Delhi & NIT Jalandhar alumni", but
-// only "IIT Delhi alumnus" is confirmed, so that phrase is rewritten here. Any other mention of
-// NIT Jalandhar falls back to the tagline until the owner confirms it. The admin text itself
-// should be corrected in admin (see dipankar-design/ayush-handoff.md); then this can go.
+// the mentor's only confirmed credential is IIT Delhi, so that phrase is rewritten here. Any
+// other mention of Jalandhar falls back to the tagline. The admin text itself still has to be
+// corrected in admin (see dipankar-design/ayush-handoff.md); only then can this go.
 export function chapterBlurb({ description, tagline }: { description: string; tagline: string }) {
   const d = stripHtml(description)
     .replace(/by IIT Delhi\s*(?:&|and)\s*NIT Jalandhar alumni/gi, "by an IIT Delhi alumnus")

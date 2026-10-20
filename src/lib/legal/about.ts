@@ -1,6 +1,6 @@
 export const ABOUT = `# About MathFlex
 
-MathFlex is an online maths learning platform for **JEE Main, JEE Advanced and Class 11–12 board** students, taught by alumni of **IIT Delhi and NIT Jalandhar**.
+MathFlex is an online maths learning platform for **JEE Main, JEE Advanced and Class 11–12 board** students, taught by **IIT Delhi alumnus Karan Mittal**.
 
 ## Why we built it
 

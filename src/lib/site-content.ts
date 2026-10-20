@@ -31,14 +31,17 @@ export const knownSocials: Partial<Record<keyof typeof placeholders.socials, str
 export const instructor = {
   shortName: "Karan bhaiya",
   fullName: "Karan Mittal",
-  title: "B.Tech, IIT Delhi",
+  // Confirmed facts only: B.Tech in Civil Engineering, IIT Delhi, graduated June 2023.
+  title: "B.Tech, Civil Engineering, IIT Delhi (2023)",
+  jobTitle: "JEE Maths Mentor",
+  credentialShort: "IIT Delhi alumnus", // bylines, hero proof row, metadata
   introVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
   // Portrait for the Book a call card, e.g. "/brand/karan.jpg" in public/. null shows a placeholder.
   photo: null as string | null,
   studentsGuided: "1,000+", // real figure from the founder
   bio: "cracked JEE and studied at IIT Delhi. He has spent his career building learning products and has mentored 1,000+ JEE aspirants along the way. Every Mathflex video is built around the questions that actually show up in the exam.",
   // Only the education credential is shown on the site (employers are left out by request).
-  credentials: [{ org: "B.Tech, IIT Delhi", role: "Indian Institute of Technology Delhi" }],
+  credentials: [{ org: "B.Tech, Civil Engineering, IIT Delhi (2023)", role: "Indian Institute of Technology (IIT) Delhi" }],
 };
 
 // Short line for the instructor block on chapter pages.
