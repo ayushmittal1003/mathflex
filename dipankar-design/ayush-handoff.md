@@ -120,7 +120,10 @@ New rule from the owner: single chapter = 3 months (each chapter bought separate
 `fulfilOrder` (`src/lib/orders.ts`) already reads `validityDays` from each `Chapter` / `Course`, so this is a data change:
 - Set `Chapter.validityDays = 90` on all 35 chapters (admin, or one update). Also change the schema default (`prisma/schema.prisma`, currently `@default(365)`) so new chapters get 90.
 - Set `Course.validityDays`: Class 11 Complete 365, Class 12 Complete 365, Class 11 + 12 combo 730.
-- Existing entitlements keep their current expiry; only new purchases and renewals use the new values. Decide whether anything needs back-filling.
+- Existing entitlements keep their current expiry; only new purchases and renewals use the new values. **No back-filling is needed**: the owner confirmed every current order is a dummy test transaction.
+- **Before launch, in this order:**
+  1. Check the production database for test orders and entitlements (`Order`, `Entitlement`, and any test users or coupons made while testing) and remove them if any exist.
+  2. Then apply the validity change above: chapters 90, Class 11 and Class 12 courses 365, combo 730, schema default 90.
 - Seed copy to update: the FAQ answer in `prisma/seed.ts` (~line 250) says "365 days by default".
 - The frontend now shows the length as "3 months / 1 year / 2 years" (`validity()` in `src/lib/format.ts`); it follows whatever is in the database.
 
