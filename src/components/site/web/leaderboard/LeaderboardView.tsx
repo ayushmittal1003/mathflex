@@ -185,5 +185,5 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
 }
 
 function Sample() {
-  return <span className="shrink-0 rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-extrabold uppercase tracking-[0.06em] text-secondary-foreground">Sample</span>;
+  return <span className="shrink-0 rounded-md border border-border bg-card px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.06em] text-secondary-foreground">Sample</span>;
 }

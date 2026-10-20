@@ -115,7 +115,7 @@ export function LegalPage({ source, current, email }: { source: string; current:
         </nav>
       </section>
 
-      <section className="pb-22 pt-14">
+      <section className="pb-12 pt-10 tablet:pb-22 tablet:pt-14">
         <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] items-start gap-14">
           {sections.length > 2 && (
             <aside className="sticky top-24 hidden w-[240px] flex-none min-[960px]:block">

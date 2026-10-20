@@ -144,7 +144,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
           <div className="order-2 min-w-0 flex-[1_1_320px]">
             <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-secondary-foreground">
               <Link href={`/chapters?class=${chapter.classLevel}`} className="hover:text-primary">Class {chapter.classLevel}</Link>
-              {!chapter.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-[11px] font-bold text-foreground">Unpublished · staff preview</span>}
+              {!chapter.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-xs font-bold text-foreground">Unpublished · staff preview</span>}
             </div>
             <h1 className="mt-4.5 text-[clamp(28px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{chapter.title}</h1>
             <div className="mt-5.5 flex flex-wrap gap-2">
@@ -207,7 +207,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
             <div className="relative aspect-[16/10] overflow-hidden text-white" style={posterBg(chapter.coverFrom, chapter.coverTo)}>
               <div className={cx("absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", chapter.symbol.length > 2 ? "text-[160px] tablet:text-[200px]" : "text-[240px] tablet:text-[320px]")}>{chapter.symbol}</div>
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.65))]" />
-              <span className="absolute left-4.5 top-4 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em] text-black">
+              <span className="absolute left-4.5 top-4 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">
                 {owned ? "Your chapter" : preview ? `Part ${preview.order} · Free preview` : "Preview"}
               </span>
               {playHref ? (
@@ -254,7 +254,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
         </div>
       </div>
 
-      <section className="pb-22 pt-6">
+      <section className="pb-12 pt-6 tablet:pb-22">
         <div className="mx-auto flex w-[min(1180px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-10 gap-y-12">
           <div className="min-w-0 flex-[1_1_420px]">
             {learn.length > 0 && (
@@ -298,7 +298,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                       <span className="text-[17px] font-bold tracking-[-0.015em]">{p.title}</span>
-                      {isFree && <span className="rounded bg-ok/14 px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.04em] text-ok-strong">Free preview</span>}
+                      {isFree && <span className="rounded bg-ok/14 px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.04em] text-ok-strong">Free preview</span>}
                     </div>
                     {p.summary && <p className="mt-1 line-clamp-2 text-sm text-secondary-foreground">{p.summary}</p>}
                     <div className="mt-1 text-[13px] text-muted-foreground">
@@ -330,7 +330,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                     <li key={r.id}>
                       {open ? (
                         <a href={r.fileUrl} target="_blank" className="flex items-center gap-3 rounded-lg border border-border p-3 text-sm font-semibold hover:border-primary hover:text-primary">
-                          <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary">{r.type === "MINDMAP" ? "MAP" : "PDF"}</span> {r.title}
+                          <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-xs font-bold text-primary">{r.type === "MINDMAP" ? "MAP" : "PDF"}</span> {r.title}
                         </a>
                       ) : (
                         <span className="flex items-center gap-3 rounded-lg border border-border p-3 text-sm font-semibold text-muted-foreground"><LockIcon className="size-3.5" /> {r.title}</span>
@@ -352,7 +352,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
             <h2 id="instructor" className={sectionH2}>Your instructor</h2>
             <div className="mt-5.5 flex flex-wrap items-center gap-x-6 gap-y-5">
-              <VideoFrame videoId={instructor.introVideoId} className="aspect-[16/10] w-[200px] shrink-0 !border-4 [&_span]:!text-[11px]" />
+              <VideoFrame videoId={instructor.introVideoId} className="aspect-[16/10] w-[200px] shrink-0 !border-4 [&_span]:!text-xs" />
               <div className="min-w-0 flex-[1_1_260px]">
                 <div className="text-xl font-extrabold tracking-[-0.02em]">{names.full}</div>
                 <div className="mt-0.5 text-sm text-muted-foreground">{instructor.title} · {instructor.studentsGuided} JEE aspirants mentored</div>
@@ -407,7 +407,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
       </section>
 
       {related.length > 0 && (
-        <section className="pb-24 pt-18">
+        <section className="pb-14 pt-10 tablet:pb-24 tablet:pt-18">
           <div className="mx-auto w-[min(1180px,calc(100%-var(--gutter)*2))]">
             <div className="flex items-baseline justify-between gap-4">
               <h2 className="text-[clamp(26px,3vw,38px)] font-extrabold tracking-[-0.035em]">More Class {chapter.classLevel} chapters</h2>

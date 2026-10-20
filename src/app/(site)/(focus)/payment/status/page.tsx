@@ -187,7 +187,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                   <span className={cx("grid aspect-[16/10] w-20 shrink-0 place-items-center rounded-lg font-black tracking-[-0.04em] text-white", it.symbol.length > 2 ? "text-sm" : "text-2xl")} style={{ background: it.bg }}>{it.symbol}</span>
                   <div className="min-w-0 flex-[1_1_200px]">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-                      <span className={cx("rounded px-1.5 py-0.5 text-[11px] font-extrabold uppercase tracking-[0.06em]", it.kind === "Course" ? "bg-primary text-white" : "bg-muted text-secondary-foreground")}>{it.kind}</span>
+                      <span className={cx("rounded px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.06em]", it.kind === "Course" ? "bg-primary text-white" : "bg-muted text-secondary-foreground")}>{it.kind}</span>
                       <span className="inline-flex items-center gap-1 text-xs font-bold text-ok-strong"><CheckIcon className="size-[11px]" strokeWidth={3.5} />Unlocked</span>
                     </div>
                     <div className="mt-1.5 text-base font-bold tracking-[-0.015em]">{it.title}</div>
@@ -213,7 +213,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
         </section>
       </div>
 
-      <section className="py-22">
+      <section className="py-12 tablet:py-22">
         <div className="mx-auto w-[min(1120px,calc(100%-var(--gutter)*2))]">
           <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">Your first <Mark>week</Mark> on Mathflex</h2>
           <div className="mt-12 grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] border-t-2 border-foreground">
@@ -229,7 +229,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
         </div>
       </section>
 
-      <section className="pb-22">
+      <section className="pb-12 tablet:pb-22">
         <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-16 gap-y-10">
           <div className="min-w-0 flex-[1_1_320px]">
             <h3 className="text-2xl font-extrabold tracking-[-0.025em]">Order details</h3>

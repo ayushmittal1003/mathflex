@@ -32,7 +32,7 @@ export function CourseCards({ courses, bestId }: { courses: CourseView[]; bestId
             )}
             style={{ animationDelay: `${i * 80}ms` }}
           >
-            {best && <span className="absolute -top-3 left-7 rounded-md bg-primary px-2.5 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.06em] text-white">Best value</span>}
+            {best && <span className="absolute -top-3 left-7 rounded-md bg-primary px-2.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.06em] text-white">Best value</span>}
             <div className="text-[21px] font-extrabold tracking-[-0.02em]">{c.title}</div>
             <div className={cx("mt-1 text-sm", best ? "text-white/70" : "text-muted-foreground")}>
               {c.subtitle || `${c.chapters.length} chapters`}{c.hours && ` · ${c.hours}`}
@@ -81,7 +81,7 @@ export function CourseInside({ courses }: { courses: CourseView[] }) {
   const cur = courses.find((c) => c.id === tab) ?? courses[0];
   const classes = [...new Set(cur.chapters.map((c) => c.classLevel))].sort();
   return (
-    <section id="inside" className="pb-22 pt-24">
+    <section id="inside" className="pb-12 pt-12 tablet:pb-22 tablet:pt-24">
       {courses.map((c) => <span key={c.id} id={`inside-${c.id}`} className="block scroll-mt-24" />)}
       <SectionHead eyebrow="What's inside" dot="brand-2" title={<>Every chapter, <Mark>listed</Mark>.</>} />
       {courses.length > 1 && (

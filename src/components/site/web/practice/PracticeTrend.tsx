@@ -19,7 +19,7 @@ export function PracticeTrend({ data }: { data: Day[] }) {
       <p className="mt-1 text-sm text-muted-foreground">{total} in the last 14 days</p>
 
       <div className="relative mt-6 flex gap-2" aria-hidden>
-        <div className="flex h-[160px] flex-col justify-between text-right text-[11px] text-muted-foreground">
+        <div className="flex h-[160px] flex-col justify-between text-right text-xs text-muted-foreground">
           <span>{nice}</span><span>{nice / 2}</span><span>0</span>
         </div>
         <div className="relative flex-1">
@@ -43,7 +43,7 @@ export function PracticeTrend({ data }: { data: Day[] }) {
               </div>
             ))}
           </div>
-          <div className="mt-2 flex gap-[2px] text-[10px] text-muted-foreground">
+          <div className="mt-2 flex gap-[2px] text-xs text-muted-foreground">
             {data.map((d, i) => <span key={d.label} className="flex-1 text-center">{i % 2 ? "" : d.label.split(" ")[0]}</span>)}
           </div>
         </div>

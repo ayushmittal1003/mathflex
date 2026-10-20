@@ -71,13 +71,13 @@ export default async function Courses() {
       {views.length > 0 && <CourseInside courses={views} />}
 
       {calc && breakeven && (
-        <section className="py-16 tablet:py-20">
+        <section className="py-12 tablet:py-20">
           <CourseCalculator course={calc} breakeven={breakeven} />
         </section>
       )}
 
       {views.length > 1 && (
-        <section className="py-16 tablet:py-20">
+        <section className="py-12 tablet:py-20">
           <div className="mx-auto w-[min(1000px,calc(100%-var(--gutter)*2))]">
             <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Compare courses</h2>
             <div className="no-scrollbar mt-10 overflow-x-auto">
@@ -112,7 +112,7 @@ export default async function Courses() {
         <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} />
       </div>
 
-      <section className="py-16 tablet:py-20">
+      <section className="py-12 tablet:py-20">
         <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
           <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about courses</h2>
           <div className="mt-9"><FaqList items={faqs} initialOpen={-1} /></div>

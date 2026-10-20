@@ -70,7 +70,7 @@ export default async function BookACallPage() {
         <VideoFrame videoId={instructor.introVideoId} caption="What happens on the call" sub={`${names.short} explains`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-var(--gutter)*2))]" />
       </WashHero>
 
-      <section id="what" className="scroll-mt-20 pb-22 pt-24">
+      <section id="what" className="scroll-mt-20 pb-12 pt-12 tablet:pb-22 tablet:pt-24">
         <SectionHead eyebrow="What you get" dot="brand-2" title={<>Walk in confused. Walk out with a <Mark>plan</Mark>.</>} lead={settings.mentorshipBlurb} />
         <div className="mx-auto mt-12 grid w-[min(1120px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-5">
           {bookCall.gets.map((g, i) => (
@@ -88,7 +88,7 @@ export default async function BookACallPage() {
         </div>
       </section>
 
-      <section id="book" className="scroll-mt-20 py-16 tablet:py-20">
+      <section id="book" className="scroll-mt-20 py-12 tablet:py-20">
         <SectionHead eyebrow="Book your call" title={<>Booked in <Mark>three</Mark> steps</>} lead="Add the call to your order, pay, and our team sets up a time with you on WhatsApp." />
         <div className="mx-auto mt-11 grid w-[min(1080px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_30px_60px_-36px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
           <div className="flex flex-col border-b border-border p-6 tablet:border-b-0 tablet:border-r tablet:p-7">
@@ -106,7 +106,7 @@ export default async function BookACallPage() {
                   </div>
                 </div>
               )}
-              <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-md bg-card/90 px-2 py-1 text-[11px] font-bold backdrop-blur">
+              <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-md bg-card/90 px-2 py-1 text-xs font-bold backdrop-blur">
                 <span className="size-1.5 rounded-full bg-ok" />1:1 with {names.short}
               </span>
             </div>
@@ -163,7 +163,7 @@ export default async function BookACallPage() {
         <MentorSection mentorship={null} names={names} />
       </div>
 
-      <section className="py-16 tablet:py-20">
+      <section className="py-12 tablet:py-20">
         <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
           <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about the call</h2>
           <div className="mt-9"><FaqList items={faqs} /></div>

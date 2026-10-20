@@ -116,7 +116,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
               <Link href="/courses" className="hover:text-primary">Complete courses</Link>
               <span className="opacity-50">/</span>
               <span>{v.title}</span>
-              {!course.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-[11px] font-bold text-foreground">Unpublished · staff preview</span>}
+              {!course.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-xs font-bold text-foreground">Unpublished · staff preview</span>}
             </div>
             <h1 className="mt-4.5 text-[clamp(28px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{v.title}</h1>
             <div className="mt-5.5 flex flex-wrap gap-2">
@@ -165,7 +165,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
           <div className="order-1 min-w-0 flex-[1.1_1_360px] min-[900px]:order-2">
             <div className="relative aspect-[16/11] overflow-hidden rounded-xl text-white shadow-[0_40px_80px_-30px_rgb(80_20_0/0.5)]" style={posterBg(course.coverFrom, course.coverTo)}>
               <span aria-hidden className="absolute -right-4 top-1/2 -translate-y-1/2 text-[clamp(220px,26vw,340px)] font-black leading-none text-white/14">Σ</span>
-              <span className="absolute left-5 top-5 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em] text-black">Complete course</span>
+              <span className="absolute left-5 top-5 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">Complete course</span>
               <div className="absolute inset-x-5 bottom-5">
                 <div className="flex -space-x-3">
                   {v.chapters.slice(0, 6).map((c) => (

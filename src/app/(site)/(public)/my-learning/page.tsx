@@ -133,7 +133,7 @@ export default async function MyLearning() {
           {f.leaderboard && (
             <Link href="/leaderboard" className="flex-none rounded-lg bg-muted px-3 py-2 text-center transition hover:bg-border" aria-label={`Leaderboard rank ${rankAbove + 1}`}>
               <span className="block text-[15px] font-extrabold leading-none text-primary">#{rankAbove + 1}</span>
-              <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.06em] text-muted-foreground">Rank</span>
+              <span className="mt-1 block text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">Rank</span>
             </Link>
           )}
         </div>
@@ -164,7 +164,7 @@ export default async function MyLearning() {
             <span className="relative block aspect-[16/9] overflow-hidden text-white min-[860px]:aspect-auto min-[860px]:min-h-[280px]" style={posterBg(resume.coverFrom, resume.coverTo)}>
               <span className={cx("absolute right-[6%] top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/20", resume.symbol.length > 2 ? "text-[110px]" : "text-[200px]")}>{resume.symbol}</span>
               <span className="absolute inset-0 bg-[linear-gradient(transparent_40%,rgb(0_0_0/0.5))]" />
-              <span className="absolute left-4 top-4 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em] text-black">Continue learning</span>
+              <span className="absolute left-4 top-4 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">Continue learning</span>
               <span className="absolute left-1/2 top-1/2 grid size-[72px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition group-hover:scale-[1.06]">
                 <PlayIcon className="size-6" />
               </span>
@@ -226,11 +226,11 @@ export default async function MyLearning() {
                     <span className={cx("absolute right-[6%] top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/22", c.symbol.length > 2 ? "text-[64px]" : "text-[110px]")}>{c.symbol}</span>
                     <span className="absolute inset-0 bg-[linear-gradient(transparent_45%,rgb(0_0_0/0.45))]" />
                     <span className="absolute left-3 top-3 flex gap-1.5">
-                      <span className="rounded-md bg-white/92 px-2 py-1 text-[11px] font-extrabold text-black">Class {c.classLevel}</span>
+                      <span className="rounded-md bg-white/92 px-2 py-1 text-xs font-extrabold text-black">Class {c.classLevel}</span>
                       {pct === 1 ? (
-                        <span className="rounded-md bg-ok px-2 py-1 text-[11px] font-extrabold">Completed</span>
+                        <span className="rounded-md bg-ok px-2 py-1 text-xs font-extrabold">Completed</span>
                       ) : c.id === resume?.id ? (
-                        <span className="rounded-md bg-primary px-2 py-1 text-[11px] font-extrabold">Continue here</span>
+                        <span className="rounded-md bg-primary px-2 py-1 text-xs font-extrabold">Continue here</span>
                       ) : null}
                     </span>
                     <span className="absolute bottom-3 left-3 grid size-11 place-items-center rounded-full bg-white text-primary opacity-0 shadow-[0_0_0_8px_rgb(255_255_255/0.18)] transition group-hover:opacity-100">
@@ -293,7 +293,7 @@ export default async function MyLearning() {
             {series.daily.map((d, i) => (
               <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5" title={`${d.full}: ${d.xp} XP · ${d.questions} questions`}>
                 <div className={cx("w-full rounded-t-md", d.xp ? "bg-gradient-to-t from-primary to-brand-2" : "bg-muted")} style={{ height: d.xp ? `${Math.max(6, (d.xp / peak) * 100)}%` : "4px" }} />
-                <span className={cx("text-[11px] font-semibold", i === series.daily.length - 1 ? "text-foreground" : "text-muted-foreground")}>{d.label}</span>
+                <span className={cx("text-xs font-semibold", i === series.daily.length - 1 ? "text-foreground" : "text-muted-foreground")}>{d.label}</span>
               </div>
             ))}
           </div>
@@ -380,7 +380,7 @@ function Tile({ value, label, tone: t }: { value: string; label: string; tone?: 
   return (
     <div className="rounded-lg bg-muted px-2 py-2.5">
       <div className={cx("text-lg font-extrabold tracking-[-0.03em]", t)}>{value}</div>
-      <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
+      <div className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
     </div>
   );
 }

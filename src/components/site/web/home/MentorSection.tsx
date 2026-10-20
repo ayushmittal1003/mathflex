@@ -8,7 +8,7 @@ import { button, cx, tone } from "../ui";
 // credential and the 1:1 call card (details on /book-a-call; it's the mentorship add-on).
 export function MentorSection({ mentorship, names }: { mentorship: { price: number } | null /* null hides the call card */; names: { short: string; full: string } }) {
   return (
-    <section id="mentor" className="py-22">
+    <section id="mentor" className="py-12 tablet:py-22">
       <div className="mx-auto grid w-[min(1120px,calc(100%-var(--gutter)*2))] items-center gap-x-14 gap-y-10 min-[960px]:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <VideoFrame videoId={instructor.introVideoId} caption={names.full} sub={instructor.title} className="aspect-video w-full" />
         <div className="min-w-0">

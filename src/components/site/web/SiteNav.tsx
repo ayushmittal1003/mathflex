@@ -74,7 +74,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
         className={cx("mx-auto grid max-w-[1240px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 px-5 sm:px-8", stuck ? "py-3" : "py-5.5")}
         aria-label="Main"
       >
-        <Link href="/" className="col-start-1 justify-self-start" aria-label="Mathflex home">
+        <Link href="/" className="tap relative col-start-1 justify-self-start" aria-label="Mathflex home">
           <SiteLogo />
         </Link>
 
@@ -98,7 +98,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
           <Link
             href="/checkout"
             aria-label={`Cart, ${cartCount} item${cartCount === 1 ? "" : "s"}`}
-            className={cx("relative grid size-[42px] place-items-center rounded-lg transition hover:scale-[1.06]", secondary)}
+            className={cx("relative grid size-11 place-items-center rounded-lg transition hover:scale-[1.06]", secondary)}
           >
             <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
@@ -106,7 +106,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
             {cartCount > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground">
+              <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-xs font-bold text-primary-foreground">
                 {cartCount}
               </span>
             )}
@@ -115,7 +115,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
           <div className="hidden items-center gap-2 lg:flex">
             {user ? (
               <>
-                <Link href="/my-learning" aria-label={`${user.streak}-day streak, ${user.xp} XP`} className={cx("hidden h-[42px] items-center gap-3 rounded-lg px-3.5 text-sm font-extrabold xl:flex", secondary)}>
+                <Link href="/my-learning" aria-label={`${user.streak}-day streak, ${user.xp} XP`} className={cx("hidden h-11 items-center gap-3 rounded-lg px-3.5 text-sm font-extrabold xl:flex", secondary)}>
                   <span className="text-brand-2">🔥 {user.streak}</span>
                   <span className="text-xp">⚡ {user.xp.toLocaleString("en-IN")}</span>
                 </Link>
@@ -125,7 +125,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
                     onClick={() => setAccountOpen(!accountOpen)}
                     aria-label="Account menu"
                     aria-expanded={accountOpen}
-                    className="grid size-[42px] place-items-center rounded-full text-sm font-bold text-white ring-2 ring-white transition hover:scale-[1.06]"
+                    className="grid size-11 place-items-center rounded-full text-sm font-bold text-white ring-2 ring-white transition hover:scale-[1.06]"
                     style={{ background: user.avatarColor }}
                   >
                     {user.name.trim()[0]?.toUpperCase() ?? "?"}
@@ -147,11 +147,11 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
 
           {/* Phones: account button (the rest lives in the bottom bar's More sheet). */}
           {user ? (
-            <button type="button" onClick={() => setMoreOpen(true)} aria-label="Account menu" className="grid size-[42px] place-items-center rounded-full text-sm font-bold text-white ring-2 ring-white tablet:hidden" style={{ background: user.avatarColor }}>
+            <button type="button" onClick={() => setMoreOpen(true)} aria-label="Account menu" className="grid size-11 place-items-center rounded-full text-sm font-bold text-white ring-2 ring-white tablet:hidden" style={{ background: user.avatarColor }}>
               {user.name.trim()[0]?.toUpperCase() ?? "?"}
             </button>
           ) : (
-            <Link href="/login" className={cx(button.sm, secondary, "h-[42px] tablet:hidden")}>Log in</Link>
+            <Link href="/login" className={cx(button.sm, secondary, "h-11 tablet:hidden")}>Log in</Link>
           )}
 
           <button
@@ -159,7 +159,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
             onClick={() => setOpen(!open)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            className="hidden size-[42px] place-items-center rounded-lg bg-foreground text-card tablet:grid lg:hidden"
+            className="hidden size-11 place-items-center rounded-lg bg-foreground text-card tablet:grid lg:hidden"
           >
             <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden>
               {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}

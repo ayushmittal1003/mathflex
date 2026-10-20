@@ -30,7 +30,7 @@ export function CostCompare({ fullCourse, minChapterPrice }: { fullCourse: HomeC
   const ratio = minChapterPrice ? Math.round(top / minChapterPrice / 100) * 100 : 0;
 
   return (
-    <section className="py-22">
+    <section className="py-12 tablet:py-22">
       <SectionHead eyebrow="The problem" title={<>JEE maths shouldn&apos;t cost a <Mark>lakh</Mark>.</>} lead={problem.lead} />
       <div ref={ref} className="mx-auto mt-12 w-[min(1120px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_4px_0_rgb(0_0_0/0.08)]">
         {rows.map((r, i) => (
@@ -41,7 +41,7 @@ export function CostCompare({ fullCourse, minChapterPrice }: { fullCourse: HomeC
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-[17px] font-extrabold tracking-[-0.02em]">{r.name}</span>
-                {r.us && <span className="rounded bg-primary px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.08em] text-primary-foreground">Mathflex</span>}
+                {r.us && <span className="rounded bg-primary px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.08em] text-primary-foreground">Mathflex</span>}
               </div>
               <div className="mt-1 text-sm leading-[1.45] text-muted-foreground">{r.note}</div>
             </div>

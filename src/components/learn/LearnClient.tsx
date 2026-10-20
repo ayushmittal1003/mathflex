@@ -172,7 +172,7 @@ export function LearnClient(props: {
                   <div className="grid gap-2.5">
                     {props.resources.map((r) => (
                       <a key={r.id} href={r.url} target="_blank" className="flex items-center gap-3.5 rounded-xl border border-border px-4 py-3.5 text-foreground hover:bg-muted/50">
-                        <span className={cx("grid h-12 w-10 shrink-0 place-items-center rounded-md text-[10px] font-extrabold text-white", r.type === "MINDMAP" ? "bg-brand-2" : r.type === "FORMULA_SHEET" ? "bg-xp" : "bg-primary")}>{r.type === "MINDMAP" ? "MAP" : "PDF"}</span>
+                        <span className={cx("grid h-12 w-10 shrink-0 place-items-center rounded-md text-xs font-extrabold text-white", r.type === "MINDMAP" ? "bg-brand-2" : r.type === "FORMULA_SHEET" ? "bg-xp" : "bg-primary")}>{r.type === "MINDMAP" ? "MAP" : "PDF"}</span>
                         <span className="min-w-0 flex-1">
                           <span className="block text-[15px] font-bold">{r.title}</span>
                           <span className="block text-xs capitalize text-muted-foreground">{r.type.replace("_", " ").toLowerCase()}</span>

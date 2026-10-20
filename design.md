@@ -89,8 +89,7 @@ design-system muted *background*. For grey text always write `text-muted-foregro
 - `font-display` only sets the family and tracking. Set the weight yourself, normally `font-extrabold` for headings
   and `font-bold` for sub-headings.
 - Body letter-spacing is `--letter-spacing` (`0em`), which `tracking-normal` also uses.
-- Use Tailwind's size scale (`text-sm`, `text-xl`, `text-4xl`…). Avoid one-off `text-[13px]`; `text-[10px]`/`text-[11px]`
-  for tiny poster labels is the existing exception.
+- Use Tailwind's size scale (`text-sm`, `text-xl`, `text-4xl`…). Avoid one-off `text-[13px]`; On the public site nothing is smaller than 12px (`text-xs`); see the Mobile section.
 
 ## 5. Radius, spacing, shadow
 

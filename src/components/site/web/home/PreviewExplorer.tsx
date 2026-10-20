@@ -22,7 +22,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
   const off = pctOff(cur.price, cur.mrp);
 
   return (
-    <section id="previews" className="scroll-mt-6 py-22">
+    <section id="previews" className="scroll-mt-6 py-12 tablet:py-22">
       <SectionHead
         eyebrow="Chapter previews"
         dot="ok"
@@ -89,7 +89,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
                   </span>
                   <span className="shrink-0 text-right">
                     <span className="block text-[15px] font-extrabold">{inr(c.price)}</span>
-                    {c.previewSrc && <span className="mt-0.5 block text-[11px] font-bold text-primary">▶ Preview</span>}
+                    {c.previewSrc && <span className="mt-0.5 block text-xs font-bold text-primary">▶ Preview</span>}
                   </span>
                 </button>
               );
@@ -116,8 +116,8 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
               </div>
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.6))]" />
               <div className="absolute left-5 top-4.5 flex gap-2">
-                <span className="rounded-md bg-black/35 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.08em] backdrop-blur-md">Class {cur.classLevel}</span>
-                {cur.jeeWeightage > 0 && <span className="rounded-md bg-black/35 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.06em] backdrop-blur-md">{cur.jeeWeightage}% of JEE Main</span>}
+                <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.08em] backdrop-blur-md">Class {cur.classLevel}</span>
+                {cur.jeeWeightage > 0 && <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] backdrop-blur-md">{cur.jeeWeightage}% of JEE Main</span>}
               </div>
               <span className="absolute left-1/2 top-[46%] grid -translate-x-1/2 -translate-y-1/2 place-items-center gap-3 text-center">
                 <span className="grid size-[76px] place-items-center rounded-full bg-white/20 text-white shadow-[0_0_0_12px_rgb(255_255_255/0.08)] backdrop-blur-sm"><PlayIcon className="size-6.5" /></span>
@@ -134,7 +134,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
             {cur.parts.map((p) => (
               <div key={p.id} className="flex flex-[1_0_190px] flex-col gap-2 rounded-lg border border-border p-2.5">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-[11px] font-bold text-muted-foreground">PART {p.order}{p.durationSec > 0 && ` · ${clock(p.durationSec)}`}</span>
+                  <span className="font-mono text-xs font-bold text-muted-foreground">PART {p.order}{p.durationSec > 0 && ` · ${clock(p.durationSec)}`}</span>
                   <span className="grid size-6 place-items-center rounded-full bg-muted text-muted-foreground"><LockIcon /></span>
                 </div>
                 <div className="text-sm font-bold leading-[1.3] text-foreground">{p.title}</div>

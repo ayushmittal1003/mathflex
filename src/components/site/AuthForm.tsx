@@ -153,7 +153,7 @@ export function AuthForm({ mode, next, panel, paused = false, googleReady = fals
                 </div>
                 {panel.rows.map((r, i) => (
                   <div key={r.title} className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-b-0">
-                    <span className="grid h-[30px] w-11 shrink-0 place-items-center rounded-md text-[11px] font-black text-white" style={{ background: `linear-gradient(155deg, ${r.coverFrom}, ${r.coverTo})` }}>{r.symbol}</span>
+                    <span className="grid h-[30px] w-11 shrink-0 place-items-center rounded-md text-xs font-black text-white" style={{ background: `linear-gradient(155deg, ${r.coverFrom}, ${r.coverTo})` }}>{r.symbol}</span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[13px] font-bold">{r.title}</span>
                       <span className="mt-1.5 block h-1 rounded-full bg-muted"><span className="block h-full rounded-full bg-primary" style={{ width: `${[62, 24, 88][i] ?? 40}%` }} /></span>

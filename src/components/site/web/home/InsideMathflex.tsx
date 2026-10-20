@@ -29,7 +29,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
     : [{ tag: "PDF", title: "Short notes", map: false }, { tag: "PDF", title: "Formula sheet", map: false }];
 
   return (
-    <section id="inside" className="py-22">
+    <section id="inside" className="py-12 tablet:py-22">
       <SectionHead
         eyebrow={eyebrow}
         dot="gold"
@@ -49,7 +49,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
             <div className="mt-auto rounded-lg bg-muted p-3">
               <div className="text-xs font-bold">Level 6</div>
               <div className="mt-2 h-1 rounded-full bg-border"><div className="h-full w-[68%] rounded-full bg-xp" /></div>
-              <div className="mt-1.5 text-[11px] text-muted-foreground">660 XP to Level 7</div>
+              <div className="mt-1.5 text-xs text-muted-foreground">660 XP to Level 7</div>
             </div>
           </div>
 
@@ -76,7 +76,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
                     <div className="grid h-[72px] w-[54px] shrink-0 place-items-center rounded-md text-base font-black text-white/70" style={posterBg(c.coverFrom, c.coverTo)}>{c.symbol}</div>
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-[13px] font-bold">{c.title}</div>
-                      <div className="text-[11px] text-muted-foreground">Part {Math.min(i + 1, c.parts.length)} of {c.parts.length} · {[62, 24][i]}%</div>
+                      <div className="text-xs text-muted-foreground">Part {Math.min(i + 1, c.parts.length)} of {c.parts.length} · {[62, 24][i]}%</div>
                       <div className="mt-1.5 h-1 rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{ width: `${[62, 24][i]}%` }} /></div>
                     </div>
                   </div>
@@ -86,12 +86,12 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
 
             <div className="grid min-h-0 flex-1 grid-cols-[1.2fr_1fr] gap-3">
               <div className="rounded-xl border border-border p-3.5">
-                <div className="flex justify-between text-[13px] font-bold"><span>This week</span><span className="text-[11px] font-semibold text-muted-foreground">XP per day</span></div>
+                <div className="flex justify-between text-[13px] font-bold"><span>This week</span><span className="text-xs font-semibold text-muted-foreground">XP per day</span></div>
                 <div className="mt-3 flex h-[120px] items-end gap-2">
                   {bars.map((h, i) => (
                     <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
                       <div className={cx("w-full rounded", i === 5 ? "bg-primary" : "bg-primary/25")} style={{ height: `${h}%` }} />
-                      <span className="text-[10px] text-muted-foreground">{"MTWTFSS"[i]}</span>
+                      <span className="text-xs text-muted-foreground">{"MTWTFSS"[i]}</span>
                     </div>
                   ))}
                 </div>
@@ -101,7 +101,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
                 <div className="mt-2.5 grid gap-2 text-xs">
                   {notes.map((n) => (
                     <div key={n.title} className="flex items-center gap-2">
-                      <span className={cx("rounded px-1.5 py-0.5 font-mono text-[10px] font-bold", n.map ? "bg-xp/12 text-xp" : "bg-primary/10 text-primary")}>{n.tag}</span>
+                      <span className={cx("rounded px-1.5 py-0.5 font-mono text-xs font-bold", n.map ? "bg-xp/12 text-xp" : "bg-primary/10 text-primary")}>{n.tag}</span>
                       <span className="truncate">{n.title}</span>
                     </div>
                   ))}
@@ -122,12 +122,12 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
 
           <div className="flex min-w-0 flex-col gap-3 border-l border-border px-3.5 py-4.5">
             <div className={cx(ring("board"), "flex-1")}>
-              <div className="flex justify-between text-[13px] font-bold"><span>Leaderboard</span><span className="text-[11px] font-semibold text-muted-foreground">This week</span></div>
+              <div className="flex justify-between text-[13px] font-bold"><span>Leaderboard</span><span className="text-xs font-semibold text-muted-foreground">This week</span></div>
               <div className="mt-2 grid gap-1">
                 {leaders.length ? leaders.map((l, i) => (
                   <div key={l.id} className="flex items-center gap-2 rounded-md px-1.5 py-2 text-xs">
                     <b className={cx("w-3.5", i < 3 ? "text-foreground" : "text-muted-foreground")}>{i + 1}</b>
-                    <span className="grid size-5.5 place-items-center rounded-full text-[10px] font-bold text-white" style={{ background: l.avatarColor }}>{l.name[0]}</span>
+                    <span className="grid size-5.5 place-items-center rounded-full text-xs font-bold text-white" style={{ background: l.avatarColor }}>{l.name[0]}</span>
                     <span className="truncate font-semibold">{l.name}</span>
                     <b className="ml-auto text-xp">{l.xp.toLocaleString("en-IN")}</b>
                   </div>

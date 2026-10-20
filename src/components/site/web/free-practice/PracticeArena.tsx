@@ -67,7 +67,7 @@ export function PracticeArena({ questions }: { questions: PracticeQ[] }) {
             )}
           >
             {s.title}
-            {!s.live && <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-bold">Soon</span>}
+            {!s.live && <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-bold">Soon</span>}
           </span>
         ))}
       </div>
@@ -218,7 +218,7 @@ function Stat({ label, value, good = false }: { label: string; value: string; go
   return (
     <div className="rounded-lg bg-muted px-2 py-3">
       <div className={cx("text-xl font-extrabold tracking-[-0.03em]", good && "text-ok")}>{value}</div>
-      <div className="mt-0.5 text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
+      <div className="mt-0.5 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
     </div>
   );
 }

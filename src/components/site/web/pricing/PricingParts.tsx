@@ -45,7 +45,7 @@ export function PricingTiers({ courses, minPrice, maxPrice, chapterAccess }: { c
           )}
           style={{ animationDelay: `${i * 70}ms` }}
         >
-          {t.best && <span className="absolute -top-3 left-6 rounded-md bg-primary px-2.5 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.06em] text-white">Best value</span>}
+          {t.best && <span className="absolute -top-3 left-6 rounded-md bg-primary px-2.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.06em] text-white">Best value</span>}
           <div className={cx("text-[13px] font-bold uppercase tracking-[0.08em]", t.best ? "text-white/68" : "text-muted-foreground")}>{t.kicker}</div>
           <div className="mt-2 text-[21px] font-extrabold tracking-[-0.02em]">{t.name}</div>
           <div className="mt-4.5 flex min-h-13 flex-wrap items-baseline gap-x-2 gap-y-1">
@@ -111,7 +111,7 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
   };
 
   return (
-    <section id="builder" className="pb-22 pt-24">
+    <section id="builder" className="pb-12 pt-12 tablet:pb-22 tablet:pt-24">
       <SectionHead
         eyebrow="Build your own"
         dot="brand-2"

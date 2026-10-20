@@ -29,7 +29,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
   const bg = posterBg(chapter.coverFrom, chapter.coverTo);
 
   return (
-    <section id="how" className="py-22">
+    <section id="how" className="py-12 tablet:py-22">
       <SectionHead
         eyebrow="How a chapter works"
         dot="xp"
@@ -82,7 +82,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
                   <div className="absolute left-1/2 top-[42%] grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/50 bg-white/22 backdrop-blur-md">
                     <svg className="size-5" viewBox="0 0 24 24" fill="#fff" aria-hidden><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
                   </div>
-                  <div className="absolute bottom-7.5 whitespace-nowrap rounded-md bg-white px-2 py-1 text-[11px] font-bold text-foreground" style={{ left: `calc(${threshold}% - 60px)` }}>Practice unlocks here</div>
+                  <div className="absolute bottom-7.5 whitespace-nowrap rounded-md bg-white px-2 py-1 text-xs font-bold text-foreground" style={{ left: `calc(${threshold}% - 60px)` }}>Practice unlocks here</div>
                 </div>
                 <div className="mt-4.5 flex items-end justify-between gap-3">
                   <div className="min-w-0">
@@ -102,7 +102,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
                   ].map(([v, l]) => (
                     <div key={l} className="rounded-lg bg-muted p-3">
                       <div className="text-base font-extrabold">{v}</div>
-                      <div className="text-[11px] text-muted-foreground">{l}</div>
+                      <div className="text-xs text-muted-foreground">{l}</div>
                     </div>
                   ))}
                 </div>
@@ -145,7 +145,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
               <div key="s2" className="animate-mf-rise p-5">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[13px] font-bold text-muted-foreground">Question 3 of 14</span>
-                  <span className="rounded-md bg-brand-2/14 px-2 py-0.5 text-[11px] font-bold text-brand-2">Practice question</span>
+                  <span className="rounded-md bg-brand-2/14 px-2 py-0.5 text-xs font-bold text-brand-2">Practice question</span>
                 </div>
                 <div className="mt-3 flex gap-1" aria-hidden>
                   <span className="h-1 flex-1 rounded-full bg-ok" /><span className="h-1 flex-1 rounded-full bg-ok" /><span className="h-1 flex-1 rounded-full bg-primary" /><span className="h-1 flex-[11] rounded-full bg-muted" />
@@ -207,7 +207,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
                   {[["+120", "XP earned", "text-xp"], ["7 days", "streak", "text-brand-2"], ["#3", "this week", "text-foreground"]].map(([v, l, c]) => (
                     <div key={l} className="rounded-lg bg-muted p-3">
                       <div className={cx("text-xl font-extrabold", c)}>{v}</div>
-                      <div className="text-[11px] text-muted-foreground">{l}</div>
+                      <div className="text-xs text-muted-foreground">{l}</div>
                     </div>
                   ))}
                 </div>

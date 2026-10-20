@@ -146,7 +146,7 @@ export function CartView(props: {
               return (
                 <li key={label} className="flex items-center gap-2.5">
                   <span className={cx("flex items-center gap-2 text-[13px] font-bold", done || active ? "text-foreground" : "text-muted-foreground")} aria-current={active ? "step" : undefined}>
-                    <span className={cx("grid size-5.5 place-items-center rounded-full text-[11px] font-extrabold", done ? "bg-ok text-white" : active ? "bg-foreground text-white" : "bg-muted text-muted-foreground")}>
+                    <span className={cx("grid size-5.5 place-items-center rounded-full text-xs font-extrabold", done ? "bg-ok text-white" : active ? "bg-foreground text-white" : "bg-muted text-muted-foreground")}>
                       {done ? <CheckIcon className="size-3" strokeWidth={3.5} /> : i + 1}
                     </span>
                     {label}
@@ -191,7 +191,7 @@ export function CartView(props: {
                       {ch ? ch.symbol : "Σ"}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <span className={cx("rounded px-1.5 py-0.5 text-[11px] font-extrabold uppercase tracking-[0.06em]", l.type === "COURSE" ? "bg-primary text-white" : "bg-muted text-secondary-foreground")}>
+                      <span className={cx("rounded px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.06em]", l.type === "COURSE" ? "bg-primary text-white" : "bg-muted text-secondary-foreground")}>
                         {l.type === "COURSE" ? "Course" : "Chapter"}
                       </span>
                       <div className="mt-1.5 text-base font-bold tracking-[-0.015em]">{l.title}</div>
@@ -258,7 +258,7 @@ export function CartView(props: {
                     </svg>
                   </div>
                   <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-3 px-5.5 py-5">
-                    <span className="self-start rounded bg-foreground px-1.5 py-0.5 text-[11px] font-extrabold uppercase tracking-[0.06em] text-white">Recommended</span>
+                    <span className="self-start rounded bg-foreground px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.06em] text-white">Recommended</span>
                     <div>
                       <div className="text-lg font-extrabold tracking-[-0.02em]">{props.mentorship.title}</div>
                       <div className="mt-1 text-sm leading-[1.5] text-secondary-foreground">{props.mentorship.blurb}</div>

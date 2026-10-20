@@ -13,7 +13,7 @@ export function Breadcrumbs({ items, className, schemaOn = true }: { items: Crum
   return (
     <>
       {schemaOn && <JsonLd data={schema.breadcrumbs(items)} />}
-      <nav aria-label="Breadcrumb" className={cx("min-w-0 text-[13px] font-semibold text-muted-foreground", className)}>
+      <nav aria-label="Breadcrumb" className={cx("min-w-0 text-sm font-semibold text-muted-foreground", className)}>
         <ol className="flex items-center gap-1.5 whitespace-nowrap">
           {items.map((c, i) => {
             const last = i === items.length - 1;
@@ -23,7 +23,7 @@ export function Breadcrumbs({ items, className, schemaOn = true }: { items: Crum
                   <span aria-current="page" className="truncate text-secondary-foreground">{c.name}</span>
                 ) : (
                   <>
-                    <Link href={c.path} className="rounded-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">{c.name}</Link>
+                    <Link href={c.path} className="tap relative rounded-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">{c.name}</Link>
                     <span aria-hidden>›</span>
                   </>
                 )}

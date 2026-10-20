@@ -189,8 +189,8 @@ function PlanList({ title, plans }: { title: string; plans: Plan[] }) {
               <Link href={p.href} className="relative block min-h-[110px] overflow-hidden text-white" style={posterBg(p.cover.from, p.cover.to)}>
                 <span className={cx("absolute right-4 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none text-white/25", p.cover.symbol.length > 2 ? "text-[48px]" : "text-[84px]")}>{p.cover.symbol}</span>
                 <span className="absolute left-3 top-3 flex gap-1.5">
-                  <span className="rounded-md bg-white/92 px-2 py-1 text-[11px] font-extrabold text-black">{p.isCourse ? "Course" : "Chapter"}</span>
-                  {p.renewed && <span className="rounded-md bg-ok px-2 py-1 text-[11px] font-extrabold">Renewed</span>}
+                  <span className="rounded-md bg-white/92 px-2 py-1 text-xs font-extrabold text-black">{p.isCourse ? "Course" : "Chapter"}</span>
+                  {p.renewed && <span className="rounded-md bg-ok px-2 py-1 text-xs font-extrabold">Renewed</span>}
                 </span>
               </Link>
               <div className="min-w-0 p-5 tablet:p-6">
@@ -237,7 +237,7 @@ function PlanList({ title, plans }: { title: string; plans: Plan[] }) {
 function Fact({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</dt>
+      <dt className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</dt>
       <dd className={cx("mt-0.5 truncate font-bold", mono && "font-mono text-[13px]")}>{value}</dd>
     </div>
   );
@@ -247,7 +247,7 @@ function Count({ value, label, warn = false }: { value: number; label: string; w
   return (
     <div className={cx("min-w-[96px] rounded-xl border border-border px-4 py-3", warn ? "bg-gold/12" : "bg-card")}>
       <div className="text-2xl font-extrabold tracking-[-0.04em]">{value}</div>
-      <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
+      <div className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
     </div>
   );
 }

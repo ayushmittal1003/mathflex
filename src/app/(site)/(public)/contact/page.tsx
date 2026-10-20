@@ -30,7 +30,7 @@ export default async function ContactPage() {
         </p>
       </section>
 
-      <section className="pb-24 pt-14">
+      <section className="pb-14 pt-10 tablet:pb-24 tablet:pt-14">
         <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-14 gap-y-10">
           <div className="min-w-0 flex-[1.4_1_480px] rounded-xl border border-border bg-card p-6 shadow-[0_24px_48px_-32px_rgb(80_20_0/0.4)] tablet:p-8">
             <div className="grid gap-3 tablet:grid-cols-3">

@@ -80,7 +80,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
         {/* Dashboard peek (dark-framed product UI). */}
         <div className="relative mx-auto mt-18 -mb-40 grid h-[420px] w-[min(1000px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[190px_minmax(0,1fr)_250px]">
           <div className="hidden content-start gap-1 border-r border-border px-3 py-4 text-[13px] tablet:grid">
-            <div className="px-2 py-1 text-[10px] font-bold tracking-[0.12em] text-muted-foreground">MENU</div>
+            <div className="px-2 py-1 text-xs font-bold tracking-[0.12em] text-muted-foreground">MENU</div>
             <div className="rounded-md bg-primary/10 p-2 font-bold text-primary">My Learning</div>
             {["Chapters", "Practice", "Leaderboard"].map((l) => <div key={l} className="p-2 text-secondary-foreground">{l}</div>)}
           </div>
@@ -93,7 +93,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
                     <span className="absolute -top-1 right-1.5 text-[52px] font-black text-white/25">{c.symbol}</span>
                   </div>
                   <div className="mt-2.5 truncate text-sm font-bold">{c.title}</div>
-                  <div className="mt-0.5 text-[11px] text-muted-foreground">Part {Math.min(i + 1, c.parts.length)} of {c.parts.length}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">Part {Math.min(i + 1, c.parts.length)} of {c.parts.length}</div>
                   <div className="mt-2 h-1 rounded-full bg-muted">
                     <div className="h-full rounded-full bg-primary" style={{ width: `${peekProgress[i]}%` }} />
                   </div>
@@ -107,7 +107,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
               {[["7", "streak", "text-brand-2"], ["2.3k", "XP", "text-xp"], ["#3", "rank", "text-foreground"]].map(([v, l, c]) => (
                 <div key={l} className="rounded-lg bg-muted px-1 py-2">
                   <div className={cx("text-base font-extrabold", c)}>{v}</div>
-                  <div className="text-[10px] text-muted-foreground">{l}</div>
+                  <div className="text-xs text-muted-foreground">{l}</div>
                 </div>
               ))}
             </div>

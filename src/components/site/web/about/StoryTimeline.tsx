@@ -64,7 +64,7 @@ export function StoryTimeline({ steps }: { steps: Step[] }) {
             {/* marker */}
             <span
               className={cx(
-                "absolute left-0 top-1 z-10 grid size-[33px] place-items-center rounded-full border-[3px] font-mono text-[11px] font-extrabold transition-all duration-500 ease-mf min-[860px]:left-1/2 min-[860px]:-translate-x-1/2",
+                "absolute left-0 top-1 z-10 grid size-[33px] place-items-center rounded-full border-[3px] font-mono text-xs font-extrabold transition-all duration-500 ease-mf min-[860px]:left-1/2 min-[860px]:-translate-x-1/2",
                 lit
                   ? s.you ? "border-primary bg-primary text-white shadow-[0_0_0_7px_color-mix(in_oklab,var(--primary)_16%,transparent)]" : "border-foreground bg-foreground text-white"
                   : "border-border bg-card text-muted-foreground",

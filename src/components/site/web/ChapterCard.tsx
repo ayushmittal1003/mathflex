@@ -42,10 +42,10 @@ export function ChapterCard({ c, index = 0 }: { c: CardChapter; index?: number }
           </span>
           <span className="absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,rgb(255_255_255/0.22),transparent_50%)]" />
           {c.owned ? (
-            <span className="absolute bottom-2.5 left-2.5 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold text-black">Owned</span>
+            <span className="absolute bottom-2.5 left-2.5 rounded-md bg-white px-2 py-1 text-xs font-extrabold text-black">Owned</span>
           ) : (
             c.free && (
-              <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold text-black">
+              <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-xs font-extrabold text-black">
                 <PlayIcon className="size-2.5" /> Free preview
               </span>
             )

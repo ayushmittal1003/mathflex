@@ -179,7 +179,7 @@ export default async function PracticeDashboard() {
           <div className="grid gap-3 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-4">
             {locked.map((c) => (
               <Link key={c.id} href={`/chapter/${c.slug}`} className={cx(card, "flex items-center gap-3.5 p-4 text-foreground transition hover:-translate-y-0.5")}>
-                <span className={cx("grid size-11 shrink-0 place-items-center rounded-xl font-black text-white", c.symbol.length > 2 ? "text-[11px]" : "text-base")} style={posterBg(c.coverFrom, c.coverTo)}>{c.symbol}</span>
+                <span className={cx("grid size-11 shrink-0 place-items-center rounded-xl font-black text-white", c.symbol.length > 2 ? "text-xs" : "text-base")} style={posterBg(c.coverFrom, c.coverTo)}>{c.symbol}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-bold">{c.title}</span>
                   <span className="text-xs font-semibold text-muted-foreground">{c._count.questions} questions</span>
@@ -198,7 +198,7 @@ function Mini({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg bg-muted px-2 py-2.5">
       <dd className="text-[15px] font-extrabold tabular-nums tracking-[-0.02em]">{value}</dd>
-      <dt className="mt-0.5 text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">{label}</dt>
+      <dt className="mt-0.5 text-xs font-bold uppercase tracking-[0.05em] text-muted-foreground">{label}</dt>
     </div>
   );
 }

@@ -73,7 +73,7 @@ export default async function PricingPage() {
         <InsideMathflex chapters={inside.chapters} leaders={inside.leaders} resources={inside.resources} eyebrow="Every paid chapter includes" />
       </div>
 
-      <section className="py-16 tablet:py-20">
+      <section className="py-12 tablet:py-20">
         <div className="px-6 text-center">
           <Eyebrow>Before you check out</Eyebrow>
           <h2 className="mx-auto mt-6 max-w-[860px] text-[clamp(28px,5.2vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
@@ -107,7 +107,7 @@ export default async function PricingPage() {
       </section>
 
       {faqs.length > 0 && (
-        <section className="py-16 tablet:py-20">
+        <section className="py-12 tablet:py-20">
           <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
             <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about pricing</h2>
             <div className="mt-9"><FaqList items={faqs} /></div>

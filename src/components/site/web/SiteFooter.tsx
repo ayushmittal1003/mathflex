@@ -9,7 +9,7 @@ import { container } from "./ui";
 export function SiteFooter({ settings }: { settings: Settings }) {
   const names = instructorNames(settings);
   const wa = `https://wa.me/${settings.whatsappNumber}`;
-  const linkCls = "text-secondary-foreground transition-colors hover:text-primary";
+  const linkCls = "flex min-h-11 items-center text-secondary-foreground transition-colors hover:text-primary tablet:inline tablet:min-h-0";
 
   return (
     <footer className="relative overflow-hidden bg-card pb-20 md:pb-0">
@@ -19,13 +19,13 @@ export function SiteFooter({ settings }: { settings: Settings }) {
           <p className="mt-3.5 max-w-[340px] text-sm leading-[1.55] text-muted-foreground">
             Chapter-wise JEE maths for Class 11 and 12, taught by IIT Delhi alumnus {names.full}.
           </p>
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex gap-1">
             <a
               href={socials.instagram.href}
               target="_blank"
               rel="noreferrer"
               aria-label={`Mathflex on ${socials.instagram.label}`}
-              className="tap relative grid size-9 place-items-center rounded-lg border border-border bg-secondary text-secondary-foreground transition hover:scale-[1.06] hover:text-primary"
+              className="relative grid size-11 place-items-center rounded-lg border border-border bg-secondary text-secondary-foreground transition hover:scale-[1.06] hover:text-primary"
             >
               <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <rect x="3" y="3" width="18" height="18" rx="5" />
@@ -57,16 +57,16 @@ export function SiteFooter({ settings }: { settings: Settings }) {
           <a href={`mailto:${settings.supportEmail}`} className={`${linkCls} break-all`}>{settings.supportEmail}</a>
           <a href={supportPhone.href} className={linkCls}>{supportPhone.display}</a>
           <a href={wa} target="_blank" rel="noreferrer" className={linkCls}>WhatsApp</a>
-          <span className="text-muted-foreground">{placeholders.hours}</span>
+          <span className="py-2 text-muted-foreground tablet:py-0">{placeholders.hours}</span>
         </FooterCol>
       </div>
 
       <div className={`${container.detail} relative z-10 mt-12 flex flex-wrap justify-between gap-3 border-t border-border py-5 text-[13px] text-muted-foreground`}>
         <span>© {new Date().getFullYear()} Mathflex · mathflex.in</span>
         <div className="flex flex-wrap gap-5">
-          <Link href="/terms" className="hover:text-foreground">Terms &amp; conditions</Link>
-          <Link href="/privacy" className="hover:text-foreground">Privacy policy</Link>
-          <Link href="/refund-policy" className="hover:text-foreground">Refund policy</Link>
+          <Link href="/terms" className="flex min-h-11 items-center hover:text-foreground tablet:min-h-0">Terms &amp; conditions</Link>
+          <Link href="/privacy" className="flex min-h-11 items-center hover:text-foreground tablet:min-h-0">Privacy policy</Link>
+          <Link href="/refund-policy" className="flex min-h-11 items-center hover:text-foreground tablet:min-h-0">Refund policy</Link>
         </div>
       </div>
 
@@ -84,7 +84,7 @@ function FooterCol({ title, children }: { title: string; children: React.ReactNo
   return (
     <div className="text-sm">
       <div className="mb-3.5 font-extrabold">{title}</div>
-      <div className="grid gap-2.5">{children}</div>
+      <div className="grid gap-0 tablet:gap-2.5">{children}</div>
     </div>
   );
 }

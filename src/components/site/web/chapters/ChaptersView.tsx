@@ -80,7 +80,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
       </WashHero>
 
       {top5.length > 0 && (
-        <section id="top" className="overflow-hidden pb-18 pt-24">
+        <section id="top" className="overflow-hidden pb-12 pt-12 tablet:pb-18 tablet:pt-24">
           <SectionHead
             eyebrow="Highest JEE weightage"
             dot="gold"
@@ -97,7 +97,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
                 <span className="relative block aspect-[2/3] w-[130px] overflow-hidden rounded-xl shadow-[0_16px_32px_-16px_rgb(0_0_0/0.45)] transition-transform duration-300 hover:-translate-y-1.5 tablet:w-[170px]" style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}>
                   <span className={cx("absolute -right-2.5 top-1 whitespace-nowrap font-black leading-none text-white/20", c.symbol.length > 2 ? "text-[56px]" : "text-[96px]")}>{c.symbol}</span>
                   <span className="absolute inset-0 bg-gradient-to-b from-transparent from-35% to-black/85" />
-                  <span className="absolute left-2.5 top-2.5 rounded bg-white px-1.5 py-0.5 text-[11px] font-extrabold text-black">{c.jeeWeightage}% of JEE</span>
+                  <span className="absolute left-2.5 top-2.5 rounded bg-white px-1.5 py-0.5 text-xs font-extrabold text-black">{c.jeeWeightage}% of JEE</span>
                   <span className="absolute inset-x-3 bottom-3">
                     <span className="block text-[15px] font-extrabold leading-[1.15]">{c.title}</span>
                     <span className="mt-1 block text-xs opacity-80">Class {c.classLevel} · {inr(c.price)}</span>
@@ -147,7 +147,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
         </div>
       </div>
 
-      <section className="pb-24 pt-8">
+      <section className="pb-14 pt-6 tablet:pb-24 tablet:pt-8">
         <div className="mx-auto w-[min(1240px,calc(100%-var(--gutter)*2))]">
           {groups.map((g) => (
             <div key={g.title || "all"} className="mb-10 last:mb-0">
@@ -173,7 +173,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
       </section>
 
       {bundles.length > 0 && (
-        <section id="bundles" className="scroll-mt-16 py-16 tablet:py-20">
+        <section id="bundles" className="scroll-mt-16 py-12 tablet:py-20">
           <div className="mx-auto flex w-[min(1240px,calc(100%-var(--gutter)*2))] flex-wrap items-center gap-x-16 gap-y-10">
             <div className="min-w-0 flex-[1_1_360px]">
               <Eyebrow>Complete courses</Eyebrow>
@@ -190,7 +190,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-xl font-extrabold tracking-[-0.02em]">{b.title}</span>
-                      {best?.id === b.id && <span className="rounded bg-primary px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.06em] text-primary-foreground">Best value</span>}
+                      {best?.id === b.id && <span className="rounded bg-primary px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.06em] text-primary-foreground">Best value</span>}
                     </div>
                     <div className="mt-1 text-sm text-muted-foreground">{b.subtitle || `${b.chapterCount} chapters`}</div>
                   </div>
@@ -218,8 +218,8 @@ function HeroPeek({ peek }: { peek: Peek }) {
         <div className="absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap text-[300px] font-black leading-none text-white/14">{peek.symbol}</div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 to-transparent to-70%" />
         <div className="absolute left-5.5 top-5 flex gap-2">
-          <span className="rounded-md bg-black/35 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.08em]">Class {peek.classLevel}</span>
-          {free && <span className="rounded-md bg-white px-2 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-black">Part {free.order} · Free</span>}
+          <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.08em]">Class {peek.classLevel}</span>
+          {free && <span className="rounded-md bg-white px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] text-black">Part {free.order} · Free</span>}
         </div>
         {free && (
           <Link href={`/learn/${peek.slug}?part=${free.order}`} aria-label={`Watch Part ${free.order} of ${peek.title} free`} className="absolute left-1/2 top-[38%] grid size-18 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition hover:scale-[1.06]">
@@ -234,7 +234,7 @@ function HeroPeek({ peek }: { peek: Peek }) {
       <div className="hidden flex-col gap-2.5 p-5 text-left tablet:flex">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground">{peek.parts.length} parts</span>
-          {peek.jeeWeightage > 0 && <span className="rounded-md bg-brand-2/14 px-2 py-0.5 text-[11px] font-bold text-brand-2">{peek.jeeWeightage}% of JEE Main</span>}
+          {peek.jeeWeightage > 0 && <span className="rounded-md bg-brand-2/14 px-2 py-0.5 text-xs font-bold text-brand-2">{peek.jeeWeightage}% of JEE Main</span>}
         </div>
         {shown.map((p, i) => (
           <div key={p.id} className={cx("flex items-center gap-2.5 rounded-lg border p-2.5", p.isFreePreview ? "border-primary/35 bg-selected" : "border-border")}>
@@ -243,7 +243,7 @@ function HeroPeek({ peek }: { peek: Peek }) {
             </span>
             <div className="min-w-0">
               <div className="truncate text-[13px] font-bold">{p.title}</div>
-              <div className="text-[11px] text-muted-foreground">
+              <div className="text-xs text-muted-foreground">
                 {p.durationSec > 0 && `${clock(p.durationSec)} · `}
                 {p.isFreePreview ? "Free preview" : i > 0 ? `Unlocks after Part ${shown[i - 1].order}` : "Unlocks after purchase"}
               </div>

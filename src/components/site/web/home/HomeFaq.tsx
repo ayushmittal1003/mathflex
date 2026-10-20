@@ -4,7 +4,7 @@ import { FaqList } from "../FaqList";
 // 11 FAQ: sticky intro on the left, accordion on the right. Copy from site-content.ts.
 export function HomeFaq({ faqs, whatsapp }: { faqs: { q: string; a: string }[]; whatsapp: string }) {
   return (
-    <section id="faq" className="scroll-mt-6 py-22">
+    <section id="faq" className="scroll-mt-6 py-12 tablet:py-22">
       <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-18 gap-y-10">
         <div className="min-w-0 flex-[1_1_300px] tablet:sticky tablet:top-8">
           <Eyebrow dot="xp">FAQ</Eyebrow>

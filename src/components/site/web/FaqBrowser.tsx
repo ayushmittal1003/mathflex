@@ -28,7 +28,7 @@ export function FaqBrowser({ groups }: { groups: Group[] }) {
         {q && <button type="button" onClick={() => setQ("")} className="shrink-0 rounded-lg bg-muted px-3.5 py-2.5 text-[13px] font-bold">Clear</button>}
       </div>
 
-      <section className="pb-18 pt-14">
+      <section className="pb-12 pt-10 tablet:pb-18 tablet:pt-14">
         <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-14 gap-y-8">
           <aside className="w-full min-w-0 min-[860px]:sticky min-[860px]:top-24 min-[860px]:w-[240px] min-[860px]:flex-none">
             <div className="no-scrollbar flex gap-2 overflow-x-auto min-[860px]:grid min-[860px]:gap-1.5">
