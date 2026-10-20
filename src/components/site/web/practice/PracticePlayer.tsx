@@ -182,7 +182,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
           </span>
           <button
             onClick={async () => setMarks({ ...marks, [q.id]: await toggleBookmark(q.id) })}
-            className="grid size-9 place-items-center rounded-full transition hover:bg-muted"
+            className="grid size-11 place-items-center rounded-full transition hover:bg-muted"
             aria-label={marks[q.id] ? "Remove bookmark" : "Bookmark question"}
           >
             {marks[q.id] ? <BookmarkCheck className="size-5 fill-primary text-primary" /> : <Bookmark className="size-5 text-muted-foreground" />}

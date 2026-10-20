@@ -236,8 +236,8 @@ export function LearnClient(props: {
             <div className="rounded-xl border border-border px-4.5 py-4">
               <div className="text-[15px] font-extrabold">Chapter resources</div>
               <div className="mt-3 grid gap-2">
-                <button type="button" onClick={() => setTab("notes")} className="flex items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-left text-sm font-bold">Notes<span className="text-xs font-semibold text-muted-foreground">{props.resources.length || "—"}</span></button>
-                <button type="button" onClick={() => setTab("practice")} className="flex items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-left text-sm font-bold">Practice questions<span className="text-xs font-semibold text-muted-foreground">{props.questions.length || "—"}</span></button>
+                <button type="button" onClick={() => setTab("notes")} className="flex min-h-11 items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-left text-sm font-bold">Notes<span className="text-xs font-semibold text-muted-foreground">{props.resources.length || "—"}</span></button>
+                <button type="button" onClick={() => setTab("practice")} className="flex min-h-11 items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-left text-sm font-bold">Practice questions<span className="text-xs font-semibold text-muted-foreground">{props.questions.length || "—"}</span></button>
               </div>
             </div>
           </aside>

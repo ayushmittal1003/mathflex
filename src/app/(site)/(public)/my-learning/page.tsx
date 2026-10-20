@@ -238,7 +238,7 @@ export default async function MyLearning() {
                     </span>
                   </Link>
                   <div className="flex flex-1 flex-col p-5">
-                    <Link href={`/chapter/${c.slug}`} className="text-lg font-extrabold leading-tight tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
+                    <Link href={`/chapter/${c.slug}`} className="inline-flex min-h-11 items-center text-lg font-extrabold leading-tight tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
                     <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[13px] font-semibold text-muted-foreground">
                       <span>{c.partsCount} parts</span>
                       {c.durationSec > 0 && <span>{duration(c.durationSec)}</span>}
@@ -365,7 +365,7 @@ export default async function MyLearning() {
         <section className="mt-16">
           <div className="mb-6 flex items-end justify-between gap-4">
             <h2 className={h2}>Add your next chapter</h2>
-            <Link href="/courses" className="text-sm font-bold text-primary hover:underline">Complete courses →</Link>
+            <Link href="/courses" className="inline-flex min-h-11 items-center text-sm font-bold text-primary hover:underline">Complete courses →</Link>
           </div>
           <div className="grid gap-5 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-3">
             {suggestions.map((c, i) => <ChapterCard key={c.id} c={c} index={i} />)}

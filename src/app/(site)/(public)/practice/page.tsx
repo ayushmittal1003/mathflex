@@ -132,7 +132,7 @@ export default async function PracticeDashboard() {
                     <div className="flex items-center gap-3.5">
                       <span className={cx("grid size-12 shrink-0 place-items-center rounded-xl font-black text-white", c.symbol.length > 2 ? "text-xs" : "text-lg")} style={posterBg(c.coverFrom, c.coverTo)}>{c.symbol}</span>
                       <span className="min-w-0 flex-1">
-                        <Link href={`/practice/${c.slug}`} className="block truncate text-[17px] font-extrabold tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
+                        <Link href={`/practice/${c.slug}`} className="flex min-h-11 items-center truncate text-[17px] font-extrabold tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
                         <span className="text-xs font-semibold text-muted-foreground">Class {c.classLevel}</span>
                       </span>
                       <span className={cx("shrink-0 rounded-full px-2.5 py-1 text-xs font-bold", s.cls)}>{s.label}</span>

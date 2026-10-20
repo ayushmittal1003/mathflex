@@ -143,7 +143,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
           {/* Info */}
           <div className="order-2 min-w-0 flex-[1_1_320px]">
             <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-secondary-foreground">
-              <Link href={`/chapters?class=${chapter.classLevel}`} className="hover:text-primary">Class {chapter.classLevel}</Link>
+              <Link href={`/chapters?class=${chapter.classLevel}`} className="tap relative hover:text-primary">Class {chapter.classLevel}</Link>
               {!chapter.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-xs font-bold text-foreground">Unpublished · staff preview</span>}
             </div>
             <h1 className="mt-4.5 text-[clamp(28px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{chapter.title}</h1>
@@ -153,7 +153,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
               {chapter.jeeWeightage > 0 && <span className="whitespace-nowrap rounded-full border border-card bg-card px-2.5 py-1.5 text-[13px] font-bold text-[oklch(0.5_0.17_47)]">{chapter.jeeWeightage}% of JEE Main</span>}
             </div>
             {chapter.tagline && <p className="mt-4.5 max-w-[520px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">{chapter.tagline}</p>}
-            <a href="#instructor" className="mt-4.5 inline-flex items-center gap-2.5 text-foreground">
+            <a href="#instructor" className="mt-3 inline-flex min-h-11 items-center gap-2.5 text-foreground">
               <span className="grid size-[34px] place-items-center rounded-full border-2 border-white bg-gradient-to-br from-primary to-brand-2 text-sm font-extrabold text-white">{names.full[0]}</span>
               <span className="text-sm leading-[1.3]">
                 Taught by <b className="underline underline-offset-[3px]">{names.full}</b>

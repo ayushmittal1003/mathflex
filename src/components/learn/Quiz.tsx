@@ -100,7 +100,7 @@ export function Quiz({
             <button
               key={v.id}
               onClick={() => { setIdx(i); shownAt.current = Date.now(); }}
-              className={`grid size-8 shrink-0 place-items-center rounded-lg text-xs font-bold transition ${
+              className={`grid size-11 shrink-0 place-items-center rounded-lg text-xs font-bold transition ${
                 i === idx ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
               } ${r ? (r.isCorrect ? "bg-ok text-white" : "bg-bad text-white") : "bg-surface-2 text-muted-foreground"}`}
               aria-label={`Question ${i + 1}`}
@@ -120,7 +120,7 @@ export function Quiz({
             <span className="text-muted-foreground">{["", "Easy", "Medium", "Hard"][q.difficulty]}</span>
             <button
               onClick={async () => setMarks({ ...marks, [q.id]: await toggleBookmark(q.id) })}
-              className="ml-auto grid size-9 place-items-center rounded-full hover:bg-surface-2"
+              className="ml-auto grid size-11 place-items-center rounded-full hover:bg-surface-2"
               aria-label="Bookmark question"
             >
               {marks[q.id] ? <BookmarkCheck className="size-5 fill-primary text-primary" /> : <Bookmark className="size-5 text-muted-foreground" />}
@@ -161,7 +161,7 @@ export function Quiz({
           <div className="mt-5 flex items-center justify-between gap-2">
             <button onClick={() => go(-1)} disabled={idx === 0} className="btn btn-ghost">Back</button>
             {!res ? (
-              <button onClick={() => choose(null)} disabled={pending} className="text-sm font-semibold text-muted-foreground underline-offset-2 hover:underline">Skip</button>
+              <button onClick={() => choose(null)} disabled={pending} className="min-h-11 px-3 text-sm font-semibold text-muted-foreground underline-offset-2 hover:underline">Skip</button>
             ) : (
               <span />
             )}
