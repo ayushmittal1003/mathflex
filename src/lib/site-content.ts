@@ -9,6 +9,13 @@ import { validity } from "./format";
 // One number everywhere (footer, contact page, Organization contactPoint). Same line as WhatsApp.
 export const supportPhone = { display: "+91 78885 58921", e164: "+917888558921", href: "tel:+917888558921" };
 
+// "917888558921" -> "+91 78885 58921" (settings store the WhatsApp number as digits). Other
+// shapes come back as "+<digits>".
+export function formatPhone(digits: string) {
+  const d = digits.replace(/\D/g, "");
+  return /^91\d{10}$/.test(d) ? `+91 ${d.slice(2, 7)} ${d.slice(7)}` : `+${d}`;
+}
+
 // ---- Placeholders ---------------------------------------------------------------------
 // Shown, clearly marked, until real values exist. A matching setting (when Ayush adds one)
 // always wins. Never shown on invoices, payment screens or legal documents: hide the

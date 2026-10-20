@@ -1,4 +1,5 @@
 "use client";
+import { formatPhone } from "@/lib/site-content";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -165,7 +166,7 @@ export function CartView(props: {
       <main id="main" className="mx-auto w-[min(1160px,calc(100%-var(--gutter)*2))] pb-28 pt-10 tablet:pb-20">
         <div className="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2">
           <h1 className="text-[clamp(28px,4vw,48px)] font-extrabold leading-[1.05] tracking-[-0.04em]">Checkout</h1>
-          <Link href="/chapters" className="text-sm font-bold text-primary">← Keep browsing</Link>
+          <Link href="/chapters" className="inline-flex min-h-11 items-center text-sm font-bold text-primary">← Keep browsing</Link>
         </div>
 
         <div className="mt-7 flex flex-wrap items-start gap-7">
@@ -202,7 +203,7 @@ export function CartView(props: {
                     <div className="shrink-0 text-right">
                       <div className="text-[17px] font-extrabold tracking-[-0.02em]">{inr(l.price)}</div>
                       {l.mrp > l.price && <div className="text-xs text-muted-foreground line-through">{inr(l.mrp)}</div>}
-                      <button type="button" onClick={() => cart.remove(l.id!)} className="mt-1.5 text-xs font-bold text-muted-foreground underline underline-offset-[3px] hover:text-bad">Remove</button>
+                      <button type="button" onClick={() => cart.remove(l.id!)} className="-mb-2.5 mt-0.5 inline-flex min-h-11 items-center text-xs font-bold text-muted-foreground underline underline-offset-[3px] hover:text-bad">Remove</button>
                     </div>
                   </div>
                 );
@@ -221,8 +222,8 @@ export function CartView(props: {
                   <div className="text-xl font-extrabold tracking-[-0.02em]">Your cart is empty</div>
                   <p className="mt-1.5 text-sm text-muted-foreground">Pick a chapter or a full course to get started.</p>
                   <div className="mt-4.5 flex flex-wrap justify-center gap-2">
-                    <Link href="/chapters" className="rounded-lg bg-foreground px-4 py-2.5 text-sm font-bold text-white">Browse chapters</Link>
-                    <Link href="/courses" className="rounded-lg border border-border px-4 py-2.5 text-sm font-bold">See courses</Link>
+                    <Link href="/chapters" className="inline-flex min-h-12 items-center justify-center rounded-lg bg-foreground px-4 text-sm font-bold text-white">Browse chapters</Link>
+                    <Link href="/courses" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-border px-4 text-sm font-bold">See courses</Link>
                   </div>
                 </div>
               )}
@@ -299,7 +300,7 @@ export function CartView(props: {
                             {inr(a.price)} {a.mrp > a.price && <span className="line-through">{inr(a.mrp)}</span>}
                           </span>
                         </span>
-                        <button type="button" onClick={() => cart.add({ type: "CHAPTER", id })} className="h-[34px] shrink-0 rounded-lg border border-foreground bg-card px-3 text-[13px] font-bold text-foreground hover:bg-foreground hover:text-white">+ Add</button>
+                        <button type="button" onClick={() => cart.add({ type: "CHAPTER", id })} className="h-11 shrink-0 rounded-lg border border-foreground bg-card px-3.5 text-[13px] font-bold text-foreground hover:bg-foreground hover:text-white">+ Add</button>
                       </div>
                     );
                   })}
@@ -392,7 +393,7 @@ export function CartView(props: {
                     <div className="flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed border-ok bg-ok/7 px-3 py-2.5">
                       <CheckIcon className="size-4 text-ok-strong" strokeWidth={2.5} />
                       <span className="flex-1 text-[13px]"><b className="font-mono">{quote.coupon.code}</b> applied · {quote.coupon.message}</span>
-                      <button type="button" onClick={() => { setCoupon(null); setCouponInput(""); }} className="text-xs font-bold text-muted-foreground underline underline-offset-[3px]">Remove</button>
+                      <button type="button" onClick={() => { setCoupon(null); setCouponInput(""); }} className="inline-flex min-h-11 items-center text-xs font-bold text-muted-foreground underline underline-offset-[3px]">Remove</button>
                     </div>
                   ) : (
                     <>
@@ -402,9 +403,9 @@ export function CartView(props: {
                           onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
                           placeholder="Coupon code"
                           aria-label="Coupon code"
-                          className="h-[42px] min-w-0 flex-1 rounded-lg border border-input bg-card px-3 font-mono text-sm uppercase outline-none focus:border-ring"
+                          className="h-12 min-w-0 flex-1 rounded-lg border border-input bg-card px-3 font-mono text-sm uppercase outline-none focus:border-ring"
                         />
-                        <button className="h-[42px] shrink-0 rounded-lg border border-foreground bg-card px-3.5 text-[13px] font-bold">Apply</button>
+                        <button className="h-12 shrink-0 rounded-lg border border-foreground bg-card px-4 text-[13px] font-bold">Apply</button>
                       </form>
                       {quote?.couponError && (
                         <p role="alert" className="mt-1.5 flex items-start gap-1.5 text-xs font-semibold text-destructive"><CircleAlert className="mt-px size-3.5 shrink-0" />{quote.couponError}</p>
@@ -435,13 +436,13 @@ export function CartView(props: {
                 </button>
                 <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
                   <LockIcon className="size-3" /> Payments secured by Cashfree ·{" "}
-                  <Link href="/refund-policy" className="underline underline-offset-[3px]">Refund policy</Link>
+                  <Link href="/refund-policy" className="inline-flex min-h-11 items-center underline underline-offset-[3px]">Refund policy</Link>
                 </div>
                 <div className="mt-4.5 grid gap-3 px-1">
                   {[
                     "Your chapters unlock on your account as soon as the payment is confirmed",
                     "Watch on phone and laptop",
-                    `Need help? WhatsApp us on +${meta.whatsapp}`,
+                    `Need help? WhatsApp us on ${formatPhone(meta.whatsapp)}`,
                   ].map((t) => (
                     <div key={t} className="flex gap-2.5 text-[13px] leading-[1.45] text-secondary-foreground">
                       <CheckIcon className="mt-0.5 size-3.5 shrink-0 text-ok" />

@@ -151,7 +151,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
       </div>
 
       {/* Question map */}
-      <div className="no-scrollbar mb-5 flex gap-1.5 overflow-x-auto p-1.5">
+      <div className="no-scrollbar mb-5 flex snap-x gap-2 overflow-x-auto p-1.5">
         {questions.map((v, i) => {
           const d = done[v.id]?.result;
           const color = !d ? "bg-muted text-secondary-foreground hover:bg-border" : d.skipped ? "bg-gold/25 text-foreground" : d.isCorrect ? "bg-ok text-white" : d.partial ? "bg-gold text-white" : "bg-bad text-white";
@@ -159,7 +159,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
             <button
               key={v.id}
               onClick={() => go(i)}
-              className={cx("grid size-9 shrink-0 place-items-center rounded-md font-mono text-xs font-bold transition", i === idx && "ring-2 ring-foreground ring-offset-2 ring-offset-card", color)}
+              className={cx("grid size-11 shrink-0 snap-start place-items-center rounded-md font-mono text-xs font-bold transition", i === idx && "ring-2 ring-foreground ring-offset-2 ring-offset-card", color)}
               aria-label={`Question ${i + 1}${d ? (d.isCorrect ? ", correct" : d.skipped ? ", skipped" : ", incorrect") : ""}`}
             >
               {i + 1}

@@ -93,7 +93,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
   return (
     <div className={cx(container.detail, "pb-28 pt-[calc(86px+32px)]")}>
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-        <Link href="/practice" className="hover:text-foreground">Practice</Link>
+        <Link href="/practice" className="tap relative hover:text-foreground">Practice</Link>
         <span aria-hidden>/</span>
         <span className="text-foreground">{chapter.title}</span>
       </nav>

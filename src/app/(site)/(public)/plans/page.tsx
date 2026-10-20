@@ -84,7 +84,7 @@ export default async function PlansPage() {
   return (
     <div className={cx(container.detail, "pb-28 pt-[calc(86px+36px)]")}>
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-        <Link href="/profile" className="hover:text-foreground">Profile</Link>
+        <Link href="/profile" className="tap relative hover:text-foreground">Profile</Link>
         <span aria-hidden>/</span>
         <span className="text-foreground">Plans</span>
       </nav>

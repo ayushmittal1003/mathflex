@@ -84,7 +84,7 @@ export function Quiz({
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex gap-1 rounded-full bg-surface-2 p-1 text-sm font-semibold">
           {(["ALL", "DPP", "PYQ"] as const).map((f) => (
-            <button key={f} onClick={() => { setFilter(f); setIdx(0); }} className={`rounded-full px-3.5 py-1.5 ${filter === f ? "bg-card shadow" : "text-muted-foreground"}`}>
+            <button key={f} onClick={() => { setFilter(f); setIdx(0); }} className={`min-h-11 rounded-full px-4 py-1.5 ${filter === f ? "bg-card shadow" : "text-muted-foreground"}`}>
               {f === "ALL" ? "All" : f === "DPP" ? "DPPs" : "PYQs"}
             </button>
           ))}
