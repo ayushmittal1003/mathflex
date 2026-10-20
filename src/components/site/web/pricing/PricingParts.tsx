@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { inr, validity } from "@/lib/format";
 import { cart } from "../../cart-store";
@@ -95,6 +95,23 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
   }, [courses, picked, subtotal]);
 
   const n = picked.length;
+  // Below 900px the summary sits under the whole chapter list, so once something is picked a
+  // sticky bar above the phone tab bar keeps the total and the action in reach (design.md §6a).
+  const summary = useRef<HTMLElement>(null);
+  const [summaryInView, setSummaryInView] = useState(false);
+  useEffect(() => {
+    const el = summary.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([e]) => setSummaryInView(e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const barOn = n > 0 && !summaryInView;
+  useEffect(() => {
+    if (!barOn) return;
+    document.body.dataset.stickyBar = "1";
+    return () => { delete document.body.dataset.stickyBar; };
+  }, [barOn]);
   const toggle = (id: string) => setSel((s) => { const t = new Set(s); if (t.has(id)) t.delete(id); else t.add(id); return t; });
   const tip = !n
     ? { title: "Nothing picked yet", body: "Tap chapters to see your price.", tone: "text-white" }
@@ -149,7 +166,7 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
           </div>
         </div>
 
-        <aside className="w-full min-w-0 flex-[1_1_320px] min-[900px]:sticky min-[900px]:top-[90px] min-[900px]:max-w-[380px]">
+        <aside ref={summary} className="w-full min-w-0 flex-[1_1_320px] min-[900px]:sticky min-[900px]:top-[90px] min-[900px]:max-w-[380px]">
           <div className="overflow-hidden rounded-xl border-[6px] border-foreground bg-foreground text-white shadow-[0_40px_70px_-34px_rgb(80_20_0/0.55)]">
             <div className="px-5.5 pb-4.5 pt-5.5">
               <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-white/60">Your selection</div>
@@ -179,6 +196,18 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
           </div>
         </aside>
       </div>
+      {n > 0 && <div aria-hidden className="h-20 min-[900px]:hidden" />}
+      {barOn && (
+        <div className="fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 border-t border-border bg-card/95 px-4 py-2.5 shadow-[0_-10px_30px_-18px_rgb(0_0_0/0.35)] backdrop-blur-xl tablet:bottom-0 tablet:pb-[calc(10px+env(safe-area-inset-bottom))] min-[900px]:hidden">
+          <div className="mx-auto flex w-[min(1180px,100%)] items-center gap-3">
+            <div className="min-w-0 flex-1 leading-tight">
+              <div className="text-[13px] font-semibold text-muted-foreground">{n} chapter{n === 1 ? "" : "s"}{plan.course ? " · best price" : ""}</div>
+              <div className="text-[22px] font-extrabold tracking-[-0.03em]">{inr(plan.total)}</div>
+            </div>
+            <button type="button" onClick={addAll} className="min-h-12 shrink-0 rounded-lg bg-primary px-5 text-[15px] font-bold text-primary-foreground transition hover:brightness-108">Add to cart</button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -387,6 +387,12 @@ body {
   @media (min-width: 40rem) { flex-direction: row; flex-wrap: wrap; justify-content: center; max-width: none; }
 }
 
+/* A sticky bottom bar on the page (pricing selection) sets data-sticky-bar on <body>; the FlexCare
+   button then rides above it on phones and tablets. */
+@media (max-width: 47.49rem) {
+  body[data-sticky-bar] .chat-fab { bottom: calc(144px + env(safe-area-inset-bottom)) !important; }
+}
+
 /* Footer wordmark fill. */
 @utility text-wordmark {
   background: linear-gradient(180deg, var(--muted), color-mix(in oklab, var(--brand-2) 22%, var(--card)));

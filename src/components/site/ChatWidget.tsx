@@ -73,7 +73,7 @@ export function ChatWidget({ name, greeting, lifted: liftedProp = true }: { name
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`fixed right-4 z-40 flex size-12 items-center justify-center gap-2 rounded-full bg-gradient-to-br from-primary to-brand-2 font-bold text-white shadow-cta transition hover:scale-105 sm:size-auto sm:py-3 sm:pl-3 sm:pr-4 tablet:bottom-6 tablet:right-6 ${
+        className={`chat-fab fixed right-4 z-40 flex size-12 items-center justify-center gap-2 rounded-full bg-gradient-to-br from-primary to-brand-2 font-bold text-white shadow-cta transition hover:scale-105 sm:size-auto sm:py-3 sm:pl-3 sm:pr-4 tablet:bottom-6 tablet:right-6 ${
           lifted ? "bottom-[calc(76px+env(safe-area-inset-bottom))]" : "bottom-4"
         } ${open || hideButton ? "scale-0" : ""} ${hideButton ? "pointer-events-none" : ""}`}
         aria-label={`Open ${name} chat`}

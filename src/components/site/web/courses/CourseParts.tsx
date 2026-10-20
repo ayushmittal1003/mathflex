@@ -85,10 +85,10 @@ export function CourseInside({ courses }: { courses: CourseView[] }) {
       {courses.map((c) => <span key={c.id} id={`inside-${c.id}`} className="block scroll-mt-24" />)}
       <SectionHead eyebrow="What's inside" dot="brand-2" title={<>Every chapter, <Mark>listed</Mark>.</>} />
       {courses.length > 1 && (
-        <div className="mt-8 flex justify-center px-6">
-          <div className="no-scrollbar inline-flex max-w-full gap-0.5 overflow-x-auto rounded-lg bg-foreground p-1">
+        <div className="mt-8 flex justify-center px-4 tablet:px-6">
+          <div className="grid w-full auto-cols-fr grid-flow-col gap-0.5 rounded-lg bg-foreground p-1 tablet:inline-grid tablet:w-auto">
             {courses.map((c) => (
-              <button key={c.id} type="button" onClick={() => setTab(c.id)} aria-pressed={c.id === tab} className={cx("whitespace-nowrap rounded-md px-4 py-3 text-sm font-bold", c.id === tab ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
+              <button key={c.id} type="button" onClick={() => setTab(c.id)} aria-pressed={c.id === tab} className={cx("min-h-12 rounded-md px-2 py-2 text-[13px] font-bold leading-tight tablet:whitespace-nowrap tablet:px-4 tablet:text-sm", c.id === tab ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
                 {c.title}
               </button>
             ))}
@@ -96,7 +96,7 @@ export function CourseInside({ courses }: { courses: CourseView[] }) {
         </div>
       )}
       <p className="mt-4 text-center text-[15px] text-muted-foreground">{cur.chapters.length} chapters{cur.hours && ` · ${cur.hours} of video`} · {inr(cur.price)}</p>
-      <div className="mx-auto mt-14 grid w-[min(1240px,calc(100%-var(--gutter)*2))] gap-16">
+      <div className="mx-auto mt-10 grid w-[min(1240px,calc(100%-var(--gutter)*2))] gap-10 tablet:mt-14 tablet:gap-16">
         {classes.map((n, i) => {
           const rows = cur.chapters.filter((c) => c.classLevel === n);
           return (
@@ -106,9 +106,9 @@ export function CourseInside({ courses }: { courses: CourseView[] }) {
                 <span className="text-[22px] font-extrabold tracking-[-0.025em]">Class {n}</span>
                 <span className="ml-auto whitespace-nowrap text-[13px] font-semibold text-muted-foreground">{rows.length} chapters</span>
               </div>
-              <div className="mt-6 grid gap-4 min-[640px]:grid-cols-2 min-[1040px]:grid-cols-3">
+              <div className="mt-5 grid gap-3 min-[640px]:mt-6 min-[640px]:grid-cols-2 min-[640px]:gap-4 min-[1040px]:grid-cols-3">
                 {rows.map((r) => (
-                  <Link key={r.id} href={`/chapter/${r.slug}`} className="flex min-h-[92px] items-center gap-4 rounded-xl border border-border bg-card px-5 py-4 text-foreground transition duration-300 hover:-translate-y-[3px] hover:border-[oklch(0.87_0.03_40)] hover:shadow-[0_18px_34px_-22px_rgb(80_20_0/0.45)]">
+                  <Link key={r.id} href={`/chapter/${r.slug}`} className="flex min-h-[92px] items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5 text-foreground transition duration-300 hover:-translate-y-[3px] hover:border-[oklch(0.87_0.03_40)] hover:shadow-[0_18px_34px_-22px_rgb(80_20_0/0.45)]">
                     <span className={cx("grid size-12 shrink-0 place-items-center rounded-[10px] font-black tracking-[-0.03em] text-white shadow-[0_6px_14px_-8px_rgb(0_0_0/0.4)]", r.symbol.length > 2 ? "text-[13px]" : "text-lg")} style={{ background: `linear-gradient(155deg, ${r.coverFrom}, ${r.coverTo})` }}>
                       {r.symbol}
                     </span>
@@ -160,9 +160,9 @@ export function CourseCalculator({ course, breakeven }: { course: CourseView; br
             {cheaper ? `Buying ${n} chapter${n === 1 ? "" : "s"} separately saves you ${inr(course.price - sep)}.` : `The course saves you ${inr(sep - course.price)} and includes every chapter.`}
           </span>
           {cheaper ? (
-            <Link href="/chapters" className="shrink-0 rounded-lg bg-foreground px-4.5 py-3 text-sm font-bold text-card hover:brightness-120">Pick your chapters</Link>
+            <Link href="/chapters" className="inline-flex min-h-12 w-full shrink-0 items-center justify-center rounded-lg bg-foreground px-4.5 py-3 text-sm font-bold text-card hover:brightness-120 sm:w-auto">Pick your chapters</Link>
           ) : (
-            <BuyButton item={{ type: "COURSE", id: course.id }} className="shrink-0 rounded-lg bg-foreground px-4.5 py-3 text-sm font-bold text-card hover:brightness-120">Get {course.title}</BuyButton>
+            <BuyButton item={{ type: "COURSE", id: course.id }} className="inline-flex min-h-12 w-full shrink-0 items-center justify-center rounded-lg bg-foreground px-4.5 py-3 text-sm font-bold text-card hover:brightness-120 sm:w-auto">Get {course.title}</BuyButton>
           )}
         </div>
       </div>
