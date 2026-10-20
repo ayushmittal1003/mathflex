@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { useFocusTrap } from "./web/useFocusTrap";
 
@@ -11,14 +12,21 @@ type Promo = { id: string; title: string; subtitle: string; ctaText: string; cta
 // second page view (design.md §6a). Escape, the backdrop and the close button dismiss it.
 export function PromoPopup({ promo }: { promo: Promo | null }) {
   const [show, setShow] = useState(false);
+  const pathname = usePathname();
   useEffect(() => {
     if (!promo) return;
     let seen = false;
     let views = 1;
     try {
       seen = localStorage.getItem(`mf-promo-${promo.id}`) === "1";
-      views = Number(sessionStorage.getItem("mf-pageviews") ?? "0") + 1;
-      sessionStorage.setItem("mf-pageviews", String(views));
+      // A page view is a change of path within the visit (the layout stays mounted on client
+      // navigations), so re-running this effect on the same path does not count twice.
+      views = Number(sessionStorage.getItem("mf-pageviews") ?? "0");
+      if (sessionStorage.getItem("mf-pv-last") !== pathname) {
+        views += 1;
+        sessionStorage.setItem("mf-pageviews", String(views));
+        sessionStorage.setItem("mf-pv-last", pathname);
+      }
     } catch {}
     if (seen) return;
     let t: ReturnType<typeof setTimeout> | undefined;
@@ -27,7 +35,7 @@ export function PromoPopup({ promo }: { promo: Promo | null }) {
     const onScroll = () => { if (window.scrollY > 80) { window.removeEventListener("scroll", onScroll); open(); } };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => { window.removeEventListener("scroll", onScroll); clearTimeout(t); };
-  }, [promo]);
+  }, [promo, pathname]);
 
   const close = () => {
     setShow(false);
