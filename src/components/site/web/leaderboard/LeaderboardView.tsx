@@ -104,21 +104,21 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
 
       <section className="pb-14 pt-5">
         <div className="mx-auto w-[min(1000px,calc(100%-var(--gutter)*2))]">
-          <div className="flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">
-            <span className="w-12 shrink-0">Rank</span>
+          <div className="flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground tablet:gap-3.5 tablet:px-4">
+            <span className="w-8 shrink-0 tablet:w-12">Rank</span>
             <span className="flex-1">Student</span>
             <span className="hidden w-20 shrink-0 tablet:block">Class</span>
             <span className="hidden w-[90px] shrink-0 tablet:block">Streak</span>
-            <span className="w-[100px] shrink-0 text-right">XP</span>
+            <span className="w-[72px] shrink-0 text-right tablet:w-[100px]">XP</span>
           </div>
           <ol>
             {filtered.map((r, i) => (
               <li
                 key={r.id}
-                className={cx("flex h-16 animate-mf-rise items-center gap-3.5 border-b border-border px-4", r.me && "rounded-lg bg-selected")}
+                className={cx("flex h-16 animate-mf-rise items-center gap-2.5 border-b border-border px-3 tablet:gap-3.5 tablet:px-4", r.me && "rounded-lg bg-selected")}
                 style={{ animationDelay: `${Math.min(i, 15) * 25}ms` }}
               >
-                <span className={cx("w-12 shrink-0 text-base font-extrabold", r.rank <= 3 ? "text-foreground" : "text-muted-foreground")}>{r.rank}</span>
+                <span className={cx("w-8 shrink-0 text-base font-extrabold tablet:w-12", r.rank <= 3 ? "text-foreground" : "text-muted-foreground")}>{r.rank}</span>
                 <span className="grid size-[38px] shrink-0 place-items-center rounded-full text-sm font-extrabold text-white" style={{ background: r.avatarColor }}>{r.name[0]}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[15px] font-bold">{r.name}{r.me && " (you)"}</span>
@@ -126,7 +126,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
                 </span>
                 <span className="hidden w-20 shrink-0 text-sm font-semibold text-secondary-foreground tablet:block">{classLabel(r.classLevel)}</span>
                 <span className="hidden w-[90px] shrink-0 text-sm font-semibold text-secondary-foreground tablet:block">{r.streak > 0 ? `${r.streak} day${r.streak === 1 ? "" : "s"}` : "—"}</span>
-                <span className="w-[100px] shrink-0 text-right text-base font-extrabold text-xp">{r.xp.toLocaleString("en-IN")}</span>
+                <span className="w-[72px] shrink-0 text-right text-base font-extrabold text-xp tablet:w-[100px]">{r.xp.toLocaleString("en-IN")}</span>
               </li>
             ))}
           </ol>
@@ -138,16 +138,16 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
               </div>
               <ol className="select-none opacity-60 grayscale" aria-label="Sample leaderboard rows, not real students">
                 {SAMPLE_ROWS.map((r, i) => (
-                  <li key={r.name} className="flex h-16 items-center gap-3.5 border-b border-border px-4">
-                    <span className="w-12 shrink-0 text-base font-extrabold text-muted-foreground">{i + 1}</span>
+                  <li key={r.name} className="flex h-16 items-center gap-2.5 border-b border-border px-3 tablet:gap-3.5 tablet:px-4">
+                    <span className="w-8 shrink-0 text-base font-extrabold text-muted-foreground tablet:w-12">{i + 1}</span>
                     <span aria-hidden className="grid size-[38px] shrink-0 place-items-center rounded-full bg-muted-foreground/50 text-sm font-extrabold text-white">{r.name.slice(-1)}</span>
                     <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-2 text-[15px] font-bold"><span className="truncate">{r.name}</span><Sample /></span>
-                      <span className="block text-xs text-muted-foreground tablet:hidden">{r.cls}</span>
+                      <span className="block truncate text-[15px] font-bold">{r.name}</span>
+                      <span className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground"><Sample /><span className="tablet:hidden">{r.cls}</span></span>
                     </span>
                     <span className="hidden w-20 shrink-0 text-sm font-semibold text-secondary-foreground tablet:block">{r.cls}</span>
                     <span className="hidden w-[90px] shrink-0 text-sm font-semibold text-secondary-foreground tablet:block">—</span>
-                    <span className="w-[100px] shrink-0 text-right text-base font-extrabold text-muted-foreground">{r.xp.toLocaleString("en-IN")}</span>
+                    <span className="w-[72px] shrink-0 text-right text-base font-extrabold text-muted-foreground tablet:w-[100px]">{r.xp.toLocaleString("en-IN")}</span>
                   </li>
                 ))}
               </ol>

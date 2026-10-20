@@ -63,7 +63,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
 
       <div className={`${container.detail} relative z-10 mt-12 flex flex-wrap justify-between gap-3 border-t border-border py-5 text-[13px] text-muted-foreground`}>
         <span>© {new Date().getFullYear()} Mathflex · mathflex.in</span>
-        <div className="flex flex-wrap gap-5">
+        <div className="flex flex-wrap gap-x-5">
           <Link href="/terms" className="flex min-h-11 items-center hover:text-foreground tablet:min-h-0">Terms &amp; conditions</Link>
           <Link href="/privacy" className="flex min-h-11 items-center hover:text-foreground tablet:min-h-0">Privacy policy</Link>
           <Link href="/refund-policy" className="flex min-h-11 items-center hover:text-foreground tablet:min-h-0">Refund policy</Link>

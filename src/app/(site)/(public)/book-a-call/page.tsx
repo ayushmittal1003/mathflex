@@ -102,7 +102,7 @@ export default async function BookACallPage() {
                     <span className="mx-auto grid size-24 place-items-center rounded-full bg-gradient-to-br from-primary to-brand-2 text-[34px] font-extrabold tracking-[-0.03em] text-white shadow-[0_0_0_8px_rgb(255_255_255/0.75),0_20px_40px_-16px_rgb(120_40_0/0.45)]">
                       {names.full.split(" ").map((w) => w[0]).join("").slice(0, 2)}
                     </span>
-                    <span className="mt-4 block text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">Photo coming soon</span>
+                    <span className="mt-4 hidden text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground sm:block">Photo coming soon</span>
                   </div>
                 </div>
               )}
