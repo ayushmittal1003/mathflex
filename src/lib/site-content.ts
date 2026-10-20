@@ -5,13 +5,15 @@
 import type { Settings } from "./settings";
 import { validity } from "./format";
 
+// ---- Support phone ----------------------------------------------------------------------
+// One number everywhere (footer, contact page, Organization contactPoint). Same line as WhatsApp.
+export const supportPhone = { display: "+91 78885 58921", e164: "+917888558921", href: "tel:+917888558921" };
+
 // ---- Placeholders ---------------------------------------------------------------------
 // Shown, clearly marked, until real values exist. A matching setting (when Ayush adds one)
 // always wins. Never shown on invoices, payment screens or legal documents: hide the
 // field there instead.
 export const placeholders = {
-  phone: "+91 788 855 8921", // support line (same number as WhatsApp)
-  phoneHref: "tel:+917888558921",
   hours: "Mon–Sat, 10am–7pm",
   // Registered address and CIN/GSTIN are hidden on the site until the real ones are added.
   address: "Mathflex Learning Pvt. Ltd., [Registered address], [City, State, PIN]",

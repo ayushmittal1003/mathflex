@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { getInsideData, getPublicCoupon } from "@/components/site/web/data";
 import { inr } from "@/lib/format";
-import { faqGroups, fillFaq, homeFaqs, instructorNames } from "@/lib/site-content";
+import { faqGroups, fillFaq, homeFaqs, instructorNames, supportPhone } from "@/lib/site-content";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from "@/lib/seo/config";
 import { HomeHero } from "@/components/site/web/home/HomeHero";
@@ -85,11 +85,10 @@ export default async function Home() {
     .filter((f): f is NonNullable<typeof f> => !!f)
     .map((f) => ({ q: fillFaq(f.q, faqVars), a: fillFaq(f.a, faqVars) }));
 
-  const phone = settings.whatsappNumber ? `+${settings.whatsappNumber.replace(/\D/g, "")}` : null;
 
   return (
     <>
-      <JsonLd data={schema.graph(schema.organization({ phone, email: settings.supportEmail }), schema.website())} />
+      <JsonLd data={schema.graph(schema.organization({ phone: supportPhone.e164, email: settings.supportEmail }), schema.website())} />
       <HomeHero chapters={chapters} chapterCount={chapters.length} minPrice={minChapterPrice} />
       {chapters.length > 0 && <PreviewExplorer chapters={chapters} chapterCount={chapters.length} mentorShort={names.short} />}
       <CostCompare fullCourse={fullCourse} minChapterPrice={minChapterPrice} />

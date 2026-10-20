@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSettings } from "@/lib/settings";
-import { placeholders, socials, socialsComingSoon } from "@/lib/site-content";
+import { placeholders, socials, socialsComingSoon, supportPhone } from "@/lib/site-content";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { buildMetadata } from "@/lib/seo/metadata";
 
@@ -15,7 +15,7 @@ export default async function ContactPage() {
   const channels = [
     { key: "wa", label: "WhatsApp", value: "Chat with our team", href: `https://wa.me/${whatsappNumber}`, icon: "WA", bg: "bg-ok", external: true },
     { key: "mail", label: "Email", value: supportEmail, href: `mailto:${supportEmail}`, icon: "@", bg: "bg-primary" },
-    { key: "call", label: "Call us", value: placeholders.phone, href: placeholders.phoneHref, icon: "☎", bg: "bg-foreground" },
+    { key: "call", label: "Call us", value: supportPhone.display, href: supportPhone.href, icon: "☎", bg: "bg-foreground" },
   ];
 
   return (

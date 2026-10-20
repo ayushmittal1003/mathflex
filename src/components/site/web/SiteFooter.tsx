@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Settings } from "@/lib/settings";
-import { instructorNames, placeholders, socials, socialsComingSoon } from "@/lib/site-content";
+import { instructorNames, placeholders, socials, socialsComingSoon, supportPhone } from "@/lib/site-content";
 import { SiteLogo } from "./SiteLogo";
 import { container } from "./ui";
 
@@ -55,6 +55,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
         </FooterCol>
         <FooterCol title="Support">
           <a href={`mailto:${settings.supportEmail}`} className={`${linkCls} break-all`}>{settings.supportEmail}</a>
+          <a href={supportPhone.href} className={linkCls}>{supportPhone.display}</a>
           <a href={wa} target="_blank" rel="noreferrer" className={linkCls}>WhatsApp</a>
           <span className="text-muted-foreground">{placeholders.hours}</span>
         </FooterCol>
