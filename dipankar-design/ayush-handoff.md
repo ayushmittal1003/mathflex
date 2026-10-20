@@ -45,8 +45,8 @@ The hook is marked in `src/app/(site)/(public)/page.tsx`.
 From the Phase 0 audit (`docs/seo-audit.md`, branch `feature/seo`). Nothing here has been implemented.
 
 ## Environment / config
-- Confirm `APP_URL` is set to the canonical public origin in Vercel Production and Preview. The root layout uses it for `metadataBase` and falls back to `http://localhost:3000` when it is missing, which would put wrong URLs into canonicals, Open Graph tags and the sitemap.
-- Confirm the canonical host (`mathflex.in` vs `www.mathflex.in`) and that the other one redirects with a 301/308 in Vercel.
+- Set `APP_URL` to **`https://mathflex.in`** (the confirmed canonical address: no `www`, no trailing slash) in Vercel Production and Preview. The root layout uses it for `metadataBase` and falls back to `http://localhost:3000` when it is missing, which would put wrong URLs into canonicals, Open Graph tags and the sitemap.
+- The canonical host is `mathflex.in`. Make `www.mathflex.in` redirect to it with a 301/308 in Vercel.
 - Decide whether `/admin` should get an `X-Robots-Tag: noindex` header (`next.config`) or a `noindex` in the admin layout. For now the plan is only `Disallow: /admin` in `robots.txt`.
 - Google Search Console and Bing Webmaster verification tokens (owner to supply; none are invented).
 
@@ -89,8 +89,8 @@ See `docs/seo-landing-plan.md`, section 6, for the backend/admin needs: content 
 Nothing here was done in code. Details of each item are in the sections above.
 
 **Config / infra**
-- [ ] Set `APP_URL` in production to the canonical origin (https, chosen host). Canonicals, sitemap, robots and OG all read it.
-- [ ] Canonical host redirect (apex ↔ www) on Vercel.
+- [ ] Set `APP_URL=https://mathflex.in` in Vercel Production and Preview. Canonicals, sitemap, robots and OG all read it.
+- [ ] Redirect `www.mathflex.in` → `https://mathflex.in` on Vercel.
 - [ ] `X-Robots-Tag: noindex` for `/admin` (headers in `next.config.ts` or Vercel); security headers.
 - [ ] Enable Vercel Speed Insights for the project and check the plan fits.
 - [ ] Replace placeholder company address, CIN, GSTIN in the legal/footer data, and the YouTube `#` link.

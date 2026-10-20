@@ -30,7 +30,7 @@ Use `buildMetadata()` from `src/lib/seo/metadata.ts`. Do not hand-write `<title>
   - Course: `{Course} – JEE Maths Course`
   - Static pages: plain descriptive name, for example `About MathFlex – JEE Maths Mentorship`
 - **Description:** unique, ≤ 160 characters, honest, ends in a complete sentence (the helper trims at word boundaries). Chapter descriptions are built from the admin description by `chapterBlurb()`, which falls back to the tagline when it cannot use the text.
-- **Canonical:** absolute, self-referencing, from `APP_URL` (`SITE_URL` in `config.ts`). Never include tracking parameters (`utm_*`, `ref`), filters or invite codes. Internal links must point to canonical URLs.
+- **Canonical:** absolute, self-referencing, from `APP_URL` (`SITE_URL` in `config.ts`). The canonical site address is **`https://mathflex.in`** (no `www`, no trailing slash); `APP_URL` must be set to exactly that in Vercel Production and Preview, and `www.mathflex.in` redirects to it. Never include tracking parameters (`utm_*`, `ref`), filters or invite codes. Internal links must point to canonical URLs.
 - **Open Graph / Twitter:** set by the helper. The site default image is `src/app/opengraph-image.tsx`. Chapter and course pages have their own `opengraph-image.tsx`, and pass `defaultImage: false` so the default is not added twice. A child page's `openGraph` replaces the parent's, so always go through the helper.
 - **Do not add:** `<meta name="keywords">`, `changeFrequency`/`priority` in the sitemap, `lastModified = now`.
 - **Credential wording:** only "IIT Delhi alumnus" is confirmed. Do not add other credentials until the owner confirms them.
