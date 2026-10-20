@@ -266,7 +266,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
           <button onClick={() => go(idx - 1)} disabled={idx === 0} className={cx(button.sm, btnTone.secondary)}><ChevronLeft className="size-4" /> Prev</button>
           {!res ? (
             <div className="flex items-center gap-3">
-              <button onClick={() => submit(q.format === "SINGLE" ? { selected: null } : q.format === "MULTIPLE" ? { selectedMany: [] } : { numericValue: null })} disabled={pending} className="text-sm font-bold text-muted-foreground underline-offset-2 hover:underline">Skip</button>
+              <button onClick={() => submit(q.format === "SINGLE" ? { selected: null } : q.format === "MULTIPLE" ? { selectedMany: [] } : { numericValue: null })} disabled={pending} className="min-h-11 px-3 text-sm font-bold text-muted-foreground underline-offset-2 hover:underline">Skip</button>
               <button onClick={submitCurrent} disabled={pending || (q.format !== "NUMERICAL" && !picks.length)} className={cx(button.sm, btnTone.primary)}>{pending ? "Checking…" : "Submit"}</button>
             </div>
           ) : (
