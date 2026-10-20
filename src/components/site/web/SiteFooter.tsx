@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Settings } from "@/lib/settings";
-import { instructorNames, knownSocials, placeholders } from "@/lib/site-content";
+import { instructorNames, placeholders, socials, socialsComingSoon } from "@/lib/site-content";
 import { SiteLogo } from "./SiteLogo";
 import { container } from "./ui";
 
@@ -9,10 +9,6 @@ import { container } from "./ui";
 export function SiteFooter({ settings }: { settings: Settings }) {
   const names = instructorNames(settings);
   const wa = `https://wa.me/${settings.whatsappNumber}`;
-  const socials = [
-    { key: "instagram", label: "Instagram", href: knownSocials.instagram ?? placeholders.socials.instagram },
-    { key: "youtube", label: "YouTube", href: knownSocials.youtube ?? placeholders.socials.youtube },
-  ];
   const linkCls = "text-secondary-foreground transition-colors hover:text-primary";
 
   return (
@@ -24,30 +20,21 @@ export function SiteFooter({ settings }: { settings: Settings }) {
             Chapter-wise JEE maths for Class 11 and 12, taught by IIT Delhi alumnus {names.full}.
           </p>
           <div className="mt-4 flex gap-2">
-            {socials.map((s) => (
-              <a
-                key={s.key}
-                href={s.href}
-                target={s.href.startsWith("http") ? "_blank" : undefined}
-                rel="noreferrer"
-                aria-label={`Mathflex on ${s.label}`}
-                className="tap relative grid size-9 place-items-center rounded-lg border border-border bg-secondary text-secondary-foreground transition hover:scale-[1.06] hover:text-primary"
-              >
-                {s.key === "instagram" ? (
-                  <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <rect x="3" y="3" width="18" height="18" rx="5" />
-                    <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
-                  </svg>
-                ) : (
-                  <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <rect x="2.5" y="5" width="19" height="14" rx="4" />
-                    <path d="m10 9 5 3-5 3z" fill="currentColor" />
-                  </svg>
-                )}
-              </a>
-            ))}
+            <a
+              href={socials.instagram.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`Mathflex on ${socials.instagram.label}`}
+              className="tap relative grid size-9 place-items-center rounded-lg border border-border bg-secondary text-secondary-foreground transition hover:scale-[1.06] hover:text-primary"
+            >
+              <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+              </svg>
+            </a>
           </div>
+          <p className="mt-3 text-[13px] text-muted-foreground">Coming soon: {socialsComingSoon.join(", ")}</p>
         </div>
 
         <FooterCol title="Learn">

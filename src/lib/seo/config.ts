@@ -19,7 +19,8 @@ export const DEFAULT_TITLE = "IIT Starts With Maths, Crack JEE Main & Advanced";
 export const DEFAULT_DESCRIPTION =
   "Learn every JEE maths chapter with video lessons, practice questions and notes. Buy only the chapters you need and build the maths score your IIT dream needs.";
 
-// Social profiles that are really linked in the footer (src/lib/site-content.ts knownSocials).
+// Social profiles that are really linked in the footer (src/lib/site-content.ts `socials`). Add a
+// profile here only when it is live and linked; no "coming soon" or placeholder links.
 export const SOCIAL_PROFILES = ["https://www.instagram.com/mathflex.in/"];
 
 export const absoluteUrl = (path = "/") => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;

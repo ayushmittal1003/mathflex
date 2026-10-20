@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSettings } from "@/lib/settings";
-import { knownSocials, placeholders } from "@/lib/site-content";
+import { placeholders, socials, socialsComingSoon } from "@/lib/site-content";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { buildMetadata } from "@/lib/seo/metadata";
 
@@ -70,7 +70,7 @@ export default async function ContactPage() {
             <div className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">Other ways to reach us</div>
             <div className="mt-3.5 border-t border-border">
               {[
-                { k: "Instagram", v: "@mathflex.in", href: knownSocials.instagram ?? placeholders.socials.instagram, icon: "IG", bg: "bg-xp" },
+                { k: socials.instagram.label, v: socials.instagram.handle, href: socials.instagram.href, icon: "IG", bg: "bg-xp" },
                 { k: "Website", v: "mathflex.in", href: "https://mathflex.in", icon: "↗", bg: "bg-brand-2" },
               ].map((c) => (
                 <a key={c.k} href={c.href} target="_blank" rel="noreferrer" className="flex items-center gap-3.5 border-b border-border py-4 text-foreground hover:text-primary">
@@ -82,6 +82,7 @@ export default async function ContactPage() {
                 </a>
               ))}
             </div>
+            <p className="mt-4 text-[13px] text-muted-foreground">Coming soon: {socialsComingSoon.join(", ")}</p>
             <div className="mt-5.5 text-sm leading-[1.6] text-secondary-foreground"><b className="text-foreground">Hours</b><br />{placeholders.hours} IST</div>
             <Link href="/faq" className="mt-5.5 flex items-center justify-between gap-3 rounded-xl bg-muted px-4.5 py-4 text-foreground hover:brightness-98">
               <span className="text-sm leading-[1.4]"><b>Quick answers</b><br /><span className="text-muted-foreground">Payments, refunds, access and more</span></span>

@@ -17,13 +17,16 @@ export const placeholders = {
   address: "Mathflex Learning Pvt. Ltd., [Registered address], [City, State, PIN]",
   cin: "CIN: [to be added]",
   gstin: "GSTIN: [to be added]",
-  socials: { instagram: "#", youtube: "#" },
 };
 
-// Real links that already exist in code (Ayush's footer). These beat the placeholders above.
-export const knownSocials: Partial<Record<keyof typeof placeholders.socials, string>> = {
-  instagram: "https://www.instagram.com/mathflex.in/",
+// Real social profiles only: clean URLs, no tracking parameters. This is the one place to add
+// a link when a profile goes live (also add it to SOCIAL_PROFILES in lib/seo/config.ts, which
+// feeds Organization sameAs). Never use "#" or empty hrefs.
+export const socials = {
+  instagram: { label: "Instagram", handle: "@mathflex.in", href: "https://www.instagram.com/mathflex.in/" },
 };
+// Shown as plain, non-clickable "coming soon" text until they exist. Added in the next branch.
+export const socialsComingSoon = ["WhatsApp channel", "LinkedIn", "YouTube"];
 
 // ---- Instructor -----------------------------------------------------------------------
 // shortName everywhere on the site (CTAs, call booking, FAQs, tips, leaderboard, upsells);

@@ -61,7 +61,7 @@ From the Phase 0 audit (`docs/seo-audit.md`, branch `feature/seo`). Nothing here
 ## Content sources
 - Blog (`src/lib/blog.ts`) is 9 placeholder posts; the plan was Sanity. Real posts, real dates and an `updatedAt` are needed before blog URLs can be indexed. Until then they will be `noindex` and left out of the sitemap.
 - Free practice (`src/lib/free-practice.ts`) is a placeholder starter set; same treatment.
-- Registered address, CIN and GSTIN are placeholders; YouTube link is `#`.
+- Registered address, CIN and GSTIN are placeholders.
 
 ## Hooks
 - On publish/unpublish of chapters, courses and posts: `revalidatePath`/`revalidateTag` for the affected pages and the sitemap, and an optional IndexNow ping.
@@ -93,7 +93,7 @@ Nothing here was done in code. Details of each item are in the sections above.
 - [ ] Redirect `www.mathflex.in` → `https://mathflex.in` on Vercel.
 - [ ] `X-Robots-Tag: noindex` for `/admin` (headers in `next.config.ts` or Vercel); security headers.
 - [ ] Enable Vercel Speed Insights for the project and check the plan fits.
-- [ ] Replace placeholder company address, CIN, GSTIN in the legal/footer data, and the YouTube `#` link.
+- [ ] Replace placeholder company address, CIN, GSTIN in the legal/footer data.
 
 **Search consoles (owner)**
 - [ ] Google Search Console: Domain property (DNS verification), submit `/sitemap.xml`, URL Inspection on home, `/chapters`, one chapter, one course; confirm the "Search generative AI features" setting; then watch Page indexing, Core Web Vitals and the generative AI performance report.
@@ -130,3 +130,4 @@ New rule from the owner: single chapter = 3 months (each chapter bought separate
   - Env vars: `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `SANITY_API_READ_TOKEN` (optional), `SANITY_REVALIDATE_SECRET`.
   - Ayush: an `/api/revalidate` route plus a Sanity webhook so publishing refreshes the blog pages and sitemap; add the site domains under CORS origins in sanity.io/manage.
   - Frontend (me): schemas for `post`, `author`, `category`, a `/studio` route, the Sanity client and queries. Remove `placeholder` flags post by post as real posts go live (see `seo.md` section 8).
+- **Social profiles (next branch):** Instagram (`https://www.instagram.com/mathflex.in/`) is live in the footer, contact page and Organization `sameAs`. The WhatsApp channel, LinkedIn and YouTube are not ready; the footer and contact page show them as plain "Coming soon" text (no links, nothing in `sameAs`). When each goes live, add it to `socials` in `src/lib/site-content.ts` and to `SOCIAL_PROFILES` in `src/lib/seo/config.ts`.
