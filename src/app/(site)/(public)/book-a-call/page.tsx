@@ -112,7 +112,7 @@ export default async function BookACallPage() {
             </div>
             <div className="mt-5">
               <div className="text-[22px] font-extrabold leading-tight tracking-[-0.025em]">{names.full}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{instructor.title} · {instructor.studentsGuided} JEE aspirants guided</div>
+              <div className="mt-1 text-sm text-muted-foreground">{instructor.title} · {instructor.studentsGuided} JEE aspirants mentored</div>
             </div>
             <dl className="mt-5 grid border-t border-border">
               <Detail icon="clock" label="The call">{settings.mentorshipBlurb}</Detail>

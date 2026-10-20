@@ -51,7 +51,8 @@ export const instructor = {
   // Portrait for the Book a call card, e.g. "/brand/karan.jpg" in public/. null shows a placeholder.
   photo: null as string | null,
   studentsGuided: "1,000+", // real figure from the founder
-  bio: "cracked JEE and studied at IIT Delhi. He has spent his career building learning products and has mentored 1,000+ JEE aspirants along the way. Every Mathflex video is built around the questions that actually show up in the exam.",
+  // Predicate: always rendered as "{name} {bio}". Confirmed facts only (IIT Delhi B.Tech Civil 2023, cracked JEE, project manager since, 1,000+ mentored).
+  bio: "is an IIT Delhi alumnus (B.Tech, Civil Engineering, 2023). After cracking JEE himself, he has mentored 1,000+ students and has worked as a project manager building products. At Mathflex, he teaches JEE maths chapter by chapter, the way he wishes he had learned it.",
   // Only the education credential is shown on the site (employers are left out by request).
   credentials: [{ org: "B.Tech, Civil Engineering, IIT Delhi (2023)", role: "Indian Institute of Technology (IIT) Delhi" }],
 };
@@ -63,7 +64,7 @@ export const about = {
   storyVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
   // {fullName}, {minPrice} are filled at render time.
   story: [
-    "{fullName} cracked JEE and studied at IIT Delhi. Over the years he has guided more than 1,000 JEE aspirants, and he kept hearing the same thing: students were stuck on a few chapters, but the only way to get help was a coaching course that cost lakhs or an online bundle with the whole syllabus.",
+    "{fullName} cracked JEE and studied at IIT Delhi. He has mentored 1,000+ students, and he kept hearing the same thing: students were stuck on a few chapters, but the only way to get help was a coaching course that cost lakhs or an online bundle with the whole syllabus.",
     "So we built Mathflex around one idea. Pay for the chapter you're stuck on, not the whole course. Every chapter is split into short parts, with practice after each one, so you can fix a weak topic in a weekend.",
   ],
   storyFree: "Every chapter has a free 3–4 minute preview. Watch it, and if it clicks, the full chapter starts at {minPrice}.",
@@ -291,8 +292,8 @@ export const aboutPillars = [
 ];
 
 export const aboutTimeline = [
-  { tag: "The start", t: "Cracks JEE, studies at IIT Delhi", d: "{fullName} goes through the same prep you're going through now." },
-  { tag: "Mentoring", t: "{studentsGuided} aspirants guided", d: "Year after year, the same story: students stuck on a few chapters, with no way to fix just those." },
+  { tag: "The start", t: "Cracks JEE, studies at IIT Delhi", d: "{fullName} has been through the same prep you're going through now." },
+  { tag: "Mentoring", t: "{studentsGuided} students mentored", d: "Year after year, the same story: students stuck on a few chapters, with no way to fix just those." },
   { tag: "Building", t: "Learning products at Allen and beyond", d: "Product roles at Allen, Transify, DaMENSCH and Meesho: how students actually learn, at scale." },
   { tag: "Today", t: "Mathflex launches", d: "{chapterCount} chapters for Class {classes}, sold one at a time. We're new, and we're building it with our first students." },
   { tag: "Next", t: "Your chapter", d: "Pick the chapter that's costing you marks and fix it this week.", you: true },
