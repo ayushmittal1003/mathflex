@@ -264,7 +264,7 @@ function MobileTabBar({ pathname, user, features, onMore, moreOpen }: { pathname
       ? [{ href: "/my-learning", label: "Learning", icon: PlayCircle }, { href: features.practice ? "/practice" : "/free-practice", label: "Practice", icon: Target }]
       : [{ href: "/courses", label: "Courses", icon: GraduationCap }, { href: "/free-practice", label: "Practice", icon: Target }]),
   ];
-  const item = "relative flex h-full flex-col items-center justify-center gap-0.5 text-[11px] font-bold";
+  const item = "relative flex h-full flex-col items-center justify-center gap-0.5 text-xs font-bold";
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/94 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_30px_-20px_rgb(0_0_0/0.3)] backdrop-blur-xl tablet:hidden" aria-label="Quick links">
       <ul className="grid h-16 grid-cols-5">

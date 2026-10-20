@@ -178,3 +178,7 @@ These are defined in `globals.css` and shared with admin.
   photos and should look the same in both themes.
 - Colours that come from the database: chapter and course poster gradients, banner colours, avatar colours.
 - Confetti colours, third-party brand colours (Paytm blue on the mock payment page), and the logo (`Logo.tsx`).
+
+## Mobile
+
+Phone rules (type floors, the `--gutter` token, 44px targets, 16px fields, tables and sticky chrome) are in `dipankar-design/design.md` section 6a. `--gutter` is defined in `globals.css`.

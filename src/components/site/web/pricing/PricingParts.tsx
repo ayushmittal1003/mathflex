@@ -35,7 +35,7 @@ export function PricingTiers({ courses, minPrice, maxPrice, chapterAccess }: { c
   ];
 
   return (
-    <div className="mx-auto mt-14 grid w-[min(1240px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] items-stretch gap-4">
+    <div className="mx-auto mt-14 grid w-[min(1240px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] items-stretch gap-4">
       {tiers.map((t, i) => (
         <div
           key={t.key}
@@ -118,7 +118,7 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
         title={<>Pick your chapters. We&apos;ll find the <Mark>best price</Mark>.</>}
         lead={courses.length ? "Tap the chapters you need. If a full course works out cheaper, we'll tell you." : "Tap the chapters you need to see your total."}
       />
-      <div className="mx-auto mt-12 flex w-[min(1180px,calc(100%-48px))] flex-wrap items-start gap-x-10 gap-y-8">
+      <div className="mx-auto mt-12 flex w-[min(1180px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-10 gap-y-8">
         <div className="min-w-0 flex-[1_1_520px]">
           <div className="flex flex-wrap items-center justify-between gap-3">
             {classes.length > 1 ? (

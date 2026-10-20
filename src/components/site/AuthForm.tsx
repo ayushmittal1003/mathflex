@@ -38,7 +38,7 @@ export function AuthForm({ mode, next, panel, paused = false, googleReady = fals
         </header>
         <main id="main" className="grid flex-1 place-items-center px-4 py-10">
           <div className="w-[min(420px,100%)] animate-mf-rise">
-            <h1 className="text-[clamp(32px,4vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{isSignup ? "Start your streak" : "Welcome back"}</h1>
+            <h1 className="text-[clamp(28px,4vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{isSignup ? "Start your streak" : "Welcome back"}</h1>
             <p className="mt-2.5 text-base leading-[1.5] text-secondary-foreground">
               {isSignup ? "Free account. Pay only for the chapters you want." : "Pick up right where you left off."}
             </p>
@@ -142,7 +142,7 @@ export function AuthForm({ mode, next, panel, paused = false, googleReady = fals
               <span className="size-1.5 rounded-full bg-ok" />
               {isSignup ? "Free account" : "Welcome back"}
             </div>
-            <h2 className="mt-6 text-[clamp(40px,4.4vw,64px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+            <h2 className="mt-6 text-[clamp(28px,4.4vw,64px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
               Your IIT seat starts with one <Mark onWash>chapter</Mark>
             </h2>
             {panel.rows.length > 0 && (

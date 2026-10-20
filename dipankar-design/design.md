@@ -64,7 +64,7 @@ Inter for everything, JetBrains Mono for codes, IDs, timestamps and file-name pl
 
 | Role | Size | Weight | Tracking | Line height |
 |---|---|---|---|---|
-| Hero H1 | `clamp(44px, 7vw, 96px)` | 800 | −0.045em | 1 |
+| Hero H1 | `clamp(44px, 7vw, 96px)` (phone floor 44, see section 6a) | 800 | −0.045em | 1 |
 | Section H2 | `clamp(38px, 5.4vw, 72px)` | 800 | −0.045em | 1.02 |
 | Split-section H2 (left column) | `clamp(34px, 4.2vw, 54px)` | 800 | −0.045em | 1.04 |
 | Block H2 (inside pages) | `clamp(26px, 3vw, 38px)` | 800 | −0.035em | 1.2 |
@@ -101,7 +101,7 @@ Use `text-wrap: balance` on headings and `text-wrap: pretty` on paragraphs.
 - On a wash the secondary buttons are `rgba(255,255,255,.7)` with a `rgba(255,255,255,.95)` border. On white they are `bg-card` with a `border-border` border.
 - **Signed in:** the auth buttons are replaced by a streak/XP chip (≥ 1280px) and a round avatar. The avatar opens the **account menu**: a soft wash card with name, email, the plan line ("2 active plans · next expiry …") and streak/XP, then site links, My Learning · Profile · Plan validity & renewal · Refer & Earn (when switched on), WhatsApp support, the support email, Admin panel (staff only) and Log out.
 - **Tablet, 760–1023px:** the segmented nav and the auth buttons hide, and a 42×42 dark hamburger opens a dark drop-down panel (12px radius, 16px links). Signed out it ends with Log in and Start free side by side; signed in it ends with the account menu.
-- **Phone, under 760px: bottom bar, no hamburger.** The top row keeps only the logo, the cart and the avatar (or Log in). A fixed bottom bar, 64px plus the safe-area inset, white at 94% with a blur and a hairline on top, holds five equal tabs: icon (22px) over an 11px/700 label, `muted-foreground` when idle and `primary` with a 3px top marker when active.
+- **Phone, under 760px: bottom bar, no hamburger.** The top row keeps only the logo, the cart and the avatar (or Log in). A fixed bottom bar, 64px plus the safe-area inset, white at 94% with a blur and a hairline on top, holds five equal tabs: icon (22px) over a 12px/700 label, `muted-foreground` when idle and `primary` with a 3px top marker when active.
   - Signed out: Home · Chapters · Courses · Practice (free practice) · More.
   - Signed in: Home · Chapters · Learning · Practice · More.
   - **More** opens a bottom sheet (rounded top, drag handle, dimmed backdrop) with the account menu (or Log in / Start free), the cart, then two-column tiles for every other page.
@@ -186,6 +186,50 @@ The last section before the footer is a centred H2 (with highlight box), a short
 - **Loading:** skeletons in the page's own shape (`components/site/web/Skeletons.tsx`). Only on signed-in pages, the chapters listing and the player. Never on public detail pages, because a `loading.tsx` makes missing pages and redirects return 200 instead of 404/307.
 - **Errors:** every site layout has an `error.tsx` showing "Something went wrong" with Try again (`retry`) and Go home, plus the error reference. No internals are shown.
 - **Empty states:** a dashed `muted` box with one line of copy and one action. Never leave a blank area.
+
+---
+
+## 6a. Mobile (phones, under 760px)
+
+Approved October 2026 (audit: `docs/mobile-audit.md`). Desktop and tablet sizes do not change; these rules set the **phone floors** and the shared behaviour. Check every new or changed page at 360, 390 and 412px.
+
+**Type scale.** Phone sizes are the `clamp()` floors, so each heading grows with the screen and reaches its desktop size unchanged.
+
+| Role | Phone | Class pattern | Line height (phone → tablet) |
+|---|---|---|---|
+| Hero H1 (wash heroes, footer CTA) | 44px | `text-[clamp(44px,Xvw,Ypx)]` | 1.1 → 1 |
+| Page H1 on white (leaderboard, contact, FAQ, blog, legal) | 36px | `text-[clamp(36px,Xvw,Ypx)]` | 1.1 → 1 |
+| Section H2 (cap 44–72px) | 28px | `text-[clamp(28px,…)]` | 1.05 |
+| Block H2 (cap 30–42px) | 26px | `text-[clamp(26px,…)]` | 1.2 |
+| H3 / card title | 20px | `text-xl` | 1.3 |
+| Body | 16px, never smaller | | 1.55 |
+| Meta / small | 14px (13px only for chips and badges) | | 1.4 |
+| Micro (badges, uppercase labels) | 12px, never 11 or 10 | | n/a |
+
+Always keep `text-balance` on headings and `text-pretty` on paragraphs.
+
+**Spacing.** One gutter token, `--gutter` (16px on phones, 24px from 760px). Content wrappers are `w-[min(1120px,calc(100%-var(--gutter)*2))]`; never write `calc(100%-48px)` again. Section vertical padding is **48px on phones** (`py-12`) and 64–96px from `tablet`. One card padding: 16px on phones (`p-4`), 24px from `tablet`. Gaps come from 8 / 12 / 16 / 24.
+
+**Targets.** Every interactive element is at least 44×44 (use `tap` on small visuals) with at least 8px between neighbours. Primary buttons are 48px tall and full width on phones inside forms, cards and CTA bands. Text links in lists get `py-3` (a 44px row).
+
+**Forms.** Every `input`, `select` and `textarea` on the public site is 16px on phones (a global rule in `globals.css` enforces this) and 48px tall, with the right `type`, `inputmode` and `autocomplete`. Submit buttons on long forms are full width.
+
+**Wide content.** The page never scrolls sideways. Decide per component:
+- **Compare table:** stacked cards, one per plan, label/value rows (`CompareTable`).
+- **Leaderboard:** compact rows (rank, avatar, name with class and level under it, XP). The podium shrinks to fit.
+- **Stat strips:** a two-column grid that wraps.
+- **Chip rows and the About timeline:** scroll inside their own box with `snap-x`, a visible partial next item (the row ends with padding, never flush) and `scroll-padding`.
+- **Formulas, code, wide images:** `max-w-full overflow-x-auto` on the block itself.
+
+**Lists.** Chapters are a single-column list row with a thumbnail below 412px, two columns from 412px, then the desktop grid.
+
+**Sticky chrome.** Keep it small: under 56px for a sticky filter row on phones (search plus a Filters button that opens a bottom sheet). The player header collapses on scroll. Prices on pricing show a sticky "Your selection" bar above the bottom tab bar once something is picked.
+
+**Bottom bar and floating buttons.** The 64px bar stays (11px labels become 12px). Every page that shows it pads for it plus `env(safe-area-inset-bottom)`. The FlexCare button is a 44px icon on phones, sits above the bar, and is hidden on checkout and cart.
+
+**Sheets and popups.** Bottom sheets with a 44px close button, Escape and swipe-down to close, a focus trap (`useFocusTrap`), and no scroll behind. The first-visit welcome popup opens only after the visitor's first scroll or on their second page view, never over the hero on first load.
+
+**Checks before you finish a page.** At 360 / 390 / 412 px: no element wider than the viewport (measure element rects, not just `scrollWidth`), no text under 12px, no tap target under 44px, no overlap with the bottom bar or the FlexCare button, hero H1 at least 44px. Then 768 and 1280 to confirm nothing moved.
 
 ---
 

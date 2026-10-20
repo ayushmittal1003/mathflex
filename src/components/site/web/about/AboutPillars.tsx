@@ -26,7 +26,7 @@ export function AboutPillars({ pillars }: { pillars: Pillar[] }) {
 
   return (
     <div className="relative">
-      <div className="mx-auto flex w-[min(1240px,calc(100%-48px))] justify-end gap-2">
+      <div className="mx-auto flex w-[min(1240px,calc(100%-var(--gutter)*2))] justify-end gap-2">
         {[-1, 1].map((d) => (
           <button
             key={d}
@@ -67,7 +67,7 @@ export function AboutPillars({ pillars }: { pillars: Pillar[] }) {
                 <span className={cx("grid size-9 place-items-center rounded-lg text-base font-black", dark ? "bg-white/10 text-brand-2" : "bg-primary/8 text-primary")}>{GLYPH[p.key] ?? "•"}</span>
                 <span className={cx("text-xs font-extrabold uppercase tracking-[0.1em]", dark ? "text-white/70" : "text-muted-foreground")}>{p.kicker}</span>
               </div>
-              <span className={cx("relative mt-9 text-[clamp(48px,5vw,64px)] font-extrabold leading-none tracking-[-0.05em]", dark && "bg-gradient-to-br from-white to-[color-mix(in_oklab,var(--brand-2)_60%,white)] bg-clip-text text-transparent")}>{p.big}</span>
+              <span className={cx("relative mt-9 text-[clamp(28px,5vw,64px)] font-extrabold leading-none tracking-[-0.05em]", dark && "bg-gradient-to-br from-white to-[color-mix(in_oklab,var(--brand-2)_60%,white)] bg-clip-text text-transparent")}>{p.big}</span>
               <span className={cx("relative mt-2.5 text-[15px] font-bold leading-snug", dark ? "text-white/90" : "text-foreground")}>{p.small}</span>
               <span className={cx("relative mt-auto pt-6 text-sm leading-[1.6]", dark ? "text-white/60" : "text-muted-foreground")}>{p.body}</span>
             </article>

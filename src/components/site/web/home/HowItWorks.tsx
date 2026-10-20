@@ -36,7 +36,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
         title={<>Every chapter plays like a <Mark>series</Mark>.</>}
         lead="Each chapter is split into short parts. Finish a part, clear its practice, and the next one unlocks. You always know what to do next."
       />
-      <div className="mx-auto mt-14 flex w-[min(1120px,calc(100%-48px))] flex-wrap-reverse items-end gap-x-10 gap-y-8">
+      <div className="mx-auto mt-14 flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap-reverse items-end gap-x-10 gap-y-8">
         <div className="min-w-0 flex-[1_1_300px]">
           {howSteps.map((s, i) => (
             <div
@@ -51,7 +51,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
                 </span>
                 <span className="text-[13px] font-bold uppercase tracking-[0.08em] text-muted-foreground">{s.kicker}</span>
               </div>
-              <h3 className="mt-4.5 text-[clamp(28px,3vw,38px)] font-extrabold leading-[1.08] tracking-[-0.035em]">{s.title}</h3>
+              <h3 className="mt-4.5 text-[clamp(26px,3vw,38px)] font-extrabold leading-[1.08] tracking-[-0.035em]">{s.title}</h3>
               <p className="mt-3 max-w-[440px] text-[17px] leading-[1.6] text-muted-foreground text-pretty">{s.body}</p>
             </div>
           ))}

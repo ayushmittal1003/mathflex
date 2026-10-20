@@ -38,7 +38,7 @@ export default async function Profile() {
           {user.name.trim()[0]?.toUpperCase() ?? "?"}
         </span>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-[clamp(30px,3.6vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{user.name}</h1>
+          <h1 className="truncate text-[clamp(28px,3.6vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{user.name}</h1>
           <p className="mt-1 text-[15px] text-secondary-foreground">
             {user.email} · Member since {user.createdAt.toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
           </p>

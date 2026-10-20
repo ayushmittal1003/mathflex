@@ -75,7 +75,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
 
       <div ref={sentinel} aria-hidden className="h-px" />
       <div className={cx("sticky top-[67px] z-30 border-b transition-colors", stuck ? "border-border bg-card/90 backdrop-blur-lg" : "border-transparent")}>
-        <div className="mx-auto flex w-[min(1000px,calc(100%-48px))] flex-wrap items-center gap-x-3 gap-y-2.5 py-3">
+        <div className="mx-auto flex w-[min(1000px,calc(100%-var(--gutter)*2))] flex-wrap items-center gap-x-3 gap-y-2.5 py-3">
           <div className="flex shrink-0 gap-0.5 rounded-lg bg-foreground p-1">
             {Object.entries(periods).map(([k, label]) => (
               <Link key={k} href={`/leaderboard?p=${k}`} scroll={false} aria-current={k === period ? "page" : undefined} className={cx("tap relative whitespace-nowrap rounded-md px-3 py-[7px] text-[13px] font-bold", k === period ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
@@ -103,7 +103,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
       </div>
 
       <section className="pb-14 pt-5">
-        <div className="mx-auto w-[min(1000px,calc(100%-48px))]">
+        <div className="mx-auto w-[min(1000px,calc(100%-var(--gutter)*2))]">
           <div className="flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">
             <span className="w-12 shrink-0">Rank</span>
             <span className="flex-1">Student</span>

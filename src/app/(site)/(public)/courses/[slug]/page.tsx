@@ -88,7 +88,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       accessLine: validity(v.validityDays),
     }),
   }));
-  const sectionH2 = "text-[clamp(28px,3.2vw,40px)] font-extrabold leading-tight tracking-[-0.04em]";
+  const sectionH2 = "text-[clamp(26px,3.2vw,40px)] font-extrabold leading-tight tracking-[-0.04em]";
 
   return (
     <>
@@ -106,11 +106,11 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       )}
       <WashHero className="!pb-[128px]">
         <Breadcrumbs
-          className="mx-auto w-[min(1240px,calc(100%-48px))] pt-3"
+          className="mx-auto w-[min(1240px,calc(100%-var(--gutter)*2))] pt-3"
           schemaOn={course.isPublished}
           items={[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: v.title, path: `/courses/${course.slug}` }]}
         />
-        <div className="mx-auto mt-5 flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-16 gap-y-10 tablet:mt-12">
+        <div className="mx-auto mt-5 flex w-[min(1240px,calc(100%-var(--gutter)*2))] flex-wrap items-center gap-x-16 gap-y-10 tablet:mt-12">
           <div className="order-2 min-w-0 flex-[1_1_340px] min-[900px]:order-1">
             <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-secondary-foreground">
               <Link href="/courses" className="hover:text-primary">Complete courses</Link>
@@ -118,7 +118,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
               <span>{v.title}</span>
               {!course.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-[11px] font-bold text-foreground">Unpublished · staff preview</span>}
             </div>
-            <h1 className="mt-4.5 text-[clamp(42px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{v.title}</h1>
+            <h1 className="mt-4.5 text-[clamp(28px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{v.title}</h1>
             <div className="mt-5.5 flex flex-wrap gap-2">
               <Pill>{v.chapters.length} chapters</Pill>
               {v.hours && <Pill>{v.hours} of video</Pill>}
@@ -183,7 +183,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       </WashHero>
 
       {/* Stats strip overlapping the hero. */}
-      <div className="relative z-[3] mx-auto -mt-16 grid w-[min(1240px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-28px_rgb(80_20_0/0.45)]">
+      <div className="relative z-[3] mx-auto -mt-16 grid w-[min(1240px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-28px_rgb(80_20_0/0.45)]">
         {stats.map((s, i) => (
           <div key={s.big} className={cx("px-7 py-6", i > 0 && "border-l border-border")}>
             <div className="text-xl font-extrabold tracking-[-0.02em]">{s.big}</div>
@@ -273,14 +273,14 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       </section>
 
       <section className="pt-28">
-        <div className="mx-auto w-[min(820px,calc(100%-48px))]">
+        <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
           <h2 className={cx(sectionH2, "text-center")}>Questions about this course</h2>
           <div className="mt-9"><FaqList items={faqs} initialOpen={-1} /></div>
         </div>
       </section>
 
       <CtaBand>
-        <h2 className="mx-auto max-w-[820px] text-[clamp(34px,4.6vw,58px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
+        <h2 className="mx-auto max-w-[820px] text-[clamp(28px,4.6vw,58px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
           {owned ? <>Pick up where you <Mark>left off</Mark>.</> : <>Every chapter of {v.title}, <Mark>one</Mark> price.</>}
         </h2>
         <div className="mt-8 flex flex-wrap justify-center gap-2.5">

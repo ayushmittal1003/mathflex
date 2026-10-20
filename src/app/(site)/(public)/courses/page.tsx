@@ -78,8 +78,8 @@ export default async function Courses() {
 
       {views.length > 1 && (
         <section className="py-16 tablet:py-20">
-          <div className="mx-auto w-[min(1000px,calc(100%-48px))]">
-            <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Compare courses</h2>
+          <div className="mx-auto w-[min(1000px,calc(100%-var(--gutter)*2))]">
+            <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Compare courses</h2>
             <div className="no-scrollbar mt-10 overflow-x-auto">
               <div className="min-w-[620px]">
                 <div className="grid items-end border-b-2 border-foreground pb-3.5" style={{ gridTemplateColumns: `minmax(0,1.6fr) repeat(${views.length}, minmax(0,1fr))` }}>
@@ -113,14 +113,14 @@ export default async function Courses() {
       </div>
 
       <section className="py-16 tablet:py-20">
-        <div className="mx-auto w-[min(820px,calc(100%-48px))]">
-          <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about courses</h2>
+        <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
+          <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about courses</h2>
           <div className="mt-9"><FaqList items={faqs} initialOpen={-1} /></div>
         </div>
       </section>
 
       <CtaBand>
-        <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
+        <h2 className="mx-auto max-w-[820px] text-[clamp(28px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           Not sure yet? {freePreview ? <>Watch a <Mark>free</Mark> 3–4 minute preview first.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
         <div className="mt-8 flex flex-wrap justify-center gap-2.5">

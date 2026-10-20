@@ -89,16 +89,16 @@ export default async function AboutPage() {
             Mathflex is chapter-wise JEE maths, taught by IIT Delhi alumnus {names.full}, at a price every student can afford.
           </p>
         </div>
-        <VideoFrame videoId={about.storyVideoId} caption="Why Mathflex exists" sub={`A note from ${names.short}`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-48px))]" />
+        <VideoFrame videoId={about.storyVideoId} caption="Why Mathflex exists" sub={`A note from ${names.short}`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-var(--gutter)*2))]" />
       </WashHero>
 
       {/* What we stand for: proof cards */}
       {pillars.length > 0 && (
         <section className="overflow-hidden pb-4 pt-24">
-          <div className="mx-auto flex w-[min(1240px,calc(100%-48px))] flex-wrap items-end justify-between gap-x-10 gap-y-4">
+          <div className="mx-auto flex w-[min(1240px,calc(100%-var(--gutter)*2))] flex-wrap items-end justify-between gap-x-10 gap-y-4">
             <div className="max-w-[640px]">
               <Eyebrow>What we stand for</Eyebrow>
-              <h2 className="mt-5.5 text-[clamp(38px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
+              <h2 className="mt-5.5 text-[clamp(28px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
                 New platform. <Mark>Proven</Mark> teaching.
               </h2>
             </div>
@@ -113,9 +113,9 @@ export default async function AboutPage() {
       )}
 
       <section className="py-16 tablet:py-20">
-        <div className="mx-auto w-[min(1120px,calc(100%-48px))]">
+        <div className="mx-auto w-[min(1120px,calc(100%-var(--gutter)*2))]">
           <Eyebrow dot="brand-2">Our story</Eyebrow>
-          <h2 className="mt-5.5 max-w-[1000px] text-[clamp(34px,4.4vw,58px)] font-extrabold leading-[1.06] tracking-[-0.045em] text-balance">
+          <h2 className="mt-5.5 max-w-[1000px] text-[clamp(28px,4.4vw,58px)] font-extrabold leading-[1.06] tracking-[-0.045em] text-balance">
             Great JEE teaching shouldn&apos;t cost <Mark>₹2 lakh</Mark>.
           </h2>
           <div className="mt-9 gap-12 text-lg leading-[1.7] text-secondary-foreground tablet:columns-2 [&>p]:mb-5 [&>p]:break-inside-avoid">
@@ -133,7 +133,7 @@ export default async function AboutPage() {
 
       <section className="py-16 tablet:py-20">
         <SectionHead eyebrow="What we solve" title={<>JEE prep is <Mark>broken</Mark> for most students</>} lead="Most students lose marks in a handful of chapters. The usual options make them pay for everything to fix those few." />
-        <div className="mx-auto mt-12 w-[min(1000px,calc(100%-48px))]">
+        <div className="mx-auto mt-12 w-[min(1000px,calc(100%-var(--gutter)*2))]">
           <div className="grid grid-cols-2 gap-x-6 border-b-2 border-foreground pb-3 text-xs font-extrabold uppercase tracking-[0.1em] text-muted-foreground tablet:grid-cols-[160px_1fr_1fr]">
             <span className="hidden tablet:block" />
             <span>The usual way</span>
@@ -153,7 +153,7 @@ export default async function AboutPage() {
       {offerings.length > 0 && (
         <section className="py-16 tablet:py-20">
           <SectionHead eyebrow="Our offerings" dot="ok" title={<>What you can learn <Mark>with us</Mark></>} lead="Start with one chapter, take a whole class, or plan your prep with a call." />
-          <div className="mx-auto mt-12 grid w-[min(1180px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-4">
+          <div className="mx-auto mt-12 grid w-[min(1180px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-4">
             {offerings.map((o, i) => (
               <Link
                 key={o.key}
@@ -188,7 +188,7 @@ export default async function AboutPage() {
           title={<>Fix the chapter that&apos;s <Mark>costing you</Mark> marks</>}
           lead="JEE rewards depth in high-weightage chapters. Studying one chapter at a time, start to finish, is how toppers close gaps. So that's how we built Mathflex."
         />
-        <div className="mx-auto mt-14 grid w-[min(1120px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-x-8 gap-y-10">
+        <div className="mx-auto mt-14 grid w-[min(1120px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-x-8 gap-y-10">
           {rules.map((r, i) => (
             <div key={r.t} className="min-w-0">
               <div aria-hidden className="select-none text-[120px] font-black leading-[0.8] tracking-[-0.06em] text-transparent [-webkit-text-stroke:2px_var(--muted-foreground)]">{i + 1}</div>
@@ -204,7 +204,7 @@ export default async function AboutPage() {
       </div>
 
       <CtaBand>
-        <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
+        <h2 className="mx-auto max-w-[820px] text-[clamp(28px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           That&apos;s why we&apos;re here: so you get your <Mark>seat</Mark> too.
         </h2>
         <p className="mx-auto mt-4.5 max-w-[520px] text-[17px] leading-[1.55] text-secondary-foreground">

@@ -43,7 +43,7 @@ export function StoryTimeline({ steps }: { steps: Step[] }) {
   }, []);
 
   return (
-    <ol ref={wrap} className="relative mx-auto mt-16 w-[min(920px,calc(100%-48px))]">
+    <ol ref={wrap} className="relative mx-auto mt-16 w-[min(920px,calc(100%-var(--gutter)*2))]">
       {/* rail + scroll fill */}
       <span aria-hidden className="absolute bottom-2 left-[15px] top-2 w-[3px] rounded-full bg-border min-[860px]:left-1/2 min-[860px]:-translate-x-1/2" />
       <span

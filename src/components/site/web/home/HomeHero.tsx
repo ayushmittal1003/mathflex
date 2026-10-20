@@ -19,7 +19,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
           <div className="animate-mf-rise">
             <Eyebrow dot="ok" onWash>For Class 11 &amp; 12 · JEE Main, Advanced &amp; Boards</Eyebrow>
           </div>
-          <h1 className="mx-auto mt-6.5 max-w-[1120px] text-[clamp(38px,6.2vw,80px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+          <h1 className="mx-auto mt-6.5 max-w-[1120px] text-[clamp(44px,6.2vw,80px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
             IIT starts with{" "}
             <Mark onWash pointer>
               maths,
@@ -78,7 +78,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
         </div>
 
         {/* Dashboard peek (dark-framed product UI). */}
-        <div className="relative mx-auto mt-18 -mb-40 grid h-[420px] w-[min(1000px,calc(100%-48px))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[190px_minmax(0,1fr)_250px]">
+        <div className="relative mx-auto mt-18 -mb-40 grid h-[420px] w-[min(1000px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[190px_minmax(0,1fr)_250px]">
           <div className="hidden content-start gap-1 border-r border-border px-3 py-4 text-[13px] tablet:grid">
             <div className="px-2 py-1 text-[10px] font-bold tracking-[0.12em] text-muted-foreground">MENU</div>
             <div className="rounded-md bg-primary/10 p-2 font-bold text-primary">My Learning</div>

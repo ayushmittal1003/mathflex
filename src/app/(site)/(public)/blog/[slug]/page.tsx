@@ -60,7 +60,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           schemaOn={!post.placeholder}
           items={[{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }, { name: post.title, path: `/blog/${post.slug}` }]}
         />
-        <h1 className="mt-5 max-w-[920px] text-[clamp(36px,5.4vw,64px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">{post.title}</h1>
+        <h1 className="mt-5 max-w-[920px] text-[clamp(28px,5.4vw,64px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">{post.title}</h1>
         <p className="mt-5 max-w-[720px] text-[19px] leading-[1.55] text-secondary-foreground text-pretty">{post.excerpt}</p>
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-y border-border py-5">
           <div className="flex items-center gap-3">
@@ -112,7 +112,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
       {related.length > 0 && (
         <section className={cx(container.listing, "pb-28 pt-20")}>
           <div className="mb-8 flex items-end justify-between gap-4">
-            <h2 className="text-[clamp(28px,3.4vw,40px)] font-extrabold tracking-[-0.04em]">Keep reading</h2>
+            <h2 className="text-[clamp(26px,3.4vw,40px)] font-extrabold tracking-[-0.04em]">Keep reading</h2>
             <Link href="/blog" className="text-sm font-bold text-primary hover:underline">All articles →</Link>
           </div>
           <div className="grid gap-x-6 gap-y-10 min-[600px]:grid-cols-2 min-[900px]:grid-cols-3">

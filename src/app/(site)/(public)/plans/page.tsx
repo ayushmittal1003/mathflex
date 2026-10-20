@@ -91,7 +91,7 @@ export default async function PlansPage() {
       <section className="mt-5 flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
         <div>
           <Eyebrow dot="ok">Plan validity &amp; renewal</Eyebrow>
-          <h1 className="mt-5 text-[clamp(36px,4.6vw,56px)] font-extrabold leading-[1.04] tracking-[-0.045em]">
+          <h1 className="mt-5 text-[clamp(28px,4.6vw,56px)] font-extrabold leading-[1.04] tracking-[-0.045em]">
             Your <Mark>plans</Mark>
           </h1>
           <p className="mt-3 max-w-[560px] text-[17px] leading-[1.55] text-secondary-foreground">

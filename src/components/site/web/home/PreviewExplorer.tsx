@@ -48,7 +48,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
         </div>
       )}
 
-      <div className="mx-auto mt-10 flex w-[min(1120px,calc(100%-48px))] flex-wrap items-stretch gap-5">
+      <div className="mx-auto mt-10 flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-stretch gap-5">
         {/* Chapter list */}
         <div className="order-2 flex min-w-0 max-w-full flex-[1_1_300px] flex-col">
           <label className="flex h-12 items-center gap-2.5 rounded-lg border border-border bg-card px-3.5 shadow-[0_1px_4px_0_rgb(0_0_0/0.06)]">
@@ -160,7 +160,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
         </div>
       </div>
 
-      <div className="mx-auto mt-5 w-[min(1120px,calc(100%-48px))] text-center">
+      <div className="mx-auto mt-5 w-[min(1120px,calc(100%-var(--gutter)*2))] text-center">
         <Link href="/chapters" className="text-sm font-bold text-primary hover:brightness-90">Browse all {chapterCount} chapters →</Link>
       </div>
     </section>

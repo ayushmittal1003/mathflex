@@ -105,7 +105,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
           <span className="absolute bottom-5 left-5 text-sm font-bold text-white/90">Class {chapter.classLevel} · marked +{settings.marking.correct} / {settings.marking.wrong}</span>
         </div>
         <div className="p-6 tablet:p-8">
-          <h1 className="text-[clamp(30px,3.6vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{chapter.title}</h1>
+          <h1 className="text-[clamp(28px,3.6vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{chapter.title}</h1>
           <dl className="mt-6 grid grid-cols-2 gap-3 min-[600px]:grid-cols-4">
             {stats.map((st) => (
               <div key={st.label} className="rounded-lg bg-muted px-4 py-3">

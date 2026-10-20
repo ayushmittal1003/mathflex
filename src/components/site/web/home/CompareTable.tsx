@@ -28,7 +28,7 @@ export function CompareTable({ fullPrice, callPrice }: { fullPrice: number | nul
   return (
     <section id="compare" className="py-22">
       <SectionHead eyebrow="Why Mathflex" dot="ok" title={<>Same goal. A <Mark>fraction</Mark> of the price.</>} />
-      <div className="mx-auto mt-10 grid w-[min(640px,calc(100%-48px))] gap-3 min-[860px]:mt-12 min-[860px]:w-[min(1120px,calc(100%-48px))] min-[860px]:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))] min-[860px]:gap-0">
+      <div className="mx-auto mt-10 grid w-[min(640px,calc(100%-var(--gutter)*2))] gap-3 min-[860px]:mt-12 min-[860px]:w-[min(1120px,calc(100%-var(--gutter)*2))] min-[860px]:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))] min-[860px]:gap-0">
         <div className="hidden min-[860px]:block" />
         <div className="hidden rounded-t-xl border-2 border-b-0 border-primary bg-selected px-3 py-5 text-center min-[860px]:block">
           <div className="text-lg font-extrabold tracking-[-0.025em]">{wordmark}</div>

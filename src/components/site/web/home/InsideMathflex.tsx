@@ -36,7 +36,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
         title={<>Everything for a chapter, in <Mark>one</Mark> place.</>}
         lead="Your My Learning dashboard keeps every part, every practice set and every note together, and shows you exactly how far you have come."
       />
-      <div className="no-scrollbar mx-auto mt-12 hidden w-[min(1120px,calc(100%-48px))] overflow-x-auto rounded-xl border-[6px] tablet:block border-foreground bg-card shadow-frame">
+      <div className="no-scrollbar mx-auto mt-12 hidden w-[min(1120px,calc(100%-var(--gutter)*2))] overflow-x-auto rounded-xl border-[6px] tablet:block border-foreground bg-card shadow-frame">
         <div className="grid h-[560px] min-w-[980px] grid-cols-[190px_minmax(0,1fr)_290px]">
           <div className="flex flex-col gap-1 border-r border-border px-3 py-4 text-[13px]">
             <div className="flex items-center gap-2 px-2 pb-3.5 pt-1">
@@ -141,7 +141,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
       <div
         onMouseEnter={() => { hold.current = true; }}
         onMouseLeave={() => { hold.current = false; }}
-        className="mx-auto mt-9 grid w-[min(1120px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,170px),1fr))] gap-x-6 gap-y-2"
+        className="mx-auto mt-9 grid w-[min(1120px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,170px),1fr))] gap-x-6 gap-y-2"
       >
         {chapterIncludes.map((f, i) => (
           <button

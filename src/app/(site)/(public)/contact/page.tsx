@@ -22,7 +22,7 @@ export default async function ContactPage() {
     <>
       <section className="px-6 pt-[calc(86px+40px)] text-center">
         <Eyebrow dot="ok">Usually replies within one working day</Eyebrow>
-        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(42px,6.4vw,84px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(36px,6.4vw,84px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
           Talk to a <Mark>real person</Mark>
         </h1>
         <p className="mx-auto mt-4.5 max-w-[540px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">
@@ -31,7 +31,7 @@ export default async function ContactPage() {
       </section>
 
       <section className="pb-24 pt-14">
-        <div className="mx-auto flex w-[min(1120px,calc(100%-48px))] flex-wrap items-start gap-x-14 gap-y-10">
+        <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-14 gap-y-10">
           <div className="min-w-0 flex-[1.4_1_480px] rounded-xl border border-border bg-card p-6 shadow-[0_24px_48px_-32px_rgb(80_20_0/0.4)] tablet:p-8">
             <div className="grid gap-3 tablet:grid-cols-3">
               {channels.map((c) => {

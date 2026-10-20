@@ -142,6 +142,17 @@
    specificity (:where), so components that style their own focus state still win. */
 .site-light :where(a, button, summary, [role="button"], [tabindex]):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
+/* Mobile rules (dipankar-design/design.md "Mobile"). Side gutter token used by every content
+   wrapper: 16px on phones, 24px from the tablet breakpoint (760px). */
+:root { --gutter: 1rem; }
+@media (min-width: 47.5rem) { :root { --gutter: 1.5rem; } }
+
+/* iOS zooms the page when a field under 16px gets focus, so every text field on the public site is
+   16px on phones. This is plain (unlayered) CSS on purpose: it beats size utilities like text-sm. */
+@media (max-width: 47.49rem) {
+  .site-light :where(input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="hidden"]), select, textarea) { font-size: 16px; }
+}
+
 @theme inline {
   /* Colours */
   --color-background: var(--background);

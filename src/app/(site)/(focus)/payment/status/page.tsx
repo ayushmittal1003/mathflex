@@ -88,7 +88,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                   <span className="absolute inset-0 animate-spin rounded-full border-4 border-gold/30 border-t-[oklch(0.7_0.17_70)]" />
                   <svg className="size-7.5 text-[oklch(0.6_0.15_70)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden><circle cx="12" cy="12" r="8" /><path d="M12 8v4l3 2" /></svg>
                 </span>
-                <h1 className="mt-6.5 text-[clamp(32px,4.4vw,46px)] font-extrabold leading-[1.05] tracking-[-0.04em]">Confirming your payment</h1>
+                <h1 className="mt-6.5 text-[clamp(28px,4.4vw,46px)] font-extrabold leading-[1.05] tracking-[-0.04em]">Confirming your payment</h1>
                 <p className="mx-auto mt-3 max-w-[440px] text-base leading-[1.55] text-secondary-foreground">We&apos;re confirming your payment with Cashfree. This page updates by itself. Please don&apos;t close it or pay again.</p>
                 <div className="mx-auto mt-7 max-w-[420px]">
                   <div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full w-1/3 animate-[shimmer_1.6s_linear_infinite] rounded-full bg-gradient-to-r from-primary to-brand-2" /></div>
@@ -103,7 +103,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
               </div>
             ) : status === "MISSING" ? (
               <div className="animate-mf-rise">
-                <h1 className="text-[clamp(32px,4.4vw,46px)] font-extrabold leading-[1.05] tracking-[-0.04em]">We couldn&apos;t find that order</h1>
+                <h1 className="text-[clamp(28px,4.4vw,46px)] font-extrabold leading-[1.05] tracking-[-0.04em]">We couldn&apos;t find that order</h1>
                 <p className="mx-auto mt-3 max-w-[440px] text-base leading-[1.55] text-secondary-foreground">It may belong to a different account. Your purchases are always listed in My Learning.</p>
                 <div className="mt-6 flex flex-wrap justify-center gap-2.5">
                   <Link href="/my-learning" className={cx(button.md, tone.primaryFlat)}>Go to My Learning</Link>
@@ -115,7 +115,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                 <span className="inline-grid size-20 animate-mf-pop place-items-center rounded-full bg-destructive shadow-[0_0_0_12px_color-mix(in_oklab,var(--destructive)_14%,transparent)]">
                   <svg className="size-8.5" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg>
                 </span>
-                <h1 className="mt-6.5 text-[clamp(32px,4.4vw,46px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{status === "REFUNDED" ? "This order was refunded" : "Payment didn't go through"}</h1>
+                <h1 className="mt-6.5 text-[clamp(28px,4.4vw,46px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{status === "REFUNDED" ? "This order was refunded" : "Payment didn't go through"}</h1>
                 <p className="mx-auto mt-3 max-w-[440px] text-base leading-[1.55] text-secondary-foreground">
                   {status === "REFUNDED" ? "The amount has been refunded to your original payment method." : "No money was taken, or it will be refunded by your bank. Your cart is saved, so you can try again."}
                 </p>
@@ -166,7 +166,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
               <CheckIcon className="size-9.5 text-white" />
             </span>
             <div className="mt-6.5 text-sm font-bold text-ok-strong">Payment successful · {inr(paid.total)}</div>
-            <h1 className="mx-auto mt-3.5 max-w-[960px] text-[clamp(42px,6.6vw,84px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+            <h1 className="mx-auto mt-3.5 max-w-[960px] text-[clamp(36px,6.6vw,84px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
               You&apos;re in, {firstName}. Let&apos;s get you that <Mark onWash>seat<Caret /></Mark>
             </h1>
             <p className="mx-auto mt-5 max-w-[560px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">Everything you bought is unlocked on your account.</p>
@@ -177,7 +177,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
           </div>
 
           {(unlocked.length > 0 || hasCall) && (
-            <div className="mx-auto mt-14 w-[min(980px,calc(100%-48px))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-34px_rgb(80_20_0/0.5)]">
+            <div className="mx-auto mt-14 w-[min(980px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-34px_rgb(80_20_0/0.5)]">
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border px-5 py-4">
                 <span className="text-[15px] font-extrabold">Unlocked for you</span>
                 <span className="text-xs font-bold text-muted-foreground">Order {paid.orderNo}</span>
@@ -214,8 +214,8 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
       </div>
 
       <section className="py-22">
-        <div className="mx-auto w-[min(1120px,calc(100%-48px))]">
-          <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">Your first <Mark>week</Mark> on Mathflex</h2>
+        <div className="mx-auto w-[min(1120px,calc(100%-var(--gutter)*2))]">
+          <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">Your first <Mark>week</Mark> on Mathflex</h2>
           <div className="mt-12 grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] border-t-2 border-foreground">
             {steps.map((n) => (
               <Link key={n.t} href={n.href} className="flex flex-col gap-2.5 border-b border-border pb-6.5 pr-5.5 pt-6 text-foreground">
@@ -230,7 +230,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
       </section>
 
       <section className="pb-22">
-        <div className="mx-auto flex w-[min(1120px,calc(100%-48px))] flex-wrap items-start gap-x-16 gap-y-10">
+        <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-16 gap-y-10">
           <div className="min-w-0 flex-[1_1_320px]">
             <h3 className="text-2xl font-extrabold tracking-[-0.025em]">Order details</h3>
             <div className="mt-4 border-t border-border">
@@ -285,7 +285,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
       </section>
 
       <footer className="border-t border-border">
-        <div className="mx-auto flex w-[min(1120px,calc(100%-48px))] flex-wrap justify-between gap-3 py-5.5 text-[13px] text-muted-foreground">
+        <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap justify-between gap-3 py-5.5 text-[13px] text-muted-foreground">
           <span>© {new Date().getFullYear()} Mathflex · mathflex.in</span>
           <div className="flex flex-wrap gap-5">
             <Link href="/terms">Terms &amp; conditions</Link>

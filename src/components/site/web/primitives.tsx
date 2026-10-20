@@ -44,7 +44,7 @@ export function SectionHead({ eyebrow, dot, title, lead, className }: { eyebrow:
   return (
     <div className={cx("px-6 text-center", className)}>
       <Eyebrow dot={dot}>{eyebrow}</Eyebrow>
-      <h2 className="mx-auto mt-6 max-w-[960px] text-[clamp(40px,5.6vw,72px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">{title}</h2>
+      <h2 className="mx-auto mt-6 max-w-[960px] text-[clamp(28px,5.6vw,72px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">{title}</h2>
       {lead && <p className="mx-auto mt-5.5 max-w-[580px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">{lead}</p>}
     </div>
   );

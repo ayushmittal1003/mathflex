@@ -28,7 +28,7 @@ export default async function BlogPage() {
     <>
       <section className="px-6 pb-10 pt-[calc(86px+40px)] text-center">
         <Eyebrow dot="brand-2">Mathflex Blog</Eyebrow>
-        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(42px,6.4vw,84px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(36px,6.4vw,84px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
           Study smarter for <Mark>JEE</Mark>
         </h1>
         <p className="mx-auto mt-5 max-w-[540px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">

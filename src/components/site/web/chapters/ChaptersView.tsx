@@ -87,7 +87,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
             title={<>Most marks for your <Mark>time</Mark>.</>}
             lead={`These ${top5.length} chapters carry the most weight in JEE Main. Short on time? Start here.`}
           />
-          <div className="no-scrollbar mx-auto mt-10 w-[min(1240px,calc(100%-48px))] overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 pb-5 pt-6">
+          <div className="no-scrollbar mx-auto mt-10 w-[min(1240px,calc(100%-var(--gutter)*2))] overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 pb-5 pt-6">
             <div className="mx-auto flex w-max gap-2">
             {top5.map((c, i) => (
               <Link key={c.id} href={`/chapter/${c.slug}`} className="flex shrink-0 items-end text-white">
@@ -112,7 +112,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
 
       {/* Sticky filter bar (design.md §3.6), parked under the sticky site nav. */}
       <div id="all" className="sticky top-[67px] z-30 scroll-mt-[67px] border-y border-border bg-card/90 backdrop-blur-lg">
-        <div className="mx-auto flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-3 gap-y-2.5 py-3">
+        <div className="mx-auto flex w-[min(1240px,calc(100%-var(--gutter)*2))] flex-wrap items-center gap-x-3 gap-y-2.5 py-3">
           <label className="flex h-10 max-w-[340px] flex-[1_1_220px] items-center gap-2 rounded-lg border border-border bg-card px-3">
             <svg className="size-[15px] shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search chapters" aria-label="Search chapters" className="min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground" />
@@ -148,7 +148,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
       </div>
 
       <section className="pb-24 pt-8">
-        <div className="mx-auto w-[min(1240px,calc(100%-48px))]">
+        <div className="mx-auto w-[min(1240px,calc(100%-var(--gutter)*2))]">
           {groups.map((g) => (
             <div key={g.title || "all"} className="mb-10 last:mb-0">
               {g.title && (
@@ -174,7 +174,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
 
       {bundles.length > 0 && (
         <section id="bundles" className="scroll-mt-16 py-16 tablet:py-20">
-          <div className="mx-auto flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-16 gap-y-10">
+          <div className="mx-auto flex w-[min(1240px,calc(100%-var(--gutter)*2))] flex-wrap items-center gap-x-16 gap-y-10">
             <div className="min-w-0 flex-[1_1_360px]">
               <Eyebrow>Complete courses</Eyebrow>
               <h2 className={cx(splitH2, "mt-5.5")}>
@@ -213,7 +213,7 @@ function HeroPeek({ peek }: { peek: Peek }) {
   const free = peek.parts.find((p) => p.isFreePreview);
   const shown = peek.parts.slice(0, 3);
   return (
-    <div className="relative mx-auto mt-14 -mb-[150px] grid h-[420px] w-[min(980px,calc(100%-48px))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+    <div className="relative mx-auto mt-14 -mb-[150px] grid h-[420px] w-[min(980px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
       <div className="relative overflow-hidden text-white" style={{ background: `linear-gradient(125deg, ${peek.coverFrom}, ${peek.coverTo})` }}>
         <div className="absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap text-[300px] font-black leading-none text-white/14">{peek.symbol}</div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 to-transparent to-70%" />

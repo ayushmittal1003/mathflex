@@ -76,11 +76,11 @@ export default async function PricingPage() {
       <section className="py-16 tablet:py-20">
         <div className="px-6 text-center">
           <Eyebrow>Before you check out</Eyebrow>
-          <h2 className="mx-auto mt-6 max-w-[860px] text-[clamp(38px,5.2vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
+          <h2 className="mx-auto mt-6 max-w-[860px] text-[clamp(28px,5.2vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
             A few ways to get <Mark>more</Mark> for less.
           </h2>
         </div>
-        <div className="mx-auto mt-14 grid w-[min(1180px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-12">
+        <div className="mx-auto mt-14 grid w-[min(1180px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-12">
           {mentorship && (
             <AddOn dot="primary" kicker="Add-on" title={`1:1 call with ${names.short}`}>
               <div className="mt-3 flex items-baseline gap-2"><span className="text-[32px] font-extrabold tracking-[-0.04em]">{inr(mentorship.mentorshipPrice)}</span><span className="text-sm text-muted-foreground">per call</span></div>
@@ -108,15 +108,15 @@ export default async function PricingPage() {
 
       {faqs.length > 0 && (
         <section className="py-16 tablet:py-20">
-          <div className="mx-auto w-[min(820px,calc(100%-48px))]">
-            <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about pricing</h2>
+          <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
+            <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about pricing</h2>
             <div className="mt-9"><FaqList items={faqs} /></div>
           </div>
         </section>
       )}
 
       <CtaBand>
-        <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
+        <h2 className="mx-auto max-w-[820px] text-[clamp(28px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           {freeChapter ? <>Watch a <Mark>free</Mark> 3–4 minute preview first.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
         <div className="mt-8 flex flex-wrap justify-center gap-2.5">

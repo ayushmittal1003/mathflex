@@ -32,7 +32,7 @@ export function CostCompare({ fullCourse, minChapterPrice }: { fullCourse: HomeC
   return (
     <section className="py-22">
       <SectionHead eyebrow="The problem" title={<>JEE maths shouldn&apos;t cost a <Mark>lakh</Mark>.</>} lead={problem.lead} />
-      <div ref={ref} className="mx-auto mt-12 w-[min(1120px,calc(100%-48px))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_4px_0_rgb(0_0_0/0.08)]">
+      <div ref={ref} className="mx-auto mt-12 w-[min(1120px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_4px_0_rgb(0_0_0/0.08)]">
         {rows.map((r, i) => (
           <div
             key={r.name}
@@ -58,7 +58,7 @@ export function CostCompare({ fullCourse, minChapterPrice }: { fullCourse: HomeC
           </div>
         ))}
       </div>
-      <div className="mx-auto mt-7 flex w-[min(1120px,calc(100%-48px))] flex-wrap items-center justify-between gap-5">
+      <div className="mx-auto mt-7 flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-center justify-between gap-5">
         {ratio > 0 ? (
           <p className="max-w-[640px] text-[clamp(20px,2.2vw,26px)] font-bold leading-[1.3] tracking-[-0.02em] text-balance">
             One Mathflex chapter costs about <span className="text-primary">1/{ratio}th</span> of a year at a big coaching institute.

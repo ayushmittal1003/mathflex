@@ -67,12 +67,12 @@ export default async function BookACallPage() {
             <a href="#what" className={cx(button.md, tone.glass)}>What you get</a>
           </div>
         </div>
-        <VideoFrame videoId={instructor.introVideoId} caption="What happens on the call" sub={`${names.short} explains`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-48px))]" />
+        <VideoFrame videoId={instructor.introVideoId} caption="What happens on the call" sub={`${names.short} explains`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-var(--gutter)*2))]" />
       </WashHero>
 
       <section id="what" className="scroll-mt-20 pb-22 pt-24">
         <SectionHead eyebrow="What you get" dot="brand-2" title={<>Walk in confused. Walk out with a <Mark>plan</Mark>.</>} lead={settings.mentorshipBlurb} />
-        <div className="mx-auto mt-12 grid w-[min(1120px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-5">
+        <div className="mx-auto mt-12 grid w-[min(1120px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-5">
           {bookCall.gets.map((g, i) => (
             <div key={g.t} className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card">
               <div className="relative grid h-[300px] place-items-center px-6" style={{ background: TINT }}>
@@ -90,7 +90,7 @@ export default async function BookACallPage() {
 
       <section id="book" className="scroll-mt-20 py-16 tablet:py-20">
         <SectionHead eyebrow="Book your call" title={<>Booked in <Mark>three</Mark> steps</>} lead="Add the call to your order, pay, and our team sets up a time with you on WhatsApp." />
-        <div className="mx-auto mt-11 grid w-[min(1080px,calc(100%-48px))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_30px_60px_-36px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+        <div className="mx-auto mt-11 grid w-[min(1080px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_30px_60px_-36px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
           <div className="flex flex-col border-b border-border p-6 tablet:border-b-0 tablet:border-r tablet:p-7">
             <div className="relative aspect-[16/10] overflow-hidden rounded-lg" style={{ background: PORTRAIT_TINT }}>
               {instructor.photo ? (
@@ -164,8 +164,8 @@ export default async function BookACallPage() {
       </div>
 
       <section className="py-16 tablet:py-20">
-        <div className="mx-auto w-[min(820px,calc(100%-48px))]">
-          <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about the call</h2>
+        <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
+          <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about the call</h2>
           <div className="mt-9"><FaqList items={faqs} /></div>
           <div className="mt-9 flex justify-center">
             <Link href={cta} className={cx(button.md, tone.primary)}>Book your call · {price}</Link>

@@ -18,7 +18,7 @@ export function CourseCards({ courses, bestId }: { courses: CourseView[]; bestId
   // Best value sits in the middle, as in the design.
   const ordered = bestId && courses.length === 3 ? [courses.find((c) => c.id !== bestId)!, courses.find((c) => c.id === bestId)!, courses.filter((c) => c.id !== bestId)[1]] : courses;
   return (
-    <div className="mx-auto mt-16 grid w-[min(1240px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] items-stretch gap-6">
+    <div className="mx-auto mt-16 grid w-[min(1240px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] items-stretch gap-6">
       {ordered.map((c, i) => {
         const best = c.id === bestId;
         const off = pctOff(c.price, c.mrp);
@@ -96,7 +96,7 @@ export function CourseInside({ courses }: { courses: CourseView[] }) {
         </div>
       )}
       <p className="mt-4 text-center text-[15px] text-muted-foreground">{cur.chapters.length} chapters{cur.hours && ` · ${cur.hours} of video`} · {inr(cur.price)}</p>
-      <div className="mx-auto mt-14 grid w-[min(1240px,calc(100%-48px))] gap-16">
+      <div className="mx-auto mt-14 grid w-[min(1240px,calc(100%-var(--gutter)*2))] gap-16">
         {classes.map((n, i) => {
           const rows = cur.chapters.filter((c) => c.classLevel === n);
           return (
@@ -136,7 +136,7 @@ export function CourseCalculator({ course, breakeven }: { course: CourseView; br
   const cheaper = sep < course.price;
 
   return (
-    <div className="mx-auto flex w-[min(1180px,calc(100%-48px))] flex-wrap items-center gap-x-18 gap-y-10">
+    <div className="mx-auto flex w-[min(1180px,calc(100%-var(--gutter)*2))] flex-wrap items-center gap-x-18 gap-y-10">
       <div className="min-w-0 flex-[1_1_340px]">
         <Eyebrow>Course or chapters?</Eyebrow>
         <h2 className={cx(splitH2, "mt-5.5")}>How many chapters do you <Mark>need</Mark>?</h2>

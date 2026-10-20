@@ -49,7 +49,7 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
           <span className="size-2 rounded-full bg-primary" />
           {empty ? "Be one of the first on the board" : `${list.length} student${list.length === 1 ? "" : "s"} ranked ${WORD[p]}`}
         </div>
-        <h1 className="mx-auto mt-5.5 max-w-[980px] text-[clamp(42px,6.4vw,84px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+        <h1 className="mx-auto mt-5.5 max-w-[980px] text-[clamp(36px,6.4vw,84px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
           {empty ? <>The leaderboard opens with our <Mark>first students</Mark></> : <>Who&apos;s on top <Mark>{WORD[p]}</Mark></>}
         </h1>
         <p className="mx-auto mt-5 max-w-[540px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">

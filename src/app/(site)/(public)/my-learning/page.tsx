@@ -114,7 +114,7 @@ export default async function MyLearning() {
       {/* Greeting: one compact row, level on the right */}
       <section className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
         <div className="min-w-0">
-          <h1 className="text-[clamp(30px,3.6vw,42px)] font-extrabold leading-[1.08] tracking-[-0.04em]">Welcome back, {first}</h1>
+          <h1 className="text-[clamp(26px,3.6vw,42px)] font-extrabold leading-[1.08] tracking-[-0.04em]">Welcome back, {first}</h1>
           <p className="mt-1.5 text-[15px] text-secondary-foreground">
             {user.streak > 0 ? `You're on a ${user.streak}-day streak. Keep it going today.` : mine.length ? "Watch a part or solve a question today to start a streak." : "Start with a free preview, no payment needed."}
           </p>
@@ -171,7 +171,7 @@ export default async function MyLearning() {
             </span>
             <span className="flex flex-col justify-center p-6 tablet:p-9">
               <span className="text-sm font-semibold text-muted-foreground">Class {resume.classLevel} · Part {resume.next.order} of {resume.partsCount}</span>
-              <span className="mt-2 block text-[clamp(28px,3.2vw,40px)] font-extrabold leading-[1.08] tracking-[-0.04em]">{resume.title}</span>
+              <span className="mt-2 block text-[clamp(26px,3.2vw,40px)] font-extrabold leading-[1.08] tracking-[-0.04em]">{resume.title}</span>
               <span className="mt-2 block text-[17px] text-secondary-foreground">
                 Next: <b className="text-foreground">{resume.next.title}</b>{resume.next.durationSec > 0 && ` · ${duration(resume.next.durationSec)}`}
               </span>

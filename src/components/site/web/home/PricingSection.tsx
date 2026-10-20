@@ -23,7 +23,7 @@ export function PricingSection({ chapters, courses, coupon }: { chapters: HomeCh
         title={<>Pocket-money pricing for <Mark>IIT-level</Mark> prep.</>}
         lead="Start with one chapter. Move to a full class whenever you are ready."
       />
-      <div className="mx-auto mt-12 grid w-[min(1120px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] items-stretch gap-4">
+      <div className="mx-auto mt-12 grid w-[min(1120px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] items-stretch gap-4">
         {pc && (
           <div className="flex flex-col rounded-xl border border-border bg-card p-6 shadow-[0_1px_4px_0_rgb(0_0_0/0.08)]">
             <div className="text-xs font-extrabold uppercase tracking-[0.14em] text-muted-foreground">Single chapter</div>

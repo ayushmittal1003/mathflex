@@ -135,18 +135,18 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
       )}
       <WashHero className="!pb-[104px]">
         <Breadcrumbs
-          className="mx-auto w-[min(1180px,calc(100%-48px))] pt-3"
+          className="mx-auto w-[min(1180px,calc(100%-var(--gutter)*2))] pt-3"
           schemaOn={published}
           items={[{ name: "Home", path: "/" }, { name: "Chapters", path: "/chapters" }, { name: chapter.title, path: `/chapter/${chapter.slug}` }]}
         />
-        <div className="mx-auto mt-3 flex w-[min(1180px,calc(100%-48px))] flex-wrap items-center gap-8">
+        <div className="mx-auto mt-3 flex w-[min(1180px,calc(100%-var(--gutter)*2))] flex-wrap items-center gap-8">
           {/* Info */}
           <div className="order-2 min-w-0 flex-[1_1_320px]">
             <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-secondary-foreground">
               <Link href={`/chapters?class=${chapter.classLevel}`} className="hover:text-primary">Class {chapter.classLevel}</Link>
               {!chapter.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-[11px] font-bold text-foreground">Unpublished · staff preview</span>}
             </div>
-            <h1 className="mt-4.5 text-[clamp(42px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{chapter.title}</h1>
+            <h1 className="mt-4.5 text-[clamp(28px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{chapter.title}</h1>
             <div className="mt-5.5 flex flex-wrap gap-2">
               <Pill>Class {chapter.classLevel}</Pill>
               <Pill>{chapter.parts.length} parts{totalSec > 0 && ` · ${duration(totalSec)}`}</Pill>
@@ -229,7 +229,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
       </WashHero>
 
       {/* Stats strip overlapping the hero. */}
-      <div className="relative z-[3] mx-auto -mt-16 grid w-[min(1180px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-28px_rgb(80_20_0/0.45)]">
+      <div className="relative z-[3] mx-auto -mt-16 grid w-[min(1180px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-28px_rgb(80_20_0/0.45)]">
         {stats.map((s, i) => (
           <div key={s.small} className={cx("px-5.5 py-5", i > 0 && "border-l border-border")}>
             <div className="text-xl font-extrabold tracking-[-0.02em]">{s.big}</div>
@@ -240,7 +240,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
       {/* Sticky section tabs. */}
       <div className="sticky top-[67px] z-30 mt-8 border-b border-border bg-card/90 backdrop-blur-lg">
-        <div className="no-scrollbar mx-auto flex w-[min(1180px,calc(100%-48px))] items-center gap-1 overflow-x-auto">
+        <div className="no-scrollbar mx-auto flex w-[min(1180px,calc(100%-var(--gutter)*2))] items-center gap-1 overflow-x-auto">
           {tabs.map(([label, href]) => (
             <a key={href} href={href} className="shrink-0 whitespace-nowrap border-b-2 border-transparent px-3.5 py-4 text-sm font-bold text-secondary-foreground hover:border-foreground hover:text-foreground">{label}</a>
           ))}
@@ -255,7 +255,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
       </div>
 
       <section className="pb-22 pt-6">
-        <div className="mx-auto flex w-[min(1180px,calc(100%-48px))] flex-wrap items-start gap-x-10 gap-y-12">
+        <div className="mx-auto flex w-[min(1180px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-10 gap-y-12">
           <div className="min-w-0 flex-[1_1_420px]">
             {learn.length > 0 && (
               <>
@@ -408,9 +408,9 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
       {related.length > 0 && (
         <section className="pb-24 pt-18">
-          <div className="mx-auto w-[min(1180px,calc(100%-48px))]">
+          <div className="mx-auto w-[min(1180px,calc(100%-var(--gutter)*2))]">
             <div className="flex items-baseline justify-between gap-4">
-              <h2 className="text-[clamp(28px,3vw,38px)] font-extrabold tracking-[-0.035em]">More Class {chapter.classLevel} chapters</h2>
+              <h2 className="text-[clamp(26px,3vw,38px)] font-extrabold tracking-[-0.035em]">More Class {chapter.classLevel} chapters</h2>
               <Link href={`/chapters?class=${chapter.classLevel}`} className="whitespace-nowrap text-sm font-bold text-primary">All chapters →</Link>
             </div>
             <div className="mt-7 grid grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))] gap-5">
