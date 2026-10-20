@@ -4,12 +4,19 @@ import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { BlogCover } from "@/components/site/web/blog/BlogCard";
 import { BlogBrowser } from "@/components/site/web/blog/BlogBrowser";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = {
-  title: "Blog",
-  description: "Chapter guides, exam strategy and study tips for JEE maths from Karan bhaiya and the Mathflex team.",
-  alternates: { canonical: "/blog" },
-};
+// Noindex while every post is sample content (placeholder: true in lib/blog). It switches to
+// indexable by itself as soon as one real post exists.
+export async function generateMetadata() {
+  const posts = await getPosts();
+  return buildMetadata({
+    title: "JEE Maths Blog – Chapter Guides & Study Tips",
+    description: "Chapter guides, exam strategy and study tips for JEE maths from the MathFlex team.",
+    path: "/blog",
+    noindex: posts.every((p) => p.placeholder),
+  });
+}
 
 // Blog listing (dipankar-design/designs/Blog.dc.html): the latest post as a big banner, then
 // older posts by category with tag chips and search. Posts come from lib/blog (placeholder
@@ -21,7 +28,7 @@ export default async function BlogPage() {
     <>
       <section className="px-6 pb-10 pt-[calc(86px+40px)] text-center">
         <Eyebrow dot="brand-2">Mathflex Blog</Eyebrow>
-        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(42px,6.4vw,84px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(36px,6.4vw,84px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
           Study smarter for <Mark>JEE</Mark>
         </h1>
         <p className="mx-auto mt-5 max-w-[540px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">

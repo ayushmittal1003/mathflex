@@ -38,7 +38,7 @@ export type BlogPost = {
   placeholder?: boolean;
 };
 
-const KARAN = { name: "Karan Mittal", role: "B.Tech, IIT Delhi" };
+const KARAN = { name: "Karan Mittal", role: "IIT Delhi alumnus" };
 const TEAM = { name: "Mathflex Team", role: "Mathflex" };
 
 const PLACEHOLDER_POSTS: BlogPost[] = [

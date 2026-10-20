@@ -10,8 +10,9 @@ import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { FaqList } from "@/components/site/web/FaqList";
 import { MentorSection } from "@/components/site/web/home/MentorSection";
 import { button, cx, tone } from "@/components/site/web/ui";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Book a 1:1 call", alternates: { canonical: "/book-a-call" } };
+export const metadata = buildMetadata({ title: "Book a 1:1 JEE Maths Call", description: "Book a one-to-one call with the MathFlex mentor to plan your JEE maths preparation.", path: "/book-a-call" });
 
 // Soft warm tints behind the illustrations and the portrait (body sections, not the hero wash).
 const TINT = "radial-gradient(80% 70% at 50% 0%, color-mix(in oklab, var(--brand-2) 16%, transparent), transparent 70%), var(--muted)";
@@ -41,7 +42,7 @@ export default async function BookACallPage() {
           <Eyebrow dot="gold" onWash>1:1 calls</Eyebrow>
           <h1 className={cx(heroH1, "mt-6")}>Calls are <Mark onWash>paused</Mark> right now</h1>
           <p className={cx(heroLead, "mt-5.5")}>We&apos;re not taking new 1:1 call bookings at the moment. Message us and we&apos;ll let you know when they open again.</p>
-          <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+          <div className="mt-7 cta-row">
             <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className={cx(button.lg, tone.primary)}>WhatsApp us</a>
             <Link href="/chapters" className={cx(button.lg, tone.glass)}>Browse chapters</Link>
           </div>
@@ -61,17 +62,17 @@ export default async function BookACallPage() {
           <p className={cx(heroLead, "mt-5.5 max-w-[580px]")}>
             A 1:1 video call with IIT Delhi alumnus {names.full}. Bring your scores and your doubts, and leave with a plan.
           </p>
-          <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+          <div className="mt-7 cta-row">
             <a href="#book" className={cx(button.md, tone.primary)}>Book your call</a>
             <a href="#what" className={cx(button.md, tone.glass)}>What you get</a>
           </div>
         </div>
-        <VideoFrame videoId={instructor.introVideoId} caption="What happens on the call" sub={`${names.short} explains`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-48px))]" />
+        <VideoFrame videoId={instructor.introVideoId} caption="What happens on the call" sub={`${names.short} explains`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-var(--gutter)*2))]" />
       </WashHero>
 
-      <section id="what" className="scroll-mt-20 pb-22 pt-24">
+      <section id="what" className="scroll-mt-20 pb-12 pt-12 tablet:pb-22 tablet:pt-24">
         <SectionHead eyebrow="What you get" dot="brand-2" title={<>Walk in confused. Walk out with a <Mark>plan</Mark>.</>} lead={settings.mentorshipBlurb} />
-        <div className="mx-auto mt-12 grid w-[min(1120px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-5">
+        <div className="mx-auto mt-12 grid w-[min(1120px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-5">
           {bookCall.gets.map((g, i) => (
             <div key={g.t} className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card">
               <div className="relative grid h-[300px] place-items-center px-6" style={{ background: TINT }}>
@@ -87,9 +88,9 @@ export default async function BookACallPage() {
         </div>
       </section>
 
-      <section id="book" className="scroll-mt-20 py-16 tablet:py-20">
+      <section id="book" className="scroll-mt-20 py-12 tablet:py-20">
         <SectionHead eyebrow="Book your call" title={<>Booked in <Mark>three</Mark> steps</>} lead="Add the call to your order, pay, and our team sets up a time with you on WhatsApp." />
-        <div className="mx-auto mt-11 grid w-[min(1080px,calc(100%-48px))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_30px_60px_-36px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+        <div className="mx-auto mt-11 grid w-[min(1080px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_30px_60px_-36px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
           <div className="flex flex-col border-b border-border p-6 tablet:border-b-0 tablet:border-r tablet:p-7">
             <div className="relative aspect-[16/10] overflow-hidden rounded-lg" style={{ background: PORTRAIT_TINT }}>
               {instructor.photo ? (
@@ -101,17 +102,17 @@ export default async function BookACallPage() {
                     <span className="mx-auto grid size-24 place-items-center rounded-full bg-gradient-to-br from-primary to-brand-2 text-[34px] font-extrabold tracking-[-0.03em] text-white shadow-[0_0_0_8px_rgb(255_255_255/0.75),0_20px_40px_-16px_rgb(120_40_0/0.45)]">
                       {names.full.split(" ").map((w) => w[0]).join("").slice(0, 2)}
                     </span>
-                    <span className="mt-4 block text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">Photo coming soon</span>
+                    <span className="mt-4 hidden text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground sm:block">Photo coming soon</span>
                   </div>
                 </div>
               )}
-              <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-md bg-card/90 px-2 py-1 text-[11px] font-bold backdrop-blur">
+              <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-md bg-card/90 px-2 py-1 text-xs font-bold backdrop-blur">
                 <span className="size-1.5 rounded-full bg-ok" />1:1 with {names.short}
               </span>
             </div>
             <div className="mt-5">
               <div className="text-[22px] font-extrabold leading-tight tracking-[-0.025em]">{names.full}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{instructor.title} · {instructor.studentsGuided} JEE aspirants guided</div>
+              <div className="mt-1 text-sm text-muted-foreground">{instructor.title} · {instructor.studentsGuided} JEE aspirants mentored</div>
             </div>
             <dl className="mt-5 grid border-t border-border">
               <Detail icon="clock" label="The call">{settings.mentorshipBlurb}</Detail>
@@ -162,9 +163,9 @@ export default async function BookACallPage() {
         <MentorSection mentorship={null} names={names} />
       </div>
 
-      <section className="py-16 tablet:py-20">
-        <div className="mx-auto w-[min(820px,calc(100%-48px))]">
-          <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about the call</h2>
+      <section className="py-12 tablet:py-20">
+        <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
+          <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about the call</h2>
           <div className="mt-9"><FaqList items={faqs} /></div>
           <div className="mt-9 flex justify-center">
             <Link href={cta} className={cx(button.md, tone.primary)}>Book your call · {price}</Link>

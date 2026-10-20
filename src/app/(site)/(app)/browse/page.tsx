@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 // The chapter listing moved to /chapters (redesign). Old links and bookmarks keep working,
 // with their search, class and sort filters.
@@ -9,5 +9,5 @@ export default async function Browse({ searchParams }: { searchParams: Promise<R
     const v = params[key];
     if (typeof v === "string" && v) sp.set(key, v);
   }
-  redirect(`/chapters${sp.size ? `?${sp}` : ""}`);
+  permanentRedirect(`/chapters${sp.size ? `?${sp}` : ""}`);
 }

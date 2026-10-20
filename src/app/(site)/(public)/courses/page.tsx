@@ -2,7 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
-import { inr } from "@/lib/format";
+import { inr, validity } from "@/lib/format";
 import { courseFaqs, fillFaq, instructorNames } from "@/lib/site-content";
 import { Caret, Eyebrow, Mark } from "@/components/site/web/primitives";
 import { WashHero, heroH1, heroLead } from "@/components/site/web/WashHero";
@@ -12,8 +12,11 @@ import { CourseCards, CourseCalculator, CourseInside, type CourseView } from "@/
 import { COURSE_INCLUDE, toCourseView } from "@/components/site/web/courses/course-view";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import * as schema from "@/lib/seo/schema";
 
-export const metadata = { title: "Complete courses" };
+export const metadata = buildMetadata({ title: "Complete JEE Maths Courses", description: "Course bundles that put several JEE maths chapters together at one price, with video lessons, practice questions and notes.", path: "/courses" });
 
 // Courses (dipankar-design/designs/Courses.dc.html). Every course, price, highlight and
 // chapter list comes from admin-managed data; hours are summed from part lengths. The
@@ -47,6 +50,7 @@ export default async function Courses() {
 
   return (
     <>
+      <JsonLd data={schema.itemList("MathFlex JEE maths courses", views.map((c) => ({ path: `/courses/${c.slug}`, name: c.title })))} />
       <WashHero>
         <div className="px-6 pt-10 text-center">
           <Eyebrow dot="ok" onWash>Complete courses · Class 11 &amp; 12</Eyebrow>
@@ -67,15 +71,15 @@ export default async function Courses() {
       {views.length > 0 && <CourseInside courses={views} />}
 
       {calc && breakeven && (
-        <section className="py-16 tablet:py-20">
+        <section className="py-12 tablet:py-20">
           <CourseCalculator course={calc} breakeven={breakeven} />
         </section>
       )}
 
       {views.length > 1 && (
-        <section className="py-16 tablet:py-20">
-          <div className="mx-auto w-[min(1000px,calc(100%-48px))]">
-            <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Compare courses</h2>
+        <section className="py-12 tablet:py-20">
+          <div className="mx-auto w-[min(1000px,calc(100%-var(--gutter)*2))]">
+            <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Compare courses</h2>
             <div className="no-scrollbar mt-10 overflow-x-auto">
               <div className="min-w-[620px]">
                 <div className="grid items-end border-b-2 border-foreground pb-3.5" style={{ gridTemplateColumns: `minmax(0,1.6fr) repeat(${views.length}, minmax(0,1fr))` }}>
@@ -88,7 +92,7 @@ export default async function Courses() {
                   ["DPPs and PYQs", views.map((v) => (v.hasPractice ? "✓" : "—"))],
                   ["Notes", views.map((v) => (v.hasNotes ? "✓" : "—"))],
                   ...(settings.features.leaderboard ? [["XP, streaks and leaderboard", views.map(() => "✓")] as [string, string[]]] : []),
-                  ["Access", views.map((v) => `${v.validityDays} days`)],
+                  ["Access", views.map((v) => validity(v.validityDays))],
                   ["Price", views.map((v) => inr(v.price))],
                 ].map(([label, cells]) => (
                   <div key={label as string} className="grid items-center border-b border-border py-3.5 text-[15px]" style={{ gridTemplateColumns: `minmax(0,1.6fr) repeat(${views.length}, minmax(0,1fr))` }}>
@@ -108,18 +112,18 @@ export default async function Courses() {
         <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} />
       </div>
 
-      <section className="py-16 tablet:py-20">
-        <div className="mx-auto w-[min(820px,calc(100%-48px))]">
-          <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about courses</h2>
+      <section className="py-12 tablet:py-20">
+        <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
+          <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about courses</h2>
           <div className="mt-9"><FaqList items={faqs} initialOpen={-1} /></div>
         </div>
       </section>
 
       <CtaBand>
-        <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
-          Not sure yet? {freePreview ? <>Watch a <Mark>free</Mark> Part 1 first.</> : <>Start with <Mark>one</Mark> chapter.</>}
+        <h2 className="mx-auto max-w-[820px] text-[clamp(28px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
+          Not sure yet? {freePreview ? <>Watch a <Mark>free</Mark> 3–4 minute preview first.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
-        <div className="mt-8 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-8 cta-row">
           <Link href="/chapters" className={cx(button.md, tone.primaryFlat)}>Browse chapters</Link>
           {freePreview && <Link href={`/chapter/${freePreview.slug}`} className={cx(button.md, tone.secondary)}>Watch a free preview</Link>}
         </div>

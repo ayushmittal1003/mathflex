@@ -19,15 +19,15 @@ Each token is a CSS variable (`--primary`) and a Tailwind colour (`bg-primary`, 
 | `foreground` | `oklch(0.145 0 0)` | `oklch(0.985 0 0)` | Default text |
 | `card` / `card-foreground` | `oklch(0.995 0 0)` / `0.145` | `oklch(0.21 0.006 285.885)` / `0.985` | Cards, panels, list containers |
 | `popover` / `popover-foreground` | `oklch(0.995 0 0)` / `0.145` | `oklch(0.269 0 0)` / `0.985` | Menus, dropdowns, tooltips, modals |
-| `primary` / `primary-foreground` | `oklch(0.637 0.237 25.331)` / `0.985` | same | Main actions (Buy, Continue), active states, links, progress |
+| `primary` / `primary-foreground` | `oklch(0.637 0.237 25.331)` (public site: `oklch(0.58 0.24 25.331)`) / `0.985` | same | Main actions (Buy, Continue), active states, links, progress |
 | `secondary` / `secondary-foreground` | `oklch(0.97 0 0)` / `0.269` | `oklch(0.269 0 0)` / `0.985` | Secondary buttons (`btn-ghost`), neutral chips |
 | `muted` | `oklch(0.968 0.007 247.896)` | `oklch(0.274 0.006 286.033)` | Subtle backgrounds: hover rows, empty slots, skeletons |
-| `muted-foreground` | `oklch(0.554 0.046 257.417)` | `oklch(0.923 0.003 48.717)` | Secondary text: captions, hints, meta info |
-| `accent` / `accent-foreground` | `oklch(0.637 0.237 25.331)` / `0.985` | same | Highlights that should match the brand (same as primary today) |
+| `muted-foreground` | `oklch(0.554 0.046 257.417)` (public site: `oklch(0.52 0.046 257.417)`) | `oklch(0.923 0.003 48.717)` | Secondary text: captions, hints, meta info |
+| `accent` / `accent-foreground` | `oklch(0.637 0.237 25.331)` (public site: `oklch(0.58 0.24 25.331)`) / `0.985` | same | Highlights that should match the brand (same as primary today) |
 | `destructive` / `destructive-foreground` | `oklch(0.577 0.245 27.325)` / white | `oklch(0.704 0.191 22.216)` / `0.985` | Errors, wrong answers, delete actions |
 | `border` | `oklch(0.929 0.013 255.508)` | `oklch(0.371 0 0)` | Borders and dividers (`border-border`, `divide-border`) |
 | `input` | `oklch(0.929 0.013 255.508)` | `oklch(0.371 0 0)` | Form field borders |
-| `ring` | `oklch(0.637 0.237 25.331)` | same | Focus rings and outlines |
+| `ring` | `oklch(0.637 0.237 25.331)` (public site: `oklch(0.58 0.24 25.331)`) | same | Focus rings and outlines |
 | `chart-1` … `chart-5` | red · orange · teal · green · violet | brighter versions | Chart series, in that order. Single-series charts use `chart-1`. |
 | `sidebar`, `sidebar-foreground`, `sidebar-primary(-foreground)`, `sidebar-accent(-foreground)`, `sidebar-border`, `sidebar-ring` | see `globals.css` | see `globals.css` | Side navigation |
 
@@ -51,9 +51,10 @@ These are MathFlex-specific colours that the base system doesn't have. They are 
 | Token | Light | Dark | Use it for |
 |---|---|---|---|
 | `brand-2` | `oklch(0.705 0.213 47.604)` | `oklch(0.75 0.183 55.934)` | Warm orange: the second stop in brand gradients, streak flame |
-| `xp` | `oklch(0.606 0.25 292.717)` | `oklch(0.702 0.183 293.541)` | XP, levels |
-| `gold` | `oklch(0.795 0.184 86.047)` | `oklch(0.852 0.199 91.936)` | Badges, top-3 ranks, "partially correct", pending, expiring soon |
-| `ok` | `oklch(0.627 0.194 149.214)` | `oklch(0.723 0.219 149.579)` | Correct answers, paid, success, discounts |
+| `xp` | `oklch(0.606 0.25 292.717)` (public site: `oklch(0.56 0.25 292.717)`) | `oklch(0.702 0.183 293.541)` | XP, levels |
+| `gold` | `oklch(0.795 0.184 86.047)` | `oklch(0.852 0.199 91.936)` | Fills only: badges, top-3 rank backgrounds, "partially correct", pending, expiring soon. Never use `text-gold` for text on a light surface (1.9:1); use `text-foreground`, or gold on a dark surface |
+| `ok` | `oklch(0.627 0.194 149.214)` (public site: `oklch(0.53 0.17 149.214)`) | `oklch(0.723 0.219 149.579)` | Correct answers, paid, success, discounts |
+| `ok-strong` | = `ok` (public site: `oklch(0.48 0.16 149.214)`) | = `ok` | Green **text on a pale green tint** (`bg-ok/10…15` chips: Free preview, Paid, Save 50%, Strong). Use `text-ok-strong` there, `text-ok` everywhere else |
 | `bad` | = `destructive` | = `destructive` | Wrong answers, failed, expired (same as `destructive`) |
 | `surface-2` | = `muted` | = `muted` | Subtle filled background (same as `muted`) |
 
@@ -88,8 +89,7 @@ design-system muted *background*. For grey text always write `text-muted-foregro
 - `font-display` only sets the family and tracking. Set the weight yourself, normally `font-extrabold` for headings
   and `font-bold` for sub-headings.
 - Body letter-spacing is `--letter-spacing` (`0em`), which `tracking-normal` also uses.
-- Use Tailwind's size scale (`text-sm`, `text-xl`, `text-4xl`…). Avoid one-off `text-[13px]`; `text-[10px]`/`text-[11px]`
-  for tiny poster labels is the existing exception.
+- Use Tailwind's size scale (`text-sm`, `text-xl`, `text-4xl`…). Avoid one-off `text-[13px]`; On the public site nothing is smaller than 12px (`text-xs`); see the Mobile section.
 
 ## 5. Radius, spacing, shadow
 
@@ -177,3 +177,7 @@ These are defined in `globals.css` and shared with admin.
   photos and should look the same in both themes.
 - Colours that come from the database: chapter and course poster gradients, banner colours, avatar colours.
 - Confetti colours, third-party brand colours (Paytm blue on the mock payment page), and the logo (`Logo.tsx`).
+
+## Mobile
+
+Phone rules (type floors, the `--gutter` token, 44px targets, 16px fields, tables and sticky chrome) are in `dipankar-design/design.md` section 6a. `--gutter` is defined in `globals.css`.

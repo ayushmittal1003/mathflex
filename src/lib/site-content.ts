@@ -3,26 +3,39 @@
 // coupons and the call's price/length always come from the database or settings at
 // render time, never from this file.
 import type { Settings } from "./settings";
+import { validity } from "./format";
+
+// ---- Support phone ----------------------------------------------------------------------
+// One number everywhere (footer, contact page, Organization contactPoint). Same line as WhatsApp.
+export const supportPhone = { display: "+91 78885 58921", e164: "+917888558921", href: "tel:+917888558921" };
+
+// "917888558921" -> "+91 78885 58921" (settings store the WhatsApp number as digits). Other
+// shapes come back as "+<digits>".
+export function formatPhone(digits: string) {
+  const d = digits.replace(/\D/g, "");
+  return /^91\d{10}$/.test(d) ? `+91 ${d.slice(2, 7)} ${d.slice(7)}` : `+${d}`;
+}
 
 // ---- Placeholders ---------------------------------------------------------------------
 // Shown, clearly marked, until real values exist. A matching setting (when Ayush adds one)
 // always wins. Never shown on invoices, payment screens or legal documents: hide the
 // field there instead.
 export const placeholders = {
-  phone: "+91 788 855 8921", // support line (same number as WhatsApp)
-  phoneHref: "tel:+917888558921",
   hours: "Mon–Sat, 10am–7pm",
   // Registered address and CIN/GSTIN are hidden on the site until the real ones are added.
   address: "Mathflex Learning Pvt. Ltd., [Registered address], [City, State, PIN]",
   cin: "CIN: [to be added]",
   gstin: "GSTIN: [to be added]",
-  socials: { instagram: "#", youtube: "#" },
 };
 
-// Real links that already exist in code (Ayush's footer). These beat the placeholders above.
-export const knownSocials: Partial<Record<keyof typeof placeholders.socials, string>> = {
-  instagram: "https://www.instagram.com/mathflex.in/",
+// Real social profiles only: clean URLs, no tracking parameters. This is the one place to add
+// a link when a profile goes live (also add it to SOCIAL_PROFILES in lib/seo/config.ts, which
+// feeds Organization sameAs). Never use "#" or empty hrefs.
+export const socials = {
+  instagram: { label: "Instagram", handle: "@mathflex.in", href: "https://www.instagram.com/mathflex.in/" },
 };
+// Shown as plain, non-clickable "coming soon" text until they exist. Added in the next branch.
+export const socialsComingSoon = ["WhatsApp channel", "LinkedIn", "YouTube"];
 
 // ---- Instructor -----------------------------------------------------------------------
 // shortName everywhere on the site (CTAs, call booking, FAQs, tips, leaderboard, upsells);
@@ -30,14 +43,18 @@ export const knownSocials: Partial<Record<keyof typeof placeholders.socials, str
 export const instructor = {
   shortName: "Karan bhaiya",
   fullName: "Karan Mittal",
-  title: "B.Tech, IIT Delhi",
+  // Confirmed facts only: B.Tech in Civil Engineering, IIT Delhi, graduated June 2023.
+  title: "B.Tech, Civil Engineering, IIT Delhi (2023)",
+  jobTitle: "JEE Maths Mentor",
+  credentialShort: "IIT Delhi alumnus", // bylines, hero proof row, metadata
   introVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
   // Portrait for the Book a call card, e.g. "/brand/karan.jpg" in public/. null shows a placeholder.
   photo: null as string | null,
   studentsGuided: "1,000+", // real figure from the founder
-  bio: "cracked JEE and studied at IIT Delhi. He has spent his career building learning products and has mentored 1,000+ JEE aspirants along the way. Every Mathflex video is built around the questions that actually show up in the exam.",
+  // Predicate: always rendered as "{name} {bio}". Confirmed facts only (IIT Delhi B.Tech Civil 2023, cracked JEE, project manager since, 1,000+ mentored).
+  bio: "is an IIT Delhi alumnus (B.Tech, Civil Engineering, 2023). After cracking JEE himself, he has mentored 1,000+ students and has worked as a project manager building products. At Mathflex, he teaches JEE maths chapter by chapter, the way he wishes he had learned it.",
   // Only the education credential is shown on the site (employers are left out by request).
-  credentials: [{ org: "B.Tech, IIT Delhi", role: "Indian Institute of Technology Delhi" }],
+  credentials: [{ org: "B.Tech, Civil Engineering, IIT Delhi (2023)", role: "Indian Institute of Technology (IIT) Delhi" }],
 };
 
 // Short line for the instructor block on chapter pages.
@@ -47,7 +64,7 @@ export const about = {
   storyVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
   // {fullName}, {minPrice} are filled at render time.
   story: [
-    "{fullName} cracked JEE and studied at IIT Delhi. Over the years he has guided more than 1,000 JEE aspirants, and he kept hearing the same thing: students were stuck on a few chapters, but the only way to get help was a coaching course that cost lakhs or an online bundle with the whole syllabus.",
+    "{fullName} cracked JEE and studied at IIT Delhi. He has mentored 1,000+ students, and he kept hearing the same thing: students were stuck on a few chapters, but the only way to get help was a coaching course that cost lakhs or an online bundle with the whole syllabus.",
     "So we built Mathflex around one idea. Pay for the chapter you're stuck on, not the whole course. Every chapter is split into short parts, with practice after each one, so you can fix a weak topic in a weekend.",
   ],
   storyFree: "Every chapter has a free 3–4 minute preview. Watch it, and if it clicks, the full chapter starts at {minPrice}.",
@@ -211,7 +228,7 @@ export function chapterFaqs(c: { classLevel: number; free: boolean; validityDays
         ? "Each part opens after you watch most of the previous one and clear its practice set."
         : "Once you own the chapter, every part is open. Watch them in any order.",
     },
-    { q: "How long do I get access?", a: `${c.validityDays} days from the date you buy it, on phone and laptop. You can renew early from your Profile page.` },
+    { q: "How long do I get access?", a: `${validity(c.validityDays)} from the date you buy it, on phone and laptop. You can renew early from your Profile page.` },
     { q: "Is this enough for Boards too?", a: `It follows the Class ${c.classLevel} syllabus, so it works for Boards as well as JEE.` },
   ];
 }
@@ -275,8 +292,8 @@ export const aboutPillars = [
 ];
 
 export const aboutTimeline = [
-  { tag: "The start", t: "Cracks JEE, studies at IIT Delhi", d: "{fullName} goes through the same prep you're going through now." },
-  { tag: "Mentoring", t: "{studentsGuided} aspirants guided", d: "Year after year, the same story: students stuck on a few chapters, with no way to fix just those." },
+  { tag: "The start", t: "Cracks JEE, studies at IIT Delhi", d: "{fullName} has been through the same prep you're going through now." },
+  { tag: "Mentoring", t: "{studentsGuided} students mentored", d: "Year after year, the same story: students stuck on a few chapters, with no way to fix just those." },
   { tag: "Building", t: "Learning products at Allen and beyond", d: "Product roles at Allen, Transify, DaMENSCH and Meesho: how students actually learn, at scale." },
   { tag: "Today", t: "Mathflex launches", d: "{chapterCount} chapters for Class {classes}, sold one at a time. We're new, and we're building it with our first students." },
   { tag: "Next", t: "Your chapter", d: "Pick the chapter that's costing you marks and fix it this week.", you: true },

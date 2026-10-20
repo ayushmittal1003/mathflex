@@ -7,6 +7,7 @@ import { getSiteNavProps } from "@/components/site/web/data";
 import { inr } from "@/lib/format";
 import { SiteNav } from "@/components/site/web/SiteNav";
 import { SiteFooter } from "@/components/site/web/SiteFooter";
+import { SkipLink } from "@/components/site/web/SkipLink";
 import { ToastProvider } from "@/components/site/web/Toast";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { WashHero, heroLead } from "@/components/site/web/WashHero";
@@ -43,9 +44,10 @@ export default async function NotFound() {
   return (
     <div className="site-light min-h-dvh overflow-x-clip bg-card pb-[calc(64px+env(safe-area-inset-bottom))] text-foreground tablet:pb-0">
       <ToastProvider>
+        <SkipLink />
         <div className="relative">
           <SiteNav {...nav} />
-          <main>
+          <main id="main">
             <WashHero>
               <div className="px-6 pt-8 text-center">
                 <div aria-hidden className="select-none text-[clamp(120px,22vw,240px)] font-black leading-[0.8] tracking-[0.02em] text-transparent [-webkit-text-stroke:3px_var(--muted-foreground)]">
@@ -56,7 +58,7 @@ export default async function NotFound() {
                   This page skipped <Mark onWash>class</Mark>.
                 </h1>
                 <p className={cx(heroLead, "mt-5")}>The link may be old, or the page may have moved. Let&apos;s get you back to your chapters.</p>
-                <div className="mt-7.5 flex flex-wrap justify-center gap-2.5">
+                <div className="mt-7.5 cta-row">
                   <Link href="/" className={cx(button.lg, tone.primary)}>Go to home</Link>
                   <Link href="/chapters" className={cx(button.lg, tone.glass)}>Browse chapters</Link>
                   {user && <Link href="/my-learning" className={cx(button.lg, tone.glass)}>My Learning</Link>}

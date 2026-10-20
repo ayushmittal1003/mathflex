@@ -9,11 +9,12 @@ import { accuracyOf, fmtTime, FORMAT_LABEL } from "@/lib/grading";
 import { PracticePlayer, type PracticeQuestion } from "@/components/site/web/practice/PracticePlayer";
 import { posterBg } from "@/components/site/web/primitives";
 import { container, cx } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const c = await db.chapter.findUnique({ where: { slug }, select: { title: true } });
-  return { title: c ? `${c.title} · Practice` : "Practice" };
+  return privateMetadata(c ? `${c.title} · Practice` : "Practice");
 }
 
 type Search = { status?: string; difficulty?: string; type?: string; format?: string; topic?: string };
@@ -92,7 +93,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
   return (
     <div className={cx(container.detail, "pb-28 pt-[calc(86px+32px)]")}>
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-        <Link href="/practice" className="hover:text-foreground">Practice</Link>
+        <Link href="/practice" className="tap relative hover:text-foreground">Practice</Link>
         <span aria-hidden>/</span>
         <span className="text-foreground">{chapter.title}</span>
       </nav>
@@ -100,11 +101,11 @@ export default async function ChapterPractice({ params, searchParams }: { params
       {/* Chapter header */}
       <header className="mt-5 grid overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_2px_rgb(0_0_0/0.04),0_24px_48px_-38px_rgb(80_20_0/0.4)] min-[860px]:grid-cols-[300px_1fr]">
         <div className="relative min-h-[150px] overflow-hidden text-white" style={posterBg(chapter.coverFrom, chapter.coverTo)}>
-          <span className="absolute left-5 top-5 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em] text-black">Question bank</span>
+          <span className="absolute left-5 top-5 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">Question bank</span>
           <span className="absolute bottom-5 left-5 text-sm font-bold text-white/90">Class {chapter.classLevel} · marked +{settings.marking.correct} / {settings.marking.wrong}</span>
         </div>
         <div className="p-6 tablet:p-8">
-          <h1 className="text-[clamp(30px,3.6vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{chapter.title}</h1>
+          <h1 className="text-[clamp(28px,3.6vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{chapter.title}</h1>
           <dl className="mt-6 grid grid-cols-2 gap-3 min-[600px]:grid-cols-4">
             {stats.map((st) => (
               <div key={st.label} className="rounded-lg bg-muted px-4 py-3">

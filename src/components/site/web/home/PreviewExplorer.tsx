@@ -22,7 +22,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
   const off = pctOff(cur.price, cur.mrp);
 
   return (
-    <section id="previews" className="scroll-mt-6 py-22">
+    <section id="previews" className="scroll-mt-6 py-12 tablet:py-22">
       <SectionHead
         eyebrow="Chapter previews"
         dot="ok"
@@ -48,7 +48,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
         </div>
       )}
 
-      <div className="mx-auto mt-10 flex w-[min(1120px,calc(100%-48px))] flex-wrap items-stretch gap-5">
+      <div className="mx-auto mt-10 flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-stretch gap-5">
         {/* Chapter list */}
         <div className="order-2 flex min-w-0 max-w-full flex-[1_1_300px] flex-col">
           <label className="flex h-12 items-center gap-2.5 rounded-lg border border-border bg-card px-3.5 shadow-[0_1px_4px_0_rgb(0_0_0/0.06)]">
@@ -61,10 +61,10 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search a chapter, e.g. integrals"
-              className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
+              className="h-full min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
             />
           </label>
-          <div className="no-scrollbar mt-3 flex gap-1.5 overflow-x-auto p-0.5 tablet:max-h-[560px] tablet:flex-col tablet:overflow-y-auto tablet:overflow-x-visible">
+          <div className="no-scrollbar -mx-4 mt-3 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 py-0.5 tablet:mx-0 tablet:max-h-[560px] tablet:snap-none tablet:gap-1.5 tablet:p-0.5 tablet:flex-col tablet:overflow-y-auto tablet:overflow-x-visible">
             {rows.map((c) => {
               const active = c.id === cur.id;
               return (
@@ -74,7 +74,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
                   onClick={() => setSelId(c.id)}
                   aria-pressed={active}
                   className={cx(
-                    "flex w-[260px] shrink-0 items-center gap-3 rounded-xl border bg-card p-2.5 text-left text-foreground transition duration-200 hover:bg-muted tablet:w-full",
+                    "flex min-h-16 w-[260px] shrink-0 snap-start items-center gap-3 rounded-xl border bg-card p-2.5 text-left text-foreground transition duration-200 hover:bg-muted tablet:w-full",
                     active ? "border-foreground shadow-[0_10px_24px_-14px_rgb(0_0_0/0.35)]" : "border-border",
                   )}
                 >
@@ -89,7 +89,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
                   </span>
                   <span className="shrink-0 text-right">
                     <span className="block text-[15px] font-extrabold">{inr(c.price)}</span>
-                    {c.previewSrc && <span className="mt-0.5 block text-[11px] font-bold text-primary">▶ Preview</span>}
+                    {c.previewSrc && <span className="mt-0.5 block text-xs font-bold text-primary">▶ Preview</span>}
                   </span>
                 </button>
               );
@@ -116,8 +116,8 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
               </div>
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.6))]" />
               <div className="absolute left-5 top-4.5 flex gap-2">
-                <span className="rounded-md bg-black/35 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.08em] backdrop-blur-md">Class {cur.classLevel}</span>
-                {cur.jeeWeightage > 0 && <span className="rounded-md bg-black/35 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.06em] backdrop-blur-md">{cur.jeeWeightage}% of JEE Main</span>}
+                <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.08em] backdrop-blur-md">Class {cur.classLevel}</span>
+                {cur.jeeWeightage > 0 && <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] backdrop-blur-md">{cur.jeeWeightage}% of JEE Main</span>}
               </div>
               <span className="absolute left-1/2 top-[46%] grid -translate-x-1/2 -translate-y-1/2 place-items-center gap-3 text-center">
                 <span className="grid size-[76px] place-items-center rounded-full bg-white/20 text-white shadow-[0_0_0_12px_rgb(255_255_255/0.08)] backdrop-blur-sm"><PlayIcon className="size-6.5" /></span>
@@ -134,7 +134,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
             {cur.parts.map((p) => (
               <div key={p.id} className="flex flex-[1_0_190px] flex-col gap-2 rounded-lg border border-border p-2.5">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-[11px] font-bold text-muted-foreground">PART {p.order}{p.durationSec > 0 && ` · ${clock(p.durationSec)}`}</span>
+                  <span className="font-mono text-xs font-bold text-muted-foreground">PART {p.order}{p.durationSec > 0 && ` · ${clock(p.durationSec)}`}</span>
                   <span className="grid size-6 place-items-center rounded-full bg-muted text-muted-foreground"><LockIcon /></span>
                 </div>
                 <div className="text-sm font-bold leading-[1.3] text-foreground">{p.title}</div>
@@ -160,7 +160,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
         </div>
       </div>
 
-      <div className="mx-auto mt-5 w-[min(1120px,calc(100%-48px))] text-center">
+      <div className="mx-auto mt-5 w-[min(1120px,calc(100%-var(--gutter)*2))] text-center">
         <Link href="/chapters" className="text-sm font-bold text-primary hover:brightness-90">Browse all {chapterCount} chapters →</Link>
       </div>
     </section>

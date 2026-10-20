@@ -32,7 +32,7 @@ export function Mark({ children, onWash = false, pointer = false }: { children: 
       {pointer && (
         <span
           aria-hidden
-          className="absolute -right-1.5 -top-4 size-0 border-x-[9px] border-t-[13px] border-x-transparent border-t-primary"
+          className="absolute -right-1.5 -top-4 hidden size-0 md:block border-x-[9px] border-t-[13px] border-x-transparent border-t-primary"
         />
       )}
     </span>
@@ -42,9 +42,9 @@ export function Mark({ children, onWash = false, pointer = false }: { children: 
 // Centred section header: eyebrow → H2 → lead.
 export function SectionHead({ eyebrow, dot, title, lead, className }: { eyebrow: string; dot?: Dot; title: React.ReactNode; lead?: React.ReactNode; className?: string }) {
   return (
-    <div className={cx("px-6 text-center", className)}>
+    <div className={cx("px-4 text-center tablet:px-6", className)}>
       <Eyebrow dot={dot}>{eyebrow}</Eyebrow>
-      <h2 className="mx-auto mt-6 max-w-[960px] text-[clamp(40px,5.6vw,72px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">{title}</h2>
+      <h2 className="mx-auto mt-6 max-w-[960px] text-[clamp(28px,5.6vw,72px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">{title}</h2>
       {lead && <p className="mx-auto mt-5.5 max-w-[580px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">{lead}</p>}
     </div>
   );

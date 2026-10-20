@@ -35,7 +35,7 @@ export function ProfileForm({ user }: { user: { name: string; email: string; pho
         </label>
       </div>
       <div className="flex flex-wrap items-center gap-4">
-        <button disabled={pending} className={cx(button.md, tone.primary)}>{pending ? "Saving…" : "Save changes"}</button>
+        <button disabled={pending} className={cx(button.md, tone.primary, "w-full sm:w-auto")}>{pending ? "Saving…" : "Save changes"}</button>
         {state && "error" in state && <p role="alert" className="text-sm font-semibold text-bad">{state.error}</p>}
         {state && "ok" in state && <p role="status" className="text-sm font-semibold text-ok">✓ Saved</p>}
       </div>

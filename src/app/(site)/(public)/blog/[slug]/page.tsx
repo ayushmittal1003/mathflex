@@ -2,15 +2,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
-import { categoryTitle, formatPostDate, getPost, getPosts, type BlogBlock } from "@/lib/blog";
+import { formatPostDate, getPost, getPosts, type BlogBlock } from "@/lib/blog";
 import { instructor } from "@/lib/site-content";
 import { BlogCard, BlogCover } from "@/components/site/web/blog/BlogCard";
 import { ReadingProgress, ShareButtons, Toc } from "@/components/site/web/blog/ArticleChrome";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { Breadcrumbs } from "@/components/site/web/Breadcrumbs";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const post = await getPost((await params).slug);
-  return post ? { title: post.title, description: post.excerpt, alternates: { canonical: `/blog/${post.slug}` } } : {};
+  if (!post) return {};
+  // Sample posts stay out of search results until they are replaced with real articles.
+  return buildMetadata({ title: post.title, description: post.excerpt, path: `/blog/${post.slug}`, type: "article", noindex: !!post.placeholder });
 }
 
 // "**bold**" -> <strong>. Stands in for Portable Text marks until Sanity is connected.
@@ -52,12 +56,11 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
       <ReadingProgress />
 
       <header className={cx(container.listing, "pt-[calc(86px+40px)]")}>
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-          <Link href="/blog" className="hover:text-foreground">Blog</Link>
-          <span aria-hidden>/</span>
-          <span className="text-primary">{categoryTitle(post.category)}</span>
-        </nav>
-        <h1 className="mt-5 max-w-[920px] text-[clamp(36px,5.4vw,64px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">{post.title}</h1>
+        <Breadcrumbs
+          schemaOn={!post.placeholder}
+          items={[{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }, { name: post.title, path: `/blog/${post.slug}` }]}
+        />
+        <h1 className="mt-5 max-w-[920px] text-[clamp(28px,5.4vw,64px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">{post.title}</h1>
         <p className="mt-5 max-w-[720px] text-[19px] leading-[1.55] text-secondary-foreground text-pretty">{post.excerpt}</p>
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-y border-border py-5">
           <div className="flex items-center gap-3">
@@ -101,7 +104,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                 {byKaran ? `${instructor.shortName} ${instructor.bio}` : "Study guides and exam updates from the people who build Mathflex."}
               </p>
             </div>
-            {byKaran && <Link href="/book-a-call" className={cx(button.sm, tone.dark, "self-start tablet:self-center")}>Book a 1:1 call</Link>}
+            {byKaran && <Link href="/book-a-call" className={cx(button.sm, tone.dark, "min-h-11 self-start tablet:self-center")}>Book a 1:1 call</Link>}
           </div>
         </div>
       </div>
@@ -109,8 +112,8 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
       {related.length > 0 && (
         <section className={cx(container.listing, "pb-28 pt-20")}>
           <div className="mb-8 flex items-end justify-between gap-4">
-            <h2 className="text-[clamp(28px,3.4vw,40px)] font-extrabold tracking-[-0.04em]">Keep reading</h2>
-            <Link href="/blog" className="text-sm font-bold text-primary hover:underline">All articles →</Link>
+            <h2 className="text-[clamp(26px,3.4vw,40px)] font-extrabold tracking-[-0.04em]">Keep reading</h2>
+            <Link href="/blog" className="inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary hover:underline">All articles →</Link>
           </div>
           <div className="grid gap-x-6 gap-y-10 min-[600px]:grid-cols-2 min-[900px]:grid-cols-3">
             {related.map((p, i) => <BlogCard key={p.slug} post={p} index={i} />)}

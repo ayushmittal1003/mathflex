@@ -105,18 +105,18 @@ export function LegalPage({ source, current, email }: { source: string; current:
     <>
       <section className="px-6 pt-[calc(86px+40px)] text-center">
         {updated && <Eyebrow dot="primary">Last updated {updated}</Eyebrow>}
-        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(40px,6vw,76px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{title}</h1>
+        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(36px,6vw,76px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">{title}</h1>
         <nav aria-label="Policies" className="mx-auto mt-7 inline-flex max-w-full gap-0.5 overflow-x-auto rounded-lg bg-foreground p-1">
           {DOCS.map((d) => (
-            <Link key={d.href} href={d.href} aria-current={d.href === current ? "page" : undefined} className={cx("whitespace-nowrap rounded-md px-3.5 py-2 text-sm font-bold", d.href === current ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
+            <Link key={d.href} href={d.href} aria-current={d.href === current ? "page" : undefined} className={cx("whitespace-nowrap rounded-md px-3.5 py-3 text-sm font-bold", d.href === current ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
               {d.label}
             </Link>
           ))}
         </nav>
       </section>
 
-      <section className="pb-22 pt-14">
-        <div className="mx-auto flex w-[min(1120px,calc(100%-48px))] items-start gap-14">
+      <section className="pb-12 pt-10 tablet:pb-22 tablet:pt-14">
+        <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] items-start gap-14">
           {sections.length > 2 && (
             <aside className="sticky top-24 hidden w-[240px] flex-none min-[960px]:block">
               <div className="pb-3 text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">On this page</div>

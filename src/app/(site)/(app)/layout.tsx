@@ -5,6 +5,7 @@ import { Marquee } from "@/components/site/Marquee";
 import { SiteExtras } from "@/components/site/SiteExtras";
 import { SiteNav } from "@/components/site/web/SiteNav";
 import { SiteFooter } from "@/components/site/web/SiteFooter";
+import { SkipLink } from "@/components/site/web/SkipLink";
 import { ToastProvider } from "@/components/site/web/Toast";
 import { getSiteNavProps } from "@/components/site/web/data";
 
@@ -20,10 +21,11 @@ export default async function AppShellLayout({ children }: { children: React.Rea
   return (
     <div className="site-light min-h-dvh overflow-x-clip bg-card pb-[calc(64px+env(safe-area-inset-bottom))] text-foreground tablet:pb-0">
       <ToastProvider>
+      <SkipLink />
         <Marquee items={marquee.map((m) => ({ id: m.id, title: m.title, href: m.ctaHref }))} />
         <div className="relative">
           <SiteNav {...nav} />
-          <main className="min-h-[70vh] [--nav-h:7rem]">{children}</main>
+          <main id="main" className="min-h-[70vh] [--nav-h:7rem]">{children}</main>
         </div>
         <SiteFooter settings={settings} />
         <SiteExtras settings={settings} />

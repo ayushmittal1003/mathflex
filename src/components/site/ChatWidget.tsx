@@ -66,15 +66,19 @@ export function ChatWidget({ name, greeting, lifted: liftedProp = true }: { name
 
   // Keep the button clear of the phone tab bar and the video player controls.
   const lifted = liftedProp && !pathname.startsWith("/learn/");
+  // It would cover the pay bar on checkout (design.md §6a).
+  const hideButton = pathname.startsWith("/checkout") || pathname.startsWith("/cart");
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`fixed right-4 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-primary to-brand-2 py-3 pl-3 pr-4 font-bold text-white shadow-cta transition hover:scale-105 tablet:bottom-6 tablet:right-6 ${
-          lifted ? "bottom-[calc(80px+env(safe-area-inset-bottom))]" : "bottom-4"
-        } ${open ? "scale-0" : ""}`}
+        className={`chat-fab fixed right-4 z-40 flex size-12 items-center justify-center gap-2 rounded-full bg-gradient-to-br from-primary to-brand-2 font-bold text-white shadow-cta transition hover:scale-105 sm:size-auto sm:py-3 sm:pl-3 sm:pr-4 tablet:bottom-6 tablet:right-6 ${
+          lifted ? "bottom-[calc(76px+env(safe-area-inset-bottom))]" : "bottom-4"
+        } ${open || hideButton ? "scale-0" : ""} ${hideButton ? "pointer-events-none" : ""}`}
         aria-label={`Open ${name} chat`}
+        aria-hidden={hideButton || undefined}
+        tabIndex={hideButton ? -1 : undefined}
       >
         <MessageCircleHeart className="size-6" />
         <span className="hidden sm:inline">{name}</span>
@@ -88,7 +92,7 @@ export function ChatWidget({ name, greeting, lifted: liftedProp = true }: { name
               <p className="font-extrabold">{name}</p>
               <p className="text-xs opacity-85">Usually replies in seconds</p>
             </div>
-            <button onClick={() => setOpen(false)} className="grid size-9 place-items-center rounded-full bg-black/15" aria-label="Close chat"><X className="size-5" /></button>
+            <button onClick={() => setOpen(false)} className="grid size-11 place-items-center rounded-full bg-black/15" aria-label="Close chat"><X className="size-5" /></button>
           </header>
 
           <div className="flex-1 space-y-3 overflow-y-auto p-4">
@@ -96,7 +100,7 @@ export function ChatWidget({ name, greeting, lifted: liftedProp = true }: { name
             {msgs.length === 0 && (
               <div className="flex flex-wrap gap-2 pt-1">
                 {SUGGESTIONS.map((s) => (
-                  <button key={s} onClick={() => send(s)} className="rounded-full border border-border bg-card px-3 py-1.5 text-left text-sm font-semibold transition hover:border-foreground/40">{s}</button>
+                  <button key={s} onClick={() => send(s)} className="min-h-11 rounded-full border border-border bg-card px-3.5 py-2 text-left text-sm font-semibold transition hover:border-foreground/40">{s}</button>
                 ))}
               </div>
             )}

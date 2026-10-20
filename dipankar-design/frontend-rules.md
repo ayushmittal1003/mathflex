@@ -190,7 +190,7 @@ Do not begin implementation until this audit is complete. If the architecture is
 
 ## 7. Git, file changes and environment protection
 
-- Work on the redesign branch (`feature/Dipankar`), never directly on `main` or the production branch.
+- Work on the branch for the current task (currently `feature/seo`), never directly on `main` or the production branch.
 - Preserve current production code and deployment as a rollback point.
 - Make small, focused commits.
 - Modify only the files necessary for the frontend redesign.

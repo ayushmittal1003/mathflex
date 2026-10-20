@@ -8,8 +8,9 @@ import { levelFromXp } from "@/lib/gamification";
 import { logout } from "@/app/actions/auth";
 import { ProfileForm } from "@/components/site/web/ProfileForm";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Profile" };
+export const metadata = privateMetadata("Profile");
 
 const card = "rounded-xl border border-border bg-card shadow-[0_1px_2px_rgb(0_0_0/0.04),0_24px_48px_-38px_rgb(80_20_0/0.4)]";
 const fmtDate = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
@@ -37,7 +38,7 @@ export default async function Profile() {
           {user.name.trim()[0]?.toUpperCase() ?? "?"}
         </span>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-[clamp(30px,3.6vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{user.name}</h1>
+          <h1 className="truncate text-[clamp(28px,3.6vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{user.name}</h1>
           <p className="mt-1 text-[15px] text-secondary-foreground">
             {user.email} · Member since {user.createdAt.toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
           </p>
@@ -117,7 +118,7 @@ export default async function Profile() {
                   <p className="truncate font-bold">{o.items.map((it) => it.title).join(", ")}</p>
                   <p className="text-muted-foreground">{o.orderNo} · {fmtDate(o.createdAt)}</p>
                 </div>
-                <span className={cx("rounded-full px-2.5 py-1 text-xs font-bold", o.status === "PAID" ? "bg-ok/12 text-ok" : o.status === "PENDING" ? "bg-gold/18" : "bg-bad/10 text-bad")}>{o.status.toLowerCase()}</span>
+                <span className={cx("rounded-full px-2.5 py-1 text-xs font-bold", o.status === "PAID" ? "bg-ok/12 text-ok-strong" : o.status === "PENDING" ? "bg-gold/18" : "bg-bad/10 text-bad")}>{o.status.toLowerCase()}</span>
                 <span className="w-20 text-right text-[15px] font-extrabold">{inr(o.total)}</span>
               </div>
             ))}

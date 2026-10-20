@@ -96,8 +96,8 @@ export function LearnClient(props: {
   return (
     <div className="min-h-dvh bg-card">
       <header className="sticky top-0 z-40 border-b border-border bg-card/92 pt-[env(safe-area-inset-top)] backdrop-blur-[14px]">
-        <div className="mx-auto grid h-17 w-[min(1240px,calc(100%-32px))] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
-          <Link href="/" className="justify-self-start" aria-label="Mathflex home"><SiteLogo className="h-[25px]" /></Link>
+        <div className="mx-auto grid h-14 w-[min(1240px,calc(100%-32px))] tablet:h-17 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
+          <Link href="/" className="tap relative justify-self-start" aria-label="Mathflex home"><SiteLogo className="h-[25px]" /></Link>
           <nav className="hidden gap-0.5 rounded-lg bg-foreground p-1 tablet:flex" aria-label="Learner">
             {appNav.map((l) => (
               <Link key={l.href} href={l.href} className={cx("whitespace-nowrap rounded-md px-3.5 py-[7px] text-[13px]", l.active ? "bg-card font-bold text-foreground" : "font-semibold text-white/75 hover:text-white")}>{l.label}</Link>
@@ -111,30 +111,31 @@ export function LearnClient(props: {
                   {props.user.streak}
                 </span>
                 <span className="hidden whitespace-nowrap rounded-lg bg-muted px-2.5 py-[7px] text-[13px] font-extrabold text-xp sm:inline-flex">{props.user.xp.toLocaleString("en-IN")} XP</span>
-                <Link href="/profile" aria-label="Your profile" className="grid size-9 shrink-0 place-items-center rounded-full text-sm font-extrabold text-white" style={{ background: props.user.avatarColor }}>{props.user.name.trim()[0]?.toUpperCase()}</Link>
+                <Link href="/profile" aria-label="Your profile" className="grid size-11 shrink-0 place-items-center rounded-full text-sm font-extrabold text-white" style={{ background: props.user.avatarColor }}>{props.user.name.trim()[0]?.toUpperCase()}</Link>
               </>
             ) : (
-              <Link href={`/login?next=${encodeURIComponent(`/learn/${chapter.slug}?part=${part.order}`)}`} className="rounded-lg border border-border px-4 py-2.5 text-sm font-bold">Log in</Link>
+              <Link href={`/login?next=${encodeURIComponent(`/learn/${chapter.slug}?part=${part.order}`)}`} className="inline-flex min-h-11 items-center rounded-lg border border-border px-4 text-sm font-bold">Log in</Link>
             )}
           </div>
         </div>
-        <nav className="no-scrollbar mx-4 mb-2.5 flex gap-0.5 overflow-x-auto rounded-lg bg-foreground p-1 tablet:hidden" aria-label="Learner">
-          {appNav.map((l) => (
-            <Link key={l.href} href={l.href} className={cx("flex-1 whitespace-nowrap rounded-md px-2.5 py-[7px] text-center text-[13px]", l.active ? "bg-card font-bold text-foreground" : "font-semibold text-white/75")}>{l.label}</Link>
-          ))}
-        </nav>
       </header>
+      {/* Phones: the section tabs scroll away with the page so only the 56px header stays pinned. */}
+      <nav className="no-scrollbar mx-4 mt-2 flex gap-0.5 overflow-x-auto rounded-lg bg-foreground p-1 tablet:hidden" aria-label="Learner">
+        {appNav.map((l) => (
+          <Link key={l.href} href={l.href} className={cx("flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-md px-2.5 text-center text-[13px]", l.active ? "bg-card font-bold text-foreground" : "font-semibold text-white/75")}>{l.label}</Link>
+        ))}
+      </nav>
 
-      <main className="mx-auto w-[min(1240px,calc(100%-32px))] pb-20 pt-5">
+      <main id="main" className="mx-auto w-[min(1240px,calc(100%-32px))] pb-20 pt-5">
         <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-muted-foreground">
-          <Link href="/my-learning" className="hover:text-foreground">My Learning</Link>
+          <Link href="/my-learning" className="tap relative hover:text-foreground">My Learning</Link>
           <span>/</span>
-          <Link href={`/chapter/${chapter.slug}`} className="text-foreground hover:text-primary">{chapter.title}</Link>
+          <Link href={`/chapter/${chapter.slug}`} className="tap relative text-foreground hover:text-primary">{chapter.title}</Link>
         </div>
 
         <div className="mt-4 flex flex-wrap items-start gap-6">
           <div className="min-w-0 flex-[1_1_640px]">
-            <div className="overflow-hidden rounded-xl shadow-[0_30px_60px_-34px_rgb(80_20_0/0.55)]">
+            <div className="-mx-4 overflow-hidden tablet:mx-0 tablet:rounded-xl tablet:shadow-[0_30px_60px_-34px_rgb(80_20_0/0.55)]">
               <VideoPlayer playback={props.playback} initialWatched={props.initialWatched} onProgress={onProgress} />
             </div>
             <div className="mt-4.5 flex flex-wrap items-start justify-between gap-x-5 gap-y-3">
@@ -143,7 +144,7 @@ export function LearnClient(props: {
                 <h1 className="mt-1 text-[clamp(24px,3vw,32px)] font-extrabold leading-[1.15] tracking-[-0.03em]">{part.title}</h1>
               </div>
               {(videoDone || props.practiceDone) && (
-                <span className="flex h-11 shrink-0 items-center gap-2 rounded-lg border border-ok/40 bg-ok/12 px-4 text-sm font-bold text-[oklch(0.5_0.16_149)]">
+                <span className="flex h-11 shrink-0 items-center gap-2 rounded-lg border border-ok/40 bg-ok/12 px-4 text-sm font-bold text-ok-strong">
                   <CheckCircle2 className="size-4" /> {videoDone && props.practiceDone ? "Part complete" : videoDone ? "Video watched" : "Practice done"}
                 </span>
               )}
@@ -151,7 +152,7 @@ export function LearnClient(props: {
             {props.isPreviewOnly && (
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/30 bg-selected p-4">
                 <p className="text-sm font-semibold">You&apos;re watching a free preview. Buy the chapter to save progress and unlock practice.</p>
-                <Link href={`/chapter/${chapter.slug}`} className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-108">Unlock chapter</Link>
+                <Link href={`/chapter/${chapter.slug}`} className="inline-flex min-h-11 items-center rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground hover:brightness-108">Unlock chapter</Link>
               </div>
             )}
 
@@ -172,7 +173,7 @@ export function LearnClient(props: {
                   <div className="grid gap-2.5">
                     {props.resources.map((r) => (
                       <a key={r.id} href={r.url} target="_blank" className="flex items-center gap-3.5 rounded-xl border border-border px-4 py-3.5 text-foreground hover:bg-muted/50">
-                        <span className={cx("grid h-12 w-10 shrink-0 place-items-center rounded-md text-[10px] font-extrabold text-white", r.type === "MINDMAP" ? "bg-brand-2" : r.type === "FORMULA_SHEET" ? "bg-xp" : "bg-primary")}>{r.type === "MINDMAP" ? "MAP" : "PDF"}</span>
+                        <span className={cx("grid h-12 w-10 shrink-0 place-items-center rounded-md text-xs font-extrabold text-white", r.type === "MINDMAP" ? "bg-brand-2" : r.type === "FORMULA_SHEET" ? "bg-xp" : "bg-primary")}>{r.type === "MINDMAP" ? "MAP" : "PDF"}</span>
                         <span className="min-w-0 flex-1">
                           <span className="block text-[15px] font-bold">{r.title}</span>
                           <span className="block text-xs capitalize text-muted-foreground">{r.type.replace("_", " ").toLowerCase()}</span>
@@ -235,8 +236,8 @@ export function LearnClient(props: {
             <div className="rounded-xl border border-border px-4.5 py-4">
               <div className="text-[15px] font-extrabold">Chapter resources</div>
               <div className="mt-3 grid gap-2">
-                <button type="button" onClick={() => setTab("notes")} className="flex items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-left text-sm font-bold">Notes<span className="text-xs font-semibold text-muted-foreground">{props.resources.length || "—"}</span></button>
-                <button type="button" onClick={() => setTab("practice")} className="flex items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-left text-sm font-bold">Practice questions<span className="text-xs font-semibold text-muted-foreground">{props.questions.length || "—"}</span></button>
+                <button type="button" onClick={() => setTab("notes")} className="flex min-h-11 items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-left text-sm font-bold">Notes<span className="text-xs font-semibold text-muted-foreground">{props.resources.length || "—"}</span></button>
+                <button type="button" onClick={() => setTab("practice")} className="flex min-h-11 items-center justify-between gap-2.5 rounded-lg bg-muted px-3 py-2.5 text-left text-sm font-bold">Practice questions<span className="text-xs font-semibold text-muted-foreground">{props.questions.length || "—"}</span></button>
               </div>
             </div>
           </aside>

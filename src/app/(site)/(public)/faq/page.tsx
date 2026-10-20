@@ -7,8 +7,9 @@ import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { FaqBrowser } from "@/components/site/web/FaqBrowser";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "FAQs", alternates: { canonical: "/faq" } };
+export const metadata = buildMetadata({ title: "MathFlex FAQs", description: "Answers about buying chapters, course access and validity, practice questions, payments and refunds.", path: "/faq" });
 
 // FAQ (dipankar-design/designs/FAQ.dc.html). The approved answers in lib/site-content.ts,
 // with settings filled in. The 1:1 call group only shows while the call add-on is on.
@@ -31,17 +32,17 @@ export default async function FaqPage() {
     <>
       <section className="px-6 pt-[calc(86px+40px)] text-center">
         <Eyebrow dot="brand-2">Help centre</Eyebrow>
-        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(42px,6.4vw,84px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(36px,6.4vw,84px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
           How can we <Mark>help</Mark>?
         </h1>
       </section>
       <FaqBrowser groups={groups} />
       <CtaBand>
-        <h2 className="mx-auto max-w-[760px] text-[clamp(34px,4.6vw,58px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
+        <h2 className="mx-auto max-w-[760px] text-[clamp(28px,4.6vw,58px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
           Still have a <Mark>question</Mark>?
         </h2>
         <p className="mx-auto mt-4.5 max-w-[500px] text-[17px] leading-[1.55] text-secondary-foreground">Write to us and a real person replies, usually within one working day.</p>
-        <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-7 cta-row">
           <Link href="/contact" className={cx(button.md, tone.primary)}>Contact us</Link>
           <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className={cx(button.md, tone.secondary)}>WhatsApp us</a>
         </div>
