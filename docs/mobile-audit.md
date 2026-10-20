@@ -130,3 +130,12 @@ Today's floors: H1 is 38 (home), 44, 42, 36, 30; H2 is 20–40; meta text goes d
 3. **Sticky pricing summary** and the collapsing learn header are new behaviours rather than restyles. OK to include?
 
 I have not edited any source file. Waiting for approval of Phase B (with your answers to the three questions) before starting Phase C.
+
+## 5. Outcome (Phases B, C and D)
+
+Approved answers: delay the welcome popup until the first scroll or second page view; chapters as a single-column list with thumbnails on phones; the sticky selection bar on pricing and the collapsing learn header are in.
+
+- **Done** (rules in `dipankar-design/design.md` section 6a, code in the commits since `ddf566b`): type floors and the 16px gutter, 48px sections, 16px fields, 44px targets everywhere, the chapters list and Filters sheet, pricing sticky bar, courses switch, compact leaderboard, learn header, popup timing, FlexCare, footer and breadcrumb targets.
+- **Deviations from the Phase B proposal:** the two-column chapters grid starts at 640px, not 412px (two narrow cards were worse than one row each); the learn video is full width but not sticky (the parts list is a separate column below it, so a sticky video would not stay in view while using it); marquee links are 44px tall (the strip is 8px taller on phones).
+- **Verification:** see "Verification" in `docs/seo-pr.md`. The measurement left no page overflow, no text under 12px and no tap target under 44px at 360, 390 and 412px.
+- **Still unverified (needs a real phone):** real Bunny playback, fullscreen and landscape video, the software keyboard with the sticky pay bar, and the notch/safe area.
