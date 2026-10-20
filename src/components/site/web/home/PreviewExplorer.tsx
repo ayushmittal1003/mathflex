@@ -61,10 +61,10 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search a chapter, e.g. integrals"
-              className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
+              className="h-full min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
             />
           </label>
-          <div className="no-scrollbar mt-3 flex gap-1.5 overflow-x-auto p-0.5 tablet:max-h-[560px] tablet:flex-col tablet:overflow-y-auto tablet:overflow-x-visible">
+          <div className="no-scrollbar -mx-4 mt-3 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 py-0.5 tablet:mx-0 tablet:max-h-[560px] tablet:snap-none tablet:gap-1.5 tablet:p-0.5 tablet:flex-col tablet:overflow-y-auto tablet:overflow-x-visible">
             {rows.map((c) => {
               const active = c.id === cur.id;
               return (
@@ -74,7 +74,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
                   onClick={() => setSelId(c.id)}
                   aria-pressed={active}
                   className={cx(
-                    "flex w-[260px] shrink-0 items-center gap-3 rounded-xl border bg-card p-2.5 text-left text-foreground transition duration-200 hover:bg-muted tablet:w-full",
+                    "flex min-h-16 w-[260px] shrink-0 snap-start items-center gap-3 rounded-xl border bg-card p-2.5 text-left text-foreground transition duration-200 hover:bg-muted tablet:w-full",
                     active ? "border-foreground shadow-[0_10px_24px_-14px_rgb(0_0_0/0.35)]" : "border-border",
                   )}
                 >

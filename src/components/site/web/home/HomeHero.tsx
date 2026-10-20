@@ -15,11 +15,11 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
   return (
     <div className="px-4 pt-4">
       <section className="relative overflow-hidden rounded-xl bg-wash">
-        <div className="px-6 pt-[calc(86px+52px)] text-center">
+        <div className="px-4 pt-[calc(86px+40px)] text-center tablet:px-6 tablet:pt-[calc(86px+52px)]">
           <div className="animate-mf-rise">
             <Eyebrow dot="ok" onWash>For Class 11 &amp; 12 · JEE Main, Advanced &amp; Boards</Eyebrow>
           </div>
-          <h1 className="mx-auto mt-6.5 max-w-[1120px] text-[clamp(44px,6.2vw,80px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
+          <h1 className="mx-auto mt-6.5 max-w-[1120px] text-[clamp(44px,6.2vw,80px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-pretty tablet:text-balance">
             IIT starts with{" "}
             <Mark onWash pointer>
               maths,
@@ -50,7 +50,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
             )}
           </div>
 
-          <div className="mt-8.5 flex flex-wrap justify-center gap-3">
+          <div className="mt-8.5 cta-row">
             {chapterCount > 0 && (
               <a href="#previews" className={cx(button.lg, tone.primary)}>
                 <PlayIcon /> Watch a preview

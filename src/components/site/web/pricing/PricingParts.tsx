@@ -124,13 +124,13 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
             {classes.length > 1 ? (
               <div className="inline-flex gap-0.5 rounded-lg bg-foreground p-1">
                 {classes.map((k) => (
-                  <button key={k} type="button" onClick={() => setCls(k)} aria-pressed={k === cls} className={cx("whitespace-nowrap rounded-md px-4 py-2 text-sm font-bold", k === cls ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>Class {k}</button>
+                  <button key={k} type="button" onClick={() => setCls(k)} aria-pressed={k === cls} className={cx("whitespace-nowrap rounded-md px-4 py-3 text-sm font-bold", k === cls ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>Class {k}</button>
                 ))}
               </div>
             ) : <span />}
             <div className="flex gap-2">
-              <button type="button" onClick={() => setSel((s) => new Set([...s, ...list.map((c) => c.id)]))} className="rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-bold">Select all</button>
-              <button type="button" onClick={() => setSel(new Set())} className="rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-bold">Clear</button>
+              <button type="button" onClick={() => setSel((s) => new Set([...s, ...list.map((c) => c.id)]))} className="min-h-11 rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-bold">Select all</button>
+              <button type="button" onClick={() => setSel(new Set())} className="min-h-11 rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-bold">Clear</button>
             </div>
           </div>
           <div className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(min(100%,230px),1fr))] gap-2.5">

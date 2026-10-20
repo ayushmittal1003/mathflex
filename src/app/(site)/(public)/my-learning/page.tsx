@@ -213,7 +213,7 @@ export default async function MyLearning() {
       <section className="mt-16">
         <div className="mb-6 flex items-end justify-between gap-4">
           <h2 className={h2}>{mine.length ? "My chapters" : "Start with a free preview"}</h2>
-          <Link href="/chapters" className="text-sm font-bold text-primary hover:underline">All chapters →</Link>
+          <Link href="/chapters" className="inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary hover:underline">All chapters →</Link>
         </div>
         {mine.length ? (
           <div className="grid gap-5 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-3">

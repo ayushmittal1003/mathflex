@@ -85,7 +85,7 @@ export default async function PricingPage() {
             <AddOn dot="primary" kicker="Add-on" title={`1:1 call with ${names.short}`}>
               <div className="mt-3 flex items-baseline gap-2"><span className="text-[32px] font-extrabold tracking-[-0.04em]">{inr(mentorship.mentorshipPrice)}</span><span className="text-sm text-muted-foreground">per call</span></div>
               <p className="mt-2.5 text-[15px] leading-[1.6] text-secondary-foreground">{mentorship.mentorshipBlurb}</p>
-              <Link href="/book-a-call" className="mt-3.5 inline-flex text-sm font-bold text-primary">Book a call with {names.short} →</Link>
+              <Link href="/book-a-call" className="mt-1.5 inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary">Book a call with {names.short} →</Link>
             </AddOn>
           )}
           {coupon && (
@@ -119,7 +119,7 @@ export default async function PricingPage() {
         <h2 className="mx-auto max-w-[820px] text-[clamp(28px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           {freeChapter ? <>Watch a <Mark>free</Mark> 3–4 minute preview first.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
-        <div className="mt-8 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-8 cta-row">
           {freeChapter && <Link href={`/chapter/${freeChapter.slug}`} className={cx(button.md, tone.primaryFlat)}>Watch a free preview</Link>}
           <Link href="/chapters" className={cx(button.md, freeChapter ? tone.secondary : tone.primaryFlat)}>Browse chapters</Link>
         </div>

@@ -18,7 +18,7 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="px-6 pt-6">
-        <Link href="/" aria-label="Mathflex home"><SiteLogo /></Link>
+        <Link href="/" aria-label="Mathflex home" className="tap relative inline-block"><SiteLogo /></Link>
       </header>
       <main id="main" className="grid flex-1 place-items-center px-4 pb-18 pt-10">
         <div className="w-[min(460px,100%)] animate-mf-rise rounded-xl border border-border bg-card p-7 shadow-[0_30px_60px_-40px_rgb(80_20_0/0.45)] tablet:p-9">

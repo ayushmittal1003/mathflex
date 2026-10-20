@@ -42,7 +42,7 @@ export default async function BookACallPage() {
           <Eyebrow dot="gold" onWash>1:1 calls</Eyebrow>
           <h1 className={cx(heroH1, "mt-6")}>Calls are <Mark onWash>paused</Mark> right now</h1>
           <p className={cx(heroLead, "mt-5.5")}>We&apos;re not taking new 1:1 call bookings at the moment. Message us and we&apos;ll let you know when they open again.</p>
-          <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+          <div className="mt-7 cta-row">
             <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className={cx(button.lg, tone.primary)}>WhatsApp us</a>
             <Link href="/chapters" className={cx(button.lg, tone.glass)}>Browse chapters</Link>
           </div>
@@ -62,7 +62,7 @@ export default async function BookACallPage() {
           <p className={cx(heroLead, "mt-5.5 max-w-[580px]")}>
             A 1:1 video call with IIT Delhi alumnus {names.full}. Bring your scores and your doubts, and leave with a plan.
           </p>
-          <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+          <div className="mt-7 cta-row">
             <a href="#book" className={cx(button.md, tone.primary)}>Book your call</a>
             <a href="#what" className={cx(button.md, tone.glass)}>What you get</a>
           </div>

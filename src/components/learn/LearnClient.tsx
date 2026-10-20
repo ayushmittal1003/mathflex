@@ -97,7 +97,7 @@ export function LearnClient(props: {
     <div className="min-h-dvh bg-card">
       <header className="sticky top-0 z-40 border-b border-border bg-card/92 pt-[env(safe-area-inset-top)] backdrop-blur-[14px]">
         <div className="mx-auto grid h-17 w-[min(1240px,calc(100%-32px))] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
-          <Link href="/" className="justify-self-start" aria-label="Mathflex home"><SiteLogo className="h-[25px]" /></Link>
+          <Link href="/" className="tap relative justify-self-start" aria-label="Mathflex home"><SiteLogo className="h-[25px]" /></Link>
           <nav className="hidden gap-0.5 rounded-lg bg-foreground p-1 tablet:flex" aria-label="Learner">
             {appNav.map((l) => (
               <Link key={l.href} href={l.href} className={cx("whitespace-nowrap rounded-md px-3.5 py-[7px] text-[13px]", l.active ? "bg-card font-bold text-foreground" : "font-semibold text-white/75 hover:text-white")}>{l.label}</Link>

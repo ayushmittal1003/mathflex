@@ -29,7 +29,7 @@ export function ReadingProgress() {
 // WhatsApp share + copy link. The URL is read on click so it's always the page being read.
 export function ShareButtons({ title }: { title: string }) {
   const toast = useToast();
-  const base = "grid size-10 place-items-center rounded-full border border-border bg-card text-foreground transition hover:border-foreground";
+  const base = "grid size-11 place-items-center rounded-full border border-border bg-card text-foreground transition hover:border-foreground";
   return (
     <div className="flex gap-2">
       <button

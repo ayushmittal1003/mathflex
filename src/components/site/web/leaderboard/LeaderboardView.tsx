@@ -95,7 +95,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
           {rows.length > 0 && (
           <label className="flex h-10 flex-[1_1_220px] items-center gap-2 rounded-lg border border-border bg-card px-3">
             <svg className="size-[15px] shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a name" aria-label="Search a name" className="min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a name" aria-label="Search a name" className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground" />
             {q && <button type="button" onClick={() => setQ("")} aria-label="Clear search" className="grid size-5.5 shrink-0 place-items-center rounded-full bg-muted text-[13px] leading-none">×</button>}
           </label>
           )}

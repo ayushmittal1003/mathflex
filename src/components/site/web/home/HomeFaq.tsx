@@ -12,7 +12,7 @@ export function HomeFaq({ faqs, whatsapp }: { faqs: { q: string; a: string }[]; 
             Questions, <Mark>answered</Mark>.
           </h2>
           <p className="mt-4.5 max-w-[340px] text-base leading-[1.55] text-secondary-foreground">Still stuck on something? Message us and a real person replies.</p>
-          <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="mt-5.5 inline-flex text-[15px] font-bold text-primary hover:brightness-90">
+          <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="mt-3 inline-flex min-h-11 items-center text-[15px] font-bold text-primary hover:brightness-90">
             Chat on WhatsApp →
           </a>
         </div>

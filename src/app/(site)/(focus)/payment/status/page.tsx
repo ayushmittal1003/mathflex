@@ -48,7 +48,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
   const header = (
     <header className="border-b border-border bg-card">
       <div className="mx-auto flex h-17 w-[min(1160px,calc(100%-32px))] items-center justify-between gap-4">
-        <Link href="/" aria-label="Mathflex home"><SiteLogo className="h-[25px]" /></Link>
+        <Link href="/" aria-label="Mathflex home" className="tap relative inline-block"><SiteLogo className="h-[25px]" /></Link>
         <Link href="/my-learning" className="text-sm font-bold text-secondary-foreground hover:text-foreground">My Learning →</Link>
       </div>
     </header>
@@ -96,7 +96,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                 </div>
                 {metaTable}
                 <PendingNote />
-                <div className="mt-5.5 flex flex-wrap justify-center gap-2.5">
+                <div className="mt-5.5 cta-row">
                   <CheckStatusNow orderNo={order!.orderNo} />
                   <Link href="/contact" className={cx(button.md, tone.secondary)}>Contact support</Link>
                 </div>
@@ -105,7 +105,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
               <div className="animate-mf-rise">
                 <h1 className="text-[clamp(28px,4.4vw,46px)] font-extrabold leading-[1.05] tracking-[-0.04em]">We couldn&apos;t find that order</h1>
                 <p className="mx-auto mt-3 max-w-[440px] text-base leading-[1.55] text-secondary-foreground">It may belong to a different account. Your purchases are always listed in My Learning.</p>
-                <div className="mt-6 flex flex-wrap justify-center gap-2.5">
+                <div className="mt-6 cta-row">
                   <Link href="/my-learning" className={cx(button.md, tone.primaryFlat)}>Go to My Learning</Link>
                   <Link href="/contact" className={cx(button.md, tone.secondary)}>Contact support</Link>
                 </div>
@@ -155,7 +155,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
       <div className="px-4 pt-4">
         <section className="relative overflow-hidden rounded-xl bg-wash pb-18">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-5.5 tablet:px-8">
-            <Link href="/" className="justify-self-start" aria-label="Mathflex home"><SiteLogo /></Link>
+            <Link href="/" className="tap relative justify-self-start" aria-label="Mathflex home"><SiteLogo /></Link>
             <Link href="/my-learning" className="flex items-center gap-2.5 rounded-full border border-white/95 bg-white/75 py-1.5 pl-1.5 pr-3 text-foreground hover:bg-card">
               <span className="grid size-7.5 place-items-center rounded-full bg-gradient-to-br from-primary to-brand-2 text-[13px] font-extrabold text-white">{firstName[0]?.toUpperCase()}</span>
               <span className="text-sm font-bold">{firstName}</span>
@@ -170,7 +170,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
               You&apos;re in, {firstName}. Let&apos;s get you that <Mark onWash>seat<Caret /></Mark>
             </h1>
             <p className="mx-auto mt-5 max-w-[560px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">Everything you bought is unlocked on your account.</p>
-            <div className="mt-7.5 flex flex-wrap justify-center gap-2.5">
+            <div className="mt-7.5 cta-row">
               {start && <Link href={start.href} className={cx(button.lg, tone.primary)}><PlayIcon className="size-3.5" /> Start {start.title}</Link>}
               <Link href="/my-learning" className={cx(button.lg, tone.glass)}>Go to My Learning</Link>
             </div>

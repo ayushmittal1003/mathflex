@@ -108,7 +108,7 @@ export function LegalPage({ source, current, email }: { source: string; current:
         <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(36px,6vw,76px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">{title}</h1>
         <nav aria-label="Policies" className="mx-auto mt-7 inline-flex max-w-full gap-0.5 overflow-x-auto rounded-lg bg-foreground p-1">
           {DOCS.map((d) => (
-            <Link key={d.href} href={d.href} aria-current={d.href === current ? "page" : undefined} className={cx("whitespace-nowrap rounded-md px-3.5 py-2 text-sm font-bold", d.href === current ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
+            <Link key={d.href} href={d.href} aria-current={d.href === current ? "page" : undefined} className={cx("whitespace-nowrap rounded-md px-3.5 py-3 text-sm font-bold", d.href === current ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
               {d.label}
             </Link>
           ))}

@@ -42,7 +42,7 @@ export default async function FaqPage() {
           Still have a <Mark>question</Mark>?
         </h2>
         <p className="mx-auto mt-4.5 max-w-[500px] text-[17px] leading-[1.55] text-secondary-foreground">Write to us and a real person replies, usually within one working day.</p>
-        <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-7 cta-row">
           <Link href="/contact" className={cx(button.md, tone.primary)}>Contact us</Link>
           <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className={cx(button.md, tone.secondary)}>WhatsApp us</a>
         </div>

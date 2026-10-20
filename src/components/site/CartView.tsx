@@ -138,7 +138,7 @@ export function CartView(props: {
     <>
       <header className="border-b border-border bg-card">
         <div className="mx-auto grid h-18 w-[min(1160px,calc(100%-var(--gutter)*2))] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
-          <Link href="/" className="justify-self-start" aria-label="Mathflex home"><SiteLogo className="h-[25px]" /></Link>
+          <Link href="/" className="tap relative justify-self-start" aria-label="Mathflex home"><SiteLogo className="h-[25px]" /></Link>
           <ol className="hidden items-center gap-2.5 tablet:flex" aria-label="Checkout steps">
             {["Cart", "Sign in", "Pay"].map((label, i) => {
               const done = i < step;

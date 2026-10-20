@@ -210,7 +210,7 @@ export default async function AboutPage() {
         <p className="mx-auto mt-4.5 max-w-[520px] text-[17px] leading-[1.55] text-secondary-foreground">
           An IIT or NIT seat through JEE is within reach. Watch a free chapter preview, start with one chapter and build from there.
         </p>
-        <div className="mt-7.5 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-7.5 cta-row">
           <Link href="/signup" className={cx(button.md, tone.primary)}>Start free</Link>
           <Link href="/chapters" className={cx(button.md, tone.secondary)}>Browse chapters</Link>
         </div>

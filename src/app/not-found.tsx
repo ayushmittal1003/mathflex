@@ -58,7 +58,7 @@ export default async function NotFound() {
                   This page skipped <Mark onWash>class</Mark>.
                 </h1>
                 <p className={cx(heroLead, "mt-5")}>The link may be old, or the page may have moved. Let&apos;s get you back to your chapters.</p>
-                <div className="mt-7.5 flex flex-wrap justify-center gap-2.5">
+                <div className="mt-7.5 cta-row">
                   <Link href="/" className={cx(button.lg, tone.primary)}>Go to home</Link>
                   <Link href="/chapters" className={cx(button.lg, tone.glass)}>Browse chapters</Link>
                   {user && <Link href="/my-learning" className={cx(button.lg, tone.glass)}>My Learning</Link>}

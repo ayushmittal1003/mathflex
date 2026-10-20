@@ -75,7 +75,7 @@ export default async function PracticeDashboard() {
         <div className="mt-10 rounded-2xl bg-wash px-6 py-14 text-center tablet:py-16">
           <div className="text-[clamp(24px,2.6vw,30px)] font-extrabold tracking-[-0.035em]">Unlock a chapter to start practising</div>
           <p className="mx-auto mt-2 max-w-[460px] text-[15px] leading-[1.6] text-secondary-foreground">Every chapter comes with its own question bank of DPPs and past-year JEE questions.</p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2.5">
+          <div className="mt-6 cta-row">
             <Link href="/chapters" className={cx(button.md, tone.primary)}>Browse chapters</Link>
             <Link href="/free-practice" className={cx(button.md, tone.secondary)}>Try free practice</Link>
           </div>
@@ -174,7 +174,7 @@ export default async function PracticeDashboard() {
         <section className="mt-16">
           <div className="mb-6 flex items-end justify-between gap-4">
             <h2 className={h2}>Unlock more question banks</h2>
-            <Link href="/chapters" className="text-sm font-bold text-primary hover:underline">All chapters →</Link>
+            <Link href="/chapters" className="inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary hover:underline">All chapters →</Link>
           </div>
           <div className="grid gap-3 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-4">
             {locked.map((c) => (

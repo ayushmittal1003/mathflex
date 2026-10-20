@@ -374,6 +374,19 @@ body {
     var(--wash);
 }
 
+/* Button groups in heroes, CTA bands and empty states (design.md §6a): stacked full-width buttons on
+   phones (max 360px), a centred wrapping row from 640px. */
+@utility cta-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.625rem;
+  width: 100%;
+  max-width: 22.5rem;
+  margin-inline: auto;
+  @media (min-width: 40rem) { flex-direction: row; flex-wrap: wrap; justify-content: center; max-width: none; }
+}
+
 /* Footer wordmark fill. */
 @utility text-wordmark {
   background: linear-gradient(180deg, var(--muted), color-mix(in oklab, var(--brand-2) 22%, var(--card)));

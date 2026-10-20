@@ -88,7 +88,7 @@ export function CourseInside({ courses }: { courses: CourseView[] }) {
         <div className="mt-8 flex justify-center px-6">
           <div className="no-scrollbar inline-flex max-w-full gap-0.5 overflow-x-auto rounded-lg bg-foreground p-1">
             {courses.map((c) => (
-              <button key={c.id} type="button" onClick={() => setTab(c.id)} aria-pressed={c.id === tab} className={cx("whitespace-nowrap rounded-md px-4 py-[9px] text-sm font-bold", c.id === tab ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
+              <button key={c.id} type="button" onClick={() => setTab(c.id)} aria-pressed={c.id === tab} className={cx("whitespace-nowrap rounded-md px-4 py-3 text-sm font-bold", c.id === tab ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
                 {c.title}
               </button>
             ))}
@@ -149,7 +149,7 @@ export function CourseCalculator({ course, breakeven }: { course: CourseView; br
           <label htmlFor="chapters-needed" className="text-[15px] font-bold">Chapters I need</label>
           <span className="text-[40px] font-extrabold leading-none tracking-[-0.04em]">{n}</span>
         </div>
-        <input id="chapters-needed" type="range" min={1} max={max} value={n} onChange={(e) => setN(Number(e.target.value))} className="mb-1 mt-4 h-6 w-full cursor-pointer accent-primary" />
+        <input id="chapters-needed" type="range" min={1} max={max} value={n} onChange={(e) => setN(Number(e.target.value))} className="-my-1 mt-2 h-11 w-full cursor-pointer accent-primary" />
         <div className="flex justify-between text-xs text-muted-foreground"><span>1</span><span>{max} (all of {course.title})</span></div>
         <div className="mt-8 grid gap-4.5">
           <Bar label={`One by one, about ${inr(Math.round(course.avgChapter))} each`} value={inr(sep)} width={(sep / top) * 100} className="bg-muted-foreground" />

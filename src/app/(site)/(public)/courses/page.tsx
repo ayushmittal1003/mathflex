@@ -123,7 +123,7 @@ export default async function Courses() {
         <h2 className="mx-auto max-w-[820px] text-[clamp(28px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           Not sure yet? {freePreview ? <>Watch a <Mark>free</Mark> 3–4 minute preview first.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
-        <div className="mt-8 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-8 cta-row">
           <Link href="/chapters" className={cx(button.md, tone.primaryFlat)}>Browse chapters</Link>
           {freePreview && <Link href={`/chapter/${freePreview.slug}`} className={cx(button.md, tone.secondary)}>Watch a free preview</Link>}
         </div>

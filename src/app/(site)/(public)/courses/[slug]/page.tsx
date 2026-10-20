@@ -283,7 +283,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         <h2 className="mx-auto max-w-[820px] text-[clamp(28px,4.6vw,58px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
           {owned ? <>Pick up where you <Mark>left off</Mark>.</> : <>Every chapter of {v.title}, <Mark>one</Mark> price.</>}
         </h2>
-        <div className="mt-8 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-8 cta-row">
           {owned ? (
             <Link href="/my-learning" className={cx(button.md, tone.primary)}>Go to My Learning</Link>
           ) : (

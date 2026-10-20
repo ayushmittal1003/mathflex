@@ -9,9 +9,9 @@ const base =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50";
 
 export const button = {
-  lg: `${base} px-6 py-3.5 text-base`,
-  md: `${base} px-4.5 py-3 text-[15px]`,
-  sm: `${base} px-4 py-2.5 text-sm`,
+  lg: `${base} min-h-12 px-6 py-3.5 text-base`,
+  md: `${base} min-h-12 px-4.5 py-3 text-[15px]`,
+  sm: `${base} min-h-11 px-4 py-2.5 text-sm`,
 };
 
 export const tone = {

@@ -89,7 +89,7 @@ export function StoryTimeline({ steps }: { steps: Step[] }) {
                 <div className={cx("font-mono text-xs font-bold uppercase tracking-[0.1em]", s.you ? "text-primary" : "text-muted-foreground")}>{s.tag}</div>
                 <h3 className="mt-2 text-[22px] font-extrabold leading-[1.2] tracking-[-0.025em]">{s.t}</h3>
                 <p className="mt-2 text-[15px] leading-[1.6] text-secondary-foreground">{s.d}</p>
-                {s.you && <Link href="/chapters" className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-cta hover:brightness-108">Find your chapter →</Link>}
+                {s.you && <Link href="/chapters" className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-cta hover:brightness-108">Find your chapter →</Link>}
               </div>
             </div>
           </li>

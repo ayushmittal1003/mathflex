@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { CloseX, useSwipeDown } from "./BottomSheet";
 import { useFocusTrap } from "./useFocusTrap";
 import { BookOpen, CalendarClock, Gift, GraduationCap, Home, LayoutGrid, LogOut, Mail, MessageCircle, PlayCircle, Shield, ShoppingBag, Target, Trophy, User } from "lucide-react";
 import { logout } from "@/app/actions/auth";
@@ -298,6 +299,7 @@ function MobileTabBar({ pathname, user, features, onMore, moreOpen }: { pathname
 function MoreSheet({ user, features, contact, onClose }: { user: SiteNavUser; features: Features; contact: Contact; onClose: () => void }) {
   const panel = useRef<HTMLDivElement>(null);
   useFocusTrap(panel);
+  const { dy, handleProps } = useSwipeDown(onClose);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
@@ -318,8 +320,15 @@ function MoreSheet({ user, features, contact, onClose }: { user: SiteNavUser; fe
   return (
     <div ref={panel} tabIndex={-1} className="fixed inset-0 z-[55] tablet:hidden" role="dialog" aria-modal aria-label="More">
       <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 bg-black/45 backdrop-blur-[2px]" />
-      <div className="absolute inset-x-0 bottom-0 max-h-[88dvh] animate-mf-rise overflow-y-auto rounded-t-2xl bg-card px-4 pb-[calc(80px+env(safe-area-inset-bottom))] pt-3 text-foreground shadow-[0_-30px_60px_-20px_rgb(0_0_0/0.4)]" onClick={(e) => { if ((e.target as HTMLElement).closest("a")) onClose(); }}>
-        <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-border" aria-hidden />
+      <div
+        className="absolute inset-x-0 bottom-0 max-h-[88dvh] animate-mf-rise overflow-y-auto rounded-t-2xl bg-card px-4 pb-[calc(80px+env(safe-area-inset-bottom))] pt-3 text-foreground shadow-[0_-30px_60px_-20px_rgb(0_0_0/0.4)]"
+        style={dy ? { transform: `translateY(${dy}px)`, transition: "none" } : undefined}
+        onClick={(e) => { if ((e.target as HTMLElement).closest("a")) onClose(); }}
+      >
+        <div {...handleProps} className="relative -mx-4 -mt-3 touch-none px-4 pb-2 pt-3">
+          <div className="mx-auto h-1.5 w-10 rounded-full bg-border" aria-hidden />
+          <div className="absolute right-2 top-1.5"><CloseX onClick={onClose} label="Close menu" /></div>
+        </div>
         {user ? (
           <AccountMenu user={user} features={features} contact={contact} onNavigate={onClose} compact />
         ) : (

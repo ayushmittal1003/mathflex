@@ -17,7 +17,7 @@ export function ErrorScreen({ error, retry, compact = false }: { error: Error & 
         <p className="mx-auto mt-3 max-w-[380px] text-[15px] leading-[1.6] text-secondary-foreground">
           This page didn&apos;t load properly. It&apos;s usually a brief network or server hiccup. Your progress and purchases are safe.
         </p>
-        <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-7 cta-row">
           <button type="button" onClick={() => retry()} className={cx(button.md, tone.primary)}>Try again</button>
           <Link href="/" className={cx(button.md, tone.secondary)}>Go home</Link>
         </div>

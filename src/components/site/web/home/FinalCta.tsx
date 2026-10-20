@@ -28,7 +28,7 @@ export function FinalCta({ chapters, minPrice }: { chapters: HomeChapter[]; minP
           {chapters.length ? "Watch a chapter preview today. If it clicks, the whole chapter is yours" : "Pick the chapter you're stuck on. It's yours"}
           {minPrice !== null ? ` from ${inr(minPrice)}.` : "."}
         </p>
-        <div className="mt-8.5 flex flex-wrap justify-center gap-3">
+        <div className="mt-8.5 cta-row">
           {chapters.length > 0 && (
             <a href="#previews" className={cx(button.lg, tone.primary)}>
               <PlayIcon /> Watch a preview

@@ -109,7 +109,7 @@ export default async function PlansPage() {
         <div className="mt-10 rounded-2xl bg-wash px-6 py-14 text-center">
           <div className="text-[clamp(24px,2.6vw,30px)] font-extrabold tracking-[-0.035em]">No plans yet</div>
           <p className="mx-auto mt-2 max-w-[440px] text-[15px] text-secondary-foreground">Buy a chapter or a complete course and it will show up here with its validity.</p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2.5">
+          <div className="mt-6 cta-row">
             <Link href="/chapters" className={cx(button.md, tone.primary)}>Browse chapters</Link>
             <Link href="/courses" className={cx(button.md, tone.secondary)}>Complete courses</Link>
           </div>
