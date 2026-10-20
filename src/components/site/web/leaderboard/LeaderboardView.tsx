@@ -8,6 +8,18 @@ export type LbRow = { id: string; name: string; avatarColor: string; streak: num
 const short = (n: string) => { const [f, l] = n.split(" "); return l ? `${f} ${l[0]}.` : f; };
 const classLabel = (c: number | null) => (c === 13 ? "Dropper" : c ? `Class ${c}` : "—");
 
+// Shown only while there is no real data for the period (rows is empty), so the board does not
+// look broken before the first students join. Generic names, clearly marked; they disappear on
+// their own as soon as a real row exists. Never present these as real students.
+const SAMPLE_ROWS = [
+  { name: "Student A", cls: "Class 12", xp: 2480 },
+  { name: "Student B", cls: "Class 11", xp: 2115 },
+  { name: "Student C", cls: "Class 12", xp: 1870 },
+  { name: "Student D", cls: "Class 11", xp: 1540 },
+  { name: "Student E", cls: "Class 12", xp: 1295 },
+  { name: "Student F", cls: "Class 11", xp: 960 },
+];
+
 // Podium, sticky filters (period links, class, name search) and the ranked list.
 export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbRow[]; period: string; periods: Record<string, string>; signedIn: boolean }) {
   const [cls, setCls] = useState<"all" | number>("all");
@@ -80,11 +92,13 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
               ))}
             </div>
           )}
+          {rows.length > 0 && (
           <label className="flex h-10 flex-[1_1_220px] items-center gap-2 rounded-lg border border-border bg-card px-3">
             <svg className="size-[15px] shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a name" aria-label="Search a name" className="min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground" />
             {q && <button type="button" onClick={() => setQ("")} aria-label="Clear search" className="grid size-5.5 shrink-0 place-items-center rounded-full bg-muted text-[13px] leading-none">×</button>}
           </label>
+          )}
         </div>
       </div>
 
@@ -117,10 +131,27 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
             ))}
           </ol>
           {rows.length === 0 && (
-            <div className="px-6 py-14 text-center">
-              <div className="text-[22px] font-extrabold tracking-[-0.02em]">No XP earned in this period yet</div>
-              <p className="mt-2 text-[15px] text-muted-foreground">Finish a part or solve a practice set to be the first on the board.</p>
-            </div>
+            <>
+              <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg bg-muted px-4 py-3 text-sm text-secondary-foreground">
+                <Sample />
+                <span>These rows only show how the board will look. They are not real students.</span>
+              </div>
+              <ol className="select-none opacity-60 grayscale" aria-label="Sample leaderboard rows, not real students">
+                {SAMPLE_ROWS.map((r, i) => (
+                  <li key={r.name} className="flex h-16 items-center gap-3.5 border-b border-border px-4">
+                    <span className="w-12 shrink-0 text-base font-extrabold text-muted-foreground">{i + 1}</span>
+                    <span aria-hidden className="grid size-[38px] shrink-0 place-items-center rounded-full bg-muted-foreground/50 text-sm font-extrabold text-white">{r.name.slice(-1)}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2 text-[15px] font-bold"><span className="truncate">{r.name}</span><Sample /></span>
+                      <span className="block text-xs text-muted-foreground tablet:hidden">{r.cls}</span>
+                    </span>
+                    <span className="hidden w-20 shrink-0 text-sm font-semibold text-secondary-foreground tablet:block">{r.cls}</span>
+                    <span className="hidden w-[90px] shrink-0 text-sm font-semibold text-secondary-foreground tablet:block">—</span>
+                    <span className="w-[100px] shrink-0 text-right text-base font-extrabold text-muted-foreground">{r.xp.toLocaleString("en-IN")}</span>
+                  </li>
+                ))}
+              </ol>
+            </>
           )}
           {rows.length > 0 && filtered.length === 0 && (
             <div className="px-6 py-14 text-center">
@@ -128,9 +159,9 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
               <button type="button" onClick={() => { setQ(""); setCls("all"); }} className="mt-4 rounded-lg bg-foreground px-4 py-2.5 text-sm font-bold text-white">Show everyone</button>
             </div>
           )}
-          <p className="mt-5 text-center text-sm text-muted-foreground">Showing the top {rows.length} students. Rankings refresh when you reload the page.</p>
+          {rows.length > 0 && <p className="mt-5 text-center text-sm text-muted-foreground">Showing the top {rows.length} students. Rankings refresh when you reload the page.</p>}
 
-          {signedIn && (
+          {signedIn && rows.length > 0 && (
             <div className="sticky bottom-[calc(80px+env(safe-area-inset-bottom))] z-20 mt-6 flex h-[68px] items-center gap-3.5 rounded-xl bg-foreground px-4 text-white shadow-[0_24px_44px_-18px_rgb(0_0_0/0.5)] tablet:bottom-4">
               {me ? (
                 <>
@@ -143,7 +174,7 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
                   <span className="shrink-0 text-base font-extrabold">{me.xp.toLocaleString("en-IN")} XP</span>
                 </>
               ) : (
-                <span className="text-sm font-semibold text-white/80">You&apos;re not in the top {rows.length || 50} yet. Solve a practice set to climb.</span>
+                <span className="text-sm font-semibold text-white/80">You&apos;re not in the top {rows.length} yet. Solve a practice set to climb.</span>
               )}
             </div>
           )}
@@ -151,4 +182,8 @@ export function LeaderboardView({ rows, period, periods, signedIn }: { rows: LbR
       </section>
     </>
   );
+}
+
+function Sample() {
+  return <span className="shrink-0 rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-extrabold uppercase tracking-[0.06em] text-secondary-foreground">Sample</span>;
 }

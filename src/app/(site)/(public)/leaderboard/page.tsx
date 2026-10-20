@@ -40,18 +40,22 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
 
   const list: LbRow[] = rows.map((r, i) => ({ ...r, rank: i + 1, level: levelFromXp(r.totalXp).level, me: r.id === me?.id }));
 
+  const empty = list.length === 0;
+
   return (
     <>
       <section className="px-6 pt-[calc(86px+56px)] text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5 text-[13px] font-semibold text-secondary-foreground">
           <span className="size-2 rounded-full bg-primary" />
-          {list.length} student{list.length === 1 ? "" : "s"} ranked {WORD[p]}
+          {empty ? "Be one of the first on the board" : `${list.length} student${list.length === 1 ? "" : "s"} ranked ${WORD[p]}`}
         </div>
         <h1 className="mx-auto mt-5.5 max-w-[980px] text-[clamp(42px,6.4vw,84px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
-          Who&apos;s on top <Mark>{WORD[p]}</Mark>
+          {empty ? <>The leaderboard opens with our <Mark>first students</Mark></> : <>Who&apos;s on top <Mark>{WORD[p]}</Mark></>}
         </h1>
         <p className="mx-auto mt-5 max-w-[540px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">
-          Earn XP for every part you finish and every question you get right. {p === "week" ? "The weekly board counts the last 7 days." : p === "month" ? "The monthly board counts the last 30 days." : "All-time XP since you joined."}
+          {empty
+            ? "Watch a part, solve a practice set and earn XP. Your name goes up here as soon as you do."
+            : <>Earn XP for every part you finish and every question you get right. {p === "week" ? "The weekly board counts the last 7 days." : p === "month" ? "The monthly board counts the last 30 days." : "All-time XP since you joined."}</>}
         </p>
       </section>
       <LeaderboardView rows={list} period={p} periods={PERIODS} signedIn={!!me} />
