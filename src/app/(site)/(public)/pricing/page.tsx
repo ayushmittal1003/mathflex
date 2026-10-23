@@ -54,11 +54,11 @@ export default async function PricingPage() {
 
   return (
     <>
-      <WashHero>
+      <WashHero green>
         <div className="px-6 pt-10 text-center">
           <Eyebrow dot="ok" onWash>No subscriptions · Pay once</Eyebrow>
           <h1 className={cx(heroH1, "mt-6")}>
-            Pay only for what you <Mark onWash>need<Caret /></Mark>
+            Pay only for what you <Mark onWash>need<Caret green /></Mark>
           </h1>
           <p className={cx(heroLead, "mt-5.5 max-w-[580px]")}>
             Watch any chapter&apos;s free preview, then buy one chapter or a full course. You pay once, with no monthly fees.

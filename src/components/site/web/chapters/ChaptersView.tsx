@@ -14,8 +14,8 @@ type Peek = {
   parts: { id: string; order: number; title: string; durationSec: number; isFreePreview: boolean }[];
 };
 type Bundle = { id: string; slug: string; title: string; subtitle: string; price: number; mrp: number; chapterCount: number; breakeven: number | null };
-type Sort = "default" | "weight" | "price";
-const SORTS: [Sort, string][] = [["default", "Syllabus order"], ["weight", "Sort: JEE weightage"], ["price", "Sort: price, low to high"]];
+type Sort = "default" | "price";
+const SORTS: [Sort, string][] = [["default", "Syllabus order"], ["price", "Sort: price, low to high"]];
 
 export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: CardChapter[]; peek: Peek | null; bundles: Bundle[]; initial: { q: string; cls: number | "all"; sort: Sort } }) {
   const [q, setQ] = useState(initial.q);
@@ -37,7 +37,6 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
   const list = useMemo(() => {
     const term = q.trim().toLowerCase();
     let l = chapters.filter((c) => (cls === "all" || c.classLevel === cls) && (!freeOnly || c.free) && (!term || c.title.toLowerCase().includes(term)));
-    if (sort === "weight") l = [...l].sort((a, b) => b.jeeWeightage - a.jeeWeightage);
     if (sort === "price") l = [...l].sort((a, b) => a.price - b.price);
     return l;
   }, [chapters, q, cls, sort, freeOnly]);
@@ -86,10 +85,10 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
       {top5.length > 0 && (
         <section id="top" className="overflow-hidden pb-12 pt-12 tablet:pb-18 tablet:pt-24">
           <SectionHead
-            eyebrow="Highest JEE weightage"
+            eyebrow="Start with these chapters"
             dot="gold"
-            title={<>Most marks for your <Mark>time</Mark>.</>}
-            lead={`These ${top5.length} chapters carry the most weight in JEE Main. Short on time? Start here.`}
+            title={<>Short on time? Begin <Mark>here</Mark>.</>}
+            lead={`These ${top5.length} chapters are a strong place to start.`}
           />
           <div className="no-scrollbar mx-auto mt-10 w-[min(1240px,calc(100%-var(--gutter)*2))] overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 pb-5 pt-6">
             <div className="mx-auto flex w-max gap-2">
@@ -101,7 +100,6 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
                 <span className="relative block aspect-[2/3] w-[130px] overflow-hidden rounded-xl shadow-[0_16px_32px_-16px_rgb(0_0_0/0.45)] transition-transform duration-300 hover:-translate-y-1.5 tablet:w-[170px]" style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}>
                   <span className={cx("absolute -right-2.5 top-1 whitespace-nowrap font-black leading-none text-white/20", c.symbol.length > 2 ? "text-[56px]" : "text-[96px]")}>{c.symbol}</span>
                   <span className="absolute inset-0 bg-gradient-to-b from-transparent from-35% to-black/85" />
-                  <span className="absolute left-2.5 top-2.5 rounded bg-white px-1.5 py-0.5 text-xs font-extrabold text-black">{c.jeeWeightage}% of JEE</span>
                   <span className="absolute inset-x-3 bottom-3">
                     <span className="block text-[15px] font-extrabold leading-[1.15]">{c.title}</span>
                     <span className="mt-1 block text-xs opacity-80">Class {c.classLevel} · {inr(c.price)}</span>
@@ -289,7 +287,6 @@ function HeroPeek({ peek }: { peek: Peek }) {
       <div className="hidden flex-col gap-2.5 p-5 text-left tablet:flex">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground">{peek.parts.length} parts</span>
-          {peek.jeeWeightage > 0 && <span className="rounded-md bg-brand-2/14 px-2 py-0.5 text-xs font-bold text-brand-2">{peek.jeeWeightage}% of JEE Main</span>}
         </div>
         {shown.map((p, i) => (
           <div key={p.id} className={cx("flex items-center gap-2.5 rounded-lg border p-2.5", p.isFreePreview ? "border-primary/35 bg-selected" : "border-border")}>

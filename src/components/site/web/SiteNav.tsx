@@ -49,15 +49,16 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
   }, []);
   const onWash = !stuck && !PLAIN_HEADER.some((p) => pathname.startsWith(p));
 
-  // Signed in, the nav swaps Pricing for the student's own pages, like the original nav.
+  // Same order for everyone; My Learning and Practice only appear when signed in.
   const links = [
     { href: "/", label: "Home" },
     { href: "/chapters", label: "Chapters" },
     { href: "/courses", label: "Courses" },
+    ...(features.leaderboard ? [{ href: "/leaderboard", label: "Leaderboard" }] : []),
     ...(user
       ? [{ href: "/my-learning", label: "My Learning" }, ...(features.practice ? [{ href: "/practice", label: "Practice" }] : [])]
-      : [{ href: "/pricing", label: "Pricing" }]),
-    ...(features.leaderboard ? [{ href: "/leaderboard", label: "Leaderboard" }] : []),
+      : []),
+    { href: "/pricing", label: "Pricing" },
   ];
   const isActive = (href: string) => (href === "/" ? pathname === "/" : !href.includes("#") && pathname.startsWith(href));
   const secondary = onWash ? tone.glass : "border border-border bg-card text-foreground hover:brightness-97";

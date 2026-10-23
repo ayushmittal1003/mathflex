@@ -51,6 +51,8 @@ Reference designs: the `.dc.html` files in this project. `Landing Page v2.dc.htm
 
 **New token: `wash`.** `--wash: oklch(0.975 0.012 50)`. This is the warm base of the hero frame. Add it to `globals.css` and `@theme` with a dark value of `oklch(0.2 0.02 40)`.
 
+**New token: `ok-tint`.** `--ok-tint: oklch(0.965 0.032 149)` (dark `oklch(0.25 0.04 149)`), `bg-ok-tint` in Tailwind. A light green for pricing: the home pricing section background and the `/pricing` hero (`bg-wash-ok`, the `wash` gradient built from `ok` over `ok-tint`; `<WashHero green>`). Prices on light backgrounds use `text-ok-strong` (5.43:1 on `ok-tint`, 5.86:1 on `card`). On the dark "Best value" card the price stays white (19.8:1) and the chip is white on `ok-strong` (5.94:1). Buy / Add to cart buttons stay `primary` red. In the pricing sections the selected-chapter accents (checkbox, chosen row) and the hero caret use `ok-strong` / `ok-tint` instead of red.
+
 **Tints:** use `color-mix(in oklab, var(--brand-2) 16%, var(--card))` for the soft highlight box on white sections, and `color-mix(in oklab, var(--primary) 6%, var(--card))` for the selected-row tint (your own leaderboard row, chosen option).
 
 **Poster gradients** come from the database (allowed exception). The current eight pairs are:

@@ -6,7 +6,7 @@ import { Mark, SectionHead } from "../primitives";
 import { button, cx, tone } from "../ui";
 import type { HomeCourse } from "./types";
 
-// 04 The problem: approximate competitor prices (static copy) against our live prices.
+// 04 The problem: approximate coaching price (static copy, lower end of the typical range) against our live prices.
 // Bars grow when the section scrolls into view.
 export function CostCompare({ fullCourse, minChapterPrice }: { fullCourse: HomeCourse | null; minChapterPrice: number | null }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -26,12 +26,12 @@ export function CostCompare({ fullCourse, minChapterPrice }: { fullCourse: HomeC
     ...(fullCourse ? [{ name: fullCourse.title, note: problem.courseNote, price: fullCourse.price, unit: "one-time", us: true }] : []),
     ...(minChapterPrice !== null ? [{ name: "One chapter", note: problem.chapterNote, price: minChapterPrice, unit: "starting price", us: true }] : []),
   ];
-  // e.g. ₹1,50,000 ÷ ₹149 ≈ 1/1000th. Derived from the figures shown above it.
+  // e.g. ₹1,15,000 ÷ ₹149 ≈ 1/800th. Derived from the figures shown above it.
   const ratio = minChapterPrice ? Math.round(top / minChapterPrice / 100) * 100 : 0;
 
   return (
     <section className="py-12 tablet:py-22">
-      <SectionHead eyebrow="The problem" title={<>JEE maths shouldn&apos;t cost a <Mark>lakh</Mark>.</>} lead={problem.lead} />
+      <SectionHead eyebrow="The problem" title={<>JEE maths shouldn&apos;t cost over <Mark>a lakh a year</Mark>.</>} lead={problem.lead} />
       <div ref={ref} className="mx-auto mt-12 w-[min(1120px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_4px_0_rgb(0_0_0/0.08)]">
         {rows.map((r, i) => (
           <div
@@ -61,7 +61,7 @@ export function CostCompare({ fullCourse, minChapterPrice }: { fullCourse: HomeC
       <div className="mx-auto mt-7 flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-center justify-between gap-5">
         {ratio > 0 ? (
           <p className="max-w-[640px] text-[clamp(20px,2.2vw,26px)] font-bold leading-[1.3] tracking-[-0.02em] text-balance">
-            One Mathflex chapter costs about <span className="text-primary">1/{ratio}th</span> of a year at a big coaching institute.
+            One Mathflex chapter costs about <span className="text-primary">1/{ratio}th</span> of a year at a big coaching institute (typically ₹1.15L–₹2.41L, varies by city).
           </p>
         ) : <span />}
         <a href="#pricing" className={cx(button.lg, tone.dark)}>See all prices →</a>

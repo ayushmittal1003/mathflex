@@ -114,7 +114,7 @@ export function CourseInside({ courses }: { courses: CourseView[] }) {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="line-clamp-2 text-[15px] font-bold leading-[1.3] tracking-[-0.01em]">{r.title}</span>
-                      <span className="mt-1 block text-xs font-semibold text-muted-foreground">{r.parts} parts{r.weight > 0 && ` · ${r.weight}% of JEE`}</span>
+                      <span className="mt-1 block text-xs font-semibold text-muted-foreground">{r.parts} parts</span>
                     </span>
                   </Link>
                 ))}

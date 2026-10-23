@@ -127,6 +127,15 @@ New rule from the owner: single chapter = 3 months (each chapter bought separate
 - Seed copy to update: the FAQ answer in `prisma/seed.ts` (~line 250) says "365 days by default".
 - The frontend now shows the length as "3 months / 1 year / 2 years" (`validity()` in `src/lib/format.ts`); it follows whatever is in the database.
 
+### Database and seed text that still needs changing (homepage-fixes branch)
+These live in the database or `prisma/seed.ts`, so the frontend can't fix them:
+- Marquee banner (`seed.ts:236`): "Limits & Derivatives: Part 1 is free to watch" → "Free 3–4 minute preview".
+- HERO banner (`seed.ts:234`): "Stop buying ₹30,000 courses. Buy one chapter." and "from ₹149" (hardcoded; use the live minimum chapter price). Also the "IIT Delhi & NIT Jalandhar alumni" wording (see above).
+- Seed FAQ (`seed.ts:252`): "Why is Part 2 locked? … finish Part 1's video …" is fine as a rule, but the access-length FAQ (~line 250) says "365 days by default": use "Single chapters: 3 months. Class 11 or Class 12 Complete: 1 year. Class 11 + 12 combo: 2 years."
+- Course subtitles (`seed.ts:222–223`): "All 20 Class 11 chapters." / "All 15 Class 12 chapters." are hardcoded counts; edit them in admin when chapters are added, or drop the count from the subtitle.
+- `Chapter.validityDays` / `Course.validityDays` values: see "Access length" above (chapters 90, Class 11 and 12 = 365, combo = 730, schema default 90). The chapter cards now show "3 months access" etc. straight from these.
+- Code note: `src/lib/catalog.ts` now also returns `validityDays` per chapter (read-only addition).
+
 ## Upcoming
 - **Sanity Studio (after the `feature/seo` PR is merged, on its own branch):** connect Sanity for (1) blog posts, with author, date, cover and categories, replacing `getPosts()` / `getPost()` in `src/lib/blog.ts` and keeping the `BlogPost` shape; (2) an author profile for the mentor (name, bio, credential "IIT Delhi alumnus", photo); (3) later, static SEO page content for the landing pages (`docs/seo-landing-plan.md`). Chapters, courses, prices and users stay in the current database.
   - Needed from the owner: Sanity project ID, dataset name (`production`), an optional read token for draft previews, and a webhook secret.

@@ -53,7 +53,7 @@ export default async function ChaptersPage({ searchParams }: { searchParams: Pro
       chapters={chapters}
       peek={peek ? { ...peek, parts: peek.parts.map((p) => ({ ...p, isFreePreview: p.isFreePreview && settings.features.freePreviews })) } : null}
       bundles={bundles}
-      initial={{ q, cls: cls === "11" || cls === "12" ? Number(cls) : "all", sort: sort === "weight" || sort === "price" ? sort : "default" }}
+      initial={{ q, cls: cls === "11" || cls === "12" ? Number(cls) : "all", sort: sort === "price" ? sort : "default" }}
     />
     </>
   );

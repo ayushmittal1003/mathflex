@@ -70,7 +70,7 @@ export const about = {
   storyFree: "Every chapter has a free 3–4 minute preview. Watch it, and if it clicks, the full chapter starts at {minPrice}.",
   // "The usual way" vs "The Mathflex way". {minPrice}/{fullPrice} are live.
   problems: [
-    { k: "Cost", bad: "₹1–2 lakh for coaching, ₹30,000+ for online bundles", good: "From {minPrice} a chapter{fullPriceLine}" },
+    { k: "Cost", bad: "Typically ₹1.15L–₹2.41L per year for coaching (varies by city); online courses often cost tens of thousands", good: "From {minPrice} a chapter{fullPriceLine}" },
     { k: "What you buy", bad: "The whole syllabus, even the chapters you're good at", good: "Only the chapters you need" },
     { k: "How you learn", bad: "Long lectures, fixed batch timings", good: "Short parts you watch any time" },
     { k: "Practice", bad: "Separate test series, often at extra cost", good: "DPPs and past JEE questions after every part" },
@@ -96,8 +96,8 @@ export function instructorNames(settings: Pick<Settings, "mentorName">) {
 export const problem = {
   lead: "Most students are stuck on three or four chapters, not the whole syllabus. So why pay for all of it?",
   competitors: [
-    { name: "Big coaching institute", note: "Fixed batches, fixed pace, a long commute. Miss two classes and you're behind.", price: 150000, unit: "per year, approx." },
-    { name: "Online course bundle", note: "Every chapter of the syllabus, including the ones you've already got.", price: 30000, unit: "one-time, approx." },
+    // Offline coaching typically costs ₹1.15L–₹2.41L per year, varying by city. The bar uses the lower bound.
+    { name: "Big coaching institute", note: "Typically ₹1.15L–₹2.41L per year, varying by city. Fixed batches, fixed pace, a long commute.", price: 115000, unit: "per year, approx. (lower end)" },
   ],
   courseNote: "Every chapter in both classes, with every part, DPPs, PYQs and notes.",
   chapterNote: "Just the chapter you're stuck on.",
@@ -128,7 +128,7 @@ export const chapterIncludes = [
 export const comparison = {
   columns: ["Big coaching", "Online giants", "Free YouTube"],
   rows: [
-    { label: "Full syllabus cost", cells: ["{fullPrice}", "₹1–2 lakh", "₹30,000+", "Free"] },
+    { label: "Full syllabus cost", cells: ["{fullPrice}", "₹1.15L–₹2.41L / year", "Often tens of thousands", "Free"] },
     { label: "Buy a single chapter", cells: [true, false, false, "—"] },
     { label: "Watch before you pay", cells: [true, false, "Limited", true] },
     { label: "Practice after every part", cells: [true, true, "Varies", false] },
@@ -159,7 +159,7 @@ export const faqGroups: FaqGroup[] = [
     items: [
       { q: "What is Mathflex?", a: "Chapter-wise JEE maths videos for Class 11 and 12. Each chapter is split into short video parts, with practice problems, previous-year JEE questions and notes." },
       { q: "Can I watch anything for free?", a: "Yes. Every chapter has a free 3–4 minute preview you can watch without paying or signing up. The full parts unlock when you buy the chapter." },
-      { q: "Is this for JEE or Boards?", a: "Both. Chapters follow the Class 11 and 12 syllabus, and each one shows how much of JEE Main it carries so you can prioritise." },
+      { q: "Is this for JEE or Boards?", a: "Both. Chapters follow the Class 11 and 12 syllabus, and each chapter page shows what you get: video parts, practice questions and notes." },
       { q: "Do I need an account to buy?", a: "You can add chapters to your cart without an account. You log in or sign up with your email and a password just before you pay." },
     ],
   },
@@ -169,7 +169,7 @@ export const faqGroups: FaqGroup[] = [
     items: [
       { q: "Should I buy chapters or a full course?", a: "Buy chapters if you only need a few. If you need most of a class, the full course usually works out cheaper. Compare the prices on the [Courses page](/courses)." },
       { q: "Why are parts locked?", a: "Inside a chapter you own, each part unlocks after you watch most of the previous one and clear its practice set. It keeps you from skipping the bits that cost marks later." },
-      { q: "How long do I get access?", a: "Each chapter and course shows its access period on its page, counted from the date you buy it. You can renew early from your Profile page once it's within 30 days of expiring." },
+      { q: "How long do I get access?", a: "Single chapters: 3 months. Class 11 or Class 12 Complete: 1 year. Class 11 + 12 combo: 2 years. Access is counted from the date you buy, and each page shows its own period. You can renew early from your Profile page once it's within 30 days of expiring." },
       { q: "Does it work on my phone?", a: "Yes. Videos adjust to your connection, and {notesKind} open right on your phone." },
     ],
   },

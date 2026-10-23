@@ -45,12 +45,12 @@ export function PricingTiers({ courses, minPrice, maxPrice, chapterAccess }: { c
           )}
           style={{ animationDelay: `${i * 70}ms` }}
         >
-          {t.best && <span className="absolute -top-3 left-6 rounded-md bg-primary px-2.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.06em] text-white">Best value</span>}
+          {t.best && <span className="absolute -top-3 left-6 rounded-md bg-ok-strong px-2.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.06em] text-white">Best value</span>}
           <div className={cx("text-[13px] font-bold uppercase tracking-[0.08em]", t.best ? "text-white/68" : "text-muted-foreground")}>{t.kicker}</div>
           <div className="mt-2 text-[21px] font-extrabold tracking-[-0.02em]">{t.name}</div>
           <div className="mt-4.5 flex min-h-13 flex-wrap items-baseline gap-x-2 gap-y-1">
             {t.from && <span className={cx("text-[15px] font-semibold", t.best ? "text-white/68" : "text-muted-foreground")}>{t.from}</span>}
-            <span className="text-[44px] font-extrabold leading-none tracking-[-0.045em]">{t.price}</span>
+            <span className={cx("text-[44px] font-extrabold leading-none tracking-[-0.045em]", !t.best && "text-ok-strong")}>{t.price}</span>
             {t.mrp && <span className={cx("text-[15px] line-through", t.best ? "text-white/68" : "text-muted-foreground")}>{t.mrp}</span>}
           </div>
           <div className={cx("mt-2 min-h-9 text-[13px]", t.best ? "text-white/68" : "text-muted-foreground")}>{t.note}</div>
@@ -154,8 +154,8 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
             {list.map((c) => {
               const on = sel.has(c.id);
               return (
-                <button key={c.id} type="button" onClick={() => toggle(c.id)} aria-pressed={on} className={cx("flex h-16 items-center gap-3 rounded-xl border-[1.5px] px-3.5 text-left text-foreground transition-colors", on ? "border-primary bg-selected" : "border-border bg-card")}>
-                  <span className={cx("grid size-5.5 shrink-0 place-items-center rounded-md border-[1.5px] text-white transition-colors", on ? "border-primary bg-primary" : "border-border bg-card")}>
+                <button key={c.id} type="button" onClick={() => toggle(c.id)} aria-pressed={on} className={cx("flex h-16 items-center gap-3 rounded-xl border-[1.5px] px-3.5 text-left text-foreground transition-colors", on ? "border-ok-strong bg-ok-tint" : "border-border bg-card")}>
+                  <span className={cx("grid size-5.5 shrink-0 place-items-center rounded-md border-[1.5px] text-white transition-colors", on ? "border-ok-strong bg-ok-strong" : "border-border bg-card")}>
                     {on && <CheckIcon className="size-3" strokeWidth={3.5} />}
                   </span>
                   <span className="line-clamp-2 min-w-0 flex-1 text-sm font-bold leading-[1.3]">{c.title}</span>

@@ -237,7 +237,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="line-clamp-2 text-base font-bold leading-[1.3] tracking-[-0.01em]">{r.title}</span>
-                          <span className="mt-1.5 block text-[13px] font-semibold text-muted-foreground">{r.parts} parts{r.weight > 0 && ` · ${r.weight}% of JEE`}</span>
+                          <span className="mt-1.5 block text-[13px] font-semibold text-muted-foreground">{r.parts} parts</span>
                           {owned && (
                             <span className="mt-2 block h-1 overflow-hidden rounded-full bg-muted"><span className="block h-full rounded-full bg-primary" style={{ width: `${pct * 100}%` }} /></span>
                           )}

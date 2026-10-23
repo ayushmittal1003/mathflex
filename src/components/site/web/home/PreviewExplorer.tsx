@@ -26,7 +26,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
       <SectionHead
         eyebrow="Chapter previews"
         dot="ok"
-        title={<>Try it before you <Mark>buy</Mark> it.</>}
+        title={<>Try a chapter before you <Mark>buy</Mark>.</>}
         lead={`Pick a chapter and watch its 3–4 minute preview. No card, no sign-up. If ${mentorShort}'s way of teaching clicks, unlock the whole chapter.`}
       />
       {classes.length > 1 && (
@@ -84,7 +84,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[15px] font-bold tracking-[-0.01em]">{c.title}</span>
                     <span className="mt-0.5 block text-xs text-muted-foreground">
-                      {c.parts.length} parts{c.jeeWeightage > 0 && ` · ${c.jeeWeightage}% JEE`}
+                      {c.parts.length} parts
                     </span>
                   </span>
                   <span className="shrink-0 text-right">
@@ -117,7 +117,6 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.6))]" />
               <div className="absolute left-5 top-4.5 flex gap-2">
                 <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.08em] backdrop-blur-md">Class {cur.classLevel}</span>
-                {cur.jeeWeightage > 0 && <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] backdrop-blur-md">{cur.jeeWeightage}% of JEE Main</span>}
               </div>
               <span className="absolute left-1/2 top-[46%] grid -translate-x-1/2 -translate-y-1/2 place-items-center gap-3 text-center">
                 <span className="grid size-[76px] place-items-center rounded-full bg-white/20 text-white shadow-[0_0_0_12px_rgb(255_255_255/0.08)] backdrop-blur-sm"><PlayIcon className="size-6.5" /></span>
@@ -152,9 +151,9 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
               </div>
               <div className="text-xs text-muted-foreground">All parts, DPPs, PYQs and notes</div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Link href={`/chapter/${cur.slug}`} className={cx(button.md, tone.secondary)}>View chapter</Link>
-              <BuyButton item={{ type: "CHAPTER", id: cur.id }} className={cx(button.md, tone.primaryFlat)}>Unlock chapter</BuyButton>
+            <div className="flex w-full flex-col gap-2 min-[480px]:w-auto min-[480px]:flex-row">
+              <BuyButton item={{ type: "CHAPTER", id: cur.id }} className={cx(button.md, tone.primaryFlat, "order-first w-full min-[480px]:order-last min-[480px]:w-auto")}>Buy this chapter</BuyButton>
+              <Link href={`/chapter/${cur.slug}`} className={cx(button.md, tone.secondary, "w-full min-[480px]:w-auto")}>View chapter</Link>
             </div>
           </div>
         </div>
