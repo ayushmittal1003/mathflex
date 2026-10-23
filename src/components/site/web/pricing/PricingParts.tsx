@@ -131,8 +131,8 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
     <section id="builder" className="pb-12 pt-12 tablet:pb-22 tablet:pt-24">
       <SectionHead
         eyebrow="Build your own"
-        dot="brand-2"
-        title={<>Pick your chapters. We&apos;ll find the <Mark>best price</Mark>.</>}
+        dot="ok"
+        title={<>Pick your chapters. We&apos;ll find the <Mark green>best price</Mark>.</>}
         lead={courses.length ? "Tap the chapters you need. If a full course works out cheaper, we'll tell you." : "Tap the chapters you need to see your total."}
       />
       <div className="mx-auto mt-12 flex w-[min(1180px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-10 gap-y-8">

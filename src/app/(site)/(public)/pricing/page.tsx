@@ -75,9 +75,9 @@ export default async function PricingPage() {
 
       <section className="py-12 tablet:py-20">
         <div className="px-6 text-center">
-          <Eyebrow>Before you check out</Eyebrow>
+          <Eyebrow dot="ok">Before you check out</Eyebrow>
           <h2 className="mx-auto mt-6 max-w-[860px] text-[clamp(28px,5.2vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
-            A few ways to get <Mark>more</Mark> for less.
+            A few ways to get <Mark green>more</Mark> for less.
           </h2>
         </div>
         <div className="mx-auto mt-14 grid w-[min(1180px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-12">

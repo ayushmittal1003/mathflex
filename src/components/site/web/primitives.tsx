@@ -25,9 +25,9 @@ export function Caret({ green = false }: { green?: boolean }) {
 }
 
 // One key word per heading sits in this box: white on the wash, warm tint on white sections.
-export function Mark({ children, onWash = false, pointer = false }: { children: React.ReactNode; onWash?: boolean; pointer?: boolean }) {
+export function Mark({ children, onWash = false, pointer = false, green = false }: { children: React.ReactNode; onWash?: boolean; pointer?: boolean; green?: boolean }) {
   return (
-    <span className={cx("relative inline-block px-3 pb-1 shadow-highlight", onWash ? "bg-card px-3.5 pb-1.5" : "bg-highlight")}>
+    <span className={cx("relative inline-block px-3 pb-1 shadow-highlight", onWash ? "bg-card px-3.5 pb-1.5" : green ? "bg-ok-tint" : "bg-highlight")}>
       {children}
       {pointer && (
         <span

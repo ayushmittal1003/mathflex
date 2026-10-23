@@ -44,7 +44,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
               <img src="/brand/mathflex-mark.svg" alt="" className="block w-[22px]" />
               <b className="text-[15px] tracking-[-0.02em]">mathflex</b>
             </div>
-            <div className="rounded-md bg-primary/10 p-2 font-bold text-primary">My Learning</div>
+            <div className="rounded-md bg-primary/10 p-2 font-bold text-[color-mix(in_oklab,var(--primary)_75%,black)]">My Learning</div>
             {["Chapters", "Practice", "Leaderboard", "Notes"].map((l) => <div key={l} className="p-2 text-secondary-foreground">{l}</div>)}
             <div className="mt-auto rounded-lg bg-muted p-3">
               <div className="text-xs font-bold">Level 6</div>
@@ -101,7 +101,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
                 <div className="mt-2.5 grid gap-2 text-xs">
                   {notes.map((n) => (
                     <div key={n.title} className="flex items-center gap-2">
-                      <span className={cx("rounded px-1.5 py-0.5 font-mono text-xs font-bold", n.map ? "bg-xp/12 text-xp" : "bg-primary/10 text-primary")}>{n.tag}</span>
+                      <span className={cx("rounded px-1.5 py-0.5 font-mono text-xs font-bold", n.map ? "bg-xp/12 text-xp" : "bg-primary/10 text-[color-mix(in_oklab,var(--primary)_75%,black)]")}>{n.tag}</span>
                       <span className="truncate">{n.title}</span>
                     </div>
                   ))}

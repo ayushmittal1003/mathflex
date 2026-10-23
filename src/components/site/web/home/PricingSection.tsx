@@ -20,6 +20,7 @@ export function PricingSection({ chapters, courses, coupon }: { chapters: HomeCh
     <section id="pricing" className="scroll-mt-6 bg-ok-tint py-12 tablet:py-22">
       <SectionHead
         eyebrow="Pricing"
+        dot="ok"
         title={<>Pocket-money pricing for <Mark onWash>IIT-level</Mark> prep.</>}
         lead="Start with one chapter. Move to a full class whenever you are ready."
       />

@@ -43,7 +43,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
               key={s.kicker}
               data-how-step={i}
               onClick={() => setStep(i)}
-              className={cx("cursor-pointer pb-8 pt-2 transition-opacity duration-400 tablet:min-h-[58vh] tablet:pb-10", i === step ? "opacity-100" : "tablet:opacity-35")}
+              className={"cursor-pointer pb-8 pt-2 tablet:min-h-[58vh] tablet:pb-10"}
             >
               <div className="flex items-center gap-3">
                 <span className={cx("rounded-md px-2 py-1 font-mono text-[13px] font-bold transition-colors duration-300", i === step ? "bg-foreground text-card" : "bg-muted text-muted-foreground")}>
@@ -51,7 +51,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
                 </span>
                 <span className="text-[13px] font-bold uppercase tracking-[0.08em] text-muted-foreground">{s.kicker}</span>
               </div>
-              <h3 className="mt-4.5 text-[clamp(26px,3vw,38px)] font-extrabold leading-[1.08] tracking-[-0.035em]">{s.title}</h3>
+              <h3 className={cx("mt-4.5 text-[clamp(26px,3vw,38px)] font-extrabold leading-[1.08] tracking-[-0.035em] transition-colors duration-400", i !== step && "tablet:text-foreground/55")}>{s.title}</h3>
               <p className="mt-3 max-w-[440px] text-[17px] leading-[1.6] text-muted-foreground text-pretty">{s.body}</p>
             </div>
           ))}
