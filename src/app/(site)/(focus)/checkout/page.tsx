@@ -3,6 +3,7 @@ import { getSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
 import { CartView, type CheckoutMeta } from "@/components/site/CartView";
 import { getCartMeta } from "@/components/site/web/data";
+import { instructorNames } from "@/lib/site-content";
 import { privateMetadata } from "@/lib/seo/metadata";
 
 export const metadata = privateMetadata("Checkout");
@@ -29,9 +30,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   };
   return (
     <CartView
-      mentorship={{ enabled: s.features.mentorshipUpsell, price: s.mentorshipPrice, title: s.mentorshipTitle, blurb: s.mentorshipBlurb, mentor: s.mentorName }}
+      mentorship={{ enabled: s.features.mentorshipUpsell, price: s.mentorshipPrice, title: s.mentorshipTitle, blurb: s.mentorshipBlurb, mentor: instructorNames(s).full }}
       couponsEnabled={s.features.coupons}
-      initialMentorship={mentorship === "1" && s.features.mentorshipUpsell}
+      initialMentorship={mentorship === "1" ? true : mentorship === "0" ? false : null}
       loggedIn={!!user}
       meta={meta}
       cartMeta={cartMeta}

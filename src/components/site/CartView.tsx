@@ -1,5 +1,5 @@
 "use client";
-import { formatPhone } from "@/lib/site-content";
+import { formatPhone, mentorshipPlan } from "@/lib/site-content";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,7 +28,7 @@ export type CheckoutMeta = {
 export function CartView(props: {
   mentorship: { enabled: boolean; price: number; title: string; blurb: string; mentor: string };
   couponsEnabled: boolean;
-  initialMentorship: boolean;
+  initialMentorship: boolean | null; // from ?mentorship=1 / 0; null = default
   loggedIn: boolean;
   meta: CheckoutMeta;
   cartMeta: CartMeta;
@@ -38,7 +38,9 @@ export function CartView(props: {
   const [quote, setQuote] = useState<Quote | null>(null);
   const [coupon, setCoupon] = useState<string | null>(null);
   const [couponInput, setCouponInput] = useState("");
-  const [mentor, setMentor] = useState(props.initialMentorship);
+  // The 1:1 call is pre-ticked once the cart has a chapter or course; an explicit choice wins.
+  const [mentorChoice, setMentorChoice] = useState<boolean | null>(props.initialMentorship);
+  const mentor = props.mentorship.enabled && (mentorChoice ?? items.length > 0);
   const [error, setError] = useState<string | null>(null);
   const [needPhone, setNeedPhone] = useState(false);
   const [phone, setPhone] = useState("");
@@ -66,7 +68,7 @@ export function CartView(props: {
     startPay(async () => {
       const res = await placeOrder(items, coupon, mentor, needPhone ? phone : undefined);
       if (!res.ok) {
-        if (res.login) router.push(`/login?next=${encodeURIComponent("/cart" + (mentor ? "?mentorship=1" : ""))}`);
+        if (res.login) router.push(`/login?next=${encodeURIComponent(`/checkout?mentorship=${mentor ? 1 : 0}`)}`);
         else {
           if (res.needPhone) setNeedPhone(true);
           setError(res.error);
@@ -213,36 +215,27 @@ export function CartView(props: {
               {!empty && <BundleUpsell meta={props.cartMeta} className="mx-5.5 my-4.5" />}
             </section>
 
-            {/* Upsell: the existing mentorship add-on */}
-            {props.mentorship.enabled && (
-              <section className={card}>
-                <div className="flex flex-wrap items-stretch">
-                  <div className="relative grid min-h-[150px] flex-[0_0_100%] place-items-center bg-video-stripes text-white tablet:flex-[0_0_200px]">
-                    <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_100%,color-mix(in_oklab,var(--primary)_35%,transparent),transparent_70%)]" />
-                    <svg className="relative size-10 text-white/85" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                      <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" />
-                    </svg>
-                  </div>
-                  <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-3 px-5.5 py-5">
-                    <span className="self-start rounded bg-foreground px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.06em] text-white">Recommended</span>
-                    <div>
-                      <div className="text-lg font-extrabold tracking-[-0.02em]">{props.mentorship.title}</div>
-                      <div className="mt-1 text-sm leading-[1.5] text-secondary-foreground">{props.mentorship.blurb}</div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setMentor((m) => !m)}
-                      aria-pressed={mentor}
-                      className={cx("flex items-center gap-3 self-start rounded-[10px] border-[1.5px] py-2.5 pl-2.5 pr-3.5 text-foreground transition", mentor ? "border-primary bg-selected" : "border-border bg-card")}
-                    >
-                      <span className={cx("grid size-5.5 place-items-center rounded-md border-[1.5px] text-white transition-colors", mentor ? "border-primary bg-primary" : "border-border bg-card")}>
-                        {mentor && <CheckIcon className="size-3" strokeWidth={3.5} />}
-                      </span>
-                      <span className="text-sm font-bold">{mentor ? "Added to your order" : "Add the call"}</span>
-                      <span className="text-sm font-extrabold">{inr(props.mentorship.price)}</span>
-                    </button>
-                  </div>
-                </div>
+            {/* 1:1 intro call: pre-ticked once the cart has an item. Sits above sign-in and payment. */}
+            {props.mentorship.enabled && !empty && (
+              <section className={cx(card, "border-[1.5px]", mentor ? "border-primary" : "border-border")} aria-labelledby="mentor-title">
+                <label className="flex cursor-pointer items-start gap-3.5 px-5.5 py-5">
+                  <input
+                    type="checkbox"
+                    checked={mentor}
+                    onChange={(e) => setMentorChoice(e.target.checked)}
+                    className="mt-0.5 size-6 shrink-0 cursor-pointer accent-primary"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span id="mentor-title" className="block text-base font-extrabold leading-[1.35] tracking-[-0.015em]">
+                      Add a 1:1 intro call with {props.mentorship.mentor} (IIT Delhi alumnus) <span className="whitespace-nowrap">· {inr(props.mentorship.price)}</span>
+                    </span>
+                    <span className="mt-1 block text-sm leading-[1.5] text-secondary-foreground">{props.mentorship.blurb}</span>
+                  </span>
+                </label>
+                <p className="border-t border-border px-5.5 py-3.5 text-[13px] leading-[1.5] text-secondary-foreground">
+                  Want ongoing help? {mentorshipPlan.sessions} monthly sessions for {inr(mentorshipPlan.price)}.{" "}
+                  <Link href="/book-a-call" className="font-bold text-primary underline underline-offset-[3px]">Learn more</Link>
+                </p>
               </section>
             )}
 
@@ -265,7 +258,7 @@ export function CartView(props: {
                   <span className="ml-auto shrink-0 rounded-md bg-ok/14 px-2 py-1 text-xs font-bold text-ok-strong">Signed in</span>
                 </div>
               ) : (
-                <InlineLogin next={`/checkout${mentor ? "?mentorship=1" : ""}`} />
+                <InlineLogin next={`/checkout?mentorship=${mentor ? 1 : 0}`} />
               )}
             </section>
 

@@ -299,6 +299,10 @@ export const aboutTimeline = [
   { tag: "Next", t: "Your chapter", d: "Pick the chapter that's costing you marks and fix it this week.", you: true },
 ];
 
+// ---- Mentorship plan (checkout "Learn more" line) ----------------------------------------------
+// Display copy only: the monthly package isn't a purchasable product yet (see ayush-handoff.md).
+export const mentorshipPlan = { sessions: 4, price: 1000 };
+
 // ---- Cart recommendations ------------------------------------------------------------------
 // Conic sections are taken together: each one recommends the other two. Matched by chapter slug
 // (the slugs are database values: if one is renamed in admin, update this list).
