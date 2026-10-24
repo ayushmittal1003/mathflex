@@ -1,5 +1,5 @@
 "use client";
-import { formatPhone, mentorshipPlan, supportPhone } from "@/lib/site-content";
+import { formatPhone, mentorshipCall, mentorshipPlan, supportEmail, supportPhone } from "@/lib/site-content";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -236,13 +236,14 @@ export function CartView(props: {
                   />
                   <span className="min-w-0 flex-1">
                     <span id="mentor-title" className="block text-base font-extrabold leading-[1.35] tracking-[-0.015em]">
-                      Add a 1:1 intro call with {props.mentorship.mentor} (IIT Delhi alumnus) <span className="whitespace-nowrap">· {inr(props.mentorship.price)}</span>
+                      {mentorshipCall.minutes}-minute 1:1 call with {props.mentorship.mentor} (IIT Delhi alumnus) <span className="whitespace-nowrap">· {inr(props.mentorship.price)}</span>
                     </span>
-                    <span className="mt-1 block text-sm leading-[1.5] text-secondary-foreground">{props.mentorship.blurb}</span>
+                    <span className="mt-1 block text-sm leading-[1.5] text-secondary-foreground">{mentorshipCall.pitch}</span>
+                    <span className="mt-1 block text-[13px] leading-[1.5] text-muted-foreground">{mentorshipCall.contactNote}</span>
                   </span>
                 </label>
                 <p className="border-t border-border px-5.5 py-3.5 text-[13px] leading-[1.5] text-secondary-foreground">
-                  Want ongoing help? {mentorshipPlan.sessions} monthly sessions for {inr(mentorshipPlan.price)}.{" "}
+                  Want ongoing help? {mentorshipPlan.sessions} monthly sessions of {mentorshipPlan.minutes} minutes each for {inr(mentorshipPlan.price)}: {mentorshipCall.monthly}{" "}
                   <Link href="/book-a-call" className="font-bold text-primary underline underline-offset-[3px]">Learn more</Link>
                 </p>
               </section>
@@ -397,7 +398,8 @@ export function CartView(props: {
         {!empty && (
           <p className="mt-6 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-xs leading-[1.5] text-secondary-foreground min-[900px]:hidden">
             <LockIcon className="size-3 text-ok" /> Secure payment via Cashfree{accessParts.map((p) => ` · ${p}`).join("")} · Support{" "}
-            <a href={supportPhone.href} className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]">{supportPhone.display}</a>
+            <a href={supportPhone.href} className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]">{supportPhone.display}</a> ·{" "}
+            <a href={`mailto:${supportEmail}`} className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]">{supportEmail}</a>
           </p>
         )}
       </main>

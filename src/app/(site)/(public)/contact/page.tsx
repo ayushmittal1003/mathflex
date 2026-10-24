@@ -62,7 +62,7 @@ export default async function ContactPage() {
               ))}
             </ul>
             <p className="mt-7 border-t border-border pt-5 text-sm leading-[1.6] text-muted-foreground">
-              For privacy requests, write to {supportEmail} with the subject “Privacy Policy / Data Protection Request”. See our <Link href="/privacy" className="font-semibold text-primary">privacy policy</Link>.
+              For privacy requests, write to <a href={`mailto:${supportEmail}`} className="font-semibold text-primary">{supportEmail}</a> with the subject “Privacy Policy / Data Protection Request”. See our <Link href="/privacy" className="font-semibold text-primary">privacy policy</Link>.
             </p>
           </div>
 

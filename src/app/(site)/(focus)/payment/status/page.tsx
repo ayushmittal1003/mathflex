@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { inr } from "@/lib/format";
-import { firstWeek, instructor, instructorNames } from "@/lib/site-content";
+import { firstWeek, instructor, instructorNames, mentorshipCall } from "@/lib/site-content";
 import { PaidCelebration } from "@/components/site/PaidCelebration";
 import { PaymentPoller } from "@/components/site/PaymentPoller";
 import { SiteLogo } from "@/components/site/web/SiteLogo";
@@ -215,7 +215,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                   </span>
                   <div className="min-w-0 flex-[1_1_220px]">
                     <div className="text-base font-bold">{settings.mentorshipTitle}</div>
-                    <div className="mt-0.5 text-[13px] text-muted-foreground">Your call is booked. The team will WhatsApp you to pick a time.</div>
+                    <div className="mt-0.5 text-[13px] text-muted-foreground">{mentorshipCall.contactNote}</div>
                   </div>
                   <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className="shrink-0 whitespace-nowrap rounded-lg bg-foreground px-3.5 py-2.5 text-[13px] font-bold text-white hover:brightness-130">WhatsApp us</a>
                 </div>
@@ -290,7 +290,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
               <span className="text-[30px] font-extrabold tracking-[-0.04em]">{inr(paid.total)}</span>
             </div>
             <p className="mt-1 text-[13px] leading-[1.55] text-muted-foreground">
-              Questions about your order? Email {settings.supportEmail} or <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className="font-semibold text-primary">WhatsApp us</a>.
+              Questions about your order? Email <a href={`mailto:${settings.supportEmail}`} className="font-semibold text-primary">{settings.supportEmail}</a> or <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className="font-semibold text-primary">WhatsApp us</a>.
             </p>
           </div>
         </div>

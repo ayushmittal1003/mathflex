@@ -302,7 +302,15 @@ export const aboutTimeline = [
 
 // ---- Mentorship plan (checkout "Learn more" line) ----------------------------------------------
 // Display copy only: the monthly package isn't a purchasable product yet (see ayush-handoff.md).
-export const mentorshipPlan = { sessions: 4, price: 1000 };
+export const mentorshipPlan = { sessions: 4, price: 1000, minutes: 45 };
+// 1:1 call copy shown at checkout and on the thank-you page. Not a form: the team contacts the student.
+export const mentorshipCall = {
+  minutes: 45,
+  pitch: "Your study plan, weak chapters and doubt clearing.",
+  monthly: "study plan, weak-chapter analysis and weightage-wise preparation.",
+  contactNote: "Our support team will contact you to understand what you need help with and schedule your call.",
+};
+export const supportEmail = "support@mathflex.in";
 
 // ---- Cart recommendations ------------------------------------------------------------------
 // Conic sections are taken together: each one recommends the other two. Matched by chapter slug
