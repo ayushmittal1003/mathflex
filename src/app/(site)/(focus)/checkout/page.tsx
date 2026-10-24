@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
 import { CartView, type CheckoutMeta } from "@/components/site/CartView";
+import { getCartMeta } from "@/components/site/web/data";
 import { privateMetadata } from "@/lib/seo/metadata";
 
 export const metadata = privateMetadata("Checkout");
@@ -19,10 +20,10 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     }),
     db.course.findMany({ where: { isPublished: true }, orderBy: { sortOrder: "asc" }, select: { id: true, title: true, price: true, chapters: { select: { chapterId: true } } } }),
   ]);
+  const cartMeta = await getCartMeta();
   const meta: CheckoutMeta = {
     chapters: Object.fromEntries(chapters.map((c) => [c.id, { title: c.title, symbol: c.symbol, coverFrom: c.coverFrom, coverTo: c.coverTo, classLevel: c.classLevel, parts: c._count.parts, price: c.price, mrp: c.mrp }])),
     courses: courses.map((c) => ({ id: c.id, title: c.title, price: c.price, chapterIds: c.chapters.map((x) => x.chapterId), count: c.chapters.length })),
-    suggestions: chapters.map((c) => c.id),
     user: user ? { name: user.name, email: user.email } : null,
     whatsapp: s.whatsappNumber,
   };
@@ -33,6 +34,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       initialMentorship={mentorship === "1" && s.features.mentorshipUpsell}
       loggedIn={!!user}
       meta={meta}
+      cartMeta={cartMeta}
     />
   );
 }

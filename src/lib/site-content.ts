@@ -298,3 +298,8 @@ export const aboutTimeline = [
   { tag: "Today", t: "Mathflex launches", d: "{chapterCount} chapters for Class {classes}, sold one at a time. We're new, and we're building it with our first students." },
   { tag: "Next", t: "Your chapter", d: "Pick the chapter that's costing you marks and fix it this week.", you: true },
 ];
+
+// ---- Cart recommendations ------------------------------------------------------------------
+// Conic sections are taken together: each one recommends the other two. Matched by chapter slug
+// (the slugs are database values: if one is renamed in admin, update this list).
+export const conicSlugs = ["parabola", "ellipse", "hyperbola"] as const;

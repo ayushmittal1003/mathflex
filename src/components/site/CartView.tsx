@@ -11,6 +11,8 @@ import { load } from "@cashfreepayments/cashfree-js";
 import type { Quote } from "@/lib/pricing";
 import { inr, pctOff } from "@/lib/format";
 import { SiteLogo } from "./web/SiteLogo";
+import { Recommendations } from "./web/Recommendations";
+import type { CartMeta } from "./web/cart-meta";
 import { CheckIcon, LockIcon } from "./web/primitives";
 import { cx } from "./web/ui";
 
@@ -18,7 +20,6 @@ import { cx } from "./web/ui";
 export type CheckoutMeta = {
   chapters: Record<string, { title: string; symbol: string; coverFrom: string; coverTo: string; classLevel: number; parts: number; price: number; mrp: number }>;
   courses: { id: string; title: string; price: number; chapterIds: string[]; count: number }[];
-  suggestions: string[]; // chapter ids, best first
   user: { name: string; email: string } | null;
   whatsapp: string;
 };
@@ -29,6 +30,7 @@ export function CartView(props: {
   initialMentorship: boolean;
   loggedIn: boolean;
   meta: CheckoutMeta;
+  cartMeta: CartMeta;
 }) {
   const items = useCart();
   const router = useRouter();
@@ -125,7 +127,6 @@ export function CartView(props: {
     upgrade.covered.forEach((id) => cart.remove(id));
     cart.add({ type: "COURSE", id: upgrade.c.id });
   };
-  const addOns = meta.suggestions.filter((id) => !inCart.has(id) && !meta.courses.some((c) => inCart.has(c.id) && c.chapterIds.includes(id))).slice(0, 3);
 
   const payLabel = !quote?.lines.length ? "Your cart is empty" : signedIn ? `Pay ${inr(quote?.total ?? 0)}` : "Log in to pay";
   const card = "overflow-hidden rounded-xl border border-border bg-card";
@@ -281,32 +282,8 @@ export function CartView(props: {
               </section>
             )}
 
-            {/* Upsell: more chapters (real catalog, highest JEE weightage first) */}
-            {!empty && addOns.length > 0 && (
-              <section className="rounded-xl border border-border bg-card px-5.5 py-5">
-                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1.5">
-                  <h2 className="text-[17px] font-extrabold tracking-[-0.02em]">Students often add</h2>
-                  <Link href="/chapters" className="text-[13px] font-bold text-primary">See all chapters →</Link>
-                </div>
-                <div className="mt-3.5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-2.5">
-                  {addOns.map((id) => {
-                    const a = meta.chapters[id];
-                    return (
-                      <div key={id} className="flex animate-mf-rise items-center gap-3 rounded-[10px] border border-border p-3">
-                        <span className={cx("grid size-11 shrink-0 place-items-center rounded-lg font-black text-white", a.symbol.length > 2 ? "text-xs" : "text-lg")} style={{ background: `linear-gradient(155deg, ${a.coverFrom}, ${a.coverTo})` }}>{a.symbol}</span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-bold">{a.title}</span>
-                          <span className="block text-xs text-muted-foreground">
-                            {inr(a.price)} {a.mrp > a.price && <span className="line-through">{inr(a.mrp)}</span>}
-                          </span>
-                        </span>
-                        <button type="button" onClick={() => cart.add({ type: "CHAPTER", id })} className="h-11 shrink-0 rounded-lg border border-foreground bg-card px-3.5 text-[13px] font-bold text-foreground hover:bg-foreground hover:text-white">+ Add</button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
+            {/* Upsell: related chapters (server prices) */}
+            {!empty && <Recommendations meta={props.cartMeta} max={3} className="rounded-xl border border-border bg-card px-5.5 py-5" />}
 
             {/* 2 · Sign in (email + password, the existing login action) */}
             <section className={cx(card, !signedIn && !empty && "border-foreground")}>
