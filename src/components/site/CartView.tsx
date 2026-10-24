@@ -1,5 +1,5 @@
 "use client";
-import { formatPhone, mentorshipPlan } from "@/lib/site-content";
+import { formatPhone, mentorshipPlan, supportPhone } from "@/lib/site-content";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,7 @@ import { getQuote, placeOrder } from "@/app/actions/checkout";
 import { login, type AuthState } from "@/app/actions/auth";
 import { load } from "@cashfreepayments/cashfree-js";
 import type { Quote } from "@/lib/pricing";
-import { inr, pctOff } from "@/lib/format";
+import { inr, pctOff, validity } from "@/lib/format";
 import { SiteLogo } from "./web/SiteLogo";
 import { Recommendations } from "./web/Recommendations";
 import { CouponField } from "./web/CouponField";
@@ -44,6 +44,8 @@ export function CartView(props: {
   const [error, setError] = useState<string | null>(null);
   const [needPhone, setNeedPhone] = useState(false);
   const [phone, setPhone] = useState("");
+  const [summaryOpen, setSummaryOpen] = useState(false); // phones: the summary is a collapsible bar at the top
+  const kbOffset = useKeyboardOffset();
   const [paying, startPay] = useTransition();
   const [loading, startLoad] = useTransition();
 
@@ -109,6 +111,12 @@ export function CartView(props: {
   const saved = quote ? mrpTotal - quote.subtotal + quote.discount : 0;
   const step = empty ? 0 : signedIn ? 2 : 1;
 
+  // Access length per kind of line, from the catalogue (display only).
+  const daysOf = (type: "CHAPTER" | "COURSE") => [...new Set((quote?.lines ?? []).filter((l) => l.type === type).map((l) => (type === "CHAPTER" ? props.cartMeta.chapters[l.id ?? ""]?.validityDays : props.cartMeta.courses.find((c) => c.id === l.id)?.validityDays)).filter((n): n is number => !!n))].sort((a, b) => a - b);
+  const accessParts = [
+    ...(daysOf("CHAPTER").length ? [`${daysOf("CHAPTER").map(validity).join(" / ")} access per chapter`] : []),
+    ...(daysOf("COURSE").length ? [`${daysOf("COURSE").map(validity).join(" / ")} access per course`] : []),
+  ];
   const payLabel = !quote?.lines.length ? "Your cart is empty" : signedIn ? `Pay ${inr(quote?.total ?? 0)}` : "Log in to pay";
   const card = "overflow-hidden rounded-xl border border-border bg-card";
   const stepDot = (n: number, done: boolean, active: boolean) => (
@@ -180,6 +188,7 @@ export function CartView(props: {
                       <div className="mt-1.5 text-base font-bold tracking-[-0.015em]">{l.title}</div>
                       <div className="mt-0.5 text-[13px] text-muted-foreground">
                         {ch ? `Class ${ch.classLevel} · ${ch.parts} parts · DPPs, PYQs, notes` : course ? `${course.count} chapters` : ""}
+                        {(() => { const d = l.type === "CHAPTER" ? props.cartMeta.chapters[l.id ?? ""]?.validityDays : props.cartMeta.courses.find((c) => c.id === l.id)?.validityDays; return d ? ` · ${validity(d)} access` : ""; })()}
                       </div>
                     </div>
                     <div className="shrink-0 text-right">
@@ -297,9 +306,21 @@ export function CartView(props: {
           </div>
 
           {/* Order summary */}
-          <aside className="w-full min-w-0 flex-[1_1_340px] min-[900px]:sticky min-[900px]:top-6 min-[900px]:max-w-[380px]">
+          <aside className="order-first w-full min-w-0 flex-[1_1_340px] min-[900px]:sticky min-[900px]:top-6 min-[900px]:order-last min-[900px]:max-w-[380px]">
             <div className="overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-32px_rgb(80_20_0/0.4)]">
-              <h2 className="px-5.5 pt-5 text-[19px] font-extrabold tracking-[-0.02em]">Order summary</h2>
+              <h2 className="hidden px-5.5 pt-5 text-[19px] font-extrabold tracking-[-0.02em] min-[900px]:block">Order summary</h2>
+              <button
+                type="button"
+                onClick={() => setSummaryOpen((o) => !o)}
+                aria-expanded={summaryOpen}
+                aria-controls="order-summary"
+                className="flex min-h-14 w-full items-center gap-3 px-5.5 py-3 text-left min-[900px]:hidden"
+              >
+                <span className="text-[17px] font-extrabold tracking-[-0.02em]">Order summary</span>
+                <span className="ml-auto text-[17px] font-extrabold tracking-[-0.02em]">{inr(quote?.total ?? 0)}</span>
+                <svg className={cx("size-4 shrink-0 transition-transform", summaryOpen && "rotate-180")} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m6 9 6 6 6-6" /></svg>
+              </button>
+              <div id="order-summary" className={cx("min-[900px]:block", summaryOpen ? "block" : "hidden")}>
               <div className="grid gap-2.5 px-5.5 pt-3.5">
                 {quote?.lines.map((l) => (
                   <div key={`${l.type}-${l.id}`} className="flex justify-between gap-3 text-sm">
@@ -359,7 +380,8 @@ export function CartView(props: {
                   {[
                     "Your chapters unlock on your account as soon as the payment is confirmed",
                     "Watch on phone and laptop",
-                    `Need help? WhatsApp us on ${formatPhone(meta.whatsapp)}`,
+                    ...accessParts,
+                    `Need help? WhatsApp ${formatPhone(meta.whatsapp)} or call ${supportPhone.display}`,
                   ].map((t) => (
                     <div key={t} className="flex gap-2.5 text-[13px] leading-[1.45] text-secondary-foreground">
                       <CheckIcon className="mt-0.5 size-3.5 shrink-0 text-ok" />
@@ -368,14 +390,21 @@ export function CartView(props: {
                   ))}
                 </div>
               </div>
+              </div>
             </div>
           </aside>
         </div>
+        {!empty && (
+          <p className="mt-6 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-xs leading-[1.5] text-secondary-foreground min-[900px]:hidden">
+            <LockIcon className="size-3 text-ok" /> Secure payment via Cashfree{accessParts.map((p) => ` · ${p}`).join("")} · Support{" "}
+            <a href={supportPhone.href} className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]">{supportPhone.display}</a>
+          </p>
+        )}
       </main>
 
       {/* Phone: sticky total + pay bar */}
       {!empty && (
-        <div className="fixed inset-x-0 bottom-0 z-50 flex items-center gap-3.5 border-t border-border bg-card px-4 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_-18px_rgb(0_0_0/0.3)] min-[900px]:hidden">
+        <div style={{ bottom: kbOffset }} className="fixed inset-x-0 bottom-0 z-50 flex items-center gap-3.5 border-t border-border bg-card px-4 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_-18px_rgb(0_0_0/0.3)] min-[900px]:hidden">
           <div className="shrink-0">
             <div className="text-xs text-muted-foreground">Total</div>
             <div className="text-[22px] font-extrabold leading-[1.1] tracking-[-0.03em]">{inr(quote?.total ?? 0)}</div>
@@ -414,4 +443,20 @@ function InlineLogin({ next }: { next: string }) {
       </div>
     </form>
   );
+}
+
+// On phones the on-screen keyboard can cover a fixed bottom bar (iOS). Track the visual viewport
+// and lift the bar by the part of the layout viewport the keyboard hides.
+function useKeyboardOffset() {
+  const [offset, setOffset] = useState(0);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => setOffset(Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)));
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => { vv.removeEventListener("resize", update); vv.removeEventListener("scroll", update); };
+  }, []);
+  return offset;
 }
