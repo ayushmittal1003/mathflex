@@ -12,6 +12,7 @@ import type { Quote } from "@/lib/pricing";
 import { inr, pctOff } from "@/lib/format";
 import { SiteLogo } from "./web/SiteLogo";
 import { Recommendations } from "./web/Recommendations";
+import { CouponField } from "./web/CouponField";
 import { BundleUpsell } from "./web/BundleUpsell";
 import type { CartMeta } from "./web/cart-meta";
 import { CheckIcon, LockIcon } from "./web/primitives";
@@ -37,7 +38,6 @@ export function CartView(props: {
   const router = useRouter();
   const [quote, setQuote] = useState<Quote | null>(null);
   const [coupon, setCoupon] = useState<string | null>(null);
-  const [couponInput, setCouponInput] = useState("");
   // The 1:1 call is pre-ticked once the cart has a chapter or course; an explicit choice wins.
   const [mentorChoice, setMentorChoice] = useState<boolean | null>(props.initialMentorship);
   const mentor = props.mentorship.enabled && (mentorChoice ?? items.length > 0);
@@ -309,7 +309,7 @@ export function CartView(props: {
                 ))}
                 {!!quote?.discount && (
                   <div className="flex justify-between gap-3 text-sm">
-                    <span className="min-w-0 truncate text-secondary-foreground">{quote.coupon?.code ?? "Coupon"}</span>
+                    <span className="min-w-0 truncate text-secondary-foreground">Coupon{quote.coupon ? ` (${quote.coupon.code})` : ""}</span>
                     <span className="shrink-0 font-bold text-ok-strong">−{inr(quote.discount)}</span>
                   </div>
                 )}
@@ -323,29 +323,12 @@ export function CartView(props: {
 
               {props.couponsEnabled && (
                 <div className="mx-5.5 mt-4 border-t border-border pt-4">
-                  {quote?.coupon ? (
-                    <div className="flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed border-ok bg-ok/7 px-3 py-2.5">
-                      <CheckIcon className="size-4 text-ok-strong" strokeWidth={2.5} />
-                      <span className="flex-1 text-[13px]"><b className="font-mono">{quote.coupon.code}</b> applied · {quote.coupon.message}</span>
-                      <button type="button" onClick={() => { setCoupon(null); setCouponInput(""); }} className="inline-flex min-h-11 items-center text-xs font-bold text-muted-foreground underline underline-offset-[3px]">Remove</button>
-                    </div>
-                  ) : (
-                    <>
-                      <form onSubmit={(e) => { e.preventDefault(); setCoupon(couponInput.trim() || null); }} className="flex gap-2">
-                        <input
-                          value={couponInput}
-                          onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                          placeholder="Coupon code"
-                          aria-label="Coupon code"
-                          className="h-12 min-w-0 flex-1 rounded-lg border border-input bg-card px-3 font-mono text-sm uppercase outline-none focus:border-ring"
-                        />
-                        <button className="h-12 shrink-0 rounded-lg border border-foreground bg-card px-4 text-[13px] font-bold">Apply</button>
-                      </form>
-                      {quote?.couponError && (
-                        <p role="alert" className="mt-1.5 flex items-start gap-1.5 text-xs font-semibold text-destructive"><CircleAlert className="mt-px size-3.5 shrink-0" />{quote.couponError}</p>
-                      )}
-                    </>
-                  )}
+                  <CouponField
+                    applied={quote?.coupon ?? null}
+                    error={quote?.couponError ?? null}
+                    onApply={(code) => setCoupon(code)}
+                    onRemove={() => setCoupon(null)}
+                  />
                 </div>
               )}
 
