@@ -92,6 +92,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
   const stats = [
     { big: `${chapter.parts.length} parts`, small: totalSec ? `${duration(totalSec)} of video` : "Video lessons" },
+    ...(chapter.jeeWeightage > 0 ? [{ big: `${chapter.jeeWeightage}%`, small: "of JEE Main" }] : []),
     ...(dpp + pyq > 0 ? [{ big: `${dpp + pyq} questions`, small: "DPPs + PYQs" }] : []),
     ...(preview ? [{ big: "Free preview", small: "3–4 min, no sign-up" }] : []),
     { big: validity(chapter.validityDays), small: "of access" },
@@ -149,6 +150,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
             <div className="mt-5.5 flex flex-wrap gap-2">
               <Pill>Class {chapter.classLevel}</Pill>
               <Pill>{chapter.parts.length} parts{totalSec > 0 && ` · ${duration(totalSec)}`}</Pill>
+              {chapter.jeeWeightage > 0 && <span className="whitespace-nowrap rounded-full border border-card bg-card px-2.5 py-1.5 text-[13px] font-bold text-[oklch(0.5_0.17_47)]">{chapter.jeeWeightage}% of JEE Main</span>}
             </div>
             {chapter.tagline && <p className="mt-4.5 max-w-[520px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">{chapter.tagline}</p>}
             <a href="#instructor" className="mt-3 inline-flex min-h-11 items-center gap-2.5 text-foreground">

@@ -58,6 +58,7 @@ export function ChapterCard({ c, index = 0 }: { c: CardChapter; index?: number }
           <span className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground sm:mt-2.5 sm:gap-y-1.5">
             <span>{c.partsCount} parts</span>
             {!c.owned && c.free && <span className="font-bold text-ok-strong sm:hidden">Free preview</span>}
+            {c.jeeWeightage > 0 && <span>{c.jeeWeightage}% of JEE Main</span>}
             <span>{validity(c.validityDays)} access</span>
             {c.isTrending && <span className="font-bold text-primary">Popular</span>}
           </span>

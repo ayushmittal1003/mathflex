@@ -161,7 +161,7 @@ export const faqGroups: FaqGroup[] = [
     items: [
       { q: "What is Mathflex?", a: "Chapter-wise JEE maths videos for Class 11 and 12. Each chapter is split into short video parts, with practice problems, previous-year JEE questions and notes." },
       { q: "Can I watch anything for free?", a: "Yes. Every chapter has a free 3–4 minute preview you can watch without paying or signing up. The full parts unlock when you buy the chapter." },
-      { q: "Is this for JEE or Boards?", a: "Both. Chapters follow the Class 11 and 12 syllabus, and each chapter page shows what you get: video parts, practice questions and notes." },
+      { q: "Is this for JEE or Boards?", a: "Both. Chapters follow the Class 11 and 12 syllabus, and each one shows how much of JEE Main it carries so you can prioritise." },
       { q: "Do I need an account to buy?", a: "You can add chapters to your cart without an account. You log in or sign up with your email and a password just before you pay." },
     ],
   },

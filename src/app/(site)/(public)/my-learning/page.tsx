@@ -242,7 +242,7 @@ export default async function MyLearning() {
                     <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[13px] font-semibold text-muted-foreground">
                       <span>{c.partsCount} parts</span>
                       {c.durationSec > 0 && <span>{duration(c.durationSec)}</span>}
-                      
+                      {c.jeeWeightage > 0 && <span className="text-[oklch(0.5_0.17_47)]">{c.jeeWeightage}% of JEE</span>}
                     </div>
                     <div className="mt-4 flex justify-between text-[13px] font-semibold"><span>{c.doneCount}/{c.partsCount} parts done</span><span>{Math.round(pct * 100)}%</span></div>
                     <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className={cx("h-full rounded-full", pct === 1 ? "bg-ok" : "bg-primary")} style={{ width: `${pct * 100}%` }} /></div>

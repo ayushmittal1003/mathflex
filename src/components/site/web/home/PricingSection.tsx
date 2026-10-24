@@ -40,7 +40,7 @@ export function PricingSection({ chapters, courses, coupon }: { chapters: HomeCh
               <svg className="pointer-events-none absolute right-3 top-1/2 size-3.5 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m6 9 6 6 6-6" /></svg>
             </div>
             <Price price={pc.price} mrp={pc.mrp} />
-            <div className="text-[13px] text-muted-foreground">{pc.parts.length} parts</div>
+            <div className="text-[13px] text-muted-foreground">{pc.parts.length} parts{pc.jeeWeightage > 0 && ` · ${pc.jeeWeightage}% of JEE Main`}</div>
             <Checks items={["Every part of the chapter", "DPPs + PYQs for each part", "Notes for the chapter"]} />
             <div className="mt-auto pt-6">
               <BuyButton item={{ type: "CHAPTER", id: pc.id }} className={cx(cta, "w-full border border-border bg-secondary text-secondary-foreground")}>Buy this chapter</BuyButton>
