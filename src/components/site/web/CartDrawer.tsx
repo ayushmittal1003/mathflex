@@ -11,6 +11,7 @@ import type { CartMeta } from "./cart-meta";
 import { button, cx, tone } from "./ui";
 import { useFocusTrap } from "./useFocusTrap";
 import { Recommendations } from "./Recommendations";
+import { BundleUpsell } from "./BundleUpsell";
 
 // Cart drawer (right panel from the tablet breakpoint, bottom sheet on phones). Opens when
 // something is added or the nav cart icon is tapped. Prices come from the existing getQuote
@@ -113,6 +114,7 @@ function CartDrawer({ meta, onClose }: { meta: CartMeta; onClose: () => void }) 
                   );
                 })}
               </ul>
+              <BundleUpsell meta={meta} compact className="mt-3" />
               <Recommendations meta={meta} max={2} className="mt-3 border-t border-border pt-4" />
               {loading && !quote && <p className="py-6 text-center text-sm text-muted-foreground">Loading prices…</p>}
               {!!quote?.skipped.length && <p className="my-3 rounded-lg bg-muted p-3 text-sm text-muted-foreground">Not charged because you already own them: {quote.skipped.join(", ")}</p>}

@@ -35,3 +35,34 @@ export function recommendChapters(meta: CartMeta, items: CartItem[], max: number
   }
   return out.slice(0, max);
 }
+
+// ---- Bundle upsell -------------------------------------------------------------------------
+// Candidate courses worth comparing against the chapters in the cart. A course qualifies when
+//  - it is strictly cheaper than the cart chapters it covers (checked with server prices), at any
+//    chapter count; or
+//  - the cart has 8+ chapters of one class (Class course), or 8+ chapters across both classes
+//    (Class 11 + 12 combo), and the course price is at most 125% of those chapters' total.
+// Prices are never computed here: the caller gets both from the server quote (getQuote).
+export const BUNDLE_MIN_CHAPTERS = 8;
+export const BUNDLE_MAX_RATIO = 1.25;
+
+export type BundleCandidate = { courseId: string; covered: string[]; eligibleByCount: boolean; classLabel: string };
+
+export function bundleCandidates(meta: CartMeta, items: CartItem[]): BundleCandidate[] {
+  const inCart = new Set(items.map((i) => i.id));
+  const chapters = items.filter((i) => i.type === "CHAPTER").map((i) => meta.chapters[i.id]).filter(Boolean);
+  const out: BundleCandidate[] = [];
+  for (const course of meta.courses) {
+    if (inCart.has(course.id)) continue;
+    const covered = chapters.filter((c) => course.chapterIds.includes(c.id));
+    if (!covered.length) continue;
+    const courseClasses = [...new Set(course.chapterIds.map((id) => meta.chapters[id]?.classLevel).filter((n): n is number => !!n))].sort();
+    const coveredClasses = new Set(covered.map((c) => c.classLevel));
+    const isClassCourse = courseClasses.length === 1;
+    const eligibleByCount = isClassCourse
+      ? covered.length >= BUNDLE_MIN_CHAPTERS
+      : coveredClasses.size > 1 && covered.length >= BUNDLE_MIN_CHAPTERS;
+    out.push({ courseId: course.id, covered: covered.map((c) => c.id), eligibleByCount, classLabel: isClassCourse ? `Class ${courseClasses[0]}` : "Class 11 + 12" });
+  }
+  return out;
+}

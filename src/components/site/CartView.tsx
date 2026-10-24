@@ -12,6 +12,7 @@ import type { Quote } from "@/lib/pricing";
 import { inr, pctOff } from "@/lib/format";
 import { SiteLogo } from "./web/SiteLogo";
 import { Recommendations } from "./web/Recommendations";
+import { BundleUpsell } from "./web/BundleUpsell";
 import type { CartMeta } from "./web/cart-meta";
 import { CheckIcon, LockIcon } from "./web/primitives";
 import { cx } from "./web/ui";
@@ -100,33 +101,11 @@ export function CartView(props: {
   // ---- Presentation (dipankar-design/designs/Checkout.dc.html) ----------------------
   const { meta } = props;
   const lines = quote?.lines.filter((l) => l.type !== "MENTORSHIP") ?? [];
-  const inCart = new Set(items.map((i) => i.id));
   const signedIn = props.loggedIn;
   const canPay = !paying && !loading && !!quote?.lines.length;
   const mrpTotal = quote?.lines.reduce((s, l) => s + l.mrp, 0) ?? 0;
   const saved = quote ? mrpTotal - quote.subtotal + quote.discount : 0;
   const step = empty ? 0 : signedIn ? 2 : 1;
-
-  // Course upgrade hint: chapters in the cart that a single course already covers.
-  const upgrade = (() => {
-    const cartChapters = items.filter((i) => i.type === "CHAPTER").map((i) => i.id);
-    if (!cartChapters.length) return null;
-    const options = meta.courses
-      .filter((c) => !inCart.has(c.id))
-      .map((c) => {
-        const covered = cartChapters.filter((id) => c.chapterIds.includes(id));
-        const coveredPrice = covered.reduce((s, id) => s + (meta.chapters[id]?.price ?? 0), 0);
-        return { c, covered, diff: c.price - coveredPrice };
-      })
-      .filter((o) => o.covered.length >= 2)
-      .sort((a, b) => a.diff - b.diff);
-    return options[0] ?? null;
-  })();
-  const applyUpgrade = () => {
-    if (!upgrade) return;
-    upgrade.covered.forEach((id) => cart.remove(id));
-    cart.add({ type: "COURSE", id: upgrade.c.id });
-  };
 
   const payLabel = !quote?.lines.length ? "Your cart is empty" : signedIn ? `Pay ${inr(quote?.total ?? 0)}` : "Log in to pay";
   const card = "overflow-hidden rounded-xl border border-border bg-card";
@@ -231,22 +210,7 @@ export function CartView(props: {
               {!empty && !loading && quote && lines.length === 0 && !mentor && (
                 <p className="px-5.5 py-6 text-sm text-muted-foreground">Nothing left to pay for.</p>
               )}
-              {upgrade && upgrade.diff < upgrade.c.price && (
-                <div className="mx-5.5 my-4.5 flex flex-wrap items-center gap-x-4.5 gap-y-3.5 rounded-xl border-[1.5px] border-dashed border-primary/45 bg-[color-mix(in_oklab,var(--brand-2)_7%,var(--card))] px-4.5 py-4">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-gradient-to-br from-primary to-brand-2 text-white">
-                    <svg className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M12 19V5M5 12l7-7 7 7" /></svg>
-                  </span>
-                  <div className="min-w-0 flex-[1_1_240px]">
-                    <div className="text-[15px] font-extrabold tracking-[-0.01em]">
-                      {upgrade.diff > 0 ? `All of ${upgrade.c.title} for ${inr(upgrade.diff)} more` : `${upgrade.c.title} is ${inr(-upgrade.diff)} cheaper`}
-                    </div>
-                    <div className="mt-0.5 text-[13px] leading-[1.45] text-secondary-foreground">Swap these chapters for the full course and get all {upgrade.c.count} chapters.</div>
-                  </div>
-                  <button type="button" onClick={applyUpgrade} className="shrink-0 whitespace-nowrap rounded-lg bg-foreground px-4 py-2.5 text-sm font-bold text-white hover:brightness-130">
-                    {upgrade.diff > 0 ? "Upgrade" : "Switch and save"}
-                  </button>
-                </div>
-              )}
+              {!empty && <BundleUpsell meta={props.cartMeta} className="mx-5.5 my-4.5" />}
             </section>
 
             {/* Upsell: the existing mentorship add-on */}
