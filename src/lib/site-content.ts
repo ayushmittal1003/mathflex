@@ -48,6 +48,8 @@ export const instructor = {
   jobTitle: "JEE Maths Mentor",
   credentialShort: "IIT Delhi alumnus", // bylines, hero proof row, metadata
   introVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
+  // Founder welcome video on the payment-success page. Paste the Bunny video ID here when Karan's video is uploaded.
+  welcomeVideoId: null as string | null,
   // Portrait for the Book a call card, e.g. "/brand/karan.jpg" in public/. null shows a placeholder.
   photo: null as string | null,
   studentsGuided: "1,000+", // real figure from the founder
@@ -252,10 +254,9 @@ export const pricingFaqs: (Faq & { needs?: "free" | "gst" })[] = [
 
 // Thank-you page "Your first week" steps. Copy only; links are set on the page.
 export const firstWeek = [
-  { t: "Watch Part 1", d: "Short, focused parts. Pause and rewind as much as you like.", cta: "Start now" },
-  { t: "Clear the practice set", d: "Practice right after the part, with worked solutions for every answer you get wrong.", cta: "How practice works" },
-  { t: "Keep your streak", d: "Study a little every day to build your streak and earn XP.", cta: "View leaderboard" },
-  { t: "Revise with notes", d: "Open your chapter's notes any time for quick revision.", cta: "Go to My Learning" },
+  { t: "Start with Part 1", d: "Short, focused parts. Pause and rewind as much as you like.", cta: "Start now" },
+  { t: "Practise after every part", d: "Practice right after the part, with worked solutions for every answer you get wrong.", cta: "How practice works" },
+  { t: "Keep your streak going", d: "Study a little every day to build your streak and earn XP.", cta: "View leaderboard" },
 ];
 
 // Book a call page. Matches how the call works today: it's the mentorship add-on bought at
