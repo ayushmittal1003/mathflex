@@ -13,8 +13,10 @@ type Promo = { id: string; title: string; subtitle: string; ctaText: string; cta
 export function PromoPopup({ promo }: { promo: Promo | null }) {
   const [show, setShow] = useState(false);
   const pathname = usePathname();
+  // Never over checkout, payment, sign-in or the player: it would cover the pay button and form fields.
+  const quiet = /^\/(checkout|cart|payment|login|signup|learn|invite)(\/|$)/.test(pathname);
   useEffect(() => {
-    if (!promo) return;
+    if (!promo || quiet) return;
     let seen = false;
     let views = 1;
     try {
@@ -35,7 +37,7 @@ export function PromoPopup({ promo }: { promo: Promo | null }) {
     const onScroll = () => { if (window.scrollY > 80) { window.removeEventListener("scroll", onScroll); open(); } };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => { window.removeEventListener("scroll", onScroll); clearTimeout(t); };
-  }, [promo, pathname]);
+  }, [promo, pathname, quiet]);
 
   const close = () => {
     setShow(false);
@@ -50,7 +52,7 @@ export function PromoPopup({ promo }: { promo: Promo | null }) {
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  if (!promo || !show) return null;
+  if (!promo || !show || quiet) return null;
   return <PromoDialog promo={promo} close={close} />;
 }
 
