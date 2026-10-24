@@ -8,6 +8,7 @@ import { BookOpen, CalendarClock, Gift, GraduationCap, Home, LayoutGrid, LogOut,
 import { logout } from "@/app/actions/auth";
 import { useCart } from "../cart-store";
 import { SiteLogo } from "./SiteLogo";
+import { useCartDrawer } from "./CartDrawer";
 import { button, cx, tone } from "./ui";
 
 export type SiteNavUser = { name: string; email: string; avatarColor: string; isStaff: boolean; xp: number; streak: number; planSummary: string | null } | null;
@@ -22,6 +23,7 @@ const PLAIN_HEADER = ["/leaderboard", "/contact", "/faq", "/terms", "/privacy", 
 export function SiteNav({ user, features, contact }: { user: SiteNavUser; features: Features; contact: Contact }) {
   const pathname = usePathname();
   const cartCount = useCart().length;
+  const drawer = useCartDrawer();
   // The menu is open for the page it was opened on, so navigating closes it.
   const [openOn, setOpenOn] = useState<{ path: string; menu: "nav" | "account" | "more" } | null>(null);
   const open = openOn?.path === pathname && openOn.menu === "nav";
@@ -97,8 +99,10 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
         </div>
 
         <div className="col-start-3 flex items-center gap-2 justify-self-end">
-          <Link
-            href="/checkout"
+          <button
+            type="button"
+            onClick={() => drawer?.open()}
+            aria-haspopup="dialog"
             aria-label={`Cart, ${cartCount} item${cartCount === 1 ? "" : "s"}`}
             className={cx("relative grid size-11 place-items-center rounded-lg transition hover:scale-[1.06]", secondary)}
           >
@@ -112,7 +116,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
                 {cartCount}
               </span>
             )}
-          </Link>
+          </button>
 
           <div className="hidden items-center gap-2 lg:flex">
             {user ? (

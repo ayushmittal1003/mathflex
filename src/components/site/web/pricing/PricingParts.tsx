@@ -7,6 +7,7 @@ import { cart } from "../../cart-store";
 import { BuyButton } from "../BuyButton";
 import { CheckIcon, Mark, SectionHead } from "../primitives";
 import { useToast } from "../Toast";
+import { useCartDrawer } from "../CartDrawer";
 import { cx } from "../ui";
 
 export type BuilderChapter = { id: string; slug: string; title: string; classLevel: number; price: number; free: boolean };
@@ -79,6 +80,7 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
   const [sel, setSel] = useState<Set<string>>(new Set());
   const router = useRouter();
   const toast = useToast();
+  const drawer = useCartDrawer();
   const list = chapters.filter((c) => c.classLevel === cls);
   const picked = chapters.filter((c) => sel.has(c.id));
   const subtotal = picked.reduce((s, c) => s + c.price, 0);
@@ -123,7 +125,8 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
     if (!n) return;
     if (plan.course) cart.add({ type: "COURSE", id: plan.course.id });
     plan.rest.forEach((c) => cart.add({ type: "CHAPTER", id: c.id }));
-    toast(`Added to cart · ${inr(plan.total)}`, { label: "View cart", href: "/checkout" });
+    if (drawer) drawer.open();
+    else toast(`Added to cart · ${inr(plan.total)}`, { label: "View cart", href: "/checkout" });
     router.prefetch("/checkout");
   };
 
