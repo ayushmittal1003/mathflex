@@ -136,6 +136,17 @@ These live in the database or `prisma/seed.ts`, so the frontend can't fix them:
 - `Chapter.validityDays` / `Course.validityDays` values: see "Access length" above (chapters 90, Class 11 and 12 = 365, combo = 730, schema default 90). The chapter cards now show "3 months access" etc. straight from these.
 - Code note: `src/lib/catalog.ts` now also returns `validityDays` per chapter (read-only addition).
 
+## Checkout and conversion (Phase 3, frontend done; backend items for Ayush)
+**To build (only if the owner wants it):**
+- **Monthly mentorship package (4 sessions, ₹1,000).** Today checkout only shows a "Learn more" link to `/book-a-call` (copy lives in `mentorshipPlan` in `src/lib/site-content.ts`). To make it purchasable: new `ItemType` value and migration (`prisma/schema.prisma`), a price and copy in `src/lib/settings.ts` plus the admin settings page, a `MENTORSHIP_PLAN` quote line in `src/lib/pricing.ts`, a flag argument in `src/app/actions/checkout.ts`, and `fulfilOrder` (`src/lib/orders.ts`) creating the 4 `MentorshipBooking` rows. Then replace `mentorshipPlan` with the settings values and turn "Learn more" into an Add checkbox.
+
+**Admin / data:**
+- **Intro call length.** The checkout checkbox shows the admin mentorship blurb (Settings → Mentorship → Pitch) under the price and the code never hardcodes a duration. Set the blurb to state the real length (30 or 45 minutes; the default currently says "45 minutes"). Price is `mentorshipPrice` (300), title is `mentorshipTitle`.
+- **Conic sections rule.** "Students also take" matches chapters by slug: `parabola`, `ellipse`, `hyperbola` (list in `conicSlugs`, `src/lib/site-content.ts`). Do not rename those slugs during the chapter merge/split; if you do, update `conicSlugs`.
+- **Coupons (optional).** Existing behaviour is kept: a coupon discounts the whole subtotal, including the ₹300 call. If the owner wants coupons to exclude the call, change `quoteCart` in `src/lib/pricing.ts` (compute the coupon on the chapter and course lines only).
+- **Founder welcome video.** Upload to Bunny, then set `instructor.welcomeVideoId` in `src/lib/site-content.ts` (needs `BUNNY_LIBRARY_ID` and the other Bunny env vars; empty in `.env` today, so the page shows "Video coming soon").
+- **No backend change** was made in this phase: `pricing.ts`, `orders.ts`, `actions/checkout.ts`, Cashfree, Prisma and admin are untouched. The drawer, upsell and recommendations call the existing `getQuote`.
+
 ## Upcoming
 - **Sanity Studio (after the `feature/seo` PR is merged, on its own branch):** connect Sanity for (1) blog posts, with author, date, cover and categories, replacing `getPosts()` / `getPost()` in `src/lib/blog.ts` and keeping the `BlogPost` shape; (2) an author profile for the mentor (name, bio, credential "IIT Delhi alumnus", photo); (3) later, static SEO page content for the landing pages (`docs/seo-landing-plan.md`). Chapters, courses, prices and users stay in the current database.
   - Needed from the owner: Sanity project ID, dataset name (`production`), an optional read token for draft previews, and a webhook secret.
