@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { createSession, hashPassword } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { isStaff } from "@/lib/permissions";
+import { appHref, STUDENT_HOME } from "@/lib/hosts";
 import { GOOGLE_STATE_COOKIE, googleConfigured, googleProfileFromCode } from "@/lib/google";
 
 const AVATAR_COLORS = ["#F43F5E", "#FB923C", "#8B5CF6", "#0EA5E9", "#10B981", "#EC4899", "#F59E0B"];
@@ -46,5 +47,6 @@ export async function GET(req: Request) {
   }
 
   await createSession(user.id, user.role);
-  return NextResponse.redirect(new URL(next || (isStaff(user.role) ? "/admin" : "/my-learning"), base()), 303);
+  const dest = next || (isStaff(user.role) ? "/admin" : STUDENT_HOME);
+  return NextResponse.redirect(new URL(appHref(dest), base()), 303);
 }

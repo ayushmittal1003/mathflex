@@ -33,6 +33,9 @@ export async function signSession(userId: string, role: string, maxAge = MAX_AGE
     .sign(secret());
 }
 
+// COOKIE_DOMAIN=".mathflex.in" makes the login cookie valid on mathflex.in and app.mathflex.in.
+const cookieDomain = () => process.env.COOKIE_DOMAIN?.trim() || undefined;
+
 export async function setSessionCookie(token: string, maxAge = MAX_AGE, name = COOKIE) {
   (await cookies()).set(name, token, {
     httpOnly: true,
@@ -40,7 +43,16 @@ export async function setSessionCookie(token: string, maxAge = MAX_AGE, name = C
     secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge,
+    domain: cookieDomain(),
   });
+}
+
+// Removes a cookie both as a shared (domain) cookie and as an old host-only one.
+export async function clearCookie(name: string) {
+  const jar = await cookies();
+  jar.delete(name);
+  const domain = cookieDomain();
+  if (domain) jar.delete({ name, path: "/", domain });
 }
 
 export async function createSession(userId: string, role: string) {
@@ -50,9 +62,8 @@ export async function createSession(userId: string, role: string) {
 }
 
 export async function destroySession() {
-  const jar = await cookies();
-  jar.delete(COOKIE);
-  jar.delete(IMPERSONATOR_COOKIE);
+  await clearCookie(COOKIE);
+  await clearCookie(IMPERSONATOR_COOKIE);
 }
 
 export async function readSessionToken(token: string | undefined) {

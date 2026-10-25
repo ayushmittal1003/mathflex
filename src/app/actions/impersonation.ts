@@ -4,7 +4,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { IMPERSONATOR_COOKIE, SESSION_COOKIE, getCurrentUser, readSessionToken, requireStaff, setSessionCookie, signSession } from "@/lib/auth";
+import { IMPERSONATOR_COOKIE, SESSION_COOKIE, getCurrentUser, readSessionToken, requireStaff, setSessionCookie, signSession, clearCookie } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { can } from "@/lib/permissions";
 
@@ -30,9 +30,9 @@ export async function stopImpersonation() {
   const admin = adminToken ? await readSessionToken(adminToken) : null;
   const adminUser = admin ? await db.user.findUnique({ where: { id: admin.userId } }) : null;
   const student = await getCurrentUser();
-  jar.delete(IMPERSONATOR_COOKIE);
+  await clearCookie(IMPERSONATOR_COOKIE);
   if (!adminToken || !adminUser || adminUser.isBlocked || !can(adminUser.role, "impersonate")) {
-    jar.delete(SESSION_COOKIE);
+    await clearCookie(SESSION_COOKIE);
     redirect("/login?next=/admin");
   }
   await setSessionCookie(adminToken);

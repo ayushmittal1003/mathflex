@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { createSession, destroySession, hashPassword, verifyPassword } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { allow, clientIp } from "@/lib/rate-limit";
+import { appHref, STUDENT_HOME } from "@/lib/hosts";
 
 // Compared against when the email is unknown, so response time doesn't reveal which emails have accounts.
 const DUMMY_HASH = "$2b$10$X3JZmmyNzQ2K5OUExlckcOK3FKv/I0h5pE17c4UW/Nym6beKJfdJa";
@@ -34,7 +35,8 @@ export async function login(_: AuthState, form: FormData): Promise<AuthState> {
   await createSession(user.id, user.role);
   const next = safeNext(form.get("next"));
   // Team members signing in from the plain login page go straight to the admin panel.
-  redirect(isStaff(user.role) && next === "/" ? "/admin" : next);
+  // Students go to the app (app.mathflex.in once it is set up); team members to the admin.
+  redirect(isStaff(user.role) && next === "/" ? "/admin" : appHref(next === "/" ? STUDENT_HOME : next));
 }
 
 const SignupSchema = z.object({
@@ -64,7 +66,8 @@ export async function signup(_: AuthState, form: FormData): Promise<AuthState> {
     },
   });
   await createSession(user.id, user.role);
-  redirect(safeNext(form.get("next")));
+  const next = safeNext(form.get("next"));
+  redirect(appHref(next === "/" ? STUDENT_HOME : next));
 }
 
 export async function logout() {
