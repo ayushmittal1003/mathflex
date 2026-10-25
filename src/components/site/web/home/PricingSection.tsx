@@ -17,13 +17,13 @@ export function PricingSection({ chapters, courses, coupon }: { chapters: HomeCh
   const cta = "flex justify-center rounded-lg p-3 text-[15px] font-bold transition duration-200 hover:brightness-97";
 
   return (
-    <section id="pricing" className="scroll-mt-6 py-22">
+    <section id="pricing" className="scroll-mt-6 py-12 tablet:py-22">
       <SectionHead
         eyebrow="Pricing"
         title={<>Pocket-money pricing for <Mark>IIT-level</Mark> prep.</>}
         lead="Start with one chapter. Move to a full class whenever you are ready."
       />
-      <div className="mx-auto mt-12 grid w-[min(1120px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] items-stretch gap-4">
+      <div className="mx-auto mt-12 grid w-[min(1120px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] items-stretch gap-4">
         {pc && (
           <div className="flex flex-col rounded-xl border border-border bg-card p-6 shadow-[0_1px_4px_0_rgb(0_0_0/0.08)]">
             <div className="text-xs font-extrabold uppercase tracking-[0.14em] text-muted-foreground">Single chapter</div>
@@ -53,7 +53,7 @@ export function PricingSection({ chapters, courses, coupon }: { chapters: HomeCh
             <div key={c.id} className="flex flex-col rounded-xl border border-border bg-card p-6 shadow-[0_1px_4px_0_rgb(0_0_0/0.08)]">
               <div className="flex items-center justify-between gap-2">
                 <div className="text-xs font-extrabold uppercase tracking-[0.14em] text-muted-foreground">{c.title}</div>
-                {off > 0 && <span className="shrink-0 whitespace-nowrap rounded-md bg-ok/15 px-2 py-0.5 text-[11px] font-bold text-ok">Save {off}%</span>}
+                {off > 0 && <span className="shrink-0 whitespace-nowrap rounded-md bg-ok/15 px-2 py-0.5 text-xs font-bold text-ok-strong">Save {off}%</span>}
               </div>
               <Price price={c.price} mrp={c.mrp} />
               <div className="text-[13px] text-muted-foreground">{c.subtitle || `${c.chapterCount} chapters`}</div>
@@ -70,7 +70,7 @@ export function PricingSection({ chapters, courses, coupon }: { chapters: HomeCh
             <div aria-hidden className="absolute -bottom-[70px] -right-4.5 text-[220px] font-black leading-none text-white/6">Σ</div>
             <div className="relative flex items-center justify-between gap-2">
               <div className="text-xs font-extrabold uppercase tracking-[0.14em] text-white/70">{best.title}</div>
-              <span className="shrink-0 whitespace-nowrap rounded-md bg-primary px-2 py-0.5 text-[11px] font-extrabold">Best value</span>
+              <span className="shrink-0 whitespace-nowrap rounded-md bg-primary px-2 py-0.5 text-xs font-extrabold">Best value</span>
             </div>
             <Price price={best.price} mrp={best.mrp} dark />
             <div className="relative text-[13px] text-white/70">

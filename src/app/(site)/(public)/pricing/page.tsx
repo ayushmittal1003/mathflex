@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
-import { inr } from "@/lib/format";
+import { inr, validity } from "@/lib/format";
 import { fillFaq, instructorNames, pricingFaqs } from "@/lib/site-content";
 import { getInsideData, getPublicCoupon } from "@/components/site/web/data";
 import { Caret, Eyebrow, Mark } from "@/components/site/web/primitives";
@@ -11,8 +11,9 @@ import { InsideMathflex } from "@/components/site/web/home/InsideMathflex";
 import { PricingTiers, PriceBuilder, CopyCode, type BuilderChapter, type BuilderCourse } from "@/components/site/web/pricing/PricingParts";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Pricing" };
+export const metadata = buildMetadata({ title: "Pricing – Chapters, Courses & 1:1 Calls", description: "See what each MathFlex chapter, course and 1:1 mentor call costs, and what is included.", path: "/pricing" });
 
 // Pricing (dipankar-design/designs/Pricing.dc.html). Prices, courses, coupons, the call
 // add-on and GST all come from admin-managed data and settings. The design's photo slots
@@ -23,7 +24,7 @@ export default async function PricingPage() {
     db.chapter.findMany({
       where: { isPublished: true },
       orderBy: [{ classLevel: "asc" }, { sortOrder: "asc" }, { title: "asc" }],
-      select: { id: true, slug: true, title: true, classLevel: true, price: true, parts: { where: { isFreePreview: true }, select: { id: true } } },
+      select: { id: true, slug: true, title: true, classLevel: true, price: true, validityDays: true, parts: { where: { isFreePreview: true }, select: { id: true } } },
     }),
     db.course.findMany({
       where: { isPublished: true },
@@ -40,6 +41,8 @@ export default async function PricingPage() {
   const prices = chapters.map((c) => c.price);
   const minPrice = prices.length ? Math.min(...prices) : null;
   const maxPrice = prices.length ? Math.max(...prices) : null;
+  const chapterDays = [...new Set(chapterRows.map((c) => c.validityDays))];
+  const chapterAccess = chapterDays.length === 1 ? validity(chapterDays[0]) : null;
   const freeChapter = chapters.find((c) => c.free) ?? null;
   const names = instructorNames(settings);
   const mentorship = settings.features.mentorshipUpsell ? settings : null;
@@ -61,7 +64,7 @@ export default async function PricingPage() {
             Watch any chapter&apos;s free preview, then buy one chapter or a full course. You pay once, with no monthly fees.
           </p>
         </div>
-        <PricingTiers courses={courses} minPrice={minPrice} maxPrice={maxPrice} freeChapter={freeChapter} />
+        <PricingTiers courses={courses} minPrice={minPrice} maxPrice={maxPrice} chapterAccess={chapterAccess} />
       </WashHero>
 
       {chapters.length > 0 && <PriceBuilder chapters={chapters} courses={courses} coupon={coupon} />}
@@ -70,19 +73,19 @@ export default async function PricingPage() {
         <InsideMathflex chapters={inside.chapters} leaders={inside.leaders} resources={inside.resources} eyebrow="Every paid chapter includes" />
       </div>
 
-      <section className="py-16 tablet:py-20">
+      <section className="py-12 tablet:py-20">
         <div className="px-6 text-center">
           <Eyebrow>Before you check out</Eyebrow>
-          <h2 className="mx-auto mt-6 max-w-[860px] text-[clamp(38px,5.2vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
+          <h2 className="mx-auto mt-6 max-w-[860px] text-[clamp(28px,5.2vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
             A few ways to get <Mark>more</Mark> for less.
           </h2>
         </div>
-        <div className="mx-auto mt-14 grid w-[min(1180px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-12">
+        <div className="mx-auto mt-14 grid w-[min(1180px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-12">
           {mentorship && (
             <AddOn dot="primary" kicker="Add-on" title={`1:1 call with ${names.short}`}>
               <div className="mt-3 flex items-baseline gap-2"><span className="text-[32px] font-extrabold tracking-[-0.04em]">{inr(mentorship.mentorshipPrice)}</span><span className="text-sm text-muted-foreground">per call</span></div>
               <p className="mt-2.5 text-[15px] leading-[1.6] text-secondary-foreground">{mentorship.mentorshipBlurb}</p>
-              <Link href="/book-a-call" className="mt-3.5 inline-flex text-sm font-bold text-primary">Book a call with {names.short} →</Link>
+              <Link href="/book-a-call" className="mt-1.5 inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary">Book a call with {names.short} →</Link>
             </AddOn>
           )}
           {coupon && (
@@ -104,20 +107,20 @@ export default async function PricingPage() {
       </section>
 
       {faqs.length > 0 && (
-        <section className="py-16 tablet:py-20">
-          <div className="mx-auto w-[min(820px,calc(100%-48px))]">
-            <h2 className="text-center text-[clamp(34px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about pricing</h2>
+        <section className="py-12 tablet:py-20">
+          <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
+            <h2 className="text-center text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em]">Questions about pricing</h2>
             <div className="mt-9"><FaqList items={faqs} /></div>
           </div>
         </section>
       )}
 
       <CtaBand>
-        <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
-          {freeChapter ? <>Start with <Mark>₹0</Mark>. Pay when you&apos;re sure.</> : <>Start with <Mark>one</Mark> chapter.</>}
+        <h2 className="mx-auto max-w-[820px] text-[clamp(28px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
+          {freeChapter ? <>Watch a <Mark>free</Mark> 3–4 minute preview first.</> : <>Start with <Mark>one</Mark> chapter.</>}
         </h2>
-        <div className="mt-8 flex flex-wrap justify-center gap-2.5">
-          {freeChapter && <Link href={`/chapter/${freeChapter.slug}`} className={cx(button.md, tone.primaryFlat)}>Watch a free Part 1</Link>}
+        <div className="mt-8 cta-row">
+          {freeChapter && <Link href={`/chapter/${freeChapter.slug}`} className={cx(button.md, tone.primaryFlat)}>Watch a free preview</Link>}
           <Link href="/chapters" className={cx(button.md, freeChapter ? tone.secondary : tone.primaryFlat)}>Browse chapters</Link>
         </div>
       </CtaBand>

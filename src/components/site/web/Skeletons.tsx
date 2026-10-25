@@ -30,7 +30,7 @@ function CardGrid({ n = 3 }: { n?: number }) {
   );
 }
 
-const wrap = "mx-auto w-[min(1240px,calc(100%-48px))] pb-24 pt-[calc(86px+36px)]";
+const wrap = "mx-auto w-[min(1240px,calc(100%-var(--gutter)*2))] pb-24 pt-[calc(86px+36px)]";
 
 // My Learning, Practice: greeting, a stats strip, a feature card and a grid.
 export function DashboardSkeleton() {
@@ -73,7 +73,7 @@ export function ListingSkeleton() {
 // Profile, Plans, chapter practice: a header card and stacked rows.
 export function DetailSkeleton() {
   return (
-    <div className="mx-auto w-[min(1120px,calc(100%-48px))] pb-24 pt-[calc(86px+36px)]" role="status" aria-label="Loading">
+    <div className="mx-auto w-[min(1120px,calc(100%-var(--gutter)*2))] pb-24 pt-[calc(86px+36px)]" role="status" aria-label="Loading">
       <Head wide />
       <div className={cx(card, "mt-8 h-[180px] animate-pulse bg-muted/60")} />
       <div className="mt-8 space-y-4">

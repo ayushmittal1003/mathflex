@@ -6,7 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { computePartStates, hasChapterAccess } from "@/lib/access";
 import { getCatalog } from "@/lib/catalog";
-import { duration, inr, pctOff } from "@/lib/format";
+import { duration, inr, pctOff, validity } from "@/lib/format";
 import { chapterFaqs, instructor, instructorChapterLine, instructorNames } from "@/lib/site-content";
 import { getPublicCoupon } from "@/components/site/web/data";
 import { WashHero } from "@/components/site/web/WashHero";
@@ -19,11 +19,25 @@ import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { ChapterCard } from "@/components/site/web/ChapterCard";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { clock } from "@/components/site/web/home/types";
+import { buildMetadata, chapterBlurb } from "@/lib/seo/metadata";
+import { getChapterSeo } from "@/lib/seo/queries";
+import { JsonLd } from "@/components/seo/JsonLd";
+import * as schema from "@/lib/seo/schema";
+import { Breadcrumbs } from "@/components/site/web/Breadcrumbs";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const c = await db.chapter.findUnique({ where: { slug }, select: { title: true, tagline: true } });
-  return c ? { title: c.title, description: c.tagline } : {};
+  const c = await getChapterSeo(slug);
+  if (!c) return {};
+  const about = chapterBlurb(c);
+  return buildMetadata({
+    title: `${c.title}: Class ${c.classLevel} JEE Maths Video Lessons`,
+    description: about
+      ? `${about} ${c._count.parts} video lessons with practice questions and notes.`
+      : `Class ${c.classLevel} JEE maths chapter ${c.title}: ${c._count.parts} video lessons with practice questions and notes.`,
+    path: `/chapter/${slug}`,
+    defaultImage: false,
+  });
 }
 
 // Chapter detail (dipankar-design/designs/Chapter Detail.dc.html). Same data and access
@@ -68,14 +82,22 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
   const names = instructorNames(settings);
   const item = { type: "CHAPTER" as const, id: chapter.id };
   const freeIds = new Set(freeOn ? (await db.part.findMany({ where: { isFreePreview: true }, select: { chapterId: true } })).map((p) => p.chapterId) : []);
-  const related = catalog.filter((c) => c.classLevel === chapter.classLevel && c.id !== chapter.id).slice(0, 4).map((c) => ({ ...c, free: freeIds.has(c.id) }));
+  // Neighbours in the syllabus order (same class, closest sortOrder first, the next chapter before the previous one).
+  const sameClass = catalog.filter((c) => c.classLevel === chapter.classLevel);
+  const at = sameClass.findIndex((c) => c.id === chapter.id);
+  const related = sameClass
+    .map((c, i) => ({ c, d: at < 0 ? i : Math.abs(i - at) + (i < at ? 0.5 : 0) }))
+    .filter(({ c }) => c.id !== chapter.id)
+    .sort((x, y) => x.d - y.d)
+    .slice(0, 4)
+    .map(({ c }) => ({ ...c, free: freeIds.has(c.id) }));
 
   const stats = [
     { big: `${chapter.parts.length} parts`, small: totalSec ? `${duration(totalSec)} of video` : "Video lessons" },
     ...(chapter.jeeWeightage > 0 ? [{ big: `${chapter.jeeWeightage}%`, small: "of JEE Main" }] : []),
     ...(dpp + pyq > 0 ? [{ big: `${dpp + pyq} questions`, small: "DPPs + PYQs" }] : []),
     ...(preview ? [{ big: `Part ${preview.order} free`, small: "No sign-up needed" }] : []),
-    { big: `${chapter.validityDays} days`, small: "of access" },
+    { big: validity(chapter.validityDays), small: "of access" },
   ];
   const includes = [
     { n: chapter.parts.length, label: "Video parts", sub: totalSec ? `${duration(totalSec)} in total` : "Short, focused parts" },
@@ -96,31 +118,54 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
   const playHref = !chapter.parts.length ? null : owned ? `/learn/${chapter.slug}?part=${resumePart?.order ?? 1}` : preview ? `/learn/${chapter.slug}?part=${preview.order}` : null;
   const heroPart = owned ? resumePart : preview ?? chapter.parts[0];
 
+  const published = chapter.isPublished;
+
   return (
     <>
+      {published && (
+        <JsonLd
+          data={schema.course({
+            path: `/chapter/${chapter.slug}`,
+            name: chapter.title,
+            description: chapterBlurb(chapter),
+            price: chapter.price,
+            level: `Class ${chapter.classLevel}`,
+            teaches: learn,
+            instructorName: names.full,
+          })}
+        />
+      )}
       <WashHero className="!pb-[104px]">
-        <div className="mx-auto mt-5 flex w-[min(1180px,calc(100%-48px))] flex-wrap items-center gap-8">
+        <Breadcrumbs
+          className="mx-auto w-[min(1180px,calc(100%-var(--gutter)*2))] pt-3"
+          schemaOn={published}
+          items={[{ name: "Home", path: "/" }, { name: "Chapters", path: "/chapters" }, { name: chapter.title, path: `/chapter/${chapter.slug}` }]}
+        />
+        <div className="mx-auto mt-3 flex w-[min(1180px,calc(100%-var(--gutter)*2))] flex-wrap items-center gap-8">
           {/* Info */}
           <div className="order-2 min-w-0 flex-[1_1_320px]">
             <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-secondary-foreground">
-              <Link href="/chapters" className="hover:text-primary">Chapters</Link>
-              <span className="opacity-50">/</span>
-              <Link href={`/chapters?class=${chapter.classLevel}`} className="hover:text-primary">Class {chapter.classLevel}</Link>
-              {!chapter.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-[11px] font-bold text-foreground">Unpublished · staff preview</span>}
+              <Link href={`/chapters?class=${chapter.classLevel}`} className="tap relative hover:text-primary">Class {chapter.classLevel}</Link>
+              {!chapter.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-xs font-bold text-foreground">Unpublished · staff preview</span>}
             </div>
-            <h1 className="mt-4.5 text-[clamp(42px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{chapter.title}</h1>
+            <h1 className="mt-4.5 text-[clamp(28px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{chapter.title}</h1>
             <div className="mt-5.5 flex flex-wrap gap-2">
               <Pill>Class {chapter.classLevel}</Pill>
               <Pill>{chapter.parts.length} parts{totalSec > 0 && ` · ${duration(totalSec)}`}</Pill>
               {chapter.jeeWeightage > 0 && <span className="whitespace-nowrap rounded-full border border-card bg-card px-2.5 py-1.5 text-[13px] font-bold text-[oklch(0.5_0.17_47)]">{chapter.jeeWeightage}% of JEE Main</span>}
             </div>
             {chapter.tagline && <p className="mt-4.5 max-w-[520px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">{chapter.tagline}</p>}
-            <a href="#instructor" className="mt-4.5 inline-flex items-center gap-2.5 text-foreground">
+            <a href="#instructor" className="mt-3 inline-flex min-h-11 items-center gap-2.5 text-foreground">
               <span className="grid size-[34px] place-items-center rounded-full border-2 border-white bg-gradient-to-br from-primary to-brand-2 text-sm font-extrabold text-white">{names.full[0]}</span>
               <span className="text-sm leading-[1.3]">
                 Taught by <b className="underline underline-offset-[3px]">{names.full}</b>
                 <br />
-                <span className="text-[13px] text-secondary-foreground">{instructor.title}</span>
+                <span className="text-xs text-secondary-foreground sm:text-[13px]">
+                  IIT Delhi alumnus
+                  {chapter.isPublished && (
+                    <> · Updated <time dateTime={chapter.updatedAt.toISOString().slice(0, 10)}>{chapter.updatedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" })}</time></>
+                  )}
+                </span>
               </span>
             </a>
 
@@ -149,7 +194,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                     {chapter.mrp > chapter.price && <span className="text-base text-muted-foreground line-through">{inr(chapter.mrp)}</span>}
                     {off > 0 && <span className="rounded-md bg-ok px-2 py-0.5 text-xs font-extrabold text-white">{off}% OFF</span>}
                   </div>
-                  <div className="mt-0.5 text-[13px] text-secondary-foreground">{chapter.validityDays} days access · all parts, DPPs, PYQs &amp; notes</div>
+                  <div className="mt-0.5 text-[13px] text-secondary-foreground">{validity(chapter.validityDays)} access · all parts, DPPs, PYQs &amp; notes</div>
                 </div>
                 <div className="mt-5.5 flex flex-wrap gap-2.5">
                   <BuyNow item={item} />
@@ -171,7 +216,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
               {heroPart?.thumbnailUrl && <img src={heroPart.thumbnailUrl} alt="" className="absolute inset-0 size-full object-cover" />}
               {!heroPart?.thumbnailUrl && <div className={cx("absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", chapter.symbol.length > 2 ? "text-[160px] tablet:text-[200px]" : "text-[240px] tablet:text-[320px]")}>{chapter.symbol}</div>}
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.65))]" />
-              <span className="absolute left-4.5 top-4 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em] text-black">
+              <span className="absolute left-4.5 top-4 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">
                 {owned ? "Your chapter" : preview ? `Part ${preview.order} · Free preview` : "Preview"}
               </span>
               {playHref ? (
@@ -194,7 +239,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
       </WashHero>
 
       {/* Stats strip overlapping the hero. */}
-      <div className="relative z-[3] mx-auto -mt-16 grid w-[min(1180px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-28px_rgb(80_20_0/0.45)]">
+      <div className="relative z-[3] mx-auto -mt-16 grid w-[min(1180px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-28px_rgb(80_20_0/0.45)]">
         {stats.map((s, i) => (
           <div key={s.small} className={cx("px-5.5 py-5", i > 0 && "border-l border-border")}>
             <div className="text-xl font-extrabold tracking-[-0.02em]">{s.big}</div>
@@ -205,7 +250,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
       {/* Sticky section tabs. */}
       <div className="sticky top-[67px] z-30 mt-8 border-b border-border bg-card/90 backdrop-blur-lg">
-        <div className="no-scrollbar mx-auto flex w-[min(1180px,calc(100%-48px))] items-center gap-1 overflow-x-auto">
+        <div className="no-scrollbar mx-auto flex w-[min(1180px,calc(100%-var(--gutter)*2))] items-center gap-1 overflow-x-auto">
           {tabs.map(([label, href]) => (
             <a key={href} href={href} className="shrink-0 whitespace-nowrap border-b-2 border-transparent px-3.5 py-4 text-sm font-bold text-secondary-foreground hover:border-foreground hover:text-foreground">{label}</a>
           ))}
@@ -219,8 +264,8 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
         </div>
       </div>
 
-      <section className="pb-22 pt-6">
-        <div className="mx-auto flex w-[min(1180px,calc(100%-48px))] flex-wrap items-start gap-x-10 gap-y-12">
+      <section className="pb-12 pt-6 tablet:pb-22">
+        <div className="mx-auto flex w-[min(1180px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-10 gap-y-12">
           <div className="min-w-0 flex-[1_1_420px]">
             {learn.length > 0 && (
               <>
@@ -263,7 +308,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                       <span className="text-[17px] font-bold tracking-[-0.015em]">{p.title}</span>
-                      {isFree && <span className="rounded bg-ok/14 px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.04em] text-[oklch(0.5_0.16_149)]">Free preview</span>}
+                      {isFree && <span className="rounded bg-ok/14 px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.04em] text-ok-strong">Free preview</span>}
                     </div>
                     {p.summary && <p className="mt-1 line-clamp-2 text-sm text-secondary-foreground">{p.summary}</p>}
                     <div className="mt-1 text-[13px] text-muted-foreground">
@@ -295,7 +340,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                     <li key={r.id}>
                       {open ? (
                         <a href={r.fileUrl} target="_blank" className="flex items-center gap-3 rounded-lg border border-border p-3 text-sm font-semibold hover:border-primary hover:text-primary">
-                          <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary">{r.type === "MINDMAP" ? "MAP" : "PDF"}</span> {r.title}
+                          <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-xs font-bold text-primary">{r.type === "MINDMAP" ? "MAP" : "PDF"}</span> {r.title}
                         </a>
                       ) : (
                         <span className="flex items-center gap-3 rounded-lg border border-border p-3 text-sm font-semibold text-muted-foreground"><LockIcon className="size-3.5" /> {r.title}</span>
@@ -317,12 +362,12 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
             <h2 id="instructor" className={sectionH2}>Your instructor</h2>
             <div className="mt-5.5 flex flex-wrap items-center gap-x-6 gap-y-5">
-              <VideoFrame videoId={instructor.introVideoId} className="aspect-[16/10] w-[200px] shrink-0 !border-4 [&_span]:!text-[11px]" />
+              <VideoFrame videoId={instructor.introVideoId} className="aspect-[16/10] w-[200px] shrink-0 !border-4 [&_span]:!text-xs" />
               <div className="min-w-0 flex-[1_1_260px]">
                 <div className="text-xl font-extrabold tracking-[-0.02em]">{names.full}</div>
                 <div className="mt-0.5 text-sm text-muted-foreground">{instructor.title} · {instructor.studentsGuided} JEE aspirants mentored</div>
                 <p className="mt-2.5 text-[15px] leading-[1.6] text-secondary-foreground">{names.short} {instructorChapterLine}</p>
-                <Link href="/about" className="mt-2.5 inline-flex text-sm font-bold text-primary">More about {names.short} →</Link>
+                <Link href="/about" className="mt-1 inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary">More about {names.short} →</Link>
               </div>
             </div>
 
@@ -372,11 +417,11 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
       </section>
 
       {related.length > 0 && (
-        <section className="pb-24 pt-18">
-          <div className="mx-auto w-[min(1180px,calc(100%-48px))]">
+        <section className="pb-14 pt-10 tablet:pb-24 tablet:pt-18">
+          <div className="mx-auto w-[min(1180px,calc(100%-var(--gutter)*2))]">
             <div className="flex items-baseline justify-between gap-4">
-              <h2 className="text-[clamp(28px,3vw,38px)] font-extrabold tracking-[-0.035em]">More from Class {chapter.classLevel}</h2>
-              <Link href={`/chapters?class=${chapter.classLevel}`} className="whitespace-nowrap text-sm font-bold text-primary">All chapters →</Link>
+              <h2 className="text-[clamp(26px,3vw,38px)] font-extrabold tracking-[-0.035em]">More Class {chapter.classLevel} chapters</h2>
+              <Link href={`/chapters?class=${chapter.classLevel}`} className="inline-flex min-h-11 items-center tablet:min-h-0 whitespace-nowrap text-sm font-bold text-primary">All chapters →</Link>
             </div>
             <div className="mt-7 grid grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))] gap-5">
               {related.map((c, i) => <ChapterCard key={c.id} c={c} index={i} />)}

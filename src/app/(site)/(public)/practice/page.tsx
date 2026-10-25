@@ -9,11 +9,12 @@ import { accuracyOf, fmtTime, strengthOf, DIFFICULTY_LABEL, FORMAT_LABEL, type S
 import { PracticeTrend } from "@/components/site/web/practice/PracticeTrend";
 import { Eyebrow, Mark, posterBg } from "@/components/site/web/primitives";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Practice" };
+export const metadata = privateMetadata("Practice");
 
 const STRENGTH: Record<Strength, { label: string; cls: string }> = {
-  strong: { label: "Strong", cls: "bg-ok/12 text-ok" },
+  strong: { label: "Strong", cls: "bg-ok/12 text-ok-strong" },
   weak: { label: "Needs work", cls: "bg-bad/10 text-bad" },
   building: { label: "Building", cls: "bg-gold/18 text-[color-mix(in_oklab,var(--gold)_55%,black)]" },
   new: { label: "Not started", cls: "bg-muted text-muted-foreground" },
@@ -58,7 +59,7 @@ export default async function PracticeDashboard() {
       <section className="flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
         <div>
           <Eyebrow dot="ok">Question bank</Eyebrow>
-          <h1 className="mt-5 text-[clamp(36px,4.6vw,56px)] font-extrabold leading-[1.04] tracking-[-0.045em]">
+          <h1 className="mt-5 text-[clamp(28px,4.6vw,56px)] font-extrabold leading-[1.04] tracking-[-0.045em]">
             <Mark>Practice</Mark> like the real paper
           </h1>
           <p className="mt-3 max-w-[560px] text-[17px] leading-[1.55] text-secondary-foreground">
@@ -74,7 +75,7 @@ export default async function PracticeDashboard() {
         <div className="mt-10 rounded-2xl bg-wash px-6 py-14 text-center tablet:py-16">
           <div className="text-[clamp(24px,2.6vw,30px)] font-extrabold tracking-[-0.035em]">Unlock a chapter to start practising</div>
           <p className="mx-auto mt-2 max-w-[460px] text-[15px] leading-[1.6] text-secondary-foreground">Every chapter comes with its own question bank of DPPs and past-year JEE questions.</p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2.5">
+          <div className="mt-6 cta-row">
             <Link href="/chapters" className={cx(button.md, tone.primary)}>Browse chapters</Link>
             <Link href="/free-practice" className={cx(button.md, tone.secondary)}>Try free practice</Link>
           </div>
@@ -131,7 +132,7 @@ export default async function PracticeDashboard() {
                     <div className="flex items-center gap-3.5">
                       <span className={cx("grid size-12 shrink-0 place-items-center rounded-xl font-black text-white", c.symbol.length > 2 ? "text-xs" : "text-lg")} style={posterBg(c.coverFrom, c.coverTo)}>{c.symbol}</span>
                       <span className="min-w-0 flex-1">
-                        <Link href={`/practice/${c.slug}`} className="block truncate text-[17px] font-extrabold tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
+                        <Link href={`/practice/${c.slug}`} className="flex min-h-11 items-center truncate text-[17px] font-extrabold tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
                         <span className="text-xs font-semibold text-muted-foreground">Class {c.classLevel}</span>
                       </span>
                       <span className={cx("shrink-0 rounded-full px-2.5 py-1 text-xs font-bold", s.cls)}>{s.label}</span>
@@ -173,12 +174,12 @@ export default async function PracticeDashboard() {
         <section className="mt-16">
           <div className="mb-6 flex items-end justify-between gap-4">
             <h2 className={h2}>Unlock more question banks</h2>
-            <Link href="/chapters" className="text-sm font-bold text-primary hover:underline">All chapters →</Link>
+            <Link href="/chapters" className="inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary hover:underline">All chapters →</Link>
           </div>
           <div className="grid gap-3 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-4">
             {locked.map((c) => (
               <Link key={c.id} href={`/chapter/${c.slug}`} className={cx(card, "flex items-center gap-3.5 p-4 text-foreground transition hover:-translate-y-0.5")}>
-                <span className={cx("grid size-11 shrink-0 place-items-center rounded-xl font-black text-white", c.symbol.length > 2 ? "text-[11px]" : "text-base")} style={posterBg(c.coverFrom, c.coverTo)}>{c.symbol}</span>
+                <span className={cx("grid size-11 shrink-0 place-items-center rounded-xl font-black text-white", c.symbol.length > 2 ? "text-xs" : "text-base")} style={posterBg(c.coverFrom, c.coverTo)}>{c.symbol}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-bold">{c.title}</span>
                   <span className="text-xs font-semibold text-muted-foreground">{c._count.questions} questions</span>
@@ -197,7 +198,7 @@ function Mini({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg bg-muted px-2 py-2.5">
       <dd className="text-[15px] font-extrabold tabular-nums tracking-[-0.02em]">{value}</dd>
-      <dt className="mt-0.5 text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">{label}</dt>
+      <dt className="mt-0.5 text-xs font-bold uppercase tracking-[0.05em] text-muted-foreground">{label}</dt>
     </div>
   );
 }

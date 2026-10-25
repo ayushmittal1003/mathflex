@@ -13,11 +13,11 @@ export function ErrorScreen({ error, retry, compact = false }: { error: Error & 
     <div className={cx("grid place-items-center px-4", compact ? "min-h-dvh" : "min-h-[70vh] pb-20 pt-[calc(86px+48px)]")}>
       <div className="w-[min(520px,100%)] animate-mf-rise rounded-2xl bg-wash px-6 py-12 text-center tablet:px-10">
         <span className="mx-auto grid size-16 place-items-center rounded-full bg-card text-3xl shadow-[0_14px_30px_-16px_rgb(80_20_0/0.5)]" aria-hidden>⚠️</span>
-        <h1 className="mt-5 text-[clamp(28px,4vw,38px)] font-extrabold leading-tight tracking-[-0.04em]">Something went wrong</h1>
+        <h1 className="mt-5 text-[clamp(26px,4vw,38px)] font-extrabold leading-tight tracking-[-0.04em]">Something went wrong</h1>
         <p className="mx-auto mt-3 max-w-[380px] text-[15px] leading-[1.6] text-secondary-foreground">
           This page didn&apos;t load properly. It&apos;s usually a brief network or server hiccup. Your progress and purchases are safe.
         </p>
-        <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-7 cta-row">
           <button type="button" onClick={() => retry()} className={cx(button.md, tone.primary)}>Try again</button>
           <Link href="/" className={cx(button.md, tone.secondary)}>Go home</Link>
         </div>

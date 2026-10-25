@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cx } from "../ui";
 
 export type Pillar = { key: string; kicker: string; big: string; small: string; body: string };
@@ -12,9 +12,21 @@ export function AboutPillars({ pillars }: { pillars: Pillar[] }) {
   const row = useRef<HTMLDivElement>(null);
   const scroll = (dir: number) => row.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
 
+  // Soft white blur on the edge that still has cards beyond it, instead of cards being cut hard.
+  const [edge, setEdge] = useState({ left: false, right: true });
+  const sync = (el: HTMLElement) => setEdge({ left: el.scrollLeft > 8, right: el.scrollLeft < el.scrollWidth - el.clientWidth - 8 });
+  useEffect(() => {
+    const el = row.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setEdge({ left: el.scrollLeft > 8, right: el.scrollLeft < el.scrollWidth - el.clientWidth - 8 }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const fade = "pointer-events-none absolute inset-y-0 z-10 w-12 bg-card/80 backdrop-blur-[6px] transition-opacity duration-300 sm:w-16";
+
   return (
     <div className="relative">
-      <div className="mx-auto flex w-[min(1240px,calc(100%-48px))] justify-end gap-2">
+      <div className="mx-auto flex w-[min(1240px,calc(100%-var(--gutter)*2))] justify-end gap-2">
         {[-1, 1].map((d) => (
           <button
             key={d}
@@ -29,8 +41,12 @@ export function AboutPillars({ pillars }: { pillars: Pillar[] }) {
           </button>
         ))}
       </div>
+      <div className="relative">
+      <span aria-hidden className={cx(fade, "left-0 [mask-image:linear-gradient(to_right,#000_25%,transparent)]", edge.left ? "opacity-100" : "opacity-0")} />
+      <span aria-hidden className={cx(fade, "right-0 [mask-image:linear-gradient(to_left,#000_25%,transparent)]", edge.right ? "opacity-100" : "opacity-0")} />
       <div
         ref={row}
+        onScroll={(e) => sync(e.currentTarget)}
         className="no-scrollbar -mt-2 flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain scroll-px-6 px-6 pb-16 pt-8 min-[1288px]:scroll-px-[calc((100%-1240px)/2)] min-[1288px]:px-[calc((100%-1240px)/2)]"
       >
         {pillars.map((p, i) => {
@@ -51,12 +67,13 @@ export function AboutPillars({ pillars }: { pillars: Pillar[] }) {
                 <span className={cx("grid size-9 place-items-center rounded-lg text-base font-black", dark ? "bg-white/10 text-brand-2" : "bg-primary/8 text-primary")}>{GLYPH[p.key] ?? "•"}</span>
                 <span className={cx("text-xs font-extrabold uppercase tracking-[0.1em]", dark ? "text-white/70" : "text-muted-foreground")}>{p.kicker}</span>
               </div>
-              <span className={cx("relative mt-9 text-[clamp(48px,5vw,64px)] font-extrabold leading-none tracking-[-0.05em]", dark && "bg-gradient-to-br from-white to-[color-mix(in_oklab,var(--brand-2)_60%,white)] bg-clip-text text-transparent")}>{p.big}</span>
+              <span className={cx("relative mt-9 text-[clamp(28px,5vw,64px)] font-extrabold leading-none tracking-[-0.05em]", dark && "bg-gradient-to-br from-white to-[color-mix(in_oklab,var(--brand-2)_60%,white)] bg-clip-text text-transparent")}>{p.big}</span>
               <span className={cx("relative mt-2.5 text-[15px] font-bold leading-snug", dark ? "text-white/90" : "text-foreground")}>{p.small}</span>
               <span className={cx("relative mt-auto pt-6 text-sm leading-[1.6]", dark ? "text-white/60" : "text-muted-foreground")}>{p.body}</span>
             </article>
           );
         })}
+      </div>
       </div>
     </div>
   );

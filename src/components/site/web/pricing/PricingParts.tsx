@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { inr } from "@/lib/format";
+import { inr, validity } from "@/lib/format";
 import { cart } from "../../cart-store";
 import { BuyButton } from "../BuyButton";
 import { CheckIcon, Mark, SectionHead } from "../primitives";
@@ -12,16 +12,15 @@ import { cx } from "../ui";
 export type BuilderChapter = { id: string; slug: string; title: string; classLevel: number; price: number; free: boolean };
 export type BuilderCourse = { id: string; slug: string; title: string; subtitle: string; price: number; mrp: number; highlights: string[]; validityDays: number; chapterIds: string[] };
 
-// Hero tiers: Free (when any chapter has a free Part 1), single chapter, then every course.
+// Hero tiers: single chapter, then every course.
 // The course with the most chapters is the dark "Best value" card.
-export function PricingTiers({ courses, minPrice, maxPrice, freeChapter }: { courses: BuilderCourse[]; minPrice: number | null; maxPrice: number | null; freeChapter: BuilderChapter | null }) {
+export function PricingTiers({ courses, minPrice, maxPrice, chapterAccess }: { courses: BuilderCourse[]; minPrice: number | null; maxPrice: number | null; chapterAccess: string | null }) {
   const best = courses.length > 1 ? [...courses].sort((a, b) => b.chapterIds.length - a.chapterIds.length)[0].id : null;
   type Tier = { key: string; kicker: string; name: string; from?: string; price: string; mrp?: string; note: string; feats: string[]; best?: boolean; cta: React.ReactNode };
   const btn = (dark: boolean, first: boolean) => cx("flex w-full justify-center rounded-lg border p-3.5 text-[15px] font-bold transition hover:brightness-108", dark ? "border-primary bg-primary text-white" : first ? "border-border bg-card text-foreground" : "border-foreground bg-foreground text-white");
 
   const tiers: Tier[] = [
-    ...(freeChapter ? [{ key: "free", kicker: "Free", name: "Part 1 of a chapter", price: "₹0", note: "No card, no sign-up. Just press play.", feats: ["Part 1 of every chapter marked free", "The same player as paid chapters"], cta: <Link href="/chapters" className={btn(false, true)}>Watch free</Link> }] : []),
-    ...(minPrice !== null ? [{ key: "chapter", kicker: "One chapter", name: "Single chapter", from: minPrice !== maxPrice ? "from" : undefined, price: inr(minPrice), note: minPrice !== maxPrice ? `${inr(minPrice)}–${inr(maxPrice!)}, depending on the chapter.` : "Every chapter, one price.", feats: ["Every part of the chapter", "DPPs and PYQs with solutions", "Notes for the chapter"], cta: <Link href="/chapters" className={btn(false, !freeChapter)}>Pick a chapter</Link> }] : []),
+    ...(minPrice !== null ? [{ key: "chapter", kicker: "One chapter", name: "Single chapter", from: minPrice !== maxPrice ? "from" : undefined, price: inr(minPrice), note: minPrice !== maxPrice ? `${inr(minPrice)}–${inr(maxPrice!)}, depending on the chapter.` : "Every chapter, one price.", feats: ["Every part of the chapter", "DPPs and PYQs with solutions", "Notes for the chapter", ...(chapterAccess ? [`${chapterAccess} of access`] : [])], cta: <Link href="/chapters" className={btn(false, true)}>Pick a chapter</Link> }] : []),
     ...courses.map((c) => ({
       key: c.id,
       kicker: "Full course",
@@ -29,14 +28,14 @@ export function PricingTiers({ courses, minPrice, maxPrice, freeChapter }: { cou
       price: inr(c.price),
       mrp: c.mrp > c.price ? inr(c.mrp) : undefined,
       note: c.subtitle || `All ${c.chapterIds.length} chapters.`,
-      feats: [`All ${c.chapterIds.length} chapters, every part`, ...c.highlights, `${c.validityDays} days of access`],
+      feats: [`All ${c.chapterIds.length} chapters, every part`, ...c.highlights, `${validity(c.validityDays)} of access`],
       best: c.id === best,
       cta: <BuyButton item={{ type: "COURSE", id: c.id }} className={btn(c.id === best, false)}>Get {c.title}</BuyButton>,
     })),
   ];
 
   return (
-    <div className="mx-auto mt-14 grid w-[min(1240px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] items-stretch gap-4">
+    <div className="mx-auto mt-14 grid w-[min(1240px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] items-stretch gap-4">
       {tiers.map((t, i) => (
         <div
           key={t.key}
@@ -46,7 +45,7 @@ export function PricingTiers({ courses, minPrice, maxPrice, freeChapter }: { cou
           )}
           style={{ animationDelay: `${i * 70}ms` }}
         >
-          {t.best && <span className="absolute -top-3 left-6 rounded-md bg-primary px-2.5 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.06em] text-white">Best value</span>}
+          {t.best && <span className="absolute -top-3 left-6 rounded-md bg-primary px-2.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.06em] text-white">Best value</span>}
           <div className={cx("text-[13px] font-bold uppercase tracking-[0.08em]", t.best ? "text-white/68" : "text-muted-foreground")}>{t.kicker}</div>
           <div className="mt-2 text-[21px] font-extrabold tracking-[-0.02em]">{t.name}</div>
           <div className="mt-4.5 flex min-h-13 flex-wrap items-baseline gap-x-2 gap-y-1">
@@ -96,6 +95,23 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
   }, [courses, picked, subtotal]);
 
   const n = picked.length;
+  // Below 900px the summary sits under the whole chapter list, so once something is picked a
+  // sticky bar above the phone tab bar keeps the total and the action in reach (design.md §6a).
+  const summary = useRef<HTMLElement>(null);
+  const [summaryInView, setSummaryInView] = useState(false);
+  useEffect(() => {
+    const el = summary.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([e]) => setSummaryInView(e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const barOn = n > 0 && !summaryInView;
+  useEffect(() => {
+    if (!barOn) return;
+    document.body.dataset.stickyBar = "1";
+    return () => { delete document.body.dataset.stickyBar; };
+  }, [barOn]);
   const toggle = (id: string) => setSel((s) => { const t = new Set(s); if (t.has(id)) t.delete(id); else t.add(id); return t; });
   const tip = !n
     ? { title: "Nothing picked yet", body: "Tap chapters to see your price.", tone: "text-white" }
@@ -112,26 +128,26 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
   };
 
   return (
-    <section id="builder" className="pb-22 pt-24">
+    <section id="builder" className="pb-12 pt-12 tablet:pb-22 tablet:pt-24">
       <SectionHead
         eyebrow="Build your own"
         dot="brand-2"
         title={<>Pick your chapters. We&apos;ll find the <Mark>best price</Mark>.</>}
         lead={courses.length ? "Tap the chapters you need. If a full course works out cheaper, we'll tell you." : "Tap the chapters you need to see your total."}
       />
-      <div className="mx-auto mt-12 flex w-[min(1180px,calc(100%-48px))] flex-wrap items-start gap-x-10 gap-y-8">
+      <div className="mx-auto mt-12 flex w-[min(1180px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-10 gap-y-8">
         <div className="min-w-0 flex-[1_1_520px]">
           <div className="flex flex-wrap items-center justify-between gap-3">
             {classes.length > 1 ? (
               <div className="inline-flex gap-0.5 rounded-lg bg-foreground p-1">
                 {classes.map((k) => (
-                  <button key={k} type="button" onClick={() => setCls(k)} aria-pressed={k === cls} className={cx("whitespace-nowrap rounded-md px-4 py-2 text-sm font-bold", k === cls ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>Class {k}</button>
+                  <button key={k} type="button" onClick={() => setCls(k)} aria-pressed={k === cls} className={cx("whitespace-nowrap rounded-md px-4 py-3 text-sm font-bold", k === cls ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>Class {k}</button>
                 ))}
               </div>
             ) : <span />}
             <div className="flex gap-2">
-              <button type="button" onClick={() => setSel((s) => new Set([...s, ...list.map((c) => c.id)]))} className="rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-bold">Select all</button>
-              <button type="button" onClick={() => setSel(new Set())} className="rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-bold">Clear</button>
+              <button type="button" onClick={() => setSel((s) => new Set([...s, ...list.map((c) => c.id)]))} className="min-h-11 rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-bold">Select all</button>
+              <button type="button" onClick={() => setSel(new Set())} className="min-h-11 rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-bold">Clear</button>
             </div>
           </div>
           <div className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(min(100%,230px),1fr))] gap-2.5">
@@ -150,7 +166,7 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
           </div>
         </div>
 
-        <aside className="w-full min-w-0 flex-[1_1_320px] min-[900px]:sticky min-[900px]:top-[90px] min-[900px]:max-w-[380px]">
+        <aside ref={summary} className="w-full min-w-0 flex-[1_1_320px] min-[900px]:sticky min-[900px]:top-[90px] min-[900px]:max-w-[380px]">
           <div className="overflow-hidden rounded-xl border-[6px] border-foreground bg-foreground text-white shadow-[0_40px_70px_-34px_rgb(80_20_0/0.55)]">
             <div className="px-5.5 pb-4.5 pt-5.5">
               <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-white/60">Your selection</div>
@@ -180,6 +196,18 @@ export function PriceBuilder({ chapters, courses, coupon }: { chapters: BuilderC
           </div>
         </aside>
       </div>
+      {n > 0 && <div aria-hidden className="h-20 min-[900px]:hidden" />}
+      {barOn && (
+        <div className="fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 border-t border-border bg-card/95 px-4 py-2.5 shadow-[0_-10px_30px_-18px_rgb(0_0_0/0.35)] backdrop-blur-xl tablet:bottom-0 tablet:pb-[calc(10px+env(safe-area-inset-bottom))] min-[900px]:hidden">
+          <div className="mx-auto flex w-[min(1180px,100%)] items-center gap-3">
+            <div className="min-w-0 flex-1 leading-tight">
+              <div className="text-[13px] font-semibold text-muted-foreground">{n} chapter{n === 1 ? "" : "s"}{plan.course ? " · best price" : ""}</div>
+              <div className="text-[22px] font-extrabold tracking-[-0.03em]">{inr(plan.total)}</div>
+            </div>
+            <button type="button" onClick={addAll} className="min-h-12 shrink-0 rounded-lg bg-primary px-5 text-[15px] font-bold text-primary-foreground transition hover:brightness-108">Add to cart</button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

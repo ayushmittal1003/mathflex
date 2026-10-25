@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { getSettings } from "@/lib/settings";
-import { knownSocials, placeholders } from "@/lib/site-content";
+import { placeholders, socials, socialsComingSoon, supportPhone } from "@/lib/site-content";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Contact us", alternates: { canonical: "/contact" } };
+export const metadata = buildMetadata({ title: "Contact MathFlex – JEE Maths Support", description: "Questions about a chapter, a payment or your access? Reach the MathFlex team by phone, WhatsApp or email.", path: "/contact" });
 
 // Contact (dipankar-design/designs/Contact.dc.html). There's no backend for the design's
 // form, so it's replaced by direct Email / WhatsApp / Call actions from settings (phone and
@@ -14,14 +15,14 @@ export default async function ContactPage() {
   const channels = [
     { key: "wa", label: "WhatsApp", value: "Chat with our team", href: `https://wa.me/${whatsappNumber}`, icon: "WA", bg: "bg-ok", external: true },
     { key: "mail", label: "Email", value: supportEmail, href: `mailto:${supportEmail}`, icon: "@", bg: "bg-primary" },
-    { key: "call", label: "Call us", value: placeholders.phone, href: placeholders.phoneHref, icon: "☎", bg: "bg-foreground" },
+    { key: "call", label: "Call us", value: supportPhone.display, href: supportPhone.href, icon: "☎", bg: "bg-foreground" },
   ];
 
   return (
     <>
       <section className="px-6 pt-[calc(86px+40px)] text-center">
         <Eyebrow dot="ok">Usually replies within one working day</Eyebrow>
-        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(42px,6.4vw,84px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(36px,6.4vw,84px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
           Talk to a <Mark>real person</Mark>
         </h1>
         <p className="mx-auto mt-4.5 max-w-[540px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">
@@ -29,8 +30,8 @@ export default async function ContactPage() {
         </p>
       </section>
 
-      <section className="pb-24 pt-14">
-        <div className="mx-auto flex w-[min(1120px,calc(100%-48px))] flex-wrap items-start gap-x-14 gap-y-10">
+      <section className="pb-14 pt-10 tablet:pb-24 tablet:pt-14">
+        <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-14 gap-y-10">
           <div className="min-w-0 flex-[1.4_1_480px] rounded-xl border border-border bg-card p-6 shadow-[0_24px_48px_-32px_rgb(80_20_0/0.4)] tablet:p-8">
             <div className="grid gap-3 tablet:grid-cols-3">
               {channels.map((c) => {
@@ -69,7 +70,7 @@ export default async function ContactPage() {
             <div className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">Other ways to reach us</div>
             <div className="mt-3.5 border-t border-border">
               {[
-                { k: "Instagram", v: "@mathflex.in", href: knownSocials.instagram ?? placeholders.socials.instagram, icon: "IG", bg: "bg-xp" },
+                { k: socials.instagram.label, v: socials.instagram.handle, href: socials.instagram.href, icon: "IG", bg: "bg-xp" },
                 { k: "Website", v: "mathflex.in", href: "https://mathflex.in", icon: "↗", bg: "bg-brand-2" },
               ].map((c) => (
                 <a key={c.k} href={c.href} target="_blank" rel="noreferrer" className="flex items-center gap-3.5 border-b border-border py-4 text-foreground hover:text-primary">
@@ -81,6 +82,7 @@ export default async function ContactPage() {
                 </a>
               ))}
             </div>
+            <p className="mt-4 text-[13px] text-muted-foreground">Coming soon: {socialsComingSoon.join(", ")}</p>
             <div className="mt-5.5 text-sm leading-[1.6] text-secondary-foreground"><b className="text-foreground">Hours</b><br />{placeholders.hours} IST</div>
             <Link href="/faq" className="mt-5.5 flex items-center justify-between gap-3 rounded-xl bg-muted px-4.5 py-4 text-foreground hover:brightness-98">
               <span className="text-sm leading-[1.4]"><b>Quick answers</b><br /><span className="text-muted-foreground">Payments, refunds, access and more</span></span>

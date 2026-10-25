@@ -17,7 +17,7 @@ export function FinalCta({ chapters, minPrice }: { chapters: HomeChapter[]; minP
     <section className="px-4 pt-24">
       <div className="mx-auto max-w-[1240px] overflow-hidden rounded-2xl bg-wash pt-16 shadow-[0_30px_60px_-50px_rgb(80_20_0/0.5)] tablet:pt-20">
       <div className="px-6 text-center">
-        <h2 className="mx-auto max-w-[1000px] text-[clamp(44px,7vw,92px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+        <h2 className="mx-auto max-w-[1000px] text-[clamp(44px,7vw,92px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
           Your IIT seat starts with one{" "}
           <Mark>
             chapter
@@ -28,7 +28,7 @@ export function FinalCta({ chapters, minPrice }: { chapters: HomeChapter[]; minP
           {chapters.length ? "Watch a chapter preview today. If it clicks, the whole chapter is yours" : "Pick the chapter you're stuck on. It's yours"}
           {minPrice !== null ? ` from ${inr(minPrice)}.` : "."}
         </p>
-        <div className="mt-8.5 flex flex-wrap justify-center gap-3">
+        <div className="mt-8.5 cta-row">
           {chapters.length > 0 && (
             <a href="#previews" className={cx(button.lg, tone.primary)}>
               <PlayIcon /> Watch a preview

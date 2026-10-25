@@ -12,8 +12,9 @@ import { duration } from "@/lib/format";
 import { PlayIcon, posterBg } from "@/components/site/web/primitives";
 import { ChapterCard } from "@/components/site/web/ChapterCard";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "My Learning" };
+export const metadata = privateMetadata("My Learning");
 
 const DAY = 86_400_000;
 
@@ -113,9 +114,9 @@ export default async function MyLearning() {
       {/* Greeting: one compact row, level on the right */}
       <section className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
         <div className="min-w-0">
-          <h1 className="text-[clamp(30px,3.6vw,42px)] font-extrabold leading-[1.08] tracking-[-0.04em]">Welcome back, {first}</h1>
+          <h1 className="text-[clamp(26px,3.6vw,42px)] font-extrabold leading-[1.08] tracking-[-0.04em]">Welcome back, {first}</h1>
           <p className="mt-1.5 text-[15px] text-secondary-foreground">
-            {user.streak > 0 ? `You're on a ${user.streak}-day streak. Keep it going today.` : mine.length ? "Watch a part or solve a question today to start a streak." : "Start with a free Part 1, no payment needed."}
+            {user.streak > 0 ? `You're on a ${user.streak}-day streak. Keep it going today.` : mine.length ? "Watch a part or solve a question today to start a streak." : "Start with a free preview, no payment needed."}
           </p>
         </div>
         <div className="flex w-full items-center gap-3.5 rounded-xl border border-border bg-card px-4 py-3 min-[600px]:w-auto min-[600px]:min-w-[340px]">
@@ -132,7 +133,7 @@ export default async function MyLearning() {
           {f.leaderboard && (
             <Link href="/leaderboard" className="flex-none rounded-lg bg-muted px-3 py-2 text-center transition hover:bg-border" aria-label={`Leaderboard rank ${rankAbove + 1}`}>
               <span className="block text-[15px] font-extrabold leading-none text-primary">#{rankAbove + 1}</span>
-              <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.06em] text-muted-foreground">Rank</span>
+              <span className="mt-1 block text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">Rank</span>
             </Link>
           )}
         </div>
@@ -163,14 +164,14 @@ export default async function MyLearning() {
             <span className="relative block aspect-[16/9] overflow-hidden text-white min-[860px]:aspect-auto min-[860px]:min-h-[280px]" style={posterBg(resume.coverFrom, resume.coverTo)}>
               <span className={cx("absolute right-[6%] top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/20", resume.symbol.length > 2 ? "text-[110px]" : "text-[200px]")}>{resume.symbol}</span>
               <span className="absolute inset-0 bg-[linear-gradient(transparent_40%,rgb(0_0_0/0.5))]" />
-              <span className="absolute left-4 top-4 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em] text-black">Continue learning</span>
+              <span className="absolute left-4 top-4 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">Continue learning</span>
               <span className="absolute left-1/2 top-1/2 grid size-[72px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition group-hover:scale-[1.06]">
                 <PlayIcon className="size-6" />
               </span>
             </span>
             <span className="flex flex-col justify-center p-6 tablet:p-9">
               <span className="text-sm font-semibold text-muted-foreground">Class {resume.classLevel} · Part {resume.next.order} of {resume.partsCount}</span>
-              <span className="mt-2 block text-[clamp(28px,3.2vw,40px)] font-extrabold leading-[1.08] tracking-[-0.04em]">{resume.title}</span>
+              <span className="mt-2 block text-[clamp(26px,3.2vw,40px)] font-extrabold leading-[1.08] tracking-[-0.04em]">{resume.title}</span>
               <span className="mt-2 block text-[17px] text-secondary-foreground">
                 Next: <b className="text-foreground">{resume.next.title}</b>{resume.next.durationSec > 0 && ` · ${duration(resume.next.durationSec)}`}
               </span>
@@ -211,8 +212,8 @@ export default async function MyLearning() {
       {/* My chapters */}
       <section className="mt-16">
         <div className="mb-6 flex items-end justify-between gap-4">
-          <h2 className={h2}>{mine.length ? "My chapters" : "Start with a free Part 1"}</h2>
-          <Link href="/chapters" className="text-sm font-bold text-primary hover:underline">All chapters →</Link>
+          <h2 className={h2}>{mine.length ? "My chapters" : "Start with a free preview"}</h2>
+          <Link href="/chapters" className="inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary hover:underline">All chapters →</Link>
         </div>
         {mine.length ? (
           <div className="grid gap-5 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-3">
@@ -225,11 +226,11 @@ export default async function MyLearning() {
                     <span className={cx("absolute right-[6%] top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/22", c.symbol.length > 2 ? "text-[64px]" : "text-[110px]")}>{c.symbol}</span>
                     <span className="absolute inset-0 bg-[linear-gradient(transparent_45%,rgb(0_0_0/0.45))]" />
                     <span className="absolute left-3 top-3 flex gap-1.5">
-                      <span className="rounded-md bg-white/92 px-2 py-1 text-[11px] font-extrabold text-black">Class {c.classLevel}</span>
+                      <span className="rounded-md bg-white/92 px-2 py-1 text-xs font-extrabold text-black">Class {c.classLevel}</span>
                       {pct === 1 ? (
-                        <span className="rounded-md bg-ok px-2 py-1 text-[11px] font-extrabold">Completed</span>
+                        <span className="rounded-md bg-ok px-2 py-1 text-xs font-extrabold">Completed</span>
                       ) : c.id === resume?.id ? (
-                        <span className="rounded-md bg-primary px-2 py-1 text-[11px] font-extrabold">Continue here</span>
+                        <span className="rounded-md bg-primary px-2 py-1 text-xs font-extrabold">Continue here</span>
                       ) : null}
                     </span>
                     <span className="absolute bottom-3 left-3 grid size-11 place-items-center rounded-full bg-white text-primary opacity-0 shadow-[0_0_0_8px_rgb(255_255_255/0.18)] transition group-hover:opacity-100">
@@ -237,7 +238,7 @@ export default async function MyLearning() {
                     </span>
                   </Link>
                   <div className="flex flex-1 flex-col p-5">
-                    <Link href={`/chapter/${c.slug}`} className="text-lg font-extrabold leading-tight tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
+                    <Link href={`/chapter/${c.slug}`} className="inline-flex min-h-11 items-center text-lg font-extrabold leading-tight tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
                     <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[13px] font-semibold text-muted-foreground">
                       <span>{c.partsCount} parts</span>
                       {c.durationSec > 0 && <span>{duration(c.durationSec)}</span>}
@@ -292,7 +293,7 @@ export default async function MyLearning() {
             {series.daily.map((d, i) => (
               <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5" title={`${d.full}: ${d.xp} XP · ${d.questions} questions`}>
                 <div className={cx("w-full rounded-t-md", d.xp ? "bg-gradient-to-t from-primary to-brand-2" : "bg-muted")} style={{ height: d.xp ? `${Math.max(6, (d.xp / peak) * 100)}%` : "4px" }} />
-                <span className={cx("text-[11px] font-semibold", i === series.daily.length - 1 ? "text-foreground" : "text-muted-foreground")}>{d.label}</span>
+                <span className={cx("text-xs font-semibold", i === series.daily.length - 1 ? "text-foreground" : "text-muted-foreground")}>{d.label}</span>
               </div>
             ))}
           </div>
@@ -314,7 +315,7 @@ export default async function MyLearning() {
                 <Tile value={`${incorrect}`} label="Wrong" tone="text-bad" />
                 <Tile value={accuracy === null ? "–" : `${accuracy}%`} label="Accuracy" />
               </div>
-              {f.practice && mine.length > 0 && <Link href="/practice" className={cx(button.sm, tone.secondary, "mt-auto w-full")}>Open question bank →</Link>}
+              {f.practice && mine.length > 0 && <div className="mt-auto pt-6"><Link href="/practice" className={cx(button.sm, tone.secondary, "w-full")}>Open question bank →</Link></div>}
             </>
           ) : (
             <Link href="/free-practice" className={cx(button.sm, tone.secondary, "mt-6 self-start")}>Try free practice →</Link>
@@ -364,7 +365,7 @@ export default async function MyLearning() {
         <section className="mt-16">
           <div className="mb-6 flex items-end justify-between gap-4">
             <h2 className={h2}>Add your next chapter</h2>
-            <Link href="/courses" className="text-sm font-bold text-primary hover:underline">Complete courses →</Link>
+            <Link href="/courses" className="inline-flex min-h-11 items-center text-sm font-bold text-primary hover:underline">Complete courses →</Link>
           </div>
           <div className="grid gap-5 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-3">
             {suggestions.map((c, i) => <ChapterCard key={c.id} c={c} index={i} />)}
@@ -379,7 +380,7 @@ function Tile({ value, label, tone: t }: { value: string; label: string; tone?: 
   return (
     <div className="rounded-lg bg-muted px-2 py-2.5">
       <div className={cx("text-lg font-extrabold tracking-[-0.03em]", t)}>{value}</div>
-      <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
+      <div className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
     </div>
   );
 }

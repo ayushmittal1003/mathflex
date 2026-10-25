@@ -84,7 +84,7 @@ export function Quiz({
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex gap-1 rounded-full bg-surface-2 p-1 text-sm font-semibold">
           {(["ALL", "DPP", "PYQ"] as const).map((f) => (
-            <button key={f} onClick={() => { setFilter(f); setIdx(0); }} className={`rounded-full px-3.5 py-1.5 ${filter === f ? "bg-card shadow" : "text-muted-foreground"}`}>
+            <button key={f} onClick={() => { setFilter(f); setIdx(0); }} className={`min-h-11 rounded-full px-4 py-1.5 ${filter === f ? "bg-card shadow" : "text-muted-foreground"}`}>
               {f === "ALL" ? "All" : f === "DPP" ? "DPPs" : "PYQs"}
             </button>
           ))}
@@ -100,7 +100,7 @@ export function Quiz({
             <button
               key={v.id}
               onClick={() => { setIdx(i); shownAt.current = Date.now(); }}
-              className={`grid size-8 shrink-0 place-items-center rounded-lg text-xs font-bold transition ${
+              className={`grid size-11 shrink-0 place-items-center rounded-lg text-xs font-bold transition ${
                 i === idx ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
               } ${r ? (r.isCorrect ? "bg-ok text-white" : "bg-bad text-white") : "bg-surface-2 text-muted-foreground"}`}
               aria-label={`Question ${i + 1}`}
@@ -115,12 +115,12 @@ export function Quiz({
         <div className="card relative p-5 sm:p-6">
           {xpPop && <span className="animate-pop absolute right-5 top-5 flex items-center gap-1 rounded-full bg-xp px-3 py-1 text-sm font-bold text-white"><Zap className="size-4" /> +{xpPop} XP</span>}
           <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
-            <span className={`rounded-md px-2 py-0.5 ${q.type === "PYQ" ? "bg-gold/20 text-gold" : "bg-primary/10 text-primary"}`}>{q.type}</span>
+            <span className={`rounded-md px-2 py-0.5 ${q.type === "PYQ" ? "bg-gold/20 text-foreground" : "bg-primary/10 text-primary"}`}>{q.type}</span>
             {(q.exam || q.year) && <span className="rounded-md bg-gold/20 px-2 py-0.5 font-semibold text-foreground">{[q.exam, q.year].filter(Boolean).join(" ")}</span>}
             <span className="text-muted-foreground">{["", "Easy", "Medium", "Hard"][q.difficulty]}</span>
             <button
               onClick={async () => setMarks({ ...marks, [q.id]: await toggleBookmark(q.id) })}
-              className="ml-auto grid size-9 place-items-center rounded-full hover:bg-surface-2"
+              className="ml-auto grid size-11 place-items-center rounded-full hover:bg-surface-2"
               aria-label="Bookmark question"
             >
               {marks[q.id] ? <BookmarkCheck className="size-5 fill-primary text-primary" /> : <Bookmark className="size-5 text-muted-foreground" />}
@@ -161,7 +161,7 @@ export function Quiz({
           <div className="mt-5 flex items-center justify-between gap-2">
             <button onClick={() => go(-1)} disabled={idx === 0} className="btn btn-ghost">Back</button>
             {!res ? (
-              <button onClick={() => choose(null)} disabled={pending} className="text-sm font-semibold text-muted-foreground underline-offset-2 hover:underline">Skip</button>
+              <button onClick={() => choose(null)} disabled={pending} className="min-h-11 px-3 text-sm font-semibold text-muted-foreground underline-offset-2 hover:underline">Skip</button>
             ) : (
               <span />
             )}

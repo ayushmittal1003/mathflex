@@ -3,12 +3,16 @@ import { LEVELS, getPracticeSet } from "@/lib/free-practice";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { PracticeArena } from "@/components/site/web/free-practice/PracticeArena";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = {
-  title: "Free practice",
-  description: "Free JEE maths practice questions, Easy to Hard, with instant answers and worked solutions.",
-  alternates: { canonical: "/free-practice" },
-};
+// Noindex: the question set is a placeholder starter set. Switch to indexable when the real
+// questions go live (see seo.md).
+export const metadata = buildMetadata({
+  title: "Free JEE Maths Practice Questions by Level",
+  description: "Free JEE maths practice questions from Easy to Hard, with instant answers and worked solutions.",
+  path: "/free-practice",
+  noindex: true,
+});
 
 // Free practice (Resources): public question sets by subject and level, checked in the
 // browser. Questions come from lib/free-practice (placeholder set until a CMS is connected).
@@ -20,7 +24,7 @@ export default async function FreePracticePage() {
     <>
       <section className="px-6 pb-10 pt-[calc(86px+40px)] text-center">
         <Eyebrow dot="ok">Free practice</Eyebrow>
-        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(40px,6vw,80px)] font-extrabold leading-none tracking-[-0.045em] text-balance">
+        <h1 className="mx-auto mt-5.5 max-w-[900px] text-[clamp(36px,6vw,80px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
           Practise JEE maths, <Mark>free</Mark>
         </h1>
         <p className="mx-auto mt-5 max-w-[560px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">

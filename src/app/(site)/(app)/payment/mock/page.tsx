@@ -5,8 +5,11 @@ import { completeMockPayment } from "@/app/actions/checkout";
 import { mockPaymentsAllowed } from "@/lib/orders";
 import { inr } from "@/lib/format";
 import { cashfreeConfigured } from "@/lib/cashfree";
+import { privateMetadata } from "@/lib/seo/metadata";
 
 // Stand-in for Cashfree checkout in local development when Cashfree keys aren't set.
+export const metadata = privateMetadata("Test payment");
+
 export default async function MockPay({ searchParams }: { searchParams: Promise<{ order?: string }> }) {
   const { order: id } = await searchParams;
   const user = await requireUser("/cart");

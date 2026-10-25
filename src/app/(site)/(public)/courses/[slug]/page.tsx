@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { getCatalog } from "@/lib/catalog";
 import { isStaff } from "@/lib/permissions";
-import { inr, pctOff } from "@/lib/format";
+import { inr, pctOff, validity } from "@/lib/format";
 import { courseFaqs, fillFaq, instructor, instructorNames } from "@/lib/site-content";
 import { WashHero } from "@/components/site/web/WashHero";
 import { CheckIcon, Mark, posterBg } from "@/components/site/web/primitives";
@@ -16,10 +16,25 @@ import { FaqList } from "@/components/site/web/FaqList";
 import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { button, container, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
+import { buildMetadata, stripHtml } from "@/lib/seo/metadata";
+import { getCourseSeo } from "@/lib/seo/queries";
+import { JsonLd } from "@/components/seo/JsonLd";
+import * as schema from "@/lib/seo/schema";
+import { Breadcrumbs } from "@/components/site/web/Breadcrumbs";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const c = await db.course.findUnique({ where: { slug: (await params).slug }, select: { title: true, subtitle: true, isPublished: true } });
-  return c?.isPublished ? { title: c.title, description: c.subtitle || undefined } : {};
+  const { slug } = await params;
+  const c = await getCourseSeo(slug);
+  if (!c) return {};
+  const about = c.subtitle || stripHtml(c.description);
+  return buildMetadata({
+    title: `${c.title} – JEE Maths Course`,
+    description: about
+      ? `${about} ${c._count.chapters} chapters with video lessons, practice and notes.`
+      : `${c.title}: ${c._count.chapters} JEE maths chapters with video lessons, practice questions and notes.`,
+    path: `/courses/${slug}`,
+    defaultImage: false,
+  });
 }
 
 // Course detail, built from the Chapter Detail and Courses designs. Price, highlights,
@@ -55,7 +70,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
     { big: `${v.chapters.length} chapters`, small: classes.length ? `Class ${classes.join(" & ")}` : "" },
     { big: `${parts} parts`, small: v.hours ? `${v.hours} of video` : "Video lessons" },
     ...(dpp + pyq > 0 ? [{ big: `${dpp + pyq} questions`, small: "DPPs + PYQs" }] : []),
-    { big: `${v.validityDays} days`, small: "of access" },
+    { big: validity(v.validityDays), small: "of access" },
   ];
   const includes = [
     `All ${v.chapters.length} chapters, every part`,
@@ -63,34 +78,51 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
     ...(notes > 0 ? ["Notes for the chapters"] : []),
     ...v.highlights,
     ...(settings.features.leaderboard ? ["XP, streaks and the weekly leaderboard"] : []),
-    `${v.validityDays} days of access on phone and laptop`,
+    `${validity(v.validityDays)} of access on phone and laptop`,
   ];
   const faqs = courseFaqs.map((f) => ({
     q: f.q,
     a: fillFaq(f.a, {
       breakevenLine: breakeven ? ` than buying ${breakeven} or more of its chapters separately` : "",
       unlockRule: settings.features.sequentialUnlock ? "each part opens after you watch most of the previous one and try its practice set." : "every part is open from the start.",
-      accessLine: `${v.validityDays} days`,
+      accessLine: validity(v.validityDays),
     }),
   }));
-  const sectionH2 = "text-[clamp(28px,3.2vw,40px)] font-extrabold leading-tight tracking-[-0.04em]";
+  const sectionH2 = "text-[clamp(26px,3.2vw,40px)] font-extrabold leading-tight tracking-[-0.04em]";
 
   return (
     <>
+      {course.isPublished && (
+        <JsonLd
+          data={schema.course({
+            path: `/courses/${course.slug}`,
+            name: v.title,
+            description: v.subtitle || stripHtml(course.description),
+            price: v.price,
+            teaches: v.chapters.map((c) => c.title),
+            instructorName: names.full,
+          })}
+        />
+      )}
       <WashHero className="!pb-[128px]">
-        <div className="mx-auto mt-8 flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-16 gap-y-10 tablet:mt-12">
+        <Breadcrumbs
+          className="mx-auto w-[min(1240px,calc(100%-var(--gutter)*2))] pt-3"
+          schemaOn={course.isPublished}
+          items={[{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: v.title, path: `/courses/${course.slug}` }]}
+        />
+        <div className="mx-auto mt-5 flex w-[min(1240px,calc(100%-var(--gutter)*2))] flex-wrap items-center gap-x-16 gap-y-10 tablet:mt-12">
           <div className="order-2 min-w-0 flex-[1_1_340px] min-[900px]:order-1">
             <div className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-secondary-foreground">
               <Link href="/courses" className="hover:text-primary">Complete courses</Link>
               <span className="opacity-50">/</span>
               <span>{v.title}</span>
-              {!course.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-[11px] font-bold text-foreground">Unpublished · staff preview</span>}
+              {!course.isPublished && <span className="ml-2 rounded bg-gold/20 px-1.5 py-0.5 text-xs font-bold text-foreground">Unpublished · staff preview</span>}
             </div>
-            <h1 className="mt-4.5 text-[clamp(42px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{v.title}</h1>
+            <h1 className="mt-4.5 text-[clamp(28px,5.4vw,72px)] font-extrabold leading-none tracking-[-0.045em] text-balance">{v.title}</h1>
             <div className="mt-5.5 flex flex-wrap gap-2">
               <Pill>{v.chapters.length} chapters</Pill>
               {v.hours && <Pill>{v.hours} of video</Pill>}
-              <Pill>{v.validityDays} days access</Pill>
+              <Pill>{validity(v.validityDays)} access</Pill>
             </div>
             {(course.description || v.subtitle) && (
               <p className="mt-4.5 max-w-[540px] whitespace-pre-line text-[17px] leading-[1.55] text-secondary-foreground text-pretty">{course.description || v.subtitle}</p>
@@ -98,7 +130,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
             {owned ? (
               <div className="mt-7 max-w-md">
-                <div className="inline-flex rounded-full bg-ok/12 px-3 py-1.5 text-sm font-bold text-[oklch(0.5_0.16_149)]">
+                <div className="inline-flex rounded-full bg-ok/12 px-3 py-1.5 text-sm font-bold text-ok-strong">
                   ✓ You own this course · till {ent!.expiresAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                 </div>
                 <div className="mb-2 mt-5 flex justify-between text-sm font-semibold"><span>Your progress</span><span>{doneParts}/{parts} parts</span></div>
@@ -133,7 +165,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
           <div className="order-1 min-w-0 flex-[1.1_1_360px] min-[900px]:order-2">
             <div className="relative aspect-[16/11] overflow-hidden rounded-xl text-white shadow-[0_40px_80px_-30px_rgb(80_20_0/0.5)]" style={posterBg(course.coverFrom, course.coverTo)}>
               <span aria-hidden className="absolute -right-4 top-1/2 -translate-y-1/2 text-[clamp(220px,26vw,340px)] font-black leading-none text-white/14">Σ</span>
-              <span className="absolute left-5 top-5 rounded-md bg-white px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em] text-black">Complete course</span>
+              <span className="absolute left-5 top-5 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">Complete course</span>
               <div className="absolute inset-x-5 bottom-5">
                 <div className="flex -space-x-3">
                   {v.chapters.slice(0, 6).map((c) => (
@@ -151,7 +183,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       </WashHero>
 
       {/* Stats strip overlapping the hero. */}
-      <div className="relative z-[3] mx-auto -mt-16 grid w-[min(1240px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-28px_rgb(80_20_0/0.45)]">
+      <div className="relative z-[3] mx-auto -mt-16 grid w-[min(1240px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-28px_rgb(80_20_0/0.45)]">
         {stats.map((s, i) => (
           <div key={s.big} className={cx("px-7 py-6", i > 0 && "border-l border-border")}>
             <div className="text-xl font-extrabold tracking-[-0.02em]">{s.big}</div>
@@ -241,17 +273,17 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       </section>
 
       <section className="pt-28">
-        <div className="mx-auto w-[min(820px,calc(100%-48px))]">
+        <div className="mx-auto w-[min(820px,calc(100%-var(--gutter)*2))]">
           <h2 className={cx(sectionH2, "text-center")}>Questions about this course</h2>
           <div className="mt-9"><FaqList items={faqs} initialOpen={-1} /></div>
         </div>
       </section>
 
       <CtaBand>
-        <h2 className="mx-auto max-w-[820px] text-[clamp(34px,4.6vw,58px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
+        <h2 className="mx-auto max-w-[820px] text-[clamp(28px,4.6vw,58px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
           {owned ? <>Pick up where you <Mark>left off</Mark>.</> : <>Every chapter of {v.title}, <Mark>one</Mark> price.</>}
         </h2>
-        <div className="mt-8 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-8 cta-row">
           {owned ? (
             <Link href="/my-learning" className={cx(button.md, tone.primary)}>Go to My Learning</Link>
           ) : (

@@ -80,7 +80,7 @@ export function CelebrateProvider({ children, sound }: { children: React.ReactNo
                   <div key={b.name} className="flex items-center gap-3 rounded-lg bg-muted p-3 text-left">
                     <span className="text-3xl">{b.emoji}</span>
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-wider text-gold">New badge</p>
+                      <p className="text-xs font-bold uppercase tracking-wider text-foreground">New badge</p>
                       <p className="font-bold">{b.name}</p>
                       <p className="text-xs text-muted-foreground">{b.description}</p>
                     </div>

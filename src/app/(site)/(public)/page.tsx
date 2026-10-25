@@ -2,7 +2,9 @@ import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { getInsideData, getPublicCoupon } from "@/components/site/web/data";
 import { inr } from "@/lib/format";
-import { faqGroups, fillFaq, homeFaqs, instructorNames } from "@/lib/site-content";
+import { faqGroups, fillFaq, homeFaqs, instructorNames, supportPhone } from "@/lib/site-content";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from "@/lib/seo/config";
 import { HomeHero } from "@/components/site/web/home/HomeHero";
 import { PreviewExplorer } from "@/components/site/web/home/PreviewExplorer";
 import { CostCompare } from "@/components/site/web/home/CostCompare";
@@ -14,10 +16,15 @@ import { PricingSection } from "@/components/site/web/home/PricingSection";
 import { HomeFaq } from "@/components/site/web/home/HomeFaq";
 import { FinalCta } from "@/components/site/web/home/FinalCta";
 import type { HomeChapter, HomeCourse } from "@/components/site/web/home/types";
+import { JsonLd } from "@/components/seo/JsonLd";
+import * as schema from "@/lib/seo/schema";
 
 // Home (dipankar-design/designs/Landing Page v2.dc.html). Everything shown comes from the
 // database or settings; static copy lives in lib/site-content.ts. The design's college
 // carousel and student reviews are hidden until they have a backend.
+// Home: its own title without the "| MathFlex" suffix (absoluteTitle).
+export const metadata = buildMetadata({ title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION, path: "/", absoluteTitle: true });
+
 export default async function Home() {
   const settings = await getSettings();
   const [chapterRows, courseRows, coupon, mindMaps, inside] = await Promise.all([
@@ -78,8 +85,10 @@ export default async function Home() {
     .filter((f): f is NonNullable<typeof f> => !!f)
     .map((f) => ({ q: fillFaq(f.q, faqVars), a: fillFaq(f.a, faqVars) }));
 
+
   return (
     <>
+      <JsonLd data={schema.graph(schema.organization({ phone: supportPhone.e164, email: settings.supportEmail }), schema.website())} />
       <HomeHero chapters={chapters} chapterCount={chapters.length} minPrice={minChapterPrice} />
       {chapters.length > 0 && <PreviewExplorer chapters={chapters} chapterCount={chapters.length} mentorShort={names.short} />}
       <CostCompare fullCourse={fullCourse} minChapterPrice={minChapterPrice} />

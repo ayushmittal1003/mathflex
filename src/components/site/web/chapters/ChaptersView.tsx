@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { inr } from "@/lib/format";
 import { ChapterCard, type CardChapter } from "../ChapterCard";
-import { Caret, Eyebrow, LockIcon, Mark, PlayIcon, SectionHead } from "../primitives";
+import { BottomSheet } from "../BottomSheet";
+import { Caret, CheckIcon, Eyebrow, LockIcon, Mark, PlayIcon, SectionHead } from "../primitives";
 import { WashHero, heroH1, heroLead, splitH2 } from "../WashHero";
 import { cx } from "../ui";
 import { clock } from "../home/types";
@@ -14,12 +15,14 @@ type Peek = {
 };
 type Bundle = { id: string; slug: string; title: string; subtitle: string; price: number; mrp: number; chapterCount: number; breakeven: number | null };
 type Sort = "default" | "weight" | "price";
+const SORTS: [Sort, string][] = [["default", "Syllabus order"], ["weight", "Sort: JEE weightage"], ["price", "Sort: price, low to high"]];
 
 export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: CardChapter[]; peek: Peek | null; bundles: Bundle[]; initial: { q: string; cls: number | "all"; sort: Sort } }) {
   const [q, setQ] = useState(initial.q);
   const [cls, setCls] = useState<number | "all">(initial.cls);
   const [sort, setSort] = useState<Sort>(initial.sort);
   const [freeOnly, setFreeOnly] = useState(false);
+  const [sheet, setSheet] = useState(false);
 
   const classes = [...new Set(chapters.map((c) => c.classLevel))].sort();
   const anyFree = chapters.some((c) => c.free);
@@ -41,14 +44,15 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
 
   // Grouped by class in syllabus order; one flat grid when sorted.
   const groups = sort === "default" ? classes.map((n) => ({ title: `Class ${n}`, rows: list.filter((c) => c.classLevel === n) })).filter((g) => g.rows.length) : [{ title: "", rows: list }];
+  const activeFilters = (cls !== "all" ? 1 : 0) + (sort !== "default" ? 1 : 0) + (freeOnly ? 1 : 0);
   const reset = () => { setQ(""); setCls("all"); setFreeOnly(false); setSort("default"); };
   const goList = () => document.getElementById("all")?.scrollIntoView({ behavior: "smooth" });
 
   return (
     <>
       <WashHero peek={!!peek}>
-        <div className="px-6 pt-10 text-center">
-          <Eyebrow dot="ok" onWash>{chapters.length} chapters · Class {classes.join(" & ")}{anyFree && " · Part 1 free"}</Eyebrow>
+        <div className="px-4 pt-10 text-center tablet:px-6">
+          <Eyebrow dot="ok" onWash>{chapters.length} chapters · Class {classes.join(" & ")}{anyFree && " · Free previews"}</Eyebrow>
           <h1 className={cx(heroH1, "mt-6 max-w-[980px]")}>
             Find the chapter that&apos;s costing you{" "}
             <Mark onWash>marks<Caret /></Mark>
@@ -61,11 +65,11 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
             className="mx-auto mt-8 flex w-[min(640px,100%)] items-center gap-2.5 rounded-xl bg-card py-2 pl-4.5 pr-2 shadow-[0_20px_50px_-20px_rgb(120_40_0/0.35)]"
           >
             <svg className="size-5 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Try integrals, vectors, P&C…" aria-label="Search chapters" className="min-w-0 flex-1 bg-transparent py-2.5 text-[17px] text-foreground outline-none placeholder:text-muted-foreground" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Try integrals, vectors, P&C…" aria-label="Search chapters" className="h-full min-w-0 flex-1 bg-transparent py-2.5 text-[17px] text-foreground outline-none placeholder:text-muted-foreground" />
             <button className="shrink-0 rounded-lg bg-primary px-5 py-3 text-[15px] font-bold text-primary-foreground transition hover:brightness-108">Search</button>
           </form>
           {popular.length > 0 && (
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 max-sm:[&>button:nth-of-type(n+3)]:hidden">
               <span className="text-[13px] text-secondary-foreground">Popular:</span>
               {popular.map((p) => (
                 <button key={p.id} type="button" onClick={() => { setQ(p.title); goList(); }} className="tap relative rounded-full border border-white/95 bg-white/75 px-3 py-1.5 text-[13px] font-semibold text-foreground transition hover:bg-card">
@@ -80,14 +84,14 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
       </WashHero>
 
       {top5.length > 0 && (
-        <section id="top" className="overflow-hidden pb-18 pt-24">
+        <section id="top" className="overflow-hidden pb-12 pt-12 tablet:pb-18 tablet:pt-24">
           <SectionHead
             eyebrow="Highest JEE weightage"
             dot="gold"
             title={<>Most marks for your <Mark>time</Mark>.</>}
             lead={`These ${top5.length} chapters carry the most weight in JEE Main. Short on time? Start here.`}
           />
-          <div className="no-scrollbar mx-auto mt-10 w-[min(1240px,calc(100%-48px))] overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 pb-5 pt-6">
+          <div className="no-scrollbar mx-auto mt-10 w-[min(1240px,calc(100%-var(--gutter)*2))] overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 pb-5 pt-6">
             <div className="mx-auto flex w-max gap-2">
             {top5.map((c, i) => (
               <Link key={c.id} href={`/chapter/${c.slug}`} className="flex shrink-0 items-end text-white">
@@ -97,7 +101,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
                 <span className="relative block aspect-[2/3] w-[130px] overflow-hidden rounded-xl shadow-[0_16px_32px_-16px_rgb(0_0_0/0.45)] transition-transform duration-300 hover:-translate-y-1.5 tablet:w-[170px]" style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}>
                   <span className={cx("absolute -right-2.5 top-1 whitespace-nowrap font-black leading-none text-white/20", c.symbol.length > 2 ? "text-[56px]" : "text-[96px]")}>{c.symbol}</span>
                   <span className="absolute inset-0 bg-gradient-to-b from-transparent from-35% to-black/85" />
-                  <span className="absolute left-2.5 top-2.5 rounded bg-white px-1.5 py-0.5 text-[11px] font-extrabold text-black">{c.jeeWeightage}% of JEE</span>
+                  <span className="absolute left-2.5 top-2.5 rounded bg-white px-1.5 py-0.5 text-xs font-extrabold text-black">{c.jeeWeightage}% of JEE</span>
                   <span className="absolute inset-x-3 bottom-3">
                     <span className="block text-[15px] font-extrabold leading-[1.15]">{c.title}</span>
                     <span className="mt-1 block text-xs opacity-80">Class {c.classLevel} · {inr(c.price)}</span>
@@ -110,45 +114,96 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
         </section>
       )}
 
-      {/* Sticky filter bar (design.md §3.6), parked under the sticky site nav. */}
+      {/* Sticky filter bar (design.md §3.6), parked under the sticky site nav. On phones it is one
+          row (search + Filters button) and the rest lives in a bottom sheet (design.md §6a). */}
       <div id="all" className="sticky top-[67px] z-30 scroll-mt-[67px] border-y border-border bg-card/90 backdrop-blur-lg">
-        <div className="mx-auto flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-3 gap-y-2.5 py-3">
-          <label className="flex h-10 max-w-[340px] flex-[1_1_220px] items-center gap-2 rounded-lg border border-border bg-card px-3">
+        <div className="mx-auto flex w-[min(1240px,calc(100%-var(--gutter)*2))] items-center gap-x-3 gap-y-2.5 py-2 tablet:flex-wrap tablet:py-3">
+          <label className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-lg border border-border bg-card px-3 tablet:max-w-[340px] tablet:flex-[1_1_220px]">
             <svg className="size-[15px] shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search chapters" aria-label="Search chapters" className="min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search chapters" aria-label="Search chapters" className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground" />
             {q && <button type="button" onClick={() => setQ("")} aria-label="Clear search" className="tap relative grid size-5.5 shrink-0 place-items-center rounded-full bg-muted text-[13px] leading-none">×</button>}
           </label>
-          <div className="flex shrink-0 gap-0.5 rounded-lg bg-foreground p-1">
-            {(["all", ...classes] as const).map((v) => (
-              <button key={v} type="button" onClick={() => setCls(v)} aria-pressed={cls === v} className={cx("tap relative whitespace-nowrap rounded-md px-3 py-[7px] text-[13px] font-bold", cls === v ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
-                {v === "all" ? "All" : `Class ${v}`}
+          <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" className="relative flex h-11 shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-3.5 text-sm font-bold text-foreground tablet:hidden">
+            <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden><path d="M4 6h16M7 12h10M10 18h4" /></svg>
+            Filters
+            {activeFilters > 0 && <span className="grid size-5 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{activeFilters}</span>}
+          </button>
+          <div className="hidden flex-wrap items-center gap-x-3 gap-y-2.5 tablet:contents">
+            <div className="flex shrink-0 gap-0.5 rounded-lg bg-foreground p-1">
+              {(["all", ...classes] as const).map((v) => (
+                <button key={v} type="button" onClick={() => setCls(v)} aria-pressed={cls === v} className={cx("tap relative whitespace-nowrap rounded-md px-3 py-[7px] text-[13px] font-bold", cls === v ? "bg-card text-foreground" : "text-white/75 hover:text-white")}>
+                  {v === "all" ? "All" : `Class ${v}`}
+                </button>
+              ))}
+            </div>
+            <div className="relative shrink-0">
+              <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sort chapters" className="h-11 cursor-pointer appearance-none rounded-lg border border-border bg-card pl-3 pr-8 text-[13px] font-bold text-foreground">
+                {SORTS.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+              </select>
+              <svg className="pointer-events-none absolute right-2.5 top-1/2 size-[13px] -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m6 9 6 6 6-6" /></svg>
+            </div>
+            {anyFree && (
+              <button type="button" role="switch" aria-checked={freeOnly} onClick={() => setFreeOnly((f) => !f)} className="tap relative flex shrink-0 items-center gap-2.5 whitespace-nowrap text-[13px] font-bold text-foreground">
+                <span className={cx("relative h-5 w-9 rounded-full transition-colors", freeOnly ? "bg-ok" : "bg-border")}>
+                  <span className={cx("absolute top-0.5 size-4 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.25)] transition-[left]", freeOnly ? "left-[18px]" : "left-0.5")} />
+                </span>
+                Free preview
               </button>
-            ))}
+            )}
+            <span className="ml-auto shrink-0 whitespace-nowrap text-[13px] font-semibold text-muted-foreground">
+              {list.length} chapter{list.length === 1 ? "" : "s"}
+            </span>
           </div>
-          <div className="relative shrink-0">
-            <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sort chapters" className="h-10 cursor-pointer appearance-none rounded-lg border border-border bg-card pl-3 pr-8 text-[13px] font-bold text-foreground">
-              <option value="default">Syllabus order</option>
-              <option value="weight">Sort: JEE weightage</option>
-              <option value="price">Sort: price, low to high</option>
-            </select>
-            <svg className="pointer-events-none absolute right-2.5 top-1/2 size-[13px] -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m6 9 6 6 6-6" /></svg>
-          </div>
-          {anyFree && (
-            <button type="button" role="switch" aria-checked={freeOnly} onClick={() => setFreeOnly((f) => !f)} className="tap relative flex shrink-0 items-center gap-2.5 whitespace-nowrap text-[13px] font-bold text-foreground">
-              <span className={cx("relative h-5 w-9 rounded-full transition-colors", freeOnly ? "bg-ok" : "bg-border")}>
-                <span className={cx("absolute top-0.5 size-4 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.25)] transition-[left]", freeOnly ? "left-[18px]" : "left-0.5")} />
-              </span>
-              Part 1 free
-            </button>
-          )}
-          <span className="ml-auto shrink-0 whitespace-nowrap text-[13px] font-semibold text-muted-foreground">
-            {list.length} chapter{list.length === 1 ? "" : "s"}
-          </span>
         </div>
       </div>
 
-      <section className="pb-24 pt-8">
-        <div className="mx-auto w-[min(1240px,calc(100%-48px))]">
+      {sheet && (
+        <BottomSheet
+          title="Filters"
+          onClose={() => setSheet(false)}
+          footer={
+            <div className="flex gap-2.5">
+              {activeFilters > 0 && <button type="button" onClick={() => { setCls("all"); setSort("default"); setFreeOnly(false); }} className="min-h-12 rounded-lg border border-border bg-card px-4 text-[15px] font-bold">Reset</button>}
+              <button type="button" onClick={() => setSheet(false)} className="min-h-12 flex-1 rounded-lg bg-primary px-4 text-[15px] font-bold text-primary-foreground">Show {list.length} chapter{list.length === 1 ? "" : "s"}</button>
+            </div>
+          }
+        >
+          <div className="grid gap-5 pt-2">
+            <fieldset>
+              <legend className="mb-2 text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground">Class</legend>
+              <div className="flex gap-0.5 rounded-lg bg-foreground p-1">
+                {(["all", ...classes] as const).map((v) => (
+                  <button key={v} type="button" onClick={() => setCls(v)} aria-pressed={cls === v} className={cx("min-h-11 flex-1 rounded-md px-3 text-sm font-bold", cls === v ? "bg-card text-foreground" : "text-white/75")}>
+                    {v === "all" ? "All" : `Class ${v}`}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend className="mb-2 text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground">Sort by</legend>
+              <div className="grid gap-2">
+                {SORTS.map(([v, label]) => (
+                  <button key={v} type="button" onClick={() => setSort(v)} aria-pressed={sort === v} className={cx("flex min-h-12 items-center justify-between rounded-lg border px-3.5 text-left text-[15px] font-bold", sort === v ? "border-foreground bg-muted" : "border-border")}>
+                    {label}
+                    {sort === v && <CheckIcon className="size-4" />}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            {anyFree && (
+              <button type="button" role="switch" aria-checked={freeOnly} onClick={() => setFreeOnly((f) => !f)} className="flex min-h-12 items-center justify-between rounded-lg border border-border px-3.5 text-[15px] font-bold">
+                Only chapters with a free preview
+                <span className={cx("relative h-6 w-10 shrink-0 rounded-full transition-colors", freeOnly ? "bg-ok" : "bg-border")}>
+                  <span className={cx("absolute top-0.5 size-5 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.25)] transition-[left]", freeOnly ? "left-[18px]" : "left-0.5")} />
+                </span>
+              </button>
+            )}
+          </div>
+        </BottomSheet>
+      )}
+
+      <section className="pb-14 pt-6 tablet:pb-24 tablet:pt-8">
+        <div className="mx-auto w-[min(1240px,calc(100%-var(--gutter)*2))]">
           {groups.map((g) => (
             <div key={g.title || "all"} className="mb-10 last:mb-0">
               {g.title && (
@@ -157,7 +212,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
                   <span className="text-[13px] font-semibold text-muted-foreground">{g.rows.length} chapters</span>
                 </div>
               )}
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-4 tablet:gap-5">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] sm:gap-4 tablet:gap-5">
                 {g.rows.map((c, i) => <ChapterCard key={c.id} c={c} index={i} />)}
               </div>
             </div>
@@ -173,8 +228,8 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
       </section>
 
       {bundles.length > 0 && (
-        <section id="bundles" className="scroll-mt-16 py-16 tablet:py-20">
-          <div className="mx-auto flex w-[min(1240px,calc(100%-48px))] flex-wrap items-center gap-x-16 gap-y-10">
+        <section id="bundles" className="scroll-mt-16 py-12 tablet:py-20">
+          <div className="mx-auto flex w-[min(1240px,calc(100%-var(--gutter)*2))] flex-wrap items-center gap-x-16 gap-y-10">
             <div className="min-w-0 flex-[1_1_360px]">
               <Eyebrow>Complete courses</Eyebrow>
               <h2 className={cx(splitH2, "mt-5.5")}>
@@ -190,7 +245,7 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-xl font-extrabold tracking-[-0.02em]">{b.title}</span>
-                      {best?.id === b.id && <span className="rounded bg-primary px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.06em] text-primary-foreground">Best value</span>}
+                      {best?.id === b.id && <span className="rounded bg-primary px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.06em] text-primary-foreground">Best value</span>}
                     </div>
                     <div className="mt-1 text-sm text-muted-foreground">{b.subtitle || `${b.chapterCount} chapters`}</div>
                   </div>
@@ -213,13 +268,13 @@ function HeroPeek({ peek }: { peek: Peek }) {
   const free = peek.parts.find((p) => p.isFreePreview);
   const shown = peek.parts.slice(0, 3);
   return (
-    <div className="relative mx-auto mt-14 -mb-[150px] grid h-[420px] w-[min(980px,calc(100%-48px))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+    <div className="relative mx-auto mt-14 -mb-[150px] grid h-[420px] w-[min(980px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
       <div className="relative overflow-hidden text-white" style={{ background: `linear-gradient(125deg, ${peek.coverFrom}, ${peek.coverTo})` }}>
         <div className="absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap text-[300px] font-black leading-none text-white/14">{peek.symbol}</div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 to-transparent to-70%" />
         <div className="absolute left-5.5 top-5 flex gap-2">
-          <span className="rounded-md bg-black/35 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.08em]">Class {peek.classLevel}</span>
-          {free && <span className="rounded-md bg-white px-2 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-black">Part {free.order} · Free</span>}
+          <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.08em]">Class {peek.classLevel}</span>
+          {free && <span className="rounded-md bg-white px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] text-black">Part {free.order} · Free</span>}
         </div>
         {free && (
           <Link href={`/learn/${peek.slug}?part=${free.order}`} aria-label={`Watch Part ${free.order} of ${peek.title} free`} className="absolute left-1/2 top-[38%] grid size-18 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition hover:scale-[1.06]">
@@ -234,7 +289,7 @@ function HeroPeek({ peek }: { peek: Peek }) {
       <div className="hidden flex-col gap-2.5 p-5 text-left tablet:flex">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground">{peek.parts.length} parts</span>
-          {peek.jeeWeightage > 0 && <span className="rounded-md bg-brand-2/14 px-2 py-0.5 text-[11px] font-bold text-brand-2">{peek.jeeWeightage}% of JEE Main</span>}
+          {peek.jeeWeightage > 0 && <span className="rounded-md bg-brand-2/14 px-2 py-0.5 text-xs font-bold text-brand-2">{peek.jeeWeightage}% of JEE Main</span>}
         </div>
         {shown.map((p, i) => (
           <div key={p.id} className={cx("flex items-center gap-2.5 rounded-lg border p-2.5", p.isFreePreview ? "border-primary/35 bg-selected" : "border-border")}>
@@ -243,7 +298,7 @@ function HeroPeek({ peek }: { peek: Peek }) {
             </span>
             <div className="min-w-0">
               <div className="truncate text-[13px] font-bold">{p.title}</div>
-              <div className="text-[11px] text-muted-foreground">
+              <div className="text-xs text-muted-foreground">
                 {p.durationSec > 0 && `${clock(p.durationSec)} · `}
                 {p.isFreePreview ? "Free preview" : i > 0 ? `Unlocks after Part ${shown[i - 1].order}` : "Unlocks after purchase"}
               </div>

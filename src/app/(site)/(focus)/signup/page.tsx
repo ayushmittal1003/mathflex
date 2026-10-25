@@ -5,8 +5,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { isStaff } from "@/lib/permissions";
 import { getAuthPanel } from "@/components/site/web/data";
 import { googleConfigured } from "@/lib/google";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Sign up" };
+export const metadata = privateMetadata("Sign up");
 
 // Only same-site paths are followed (same rule as the auth actions).
 const safeNext = (n?: string) => (n && n.startsWith("/") && !n.startsWith("//") ? n : null);

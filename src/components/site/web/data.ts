@@ -62,7 +62,7 @@ export async function getAuthPanel(settings: Settings) {
     settings.features.freePreviews ? db.part.count({ where: { isFreePreview: true, chapter: { isPublished: true } } }) : Promise.resolve(0),
   ]);
   const tagline = [
-    ...(free > 0 ? ["Part 1 free"] : []),
+    ...(free > 0 ? ["Free 3–4 min previews"] : []),
     ...(min._min.price != null ? [`From ₹${min._min.price.toLocaleString("en-IN")} a chapter`] : []),
     "Taught by an IIT Delhi alumnus",
   ];

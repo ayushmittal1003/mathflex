@@ -1,5 +1,6 @@
 import { getSettings } from "@/lib/settings";
 import { SiteExtras } from "@/components/site/SiteExtras";
+import { SkipLink } from "@/components/site/web/SkipLink";
 import { ToastProvider } from "@/components/site/web/Toast";
 
 // Focused pages without the site nav/footer: checkout, payment status, log in and sign up
@@ -9,6 +10,7 @@ export default async function FocusLayout({ children }: { children: React.ReactN
   return (
     <div className="site-light min-h-dvh bg-[color-mix(in_oklab,var(--muted)_45%,var(--card))] text-foreground">
       <ToastProvider>
+        <SkipLink />
         {children}
         <SiteExtras settings={settings} lifted={false} />
       </ToastProvider>

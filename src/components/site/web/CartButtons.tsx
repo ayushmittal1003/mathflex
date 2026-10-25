@@ -22,7 +22,7 @@ export function AddToCartButton({ item, title, className, size = "lg" }: { item:
       type="button"
       onClick={() => toggle(item, title)}
       aria-pressed={inCart}
-      className={cx(button[size], inCart ? "border border-ok/40 bg-ok/12 text-[oklch(0.5_0.16_149)]" : "border border-border bg-card text-foreground hover:brightness-97", className)}
+      className={cx(button[size], inCart ? "border border-ok/40 bg-ok/12 text-ok-strong" : "border border-border bg-card text-foreground hover:brightness-97", className)}
     >
       {inCart ? "✓ In cart" : "Add to cart"}
     </button>

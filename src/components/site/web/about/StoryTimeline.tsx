@@ -43,7 +43,7 @@ export function StoryTimeline({ steps }: { steps: Step[] }) {
   }, []);
 
   return (
-    <ol ref={wrap} className="relative mx-auto mt-16 w-[min(920px,calc(100%-48px))]">
+    <ol ref={wrap} className="relative mx-auto mt-16 w-[min(920px,calc(100%-var(--gutter)*2))]">
       {/* rail + scroll fill */}
       <span aria-hidden className="absolute bottom-2 left-[15px] top-2 w-[3px] rounded-full bg-border min-[860px]:left-1/2 min-[860px]:-translate-x-1/2" />
       <span
@@ -64,7 +64,7 @@ export function StoryTimeline({ steps }: { steps: Step[] }) {
             {/* marker */}
             <span
               className={cx(
-                "absolute left-0 top-1 z-10 grid size-[33px] place-items-center rounded-full border-[3px] font-mono text-[11px] font-extrabold transition-all duration-500 ease-mf min-[860px]:left-1/2 min-[860px]:-translate-x-1/2",
+                "absolute left-0 top-1 z-10 grid size-[33px] place-items-center rounded-full border-[3px] font-mono text-xs font-extrabold transition-all duration-500 ease-mf min-[860px]:left-1/2 min-[860px]:-translate-x-1/2",
                 lit
                   ? s.you ? "border-primary bg-primary text-white shadow-[0_0_0_7px_color-mix(in_oklab,var(--primary)_16%,transparent)]" : "border-foreground bg-foreground text-white"
                   : "border-border bg-card text-muted-foreground",
@@ -89,7 +89,7 @@ export function StoryTimeline({ steps }: { steps: Step[] }) {
                 <div className={cx("font-mono text-xs font-bold uppercase tracking-[0.1em]", s.you ? "text-primary" : "text-muted-foreground")}>{s.tag}</div>
                 <h3 className="mt-2 text-[22px] font-extrabold leading-[1.2] tracking-[-0.025em]">{s.t}</h3>
                 <p className="mt-2 text-[15px] leading-[1.6] text-secondary-foreground">{s.d}</p>
-                {s.you && <Link href="/chapters" className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-cta hover:brightness-108">Find your chapter →</Link>}
+                {s.you && <Link href="/chapters" className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-cta hover:brightness-108">Find your chapter →</Link>}
               </div>
             </div>
           </li>

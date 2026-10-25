@@ -22,14 +22,14 @@ export function FaqBrowser({ groups }: { groups: Group[] }) {
 
   return (
     <>
-      <div className="mx-auto mt-8 flex w-[min(620px,calc(100%-48px))] items-center gap-2.5 rounded-xl border border-border bg-card py-1.5 pl-4.5 pr-1.5 shadow-[0_20px_44px_-28px_rgb(80_20_0/0.4)]">
+      <div className="mx-auto mt-8 flex w-[min(620px,calc(100%-var(--gutter)*2))] items-center gap-2.5 rounded-xl border border-border bg-card py-1.5 pl-4.5 pr-1.5 shadow-[0_20px_44px_-28px_rgb(80_20_0/0.4)]">
         <svg className="size-5 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search questions" aria-label="Search questions" className="h-11 min-w-0 flex-1 bg-transparent text-[17px] text-foreground outline-none placeholder:text-muted-foreground" />
         {q && <button type="button" onClick={() => setQ("")} className="shrink-0 rounded-lg bg-muted px-3.5 py-2.5 text-[13px] font-bold">Clear</button>}
       </div>
 
-      <section className="pb-18 pt-14">
-        <div className="mx-auto flex w-[min(1120px,calc(100%-48px))] flex-wrap items-start gap-x-14 gap-y-8">
+      <section className="pb-12 pt-10 tablet:pb-18 tablet:pt-14">
+        <div className="mx-auto flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap items-start gap-x-14 gap-y-8">
           <aside className="w-full min-w-0 min-[860px]:sticky min-[860px]:top-24 min-[860px]:w-[240px] min-[860px]:flex-none">
             <div className="no-scrollbar flex gap-2 overflow-x-auto min-[860px]:grid min-[860px]:gap-1.5">
               {cats.map((c) => (

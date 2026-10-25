@@ -64,6 +64,7 @@
   --xp: oklch(0.606 0.25 292.717);      /* violet: XP, levels */
   --gold: oklch(0.795 0.184 86.047);    /* yellow: badges, top ranks, "partial", warnings */
   --ok: oklch(0.627 0.194 149.214);     /* green: correct, paid, success */
+  --ok-strong: var(--ok);               /* green text on a pale green tint (chips). Darker on the public site */
 
   /* Website (v2) tokens */
   --wash: oklch(0.975 0.012 50);       /* warm base of the framed hero wash */
@@ -124,6 +125,34 @@
 
 .site-light { color-scheme: light; }
 
+/* Public-site contrast (WCAG 2.2 AA, 4.5:1). Scoped here so /admin and dark mode keep the base values. */
+.site-light {
+  --primary: oklch(0.58 0.24 25.331);
+  --ring: oklch(0.58 0.24 25.331);
+  --accent: oklch(0.58 0.24 25.331);
+  --sidebar-primary: oklch(0.58 0.24 25.331);
+  --sidebar-ring: oklch(0.58 0.24 25.331);
+  --ok: oklch(0.53 0.17 149.214);
+  --ok-strong: oklch(0.48 0.16 149.214);
+  --xp: oklch(0.56 0.25 292.717);
+  --muted-foreground: oklch(0.52 0.046 257.417);
+}
+
+/* Visible keyboard focus for links and controls on the public site (admin is unaffected). Zero
+   specificity (:where), so components that style their own focus state still win. */
+.site-light :where(a, button, summary, [role="button"], [tabindex]):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* Mobile rules (dipankar-design/design.md "Mobile"). Side gutter token used by every content
+   wrapper: 16px on phones, 24px from the tablet breakpoint (760px). */
+:root { --gutter: 1rem; }
+@media (min-width: 47.5rem) { :root { --gutter: 1.5rem; } }
+
+/* iOS zooms the page when a field under 16px gets focus, so every text field on the public site is
+   16px on phones. This is plain (unlayered) CSS on purpose: it beats size utilities like text-sm. */
+@media (max-width: 47.49rem) {
+  .site-light :where(input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="hidden"]), select, textarea) { font-size: 16px; }
+}
+
 @theme inline {
   /* Colours */
   --color-background: var(--background);
@@ -164,6 +193,7 @@
   --color-xp: var(--xp);
   --color-gold: var(--gold);
   --color-ok: var(--ok);
+  --color-ok-strong: var(--ok-strong);
 
   /* Legacy colour aliases (don't use in new code) */
   --color-bg: var(--background);
@@ -342,6 +372,25 @@ body {
     radial-gradient(50% 50% at 100% 100%, color-mix(in oklab, var(--primary) 26%, transparent), transparent 70%),
     radial-gradient(40% 40% at 0% 80%, color-mix(in oklab, var(--brand-2) 18%, transparent), transparent 70%),
     var(--wash);
+}
+
+/* Button groups in heroes, CTA bands and empty states (design.md §6a): stacked full-width buttons on
+   phones (max 360px), a centred wrapping row from 640px. */
+@utility cta-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.625rem;
+  width: 100%;
+  max-width: 22.5rem;
+  margin-inline: auto;
+  @media (min-width: 40rem) { flex-direction: row; flex-wrap: wrap; justify-content: center; max-width: none; }
+}
+
+/* A sticky bottom bar on the page (pricing selection) sets data-sticky-bar on <body>; the FlexCare
+   button then rides above it on phones and tablets. */
+@media (max-width: 47.49rem) {
+  body[data-sticky-bar] .chat-fab { bottom: calc(144px + env(safe-area-inset-bottom)) !important; }
 }
 
 /* Footer wordmark fill. */

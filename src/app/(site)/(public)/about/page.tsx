@@ -11,8 +11,11 @@ import { AboutPillars } from "@/components/site/web/about/AboutPillars";
 import { StoryTimeline } from "@/components/site/web/about/StoryTimeline";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { CtaBand } from "@/components/site/web/CtaBand";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import * as schema from "@/lib/seo/schema";
 
-export const metadata = { title: "About us", alternates: { canonical: "/about" } };
+export const metadata = buildMetadata({ title: "About MathFlex – JEE Maths Mentorship", description: "Who is behind MathFlex, how the chapter-by-chapter JEE maths videos are made, and how to reach us.", path: "/about" });
 
 // About. Structure inspired by allen.in/about-us (proof cards → timeline → offerings), built
 // on our design system and kept honest for a new platform: every number is live, and the
@@ -70,6 +73,12 @@ export default async function AboutPage() {
 
   return (
     <>
+      <JsonLd
+        data={schema.graph(
+          schema.profilePage("/about", "About MathFlex"),
+          schema.person({ name: names.full, jobTitle: instructor.jobTitle, degree: "B.Tech in Civil Engineering", image: instructor.photo }),
+        )}
+      />
       <WashHero>
         <div className="px-6 pt-10 text-center">
           <Eyebrow dot="ok" onWash>About Mathflex</Eyebrow>
@@ -80,16 +89,16 @@ export default async function AboutPage() {
             Mathflex is chapter-wise JEE maths, taught by IIT Delhi alumnus {names.full}, at a price every student can afford.
           </p>
         </div>
-        <VideoFrame videoId={about.storyVideoId} caption="Why Mathflex exists" sub={`A note from ${names.short}`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-48px))]" />
+        <VideoFrame videoId={about.storyVideoId} caption="Why Mathflex exists" sub={`A note from ${names.short}`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-var(--gutter)*2))]" />
       </WashHero>
 
       {/* What we stand for: proof cards */}
       {pillars.length > 0 && (
-        <section className="overflow-hidden pb-4 pt-24">
-          <div className="mx-auto flex w-[min(1240px,calc(100%-48px))] flex-wrap items-end justify-between gap-x-10 gap-y-4">
+        <section className="overflow-hidden pb-4 pt-12 tablet:pt-24">
+          <div className="mx-auto flex w-[min(1240px,calc(100%-var(--gutter)*2))] flex-wrap items-end justify-between gap-x-10 gap-y-4">
             <div className="max-w-[640px]">
               <Eyebrow>What we stand for</Eyebrow>
-              <h2 className="mt-5.5 text-[clamp(38px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
+              <h2 className="mt-5.5 text-[clamp(28px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
                 New platform. <Mark>Proven</Mark> teaching.
               </h2>
             </div>
@@ -103,10 +112,10 @@ export default async function AboutPage() {
         </section>
       )}
 
-      <section className="py-16 tablet:py-20">
-        <div className="mx-auto w-[min(1120px,calc(100%-48px))]">
+      <section className="py-12 tablet:py-20">
+        <div className="mx-auto w-[min(1120px,calc(100%-var(--gutter)*2))]">
           <Eyebrow dot="brand-2">Our story</Eyebrow>
-          <h2 className="mt-5.5 max-w-[1000px] text-[clamp(34px,4.4vw,58px)] font-extrabold leading-[1.06] tracking-[-0.045em] text-balance">
+          <h2 className="mt-5.5 max-w-[1000px] text-[clamp(28px,4.4vw,58px)] font-extrabold leading-[1.06] tracking-[-0.045em] text-balance">
             Great JEE teaching shouldn&apos;t cost <Mark>₹2 lakh</Mark>.
           </h2>
           <div className="mt-9 gap-12 text-lg leading-[1.7] text-secondary-foreground tablet:columns-2 [&>p]:mb-5 [&>p]:break-inside-avoid">
@@ -117,14 +126,14 @@ export default async function AboutPage() {
       </section>
 
       {/* The story so far: timeline */}
-      <section className="py-16 tablet:py-20">
+      <section className="py-12 tablet:py-20">
         <SectionHead eyebrow="The story so far" dot="gold" title={<>From one student to <Mark>every chapter</Mark></>} lead="No decades of history yet. Just the road that led here, and where you come in." />
         <StoryTimeline steps={timeline} />
       </section>
 
-      <section className="py-16 tablet:py-20">
+      <section className="py-12 tablet:py-20">
         <SectionHead eyebrow="What we solve" title={<>JEE prep is <Mark>broken</Mark> for most students</>} lead="Most students lose marks in a handful of chapters. The usual options make them pay for everything to fix those few." />
-        <div className="mx-auto mt-12 w-[min(1000px,calc(100%-48px))]">
+        <div className="mx-auto mt-12 w-[min(1000px,calc(100%-var(--gutter)*2))]">
           <div className="grid grid-cols-2 gap-x-6 border-b-2 border-foreground pb-3 text-xs font-extrabold uppercase tracking-[0.1em] text-muted-foreground tablet:grid-cols-[160px_1fr_1fr]">
             <span className="hidden tablet:block" />
             <span>The usual way</span>
@@ -142,9 +151,9 @@ export default async function AboutPage() {
 
       {/* What you can learn with us: offerings */}
       {offerings.length > 0 && (
-        <section className="py-16 tablet:py-20">
+        <section className="py-12 tablet:py-20">
           <SectionHead eyebrow="Our offerings" dot="ok" title={<>What you can learn <Mark>with us</Mark></>} lead="Start with one chapter, take a whole class, or plan your prep with a call." />
-          <div className="mx-auto mt-12 grid w-[min(1180px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-4">
+          <div className="mx-auto mt-12 grid w-[min(1180px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-4">
             {offerings.map((o, i) => (
               <Link
                 key={o.key}
@@ -156,7 +165,7 @@ export default async function AboutPage() {
                   style={{ background: i === 0 ? "linear-gradient(155deg, var(--primary), var(--brand-2))" : i === 1 ? "var(--foreground)" : i === 2 ? "linear-gradient(155deg, var(--xp), var(--primary))" : "linear-gradient(155deg, var(--ok), var(--chart-3))" }}
                 >
                   <span aria-hidden className="absolute -right-3 top-1/2 -translate-y-1/2 text-[140px] font-black leading-none text-white/18">{o.glyph}</span>
-                  <span className="absolute left-4 top-4 rounded-md bg-white/90 px-2 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em] text-black">{o.kicker}</span>
+                  <span className="absolute left-4 top-4 rounded-md bg-white/90 px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">{o.kicker}</span>
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <div className="text-xl font-extrabold tracking-[-0.02em]">{o.title}</div>
@@ -173,13 +182,13 @@ export default async function AboutPage() {
         </section>
       )}
 
-      <section className="py-16 tablet:py-20">
+      <section className="py-12 tablet:py-20">
         <SectionHead
           eyebrow="Why chapter-wise"
           title={<>Fix the chapter that&apos;s <Mark>costing you</Mark> marks</>}
           lead="JEE rewards depth in high-weightage chapters. Studying one chapter at a time, start to finish, is how toppers close gaps. So that's how we built Mathflex."
         />
-        <div className="mx-auto mt-14 grid w-[min(1120px,calc(100%-48px))] grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-x-8 gap-y-10">
+        <div className="mx-auto mt-14 grid w-[min(1120px,calc(100%-var(--gutter)*2))] grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-x-8 gap-y-10">
           {rules.map((r, i) => (
             <div key={r.t} className="min-w-0">
               <div aria-hidden className="select-none text-[120px] font-black leading-[0.8] tracking-[-0.06em] text-transparent [-webkit-text-stroke:2px_var(--muted-foreground)]">{i + 1}</div>
@@ -195,13 +204,13 @@ export default async function AboutPage() {
       </div>
 
       <CtaBand>
-        <h2 className="mx-auto max-w-[820px] text-[clamp(36px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
+        <h2 className="mx-auto max-w-[820px] text-[clamp(28px,5vw,64px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">
           That&apos;s why we&apos;re here: so you get your <Mark>seat</Mark> too.
         </h2>
         <p className="mx-auto mt-4.5 max-w-[520px] text-[17px] leading-[1.55] text-secondary-foreground">
           An IIT or NIT seat through JEE is within reach. Watch a free chapter preview, start with one chapter and build from there.
         </p>
-        <div className="mt-7.5 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-7.5 cta-row">
           <Link href="/signup" className={cx(button.md, tone.primary)}>Start free</Link>
           <Link href="/chapters" className={cx(button.md, tone.secondary)}>Browse chapters</Link>
         </div>

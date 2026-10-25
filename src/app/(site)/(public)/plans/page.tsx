@@ -4,12 +4,13 @@ import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { getCatalog } from "@/lib/catalog";
 import { requestNow } from "@/lib/time";
-import { inr } from "@/lib/format";
+import { inr, validity } from "@/lib/format";
 import { Eyebrow, Mark, posterBg } from "@/components/site/web/primitives";
 import { BuyButton } from "@/components/site/web/BuyButton";
 import { button, container, cx, tone } from "@/components/site/web/ui";
+import { privateMetadata } from "@/lib/seo/metadata";
 
-export const metadata = { title: "Plan validity & renewal" };
+export const metadata = privateMetadata("Plan validity & renewal");
 
 const DAY = 86_400_000;
 const RENEW_WINDOW = 30; // days; matches pricing.ts, where plans this close to expiry can be bought again
@@ -83,14 +84,14 @@ export default async function PlansPage() {
   return (
     <div className={cx(container.detail, "pb-28 pt-[calc(86px+36px)]")}>
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-        <Link href="/profile" className="hover:text-foreground">Profile</Link>
+        <Link href="/profile" className="tap relative hover:text-foreground">Profile</Link>
         <span aria-hidden>/</span>
         <span className="text-foreground">Plans</span>
       </nav>
       <section className="mt-5 flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
         <div>
           <Eyebrow dot="ok">Plan validity &amp; renewal</Eyebrow>
-          <h1 className="mt-5 text-[clamp(36px,4.6vw,56px)] font-extrabold leading-[1.04] tracking-[-0.045em]">
+          <h1 className="mt-5 text-[clamp(28px,4.6vw,56px)] font-extrabold leading-[1.04] tracking-[-0.045em]">
             Your <Mark>plans</Mark>
           </h1>
           <p className="mt-3 max-w-[560px] text-[17px] leading-[1.55] text-secondary-foreground">
@@ -108,7 +109,7 @@ export default async function PlansPage() {
         <div className="mt-10 rounded-2xl bg-wash px-6 py-14 text-center">
           <div className="text-[clamp(24px,2.6vw,30px)] font-extrabold tracking-[-0.035em]">No plans yet</div>
           <p className="mx-auto mt-2 max-w-[440px] text-[15px] text-secondary-foreground">Buy a chapter or a complete course and it will show up here with its validity.</p>
-          <div className="mt-6 flex flex-wrap justify-center gap-2.5">
+          <div className="mt-6 cta-row">
             <Link href="/chapters" className={cx(button.md, tone.primary)}>Browse chapters</Link>
             <Link href="/courses" className={cx(button.md, tone.secondary)}>Complete courses</Link>
           </div>
@@ -135,7 +136,7 @@ export default async function PlansPage() {
                   <span className="flex flex-1 flex-col p-5">
                     <span className="text-xs font-extrabold uppercase tracking-[0.08em] text-primary">Upgrade to a course</span>
                     <span className="mt-1 text-lg font-extrabold tracking-[-0.02em]">{c.title}</span>
-                    <span className="mt-1 text-sm text-secondary-foreground">You have {have} of its {c.chapters.length} chapters. Get all of them for {c.validityDays} days.</span>
+                    <span className="mt-1 text-sm text-secondary-foreground">You have {have} of its {c.chapters.length} chapters. Get all of them for {validity(c.validityDays)}.</span>
                     <span className="mt-3 flex items-baseline gap-2">
                       <span className="text-xl font-extrabold">{inr(c.price)}</span>
                       {c.mrp > c.price && <span className="text-sm text-muted-foreground line-through">{inr(c.mrp)}</span>}
@@ -188,8 +189,8 @@ function PlanList({ title, plans }: { title: string; plans: Plan[] }) {
               <Link href={p.href} className="relative block min-h-[110px] overflow-hidden text-white" style={posterBg(p.cover.from, p.cover.to)}>
                 <span className={cx("absolute right-4 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none text-white/25", p.cover.symbol.length > 2 ? "text-[48px]" : "text-[84px]")}>{p.cover.symbol}</span>
                 <span className="absolute left-3 top-3 flex gap-1.5">
-                  <span className="rounded-md bg-white/92 px-2 py-1 text-[11px] font-extrabold text-black">{p.isCourse ? "Course" : "Chapter"}</span>
-                  {p.renewed && <span className="rounded-md bg-ok px-2 py-1 text-[11px] font-extrabold">Renewed</span>}
+                  <span className="rounded-md bg-white/92 px-2 py-1 text-xs font-extrabold text-black">{p.isCourse ? "Course" : "Chapter"}</span>
+                  {p.renewed && <span className="rounded-md bg-ok px-2 py-1 text-xs font-extrabold">Renewed</span>}
                 </span>
               </Link>
               <div className="min-w-0 p-5 tablet:p-6">
@@ -216,7 +217,7 @@ function PlanList({ title, plans }: { title: string; plans: Plan[] }) {
                     <BuyButton item={{ type: p.isCourse ? "COURSE" : "CHAPTER", id: p.item.id }} className={cx(button.sm, tone.primary)}>
                       {ended ? "Buy again" : "Renew"} · {inr(p.item.price)}
                     </BuyButton>
-                    <span className="text-center text-xs text-muted-foreground">Adds {p.item.validityDays} days{ended ? "" : " on top"}</span>
+                    <span className="text-center text-xs text-muted-foreground">Adds {validity(p.item.validityDays)}{ended ? "" : " on top"}</span>
                   </>
                 ) : ended ? (
                   <span className="text-center text-xs text-muted-foreground">No longer on sale</span>
@@ -236,7 +237,7 @@ function PlanList({ title, plans }: { title: string; plans: Plan[] }) {
 function Fact({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</dt>
+      <dt className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</dt>
       <dd className={cx("mt-0.5 truncate font-bold", mono && "font-mono text-[13px]")}>{value}</dd>
     </div>
   );
@@ -246,7 +247,7 @@ function Count({ value, label, warn = false }: { value: number; label: string; w
   return (
     <div className={cx("min-w-[96px] rounded-xl border border-border px-4 py-3", warn ? "bg-gold/12" : "bg-card")}>
       <div className="text-2xl font-extrabold tracking-[-0.04em]">{value}</div>
-      <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
+      <div className="text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
     </div>
   );
 }

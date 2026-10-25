@@ -142,15 +142,19 @@ export function ChatWidget({ name, greeting, avatar, starters, lifted: liftedPro
 
   // Keep the button clear of the phone tab bar and the video player controls.
   const lifted = liftedProp && !pathname.startsWith("/learn/");
+  // It would cover the pay bar on checkout (design.md §6a).
+  const hideButton = pathname.startsWith("/checkout") || pathname.startsWith("/cart");
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`fixed right-4 z-40 transition hover:scale-105 tablet:bottom-6 tablet:right-6 ${
-          lifted ? "bottom-[calc(80px+env(safe-area-inset-bottom))]" : "bottom-4"
-        } ${open ? "scale-0" : ""}`}
+        className={`chat-fab fixed right-4 z-40 transition hover:scale-105 tablet:bottom-6 tablet:right-6 ${
+          lifted ? "bottom-[calc(76px+env(safe-area-inset-bottom))]" : "bottom-4"
+        } ${open || hideButton ? "scale-0" : ""} ${hideButton ? "pointer-events-none" : ""}`}
         aria-label={`Open ${name} chat`}
+        aria-hidden={hideButton || undefined}
+        tabIndex={hideButton ? -1 : undefined}
       >
         <span className="relative block">
           {avatar ? (
@@ -174,8 +178,8 @@ export function ChatWidget({ name, greeting, avatar, starters, lifted: liftedPro
               <p className="truncate text-lg font-extrabold leading-tight">{name}</p>
               <p className="flex items-center gap-1.5 text-sm font-semibold"><span className="size-2 rounded-full bg-ok" /> Online</p>
             </div>
-            <button onClick={() => { setMsgs([]); setShots([]); setNote(""); }} className="grid size-9 place-items-center rounded-full bg-white/20" aria-label="Start a new chat"><RotateCcw className="size-4.5" /></button>
-            <button onClick={() => setOpen(false)} className="grid size-9 place-items-center rounded-full bg-white/20" aria-label="Close chat"><X className="size-5" /></button>
+            <button onClick={() => { setMsgs([]); setShots([]); setNote(""); }} className="grid size-11 place-items-center rounded-full bg-white/20" aria-label="Start a new chat"><RotateCcw className="size-4.5" /></button>
+            <button onClick={() => setOpen(false)} className="grid size-11 place-items-center rounded-full bg-white/20" aria-label="Close chat"><X className="size-5" /></button>
           </header>
 
           <div className="flex-1 space-y-4 overflow-y-auto p-4">
@@ -186,7 +190,7 @@ export function ChatWidget({ name, greeting, avatar, starters, lifted: liftedPro
             {msgs.length === 0 && starters.length > 0 && (
               <div className="flex flex-wrap gap-2 pl-[46px]">
                 {starters.map((s) => (
-                  <button key={s} onClick={() => send(s)} className="rounded-full border-2 border-primary bg-card px-3.5 py-1.5 text-left text-sm font-semibold text-primary transition hover:bg-primary hover:text-primary-foreground">{s}</button>
+                  <button key={s} onClick={() => send(s)} className="min-h-11 rounded-full border-2 border-primary bg-card px-3.5 py-1.5 text-left text-sm font-semibold text-primary transition hover:bg-primary hover:text-primary-foreground">{s}</button>
                 ))}
               </div>
             )}
