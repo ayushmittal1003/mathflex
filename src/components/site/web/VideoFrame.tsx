@@ -1,8 +1,9 @@
 import { playbackFor } from "@/lib/video";
 import { cx } from "./ui";
+import { VideoPlayFacade } from "./VideoPlayFacade";
 
 // Dark-framed video (design.md §3.4). With a Bunny video ID it renders the existing signed
-// Bunny embed from playbackFor, exactly like chapter videos. Without one it shows a
+// Bunny embed from playbackFor, exactly like chapter videos, behind a click-to-play facade. Without one it shows a
 // "Video coming soon" frame: no play button, no broken embed.
 export function VideoFrame({ videoId, caption, sub, className }: { videoId: string | null; caption?: string; sub?: string; className?: string }) {
   const playback = videoId ? playbackFor("BUNNY", videoId) : { kind: "none" as const };
@@ -10,14 +11,7 @@ export function VideoFrame({ videoId, caption, sub, className }: { videoId: stri
   return (
     <div className={cx("relative overflow-hidden rounded-xl border-[6px] border-foreground bg-foreground text-white shadow-[0_40px_80px_-36px_rgb(80_20_0/0.5)]", className)}>
       {playback.kind === "iframe" ? (
-        <iframe
-          src={playback.src}
-          title={caption ?? "Video"}
-          className="absolute inset-0 size-full"
-          loading="lazy"
-          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
-          allowFullScreen
-        />
+        <VideoPlayFacade src={playback.src} title={caption ?? "Video"} caption={caption} sub={sub} />
       ) : (
         <>
           <div className="absolute inset-0 bg-video-stripes" />

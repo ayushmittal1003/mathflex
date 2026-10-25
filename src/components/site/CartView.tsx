@@ -279,6 +279,17 @@ export function CartView(props: {
                 <h2 className="text-[19px] font-extrabold tracking-[-0.02em]">Payment</h2>
               </div>
               <div className="px-5.5 pb-5.5">
+                {props.couponsEnabled && !empty && (
+                  <div className="mb-4 border-b border-border pb-3 min-[900px]:hidden">
+                    <CouponField
+                      idPrefix="pay-"
+                      applied={quote?.coupon ?? null}
+                      error={quote?.couponError ?? null}
+                      onApply={(code) => setCoupon(code)}
+                      onRemove={() => setCoupon(null)}
+                    />
+                  </div>
+                )}
                 <p className="text-sm leading-[1.5] text-secondary-foreground">
                   {signedIn ? "You'll pay on Cashfree's secure page and come straight back here." : "Sign in above, then pay on Cashfree's secure page."}
                 </p>
@@ -344,8 +355,9 @@ export function CartView(props: {
               </div>
 
               {props.couponsEnabled && (
-                <div className="mx-5.5 mt-4 border-t border-border pt-4">
+                <div className="mx-5.5 mt-4 hidden border-t border-border pt-4 min-[900px]:block">
                   <CouponField
+                    idPrefix="side-"
                     applied={quote?.coupon ?? null}
                     error={quote?.couponError ?? null}
                     onApply={(code) => setCoupon(code)}

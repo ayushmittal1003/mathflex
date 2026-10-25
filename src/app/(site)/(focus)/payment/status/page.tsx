@@ -183,7 +183,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
           <VideoFrame
             videoId={instructor.welcomeVideoId}
             caption={`Welcome from ${instructorNames(settings).short}`}
-            sub="A short note on how to get the most from Mathflex"
+            sub="What is Mathflex and how students benefit from it"
             className="mx-auto mt-12 aspect-video w-[min(720px,calc(100%-var(--gutter)*2))]"
           />
 

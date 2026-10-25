@@ -148,7 +148,7 @@ These live in the database or `prisma/seed.ts`, so the frontend can't fix them:
 - **DPPs, solutions, notes.** Uploaded by Ayush on the backend; no frontend change.
 - **Conic sections rule.** "Students also take" matches chapters by slug: `parabola`, `ellipse`, `hyperbola` (list in `conicSlugs`, `src/lib/site-content.ts`). Do not rename those slugs during the chapter merge/split; if you do, update `conicSlugs`.
 - **Coupons (optional).** Existing behaviour is kept: a coupon discounts the whole subtotal, including the ₹300 call. If the owner wants coupons to exclude the call, change `quoteCart` in `src/lib/pricing.ts` (compute the coupon on the chapter and course lines only).
-- **Founder welcome video.** Set `instructor.welcomeVideoId` in `src/lib/site-content.ts` to the Bunny video ID, and make sure the Bunny env vars are set in Vercel. Until then the page shows "Video coming soon".
+- **Founder welcome video.** `instructor.welcomeVideoId` is set (Karan's "What is MathFlex and how students benefit from it"). It shows on the thank-you page and in the About mentor section behind a click-to-play facade. Make sure `BUNNY_LIBRARY_ID` (and `BUNNY_TOKEN_KEY` if embed token authentication is on) are set in Vercel, and that the video is in that library and allowed to play on the site domain; without the env vars the pages show "Video coming soon".
 - **No backend change** was made in this phase: `pricing.ts`, `orders.ts`, `actions/checkout.ts`, Cashfree, Prisma and admin are untouched. The drawer, upsell and recommendations call the existing `getQuote`.
 
 ## Upcoming

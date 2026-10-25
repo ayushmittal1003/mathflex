@@ -49,7 +49,7 @@ export const instructor = {
   credentialShort: "IIT Delhi alumnus", // bylines, hero proof row, metadata
   introVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
   // Founder welcome video on the payment-success page. Paste the Bunny video ID here when Karan's video is uploaded.
-  welcomeVideoId: null as string | null,
+  welcomeVideoId: "581f9d86-7fe5-4e96-b2e2-88a6d7ed36fe" as string | null, // "What is MathFlex and how students benefit from it"
   // Portrait for the Book a call card, e.g. "/brand/karan.jpg" in public/. null shows a placeholder.
   photo: null as string | null,
   studentsGuided: "1,000+", // real figure from the founder

@@ -10,7 +10,8 @@ export function couponMessage(error: string) {
 }
 
 // "Have a coupon?" expander: collapsed until tapped; stays open while a code is applied or being fixed.
-export function CouponField({ applied, error, onApply, onRemove }: {
+export function CouponField({ applied, error, onApply, onRemove, idPrefix = "" }: {
+  idPrefix?: string; // keeps ids unique when the field is rendered twice (phone and desktop slots)
   applied: { code: string; message: string } | null;
   error: string | null;
   onApply: (code: string) => void;
@@ -32,12 +33,12 @@ export function CouponField({ applied, error, onApply, onRemove }: {
   const expanded = open || !!error;
   return (
     <div>
-      <button type="button" onClick={() => setOpen(!expanded)} aria-expanded={expanded} aria-controls="coupon-panel" className="inline-flex min-h-11 items-center text-sm font-bold text-primary">
+      <button type="button" onClick={() => setOpen(!expanded)} aria-expanded={expanded} aria-controls={`${idPrefix}coupon-panel`} className="inline-flex min-h-11 items-center text-sm font-bold text-primary">
         Have a coupon?
         <svg className={`ml-1.5 size-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m6 9 6 6 6-6" /></svg>
       </button>
       {expanded && (
-        <div id="coupon-panel">
+        <div id={`${idPrefix}coupon-panel`}>
           <form onSubmit={(e) => { e.preventDefault(); if (code.trim()) onApply(code.trim()); }} className="flex gap-2">
             <input
               value={code}
