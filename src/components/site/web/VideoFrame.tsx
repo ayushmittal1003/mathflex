@@ -7,11 +7,13 @@ import { VideoPlayFacade } from "./VideoPlayFacade";
 // "Video coming soon" frame: no play button, no broken embed.
 export function VideoFrame({ videoId, caption, sub, className }: { videoId: string | null; caption?: string; sub?: string; className?: string }) {
   const playback = videoId ? playbackFor("BUNNY", videoId) : { kind: "none" as const };
+  const cdn = process.env.NEXT_PUBLIC_BUNNY_CDN_HOSTNAME;
+  const poster = videoId && cdn ? `https://${cdn}/${videoId}/thumbnail.jpg` : null;
 
   return (
     <div className={cx("relative overflow-hidden rounded-xl border-[6px] border-foreground bg-foreground text-white shadow-[0_40px_80px_-36px_rgb(80_20_0/0.5)]", className)}>
       {playback.kind === "iframe" ? (
-        <VideoPlayFacade src={playback.src} title={caption ?? "Video"} caption={caption} sub={sub} />
+        <VideoPlayFacade poster={poster} src={playback.src} title={caption ?? "Video"} caption={caption} sub={sub} />
       ) : (
         <>
           <div className="absolute inset-0 bg-video-stripes" />

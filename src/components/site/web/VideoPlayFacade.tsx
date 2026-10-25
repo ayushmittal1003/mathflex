@@ -4,9 +4,11 @@ import { PlayIcon } from "./primitives";
 
 // Click-to-play facade: a poster and an accessible play button. The Bunny iframe (and its
 // scripts) loads only after the tap, so pages with a video stay fast. `src` is the signed
-// embed URL built on the server by playbackFor.
-export function VideoPlayFacade({ src, title, caption, sub }: { src: string; title: string; caption?: string; sub?: string }) {
+// embed URL built on the server by playbackFor. `poster` is the Bunny CDN thumbnail; if it
+// is missing or fails to load, the generic striped poster shows.
+export function VideoPlayFacade({ src, title, caption, sub, poster }: { src: string; title: string; caption?: string; sub?: string; poster?: string | null }) {
   const [playing, setPlaying] = useState(false);
+  const [posterFailed, setPosterFailed] = useState(false);
 
   if (playing) {
     return (
@@ -28,6 +30,10 @@ export function VideoPlayFacade({ src, title, caption, sub }: { src: string; tit
       className="group absolute inset-0 grid size-full place-items-center text-left"
     >
       <span className="absolute inset-0 bg-video-stripes" />
+      {poster && !posterFailed && (
+        // eslint-disable-next-line @next/next/no-img-element -- Bunny CDN thumbnail; falls back to the generic poster on error
+        <img src={poster} alt="" loading="lazy" onError={() => setPosterFailed(true)} className="absolute inset-0 size-full object-cover" />
+      )}
       <span className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_100%,color-mix(in_oklab,var(--primary)_35%,transparent),transparent_70%)]" />
       <span className="relative grid size-[76px] place-items-center rounded-full bg-primary text-white shadow-[0_0_0_12px_rgb(255_255_255/0.12)] transition-transform duration-200 group-hover:scale-105 group-focus-visible:outline group-focus-visible:outline-2 group-focus-visible:outline-offset-4 group-focus-visible:outline-white">
         <PlayIcon className="size-7" />
