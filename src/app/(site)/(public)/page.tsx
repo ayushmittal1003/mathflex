@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { getInsideData, getPublicCoupon } from "@/components/site/web/data";
 import { inr } from "@/lib/format";
-import { faqGroups, fillFaq, homeFaqs, instructorNames, supportPhone } from "@/lib/site-content";
+import { faqGroups, fillFaq, homeFaqs, instructor, instructorNames, supportPhone } from "@/lib/site-content";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from "@/lib/seo/config";
 import { HomeHero } from "@/components/site/web/home/HomeHero";
@@ -94,7 +94,7 @@ export default async function Home() {
       <CostCompare fullCourse={fullCourse} minChapterPrice={minChapterPrice} />
       <HowItWorks chapter={demoChapter} practice={practice} />
       <InsideMathflex chapters={inside.chapters} leaders={inside.leaders} resources={inside.resources} />
-      <MentorSection mentorship={mentorship} names={names} />
+      <MentorSection mentorship={mentorship} names={names} videoId={instructor.welcomeVideoId} videoTitle={`Meet ${names.full.split(" ")[0]} — what MathFlex is and how it helps you`} />
       <CompareTable fullPrice={fullCourse?.price ?? null} callPrice={mentorship?.price ?? null} />
       <PricingSection chapters={chapters} courses={courses} coupon={coupon} />
       <HomeFaq faqs={faqs} whatsapp={settings.whatsappNumber} />

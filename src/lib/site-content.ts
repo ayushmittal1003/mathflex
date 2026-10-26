@@ -48,6 +48,8 @@ export const instructor = {
   jobTitle: "JEE Maths Mentor",
   credentialShort: "IIT Delhi alumnus", // bylines, hero proof row, metadata
   introVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
+  // Founder welcome video on the payment-success page. Paste the Bunny video ID here when Karan's video is uploaded.
+  welcomeVideoId: "581f9d86-7fe5-4e96-b2e2-88a6d7ed36fe" as string | null, // "What is MathFlex and how students benefit from it"
   // Portrait for the Book a call card, e.g. "/brand/karan.jpg" in public/. null shows a placeholder.
   photo: null as string | null,
   studentsGuided: "1,000+", // real figure from the founder
@@ -70,7 +72,7 @@ export const about = {
   storyFree: "Every chapter has a free 3–4 minute preview. Watch it, and if it clicks, the full chapter starts at {minPrice}.",
   // "The usual way" vs "The Mathflex way". {minPrice}/{fullPrice} are live.
   problems: [
-    { k: "Cost", bad: "₹1–2 lakh for coaching, ₹30,000+ for online bundles", good: "From {minPrice} a chapter{fullPriceLine}" },
+    { k: "Cost", bad: "Typically ₹1.15L–₹2.41L per year for coaching (varies by city); online courses often cost tens of thousands", good: "From {minPrice} a chapter{fullPriceLine}" },
     { k: "What you buy", bad: "The whole syllabus, even the chapters you're good at", good: "Only the chapters you need" },
     { k: "How you learn", bad: "Long lectures, fixed batch timings", good: "Short parts you watch any time" },
     { k: "Practice", bad: "Separate test series, often at extra cost", good: "DPPs and past JEE questions after every part" },
@@ -96,8 +98,8 @@ export function instructorNames(settings: Pick<Settings, "mentorName">) {
 export const problem = {
   lead: "Most students are stuck on three or four chapters, not the whole syllabus. So why pay for all of it?",
   competitors: [
-    { name: "Big coaching institute", note: "Fixed batches, fixed pace, a long commute. Miss two classes and you're behind.", price: 150000, unit: "per year, approx." },
-    { name: "Online course bundle", note: "Every chapter of the syllabus, including the ones you've already got.", price: 30000, unit: "one-time, approx." },
+    // Offline coaching typically costs ₹1.15L–₹2.41L per year, varying by city. The bar uses the lower bound.
+    { name: "Big coaching institute", note: "Typically ₹1.15L–₹2.41L per year, varying by city. Fixed batches, fixed pace, a long commute.", price: 115000, unit: "per year, approx. (lower end)" },
   ],
   courseNote: "Every chapter in both classes, with every part, DPPs, PYQs and notes.",
   chapterNote: "Just the chapter you're stuck on.",
@@ -128,7 +130,7 @@ export const chapterIncludes = [
 export const comparison = {
   columns: ["Big coaching", "Online giants", "Free YouTube"],
   rows: [
-    { label: "Full syllabus cost", cells: ["{fullPrice}", "₹1–2 lakh", "₹30,000+", "Free"] },
+    { label: "Full syllabus cost", cells: ["{fullPrice}", "₹1.15L–₹2.41L / year", "Often tens of thousands", "Free"] },
     { label: "Buy a single chapter", cells: [true, false, false, "—"] },
     { label: "Watch before you pay", cells: [true, false, "Limited", true] },
     { label: "Practice after every part", cells: [true, true, "Varies", false] },
@@ -169,7 +171,7 @@ export const faqGroups: FaqGroup[] = [
     items: [
       { q: "Should I buy chapters or a full course?", a: "Buy chapters if you only need a few. If you need most of a class, the full course usually works out cheaper. Compare the prices on the [Courses page](/courses)." },
       { q: "Why are parts locked?", a: "Inside a chapter you own, each part unlocks after you watch most of the previous one and clear its practice set. It keeps you from skipping the bits that cost marks later." },
-      { q: "How long do I get access?", a: "Each chapter and course shows its access period on its page, counted from the date you buy it. You can renew early from your Profile page once it's within 30 days of expiring." },
+      { q: "How long do I get access?", a: "Single chapters: 3 months. Class 11 or Class 12 Complete: 1 year. Class 11 + 12 combo: 2 years. Access is counted from the date you buy, and each page shows its own period. You can renew early from your Profile page once it's within 30 days of expiring." },
       { q: "Does it work on my phone?", a: "Yes. Videos adjust to your connection, and {notesKind} open right on your phone." },
     ],
   },
@@ -252,10 +254,9 @@ export const pricingFaqs: (Faq & { needs?: "free" | "gst" })[] = [
 
 // Thank-you page "Your first week" steps. Copy only; links are set on the page.
 export const firstWeek = [
-  { t: "Watch Part 1", d: "Short, focused parts. Pause and rewind as much as you like.", cta: "Start now" },
-  { t: "Clear the practice set", d: "Practice right after the part, with worked solutions for every answer you get wrong.", cta: "How practice works" },
-  { t: "Keep your streak", d: "Study a little every day to build your streak and earn XP.", cta: "View leaderboard" },
-  { t: "Revise with notes", d: "Open your chapter's notes any time for quick revision.", cta: "Go to My Learning" },
+  { t: "Start with Part 1", d: "Short, focused parts. Pause and rewind as much as you like.", cta: "Start now" },
+  { t: "Practise after every part", d: "Practice right after the part, with worked solutions for every answer you get wrong.", cta: "How practice works" },
+  { t: "Keep your streak going", d: "Study a little every day to build your streak and earn XP.", cta: "View leaderboard" },
 ];
 
 // Book a call page. Matches how the call works today: it's the mentorship add-on bought at
@@ -298,3 +299,20 @@ export const aboutTimeline = [
   { tag: "Today", t: "Mathflex launches", d: "{chapterCount} chapters for Class {classes}, sold one at a time. We're new, and we're building it with our first students." },
   { tag: "Next", t: "Your chapter", d: "Pick the chapter that's costing you marks and fix it this week.", you: true },
 ];
+
+// ---- Mentorship plan (checkout "Learn more" line) ----------------------------------------------
+// Display copy only: the monthly package isn't a purchasable product yet (see ayush-handoff.md).
+export const mentorshipPlan = { sessions: 4, price: 1000, minutes: 45 };
+// 1:1 call copy shown at checkout and on the thank-you page. Not a form: the team contacts the student.
+export const mentorshipCall = {
+  minutes: 45,
+  pitch: "Your study plan, weak chapters and doubt clearing.",
+  monthly: "study plan, weak-chapter analysis and weightage-wise preparation.",
+  contactNote: "Our support team will contact you to understand what you need help with and schedule your call.",
+};
+export const supportEmail = "support@mathflex.in";
+
+// ---- Cart recommendations ------------------------------------------------------------------
+// Conic sections are taken together: each one recommends the other two. Matched by chapter slug
+// (the slugs are database values: if one is renamed in admin, update this list).
+export const conicSlugs = ["parabola", "ellipse", "hyperbola"] as const;

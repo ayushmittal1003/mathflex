@@ -15,6 +15,7 @@ export type ChapterCardData = {
   coverImage: string | null;
   symbol: string;
   jeeWeightage: number;
+  validityDays: number;
   difficulty: number;
   partsCount: number;
   durationSec: number;
@@ -53,6 +54,7 @@ export const getCatalog = cache(async (userId?: string): Promise<ChapterCardData
     coverImage: c.coverImage,
     symbol: c.symbol,
     jeeWeightage: c.jeeWeightage,
+    validityDays: c.validityDays,
     difficulty: c.difficulty,
     partsCount: c.parts.length,
     durationSec: c.parts.reduce((s, p) => s + p.durationSec, 0),

@@ -127,6 +127,30 @@ New rule from the owner: single chapter = 3 months (each chapter bought separate
 - Seed copy to update: the FAQ answer in `prisma/seed.ts` (~line 250) says "365 days by default".
 - The frontend now shows the length as "3 months / 1 year / 2 years" (`validity()` in `src/lib/format.ts`); it follows whatever is in the database.
 
+### Database and seed text that still needs changing (homepage-fixes branch)
+These live in the database or `prisma/seed.ts`, so the frontend can't fix them:
+- Marquee banner (`seed.ts:236`): "Limits & Derivatives: Part 1 is free to watch" → "Free 3–4 minute preview".
+- HERO banner (`seed.ts:234`): "Stop buying ₹30,000 courses. Buy one chapter." and "from ₹149" (hardcoded; use the live minimum chapter price). Also the "IIT Delhi & NIT Jalandhar alumni" wording (see above).
+- Seed FAQ (`seed.ts:252`): "Why is Part 2 locked? … finish Part 1's video …" is fine as a rule, but the access-length FAQ (~line 250) says "365 days by default": use "Single chapters: 3 months. Class 11 or Class 12 Complete: 1 year. Class 11 + 12 combo: 2 years."
+- Course subtitles (`seed.ts:222–223`): "All 20 Class 11 chapters." / "All 15 Class 12 chapters." are hardcoded counts; edit them in admin when chapters are added, or drop the count from the subtitle.
+- `Chapter.validityDays` / `Course.validityDays` values: see "Access length" above (chapters 90, Class 11 and 12 = 365, combo = 730, schema default 90). The chapter cards now show "3 months access" etc. straight from these.
+- Code note: `src/lib/catalog.ts` now also returns `validityDays` per chapter (read-only addition).
+
+## Checkout and conversion (Phase 3, frontend done; backend items for Ayush)
+**To build (only if the owner wants it):**
+- **Monthly mentorship package (4 sessions, ₹1,000).** Today checkout only shows a "Learn more" link to `/book-a-call` (copy lives in `mentorshipPlan` in `src/lib/site-content.ts`). To make it purchasable: new `ItemType` value and migration (`prisma/schema.prisma`), a price and copy in `src/lib/settings.ts` plus the admin settings page, a `MENTORSHIP_PLAN` quote line in `src/lib/pricing.ts`, a flag argument in `src/app/actions/checkout.ts`, and `fulfilOrder` (`src/lib/orders.ts`) creating the 4 `MentorshipBooking` rows. Then replace `mentorshipPlan` with the settings values and turn "Learn more" into an Add checkbox.
+
+**Admin / data:**
+- **Intro call copy.** Checkout now uses fixed frontend copy: "45-minute 1:1 call with {mentor} (IIT Delhi alumnus)", the line "Your study plan, weak chapters and doubt clearing." and the note "Our support team will contact you…" (`mentorshipCall` in `src/lib/site-content.ts`). The admin mentorship blurb is no longer shown at checkout, but **it must still say 45 minutes** wherever else it is used (Settings → Mentorship → Pitch; the default already does). Price is `mentorshipPrice` (300). The thank-you call card tells the student the support team will contact them; there is no booking form.
+- **Hero banner and marquee.** The database HERO banner ("from ₹149" / "₹30,000 courses") is not rendered by the frontend and stays hidden; it is untouched in the database, so update its text before anyone shows it. The MARQUEE banner is left as it is (still live, still has the old "Part 1 is free" wording noted above).
+- **Mentor photo.** No photo of Karan exists in the repo. Book a call shows a placeholder (alt text is set). When Karan sends it, put it in `public/brand/` and set `instructor.photo` in `src/lib/site-content.ts`; About and the mentor sections can then use it.
+- **"How to use MathFlex" video.** Not on the site; nothing to hide. It stays out until it is recorded. (The mentor intro video slots still show "Video coming soon" until `instructor.introVideoId` is set.)
+- **DPPs, solutions, notes.** Uploaded by Ayush on the backend; no frontend change.
+- **Conic sections rule.** "Students also take" matches chapters by slug: `parabola`, `ellipse`, `hyperbola` (list in `conicSlugs`, `src/lib/site-content.ts`). Do not rename those slugs during the chapter merge/split; if you do, update `conicSlugs`.
+- **Coupons (optional).** Existing behaviour is kept: a coupon discounts the whole subtotal, including the ₹300 call. If the owner wants coupons to exclude the call, change `quoteCart` in `src/lib/pricing.ts` (compute the coupon on the chapter and course lines only).
+- **Founder welcome video.** `instructor.welcomeVideoId` is set (Karan's "What is MathFlex and how students benefit from it"). It shows on the thank-you page and in the About mentor section behind a click-to-play facade. Make sure `BUNNY_LIBRARY_ID` (and `BUNNY_TOKEN_KEY` if embed token authentication is on) are set in Vercel, and that the video is in that library and allowed to play on the site domain; without the env vars the pages show "Video coming soon". It also shows in the home "Meet the mentor" section. For the real thumbnail on the play screen, set `NEXT_PUBLIC_BUNNY_CDN_HOSTNAME` (the Bunny pull-zone hostname, e.g. `vz-xxxx.b-cdn.net`; see `.env.example`); if it is empty or the image fails, the generic poster shows.
+- **No backend change** was made in this phase: `pricing.ts`, `orders.ts`, `actions/checkout.ts`, Cashfree, Prisma and admin are untouched. The drawer, upsell and recommendations call the existing `getQuote`.
+
 ## Upcoming
 - **Sanity Studio (after the `feature/seo` PR is merged, on its own branch):** connect Sanity for (1) blog posts, with author, date, cover and categories, replacing `getPosts()` / `getPost()` in `src/lib/blog.ts` and keeping the `BlogPost` shape; (2) an author profile for the mentor (name, bio, credential "IIT Delhi alumnus", photo); (3) later, static SEO page content for the landing pages (`docs/seo-landing-plan.md`). Chapters, courses, prices and users stay in the current database.
   - Needed from the owner: Sanity project ID, dataset name (`production`), an optional read token for draft previews, and a webhook secret.

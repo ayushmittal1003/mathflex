@@ -267,7 +267,7 @@ export default async function MyLearning() {
           </div>
         ) : suggestions.length ? (
           <>
-            <p className="-mt-2 mb-6 max-w-[620px] text-[15px] leading-[1.6] text-secondary-foreground">Every chapter below has a free first part. Watch it, try the practice set and earn XP. Buy the chapter when you&apos;re ready for the rest.</p>
+            <p className="-mt-2 mb-6 max-w-[620px] text-[15px] leading-[1.6] text-secondary-foreground">Every chapter below has a free 3–4 minute preview. Watch it, try the practice set and earn XP. Buy the chapter when you&apos;re ready for the rest.</p>
             <div className="grid gap-5 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-3">
               {suggestions.map((c, i) => <ChapterCard key={c.id} c={c} index={i} />)}
             </div>

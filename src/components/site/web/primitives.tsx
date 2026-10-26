@@ -20,14 +20,14 @@ export function Eyebrow({ children, dot = "primary", onWash = false }: { childre
 }
 
 // Blinking caret after the highlighted word in hero headings.
-export function Caret() {
-  return <span aria-hidden className="ml-1.5 inline-block h-[0.82em] w-1 animate-mf-blink bg-primary align-[-0.04em]" />;
+export function Caret({ green = false }: { green?: boolean }) {
+  return <span aria-hidden className={cx("ml-1.5 inline-block h-[0.82em] w-1 animate-mf-blink align-[-0.04em]", green ? "bg-ok-strong" : "bg-primary")} />;
 }
 
 // One key word per heading sits in this box: white on the wash, warm tint on white sections.
-export function Mark({ children, onWash = false, pointer = false }: { children: React.ReactNode; onWash?: boolean; pointer?: boolean }) {
+export function Mark({ children, onWash = false, pointer = false, green = false }: { children: React.ReactNode; onWash?: boolean; pointer?: boolean; green?: boolean }) {
   return (
-    <span className={cx("relative inline-block px-3 pb-1 shadow-highlight", onWash ? "bg-card px-3.5 pb-1.5" : "bg-highlight")}>
+    <span className={cx("relative inline-block px-3 pb-1 shadow-highlight", onWash ? "bg-card px-3.5 pb-1.5" : green ? "bg-ok-tint" : "bg-highlight")}>
       {children}
       {pointer && (
         <span

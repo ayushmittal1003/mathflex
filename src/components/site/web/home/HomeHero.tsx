@@ -81,7 +81,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
         <div className="relative mx-auto mt-18 -mb-40 grid h-[420px] w-[min(1000px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[190px_minmax(0,1fr)_250px]">
           <div className="hidden content-start gap-1 border-r border-border px-3 py-4 text-[13px] tablet:grid">
             <div className="px-2 py-1 text-xs font-bold tracking-[0.12em] text-muted-foreground">MENU</div>
-            <div className="rounded-md bg-primary/10 p-2 font-bold text-primary">My Learning</div>
+            <div className="rounded-md bg-primary/10 p-2 font-bold text-[color-mix(in_oklab,var(--primary)_75%,black)]">My Learning</div>
             {["Chapters", "Practice", "Leaderboard"].map((l) => <div key={l} className="p-2 text-secondary-foreground">{l}</div>)}
           </div>
           <div className="px-5 py-4.5 text-left">

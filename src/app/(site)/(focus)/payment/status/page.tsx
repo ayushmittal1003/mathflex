@@ -4,11 +4,12 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { inr } from "@/lib/format";
-import { firstWeek } from "@/lib/site-content";
+import { firstWeek, instructor, instructorNames, mentorshipCall } from "@/lib/site-content";
 import { PaidCelebration } from "@/components/site/PaidCelebration";
 import { PaymentPoller } from "@/components/site/PaymentPoller";
 import { SiteLogo } from "@/components/site/web/SiteLogo";
 import { Caret, CheckIcon, Mark, PlayIcon } from "@/components/site/web/primitives";
+import { VideoFrame } from "@/components/site/web/VideoFrame";
 import { CheckStatusNow } from "@/components/site/web/CheckStatusNow";
 import { button, cx, tone } from "@/components/site/web/ui";
 import { privateMetadata } from "@/lib/seo/metadata";
@@ -27,7 +28,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
 
   const chapterIds = order?.items.filter((i) => i.itemType === "CHAPTER").map((i) => i.itemId!) ?? [];
   const courseIds = order?.items.filter((i) => i.itemType === "COURSE").map((i) => i.itemId!) ?? [];
-  const [chapters, courses] = await Promise.all([
+  const [chapters, courses, entitlements] = await Promise.all([
     chapterIds.length ? db.chapter.findMany({ where: { id: { in: chapterIds } }, select: { id: true, slug: true, title: true, symbol: true, coverFrom: true, coverTo: true, classLevel: true, _count: { select: { parts: true } } } }) : [],
     courseIds.length
       ? db.course.findMany({
@@ -35,6 +36,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
           select: { id: true, title: true, chapters: { where: { chapter: { isPublished: true } }, select: { chapter: { select: { slug: true, title: true, classLevel: true, sortOrder: true } } } } },
         })
       : [],
+    order?.status === "PAID" ? db.entitlement.findMany({ where: { orderId: order.id }, select: { chapterId: true, courseId: true, expiresAt: true } }) : [],
   ]);
 
   // What Cashfree returned when the order was confirmed (stored by the existing backend).
@@ -138,16 +140,18 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
   // ---- Paid: thank-you page ----------------------------------------------------------
   const paid = order!;
   const sortedCourseChapters = (c: (typeof courses)[number]) => c.chapters.map((x) => x.chapter).sort((a, b) => a.classLevel - b.classLevel || a.sortOrder - b.sortOrder);
+  const endDate = (d?: Date) => (d ? d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : null);
+  const until = (where: { chapterId?: string; courseId?: string }) => endDate(entitlements.find((e) => (where.chapterId ? e.chapterId === where.chapterId : e.courseId === where.courseId))?.expiresAt);
   const unlocked = [
     ...courses.map((c) => {
       const first = sortedCourseChapters(c)[0];
-      return { key: c.id, kind: "Course", title: c.title, sub: `${c.chapters.length} chapters${first ? ` · start with ${first.title}` : ""}`, href: first ? `/learn/${first.slug}` : "/my-learning", cta: first ? "Start Chapter 1" : "Open", symbol: "Σ", bg: "linear-gradient(135deg, var(--primary), var(--brand-2))" };
+      return { key: c.id, kind: "Course", title: c.title, sub: `${c.chapters.length} chapters${first ? ` · start with ${first.title}` : ""}`, until: until({ courseId: c.id }), href: first ? `/learn/${first.slug}` : "/my-learning", cta: first ? "Start Chapter 1" : "Open", symbol: "Σ", bg: "linear-gradient(135deg, var(--primary), var(--brand-2))" };
     }),
-    ...chapters.map((ch) => ({ key: ch.id, kind: "Chapter", title: ch.title, sub: `Class ${ch.classLevel} · ${ch._count.parts} parts · DPPs, PYQs, notes`, href: `/learn/${ch.slug}`, cta: "Start Part 1", symbol: ch.symbol, bg: `linear-gradient(155deg, ${ch.coverFrom}, ${ch.coverTo})` })),
+    ...chapters.map((ch) => ({ key: ch.id, kind: "Chapter", title: ch.title, sub: `Class ${ch.classLevel} · ${ch._count.parts} parts · DPPs, PYQs, notes`, until: until({ chapterId: ch.id }), href: `/learn/${ch.slug}`, cta: "Start Part 1", symbol: ch.symbol, bg: `linear-gradient(155deg, ${ch.coverFrom}, ${ch.coverTo})` })),
   ];
   const start = unlocked[0];
   const hasCall = paid.items.some((i) => i.itemType === "MENTORSHIP");
-  const steps = firstWeek.map((s, i) => ({ ...s, n: `0${i + 1}`, href: [start?.href ?? "/my-learning", "/#how", "/leaderboard", "/my-learning"][i] })).filter((s) => s.href !== "/leaderboard" || settings.features.leaderboard);
+  const steps = firstWeek.map((s, i) => ({ ...s, n: `0${i + 1}`, href: [start?.href ?? "/my-learning", "/#how", "/leaderboard"][i] })).filter((s) => s.href !== "/leaderboard" || settings.features.leaderboard);
 
   return (
     <div className="min-h-dvh bg-card">
@@ -171,10 +175,17 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
             </h1>
             <p className="mx-auto mt-5 max-w-[560px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">Everything you bought is unlocked on your account.</p>
             <div className="mt-7.5 cta-row">
-              {start && <Link href={start.href} className={cx(button.lg, tone.primary)}><PlayIcon className="size-3.5" /> Start {start.title}</Link>}
-              <Link href="/my-learning" className={cx(button.lg, tone.glass)}>Go to My Learning</Link>
+              <Link href="/my-learning" className={cx(button.lg, tone.primary)}>Continue to My Learning</Link>
+              {start && <Link href={start.href} className={cx(button.lg, tone.glass)}><PlayIcon className="size-3.5" /> Start {start.title}</Link>}
             </div>
           </div>
+
+          <VideoFrame
+            videoId={instructor.welcomeVideoId}
+            caption={`Welcome from ${instructorNames(settings).short}`}
+            sub="What is Mathflex and how students benefit from it"
+            className="mx-auto mt-12 aspect-video w-[min(720px,calc(100%-var(--gutter)*2))]"
+          />
 
           {(unlocked.length > 0 || hasCall) && (
             <div className="mx-auto mt-14 w-[min(980px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-34px_rgb(80_20_0/0.5)]">
@@ -192,6 +203,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                     </div>
                     <div className="mt-1.5 text-base font-bold tracking-[-0.015em]">{it.title}</div>
                     <div className="mt-0.5 text-[13px] text-muted-foreground">{it.sub}</div>
+                    {it.until && <div className="mt-0.5 text-[13px] font-semibold text-secondary-foreground">Access until {it.until}</div>}
                   </div>
                   <Link href={it.href} className={cx("shrink-0 whitespace-nowrap rounded-lg px-3.5 py-2.5 text-[13px] font-bold", i === 0 ? "bg-primary text-white" : "border border-border bg-card text-foreground")}>{it.cta}</Link>
                 </div>
@@ -203,7 +215,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                   </span>
                   <div className="min-w-0 flex-[1_1_220px]">
                     <div className="text-base font-bold">{settings.mentorshipTitle}</div>
-                    <div className="mt-0.5 text-[13px] text-muted-foreground">Your call is booked. The team will WhatsApp you to pick a time.</div>
+                    <div className="mt-0.5 text-[13px] text-muted-foreground">{mentorshipCall.contactNote}</div>
                   </div>
                   <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className="shrink-0 whitespace-nowrap rounded-lg bg-foreground px-3.5 py-2.5 text-[13px] font-bold text-white hover:brightness-130">WhatsApp us</a>
                 </div>
@@ -278,7 +290,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
               <span className="text-[30px] font-extrabold tracking-[-0.04em]">{inr(paid.total)}</span>
             </div>
             <p className="mt-1 text-[13px] leading-[1.55] text-muted-foreground">
-              Questions about your order? Email {settings.supportEmail} or <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className="font-semibold text-primary">WhatsApp us</a>.
+              Questions about your order? Email <a href={`mailto:${settings.supportEmail}`} className="font-semibold text-primary">{settings.supportEmail}</a> or <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className="font-semibold text-primary">WhatsApp us</a>.
             </p>
           </div>
         </div>

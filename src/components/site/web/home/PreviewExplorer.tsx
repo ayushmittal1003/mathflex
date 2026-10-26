@@ -26,7 +26,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
       <SectionHead
         eyebrow="Chapter previews"
         dot="ok"
-        title={<>Try it before you <Mark>buy</Mark> it.</>}
+        title={<>Try a chapter before you <Mark>buy</Mark>.</>}
         lead={`Pick a chapter and watch its 3–4 minute preview. No card, no sign-up. If ${mentorShort}'s way of teaching clicks, unlock the whole chapter.`}
       />
       {classes.length > 1 && (
@@ -152,9 +152,9 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
               </div>
               <div className="text-xs text-muted-foreground">All parts, DPPs, PYQs and notes</div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Link href={`/chapter/${cur.slug}`} className={cx(button.md, tone.secondary)}>View chapter</Link>
-              <BuyButton item={{ type: "CHAPTER", id: cur.id }} className={cx(button.md, tone.primaryFlat)}>Unlock chapter</BuyButton>
+            <div className="flex w-full flex-col gap-2 min-[480px]:w-auto min-[480px]:flex-row">
+              <BuyButton item={{ type: "CHAPTER", id: cur.id }} className={cx(button.md, tone.primaryFlat, "order-first w-full min-[480px]:order-last min-[480px]:w-auto")}>Buy this chapter</BuyButton>
+              <Link href={`/chapter/${cur.slug}`} className={cx(button.md, tone.secondary, "w-full min-[480px]:w-auto")}>View chapter</Link>
             </div>
           </div>
         </div>
