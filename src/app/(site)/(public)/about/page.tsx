@@ -116,7 +116,7 @@ export default async function AboutPage() {
         <div className="mx-auto w-[min(1120px,calc(100%-var(--gutter)*2))]">
           <Eyebrow dot="brand-2">Our story</Eyebrow>
           <h2 className="mt-5.5 max-w-[1000px] text-[clamp(28px,4.4vw,58px)] font-extrabold leading-[1.06] tracking-[-0.045em] text-balance">
-            Great JEE teaching shouldn&apos;t cost <Mark>₹2 lakh</Mark>.
+            Great JEE teaching shouldn&apos;t cost over <Mark>a lakh a year</Mark>.
           </h2>
           <div className="mt-9 gap-12 text-lg leading-[1.7] text-secondary-foreground tablet:columns-2 [&>p]:mb-5 [&>p]:break-inside-avoid">
             {about.story.map((p) => <p key={p.slice(0, 20)} className="text-pretty">{fillFaq(p, vars)}</p>)}
@@ -200,7 +200,7 @@ export default async function AboutPage() {
       </section>
 
       <div>
-        <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} />
+        <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} videoId={instructor.welcomeVideoId} videoTitle={`Meet ${names.full.split(" ")[0]} — what MathFlex is and how it helps you`} />
       </div>
 
       <CtaBand>

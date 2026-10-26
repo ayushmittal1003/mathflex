@@ -274,7 +274,7 @@ function HeroPeek({ peek }: { peek: Peek }) {
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 to-transparent to-70%" />
         <div className="absolute left-5.5 top-5 flex gap-2">
           <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.08em]">Class {peek.classLevel}</span>
-          {free && <span className="rounded-md bg-white px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] text-black">Part {free.order} · Free</span>}
+          {free && <span className="rounded-md bg-white px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] text-black">Free preview</span>}
         </div>
         {free && (
           <Link href={`/learn/${peek.slug}?part=${free.order}`} aria-label={`Watch Part ${free.order} of ${peek.title} free`} className="absolute left-1/2 top-[38%] grid size-18 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition hover:scale-[1.06]">
@@ -289,7 +289,7 @@ function HeroPeek({ peek }: { peek: Peek }) {
       <div className="hidden flex-col gap-2.5 p-5 text-left tablet:flex">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground">{peek.parts.length} parts</span>
-          {peek.jeeWeightage > 0 && <span className="rounded-md bg-brand-2/14 px-2 py-0.5 text-xs font-bold text-brand-2">{peek.jeeWeightage}% of JEE Main</span>}
+          {peek.jeeWeightage > 0 && <span className="rounded-md bg-brand-2/14 px-2 py-0.5 text-xs font-bold text-[oklch(0.5_0.17_47)]">{peek.jeeWeightage}% of JEE Main</span>}
         </div>
         {shown.map((p, i) => (
           <div key={p.id} className={cx("flex items-center gap-2.5 rounded-lg border p-2.5", p.isFreePreview ? "border-primary/35 bg-selected" : "border-border")}>

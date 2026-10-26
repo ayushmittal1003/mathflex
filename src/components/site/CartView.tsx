@@ -1,5 +1,5 @@
 "use client";
-import { formatPhone } from "@/lib/site-content";
+import { formatPhone, mentorshipCall, mentorshipPlan, supportEmail, supportPhone } from "@/lib/site-content";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,8 +9,12 @@ import { getQuote, placeOrder } from "@/app/actions/checkout";
 import { login, type AuthState } from "@/app/actions/auth";
 import { load } from "@cashfreepayments/cashfree-js";
 import type { Quote } from "@/lib/pricing";
-import { inr, pctOff } from "@/lib/format";
+import { inr, pctOff, validity } from "@/lib/format";
 import { SiteLogo } from "./web/SiteLogo";
+import { Recommendations } from "./web/Recommendations";
+import { CouponField } from "./web/CouponField";
+import { BundleUpsell } from "./web/BundleUpsell";
+import type { CartMeta } from "./web/cart-meta";
 import { CheckIcon, LockIcon } from "./web/primitives";
 import { cx } from "./web/ui";
 
@@ -18,7 +22,6 @@ import { cx } from "./web/ui";
 export type CheckoutMeta = {
   chapters: Record<string, { title: string; symbol: string; coverFrom: string; coverTo: string; classLevel: number; parts: number; price: number; mrp: number }>;
   courses: { id: string; title: string; price: number; chapterIds: string[]; count: number }[];
-  suggestions: string[]; // chapter ids, best first
   user: { name: string; email: string } | null;
   whatsapp: string;
 };
@@ -26,19 +29,23 @@ export type CheckoutMeta = {
 export function CartView(props: {
   mentorship: { enabled: boolean; price: number; title: string; blurb: string; mentor: string };
   couponsEnabled: boolean;
-  initialMentorship: boolean;
+  initialMentorship: boolean | null; // from ?mentorship=1 / 0; null = default
   loggedIn: boolean;
   meta: CheckoutMeta;
+  cartMeta: CartMeta;
 }) {
   const items = useCart();
   const router = useRouter();
   const [quote, setQuote] = useState<Quote | null>(null);
   const [coupon, setCoupon] = useState<string | null>(null);
-  const [couponInput, setCouponInput] = useState("");
-  const [mentor, setMentor] = useState(props.initialMentorship);
+  // The 1:1 call is pre-ticked once the cart has a chapter or course; an explicit choice wins.
+  const [mentorChoice, setMentorChoice] = useState<boolean | null>(props.initialMentorship);
+  const mentor = props.mentorship.enabled && (mentorChoice ?? items.length > 0);
   const [error, setError] = useState<string | null>(null);
   const [needPhone, setNeedPhone] = useState(false);
   const [phone, setPhone] = useState("");
+  const [summaryOpen, setSummaryOpen] = useState(false); // phones: the summary is a collapsible bar at the top
+  const kbOffset = useKeyboardOffset();
   const [paying, startPay] = useTransition();
   const [loading, startLoad] = useTransition();
 
@@ -63,7 +70,7 @@ export function CartView(props: {
     startPay(async () => {
       const res = await placeOrder(items, coupon, mentor, needPhone ? phone : undefined);
       if (!res.ok) {
-        if (res.login) router.push(`/login?next=${encodeURIComponent("/cart" + (mentor ? "?mentorship=1" : ""))}`);
+        if (res.login) router.push(`/login?next=${encodeURIComponent(`/checkout?mentorship=${mentor ? 1 : 0}`)}`);
         else {
           if (res.needPhone) setNeedPhone(true);
           setError(res.error);
@@ -98,35 +105,18 @@ export function CartView(props: {
   // ---- Presentation (dipankar-design/designs/Checkout.dc.html) ----------------------
   const { meta } = props;
   const lines = quote?.lines.filter((l) => l.type !== "MENTORSHIP") ?? [];
-  const inCart = new Set(items.map((i) => i.id));
   const signedIn = props.loggedIn;
   const canPay = !paying && !loading && !!quote?.lines.length;
   const mrpTotal = quote?.lines.reduce((s, l) => s + l.mrp, 0) ?? 0;
   const saved = quote ? mrpTotal - quote.subtotal + quote.discount : 0;
   const step = empty ? 0 : signedIn ? 2 : 1;
 
-  // Course upgrade hint: chapters in the cart that a single course already covers.
-  const upgrade = (() => {
-    const cartChapters = items.filter((i) => i.type === "CHAPTER").map((i) => i.id);
-    if (!cartChapters.length) return null;
-    const options = meta.courses
-      .filter((c) => !inCart.has(c.id))
-      .map((c) => {
-        const covered = cartChapters.filter((id) => c.chapterIds.includes(id));
-        const coveredPrice = covered.reduce((s, id) => s + (meta.chapters[id]?.price ?? 0), 0);
-        return { c, covered, diff: c.price - coveredPrice };
-      })
-      .filter((o) => o.covered.length >= 2)
-      .sort((a, b) => a.diff - b.diff);
-    return options[0] ?? null;
-  })();
-  const applyUpgrade = () => {
-    if (!upgrade) return;
-    upgrade.covered.forEach((id) => cart.remove(id));
-    cart.add({ type: "COURSE", id: upgrade.c.id });
-  };
-  const addOns = meta.suggestions.filter((id) => !inCart.has(id) && !meta.courses.some((c) => inCart.has(c.id) && c.chapterIds.includes(id))).slice(0, 3);
-
+  // Access length per kind of line, from the catalogue (display only).
+  const daysOf = (type: "CHAPTER" | "COURSE") => [...new Set((quote?.lines ?? []).filter((l) => l.type === type).map((l) => (type === "CHAPTER" ? props.cartMeta.chapters[l.id ?? ""]?.validityDays : props.cartMeta.courses.find((c) => c.id === l.id)?.validityDays)).filter((n): n is number => !!n))].sort((a, b) => a - b);
+  const accessParts = [
+    ...(daysOf("CHAPTER").length ? [`${daysOf("CHAPTER").map(validity).join(" / ")} access per chapter`] : []),
+    ...(daysOf("COURSE").length ? [`${daysOf("COURSE").map(validity).join(" / ")} access per course`] : []),
+  ];
   const payLabel = !quote?.lines.length ? "Your cart is empty" : signedIn ? `Pay ${inr(quote?.total ?? 0)}` : "Log in to pay";
   const card = "overflow-hidden rounded-xl border border-border bg-card";
   const stepDot = (n: number, done: boolean, active: boolean) => (
@@ -198,6 +188,7 @@ export function CartView(props: {
                       <div className="mt-1.5 text-base font-bold tracking-[-0.015em]">{l.title}</div>
                       <div className="mt-0.5 text-[13px] text-muted-foreground">
                         {ch ? `Class ${ch.classLevel} · ${ch.parts} parts · DPPs, PYQs, notes` : course ? `${course.count} chapters` : ""}
+                        {(() => { const d = l.type === "CHAPTER" ? props.cartMeta.chapters[l.id ?? ""]?.validityDays : props.cartMeta.courses.find((c) => c.id === l.id)?.validityDays; return d ? ` · ${validity(d)} access` : ""; })()}
                       </div>
                     </div>
                     <div className="shrink-0 text-right">
@@ -230,83 +221,36 @@ export function CartView(props: {
               {!empty && !loading && quote && lines.length === 0 && !mentor && (
                 <p className="px-5.5 py-6 text-sm text-muted-foreground">Nothing left to pay for.</p>
               )}
-              {upgrade && upgrade.diff < upgrade.c.price && (
-                <div className="mx-5.5 my-4.5 flex flex-wrap items-center gap-x-4.5 gap-y-3.5 rounded-xl border-[1.5px] border-dashed border-primary/45 bg-[color-mix(in_oklab,var(--brand-2)_7%,var(--card))] px-4.5 py-4">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-[10px] bg-gradient-to-br from-primary to-brand-2 text-white">
-                    <svg className="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M12 19V5M5 12l7-7 7 7" /></svg>
-                  </span>
-                  <div className="min-w-0 flex-[1_1_240px]">
-                    <div className="text-[15px] font-extrabold tracking-[-0.01em]">
-                      {upgrade.diff > 0 ? `All of ${upgrade.c.title} for ${inr(upgrade.diff)} more` : `${upgrade.c.title} is ${inr(-upgrade.diff)} cheaper`}
-                    </div>
-                    <div className="mt-0.5 text-[13px] leading-[1.45] text-secondary-foreground">Swap these chapters for the full course and get all {upgrade.c.count} chapters.</div>
-                  </div>
-                  <button type="button" onClick={applyUpgrade} className="shrink-0 whitespace-nowrap rounded-lg bg-foreground px-4 py-2.5 text-sm font-bold text-white hover:brightness-130">
-                    {upgrade.diff > 0 ? "Upgrade" : "Switch and save"}
-                  </button>
-                </div>
-              )}
+              {!empty && <BundleUpsell meta={props.cartMeta} className="mx-5.5 my-4.5" />}
             </section>
 
-            {/* Upsell: the existing mentorship add-on */}
-            {props.mentorship.enabled && (
-              <section className={card}>
-                <div className="flex flex-wrap items-stretch">
-                  <div className="relative grid min-h-[150px] flex-[0_0_100%] place-items-center bg-video-stripes text-white tablet:flex-[0_0_200px]">
-                    <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_100%,color-mix(in_oklab,var(--primary)_35%,transparent),transparent_70%)]" />
-                    <svg className="relative size-10 text-white/85" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                      <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" />
-                    </svg>
-                  </div>
-                  <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-3 px-5.5 py-5">
-                    <span className="self-start rounded bg-foreground px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.06em] text-white">Recommended</span>
-                    <div>
-                      <div className="text-lg font-extrabold tracking-[-0.02em]">{props.mentorship.title}</div>
-                      <div className="mt-1 text-sm leading-[1.5] text-secondary-foreground">{props.mentorship.blurb}</div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setMentor((m) => !m)}
-                      aria-pressed={mentor}
-                      className={cx("flex items-center gap-3 self-start rounded-[10px] border-[1.5px] py-2.5 pl-2.5 pr-3.5 text-foreground transition", mentor ? "border-primary bg-selected" : "border-border bg-card")}
-                    >
-                      <span className={cx("grid size-5.5 place-items-center rounded-md border-[1.5px] text-white transition-colors", mentor ? "border-primary bg-primary" : "border-border bg-card")}>
-                        {mentor && <CheckIcon className="size-3" strokeWidth={3.5} />}
-                      </span>
-                      <span className="text-sm font-bold">{mentor ? "Added to your order" : "Add the call"}</span>
-                      <span className="text-sm font-extrabold">{inr(props.mentorship.price)}</span>
-                    </button>
-                  </div>
-                </div>
+            {/* 1:1 intro call: pre-ticked once the cart has an item. Sits above sign-in and payment. */}
+            {props.mentorship.enabled && !empty && (
+              <section className={cx(card, "border-[1.5px]", mentor ? "border-primary" : "border-border")} aria-labelledby="mentor-title">
+                <label className="flex cursor-pointer items-start gap-3.5 px-5.5 py-5">
+                  <input
+                    type="checkbox"
+                    checked={mentor}
+                    onChange={(e) => setMentorChoice(e.target.checked)}
+                    className="mt-0.5 size-6 shrink-0 cursor-pointer accent-primary"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span id="mentor-title" className="block text-base font-extrabold leading-[1.35] tracking-[-0.015em]">
+                      {mentorshipCall.minutes}-minute 1:1 call with {props.mentorship.mentor} (IIT Delhi alumnus) <span className="whitespace-nowrap">· {inr(props.mentorship.price)}</span>
+                    </span>
+                    <span className="mt-1 block text-sm leading-[1.5] text-secondary-foreground">{mentorshipCall.pitch}</span>
+                    <span className="mt-1 block text-[13px] leading-[1.5] text-muted-foreground">{mentorshipCall.contactNote}</span>
+                  </span>
+                </label>
+                <p className="border-t border-border px-5.5 py-3.5 text-[13px] leading-[1.5] text-secondary-foreground">
+                  Want ongoing help? {mentorshipPlan.sessions} monthly sessions of {mentorshipPlan.minutes} minutes each for {inr(mentorshipPlan.price)}: {mentorshipCall.monthly}{" "}
+                  <Link href="/book-a-call" className="font-bold text-primary underline underline-offset-[3px]">Learn more</Link>
+                </p>
               </section>
             )}
 
-            {/* Upsell: more chapters (real catalog, highest JEE weightage first) */}
-            {!empty && addOns.length > 0 && (
-              <section className="rounded-xl border border-border bg-card px-5.5 py-5">
-                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1.5">
-                  <h2 className="text-[17px] font-extrabold tracking-[-0.02em]">Students often add</h2>
-                  <Link href="/chapters" className="text-[13px] font-bold text-primary">See all chapters →</Link>
-                </div>
-                <div className="mt-3.5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-2.5">
-                  {addOns.map((id) => {
-                    const a = meta.chapters[id];
-                    return (
-                      <div key={id} className="flex animate-mf-rise items-center gap-3 rounded-[10px] border border-border p-3">
-                        <span className={cx("grid size-11 shrink-0 place-items-center rounded-lg font-black text-white", a.symbol.length > 2 ? "text-xs" : "text-lg")} style={{ background: `linear-gradient(155deg, ${a.coverFrom}, ${a.coverTo})` }}>{a.symbol}</span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-bold">{a.title}</span>
-                          <span className="block text-xs text-muted-foreground">
-                            {inr(a.price)} {a.mrp > a.price && <span className="line-through">{inr(a.mrp)}</span>}
-                          </span>
-                        </span>
-                        <button type="button" onClick={() => cart.add({ type: "CHAPTER", id })} className="h-11 shrink-0 rounded-lg border border-foreground bg-card px-3.5 text-[13px] font-bold text-foreground hover:bg-foreground hover:text-white">+ Add</button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
+            {/* Upsell: related chapters (server prices) */}
+            {!empty && <Recommendations meta={props.cartMeta} max={3} className="rounded-xl border border-border bg-card px-5.5 py-5" />}
 
             {/* 2 · Sign in (email + password, the existing login action) */}
             <section className={cx(card, !signedIn && !empty && "border-foreground")}>
@@ -324,7 +268,7 @@ export function CartView(props: {
                   <span className="ml-auto shrink-0 rounded-md bg-ok/14 px-2 py-1 text-xs font-bold text-ok-strong">Signed in</span>
                 </div>
               ) : (
-                <InlineLogin next={`/checkout${mentor ? "?mentorship=1" : ""}`} />
+                <InlineLogin next={`/checkout?mentorship=${mentor ? 1 : 0}`} />
               )}
             </section>
 
@@ -335,6 +279,17 @@ export function CartView(props: {
                 <h2 className="text-[19px] font-extrabold tracking-[-0.02em]">Payment</h2>
               </div>
               <div className="px-5.5 pb-5.5">
+                {props.couponsEnabled && !empty && (
+                  <div className="mb-4 border-b border-border pb-3 min-[900px]:hidden">
+                    <CouponField
+                      idPrefix="pay-"
+                      applied={quote?.coupon ?? null}
+                      error={quote?.couponError ?? null}
+                      onApply={(code) => setCoupon(code)}
+                      onRemove={() => setCoupon(null)}
+                    />
+                  </div>
+                )}
                 <p className="text-sm leading-[1.5] text-secondary-foreground">
                   {signedIn ? "You'll pay on Cashfree's secure page and come straight back here." : "Sign in above, then pay on Cashfree's secure page."}
                 </p>
@@ -363,9 +318,21 @@ export function CartView(props: {
           </div>
 
           {/* Order summary */}
-          <aside className="w-full min-w-0 flex-[1_1_340px] min-[900px]:sticky min-[900px]:top-6 min-[900px]:max-w-[380px]">
+          <aside className="order-first w-full min-w-0 flex-[1_1_340px] min-[900px]:sticky min-[900px]:top-6 min-[900px]:order-last min-[900px]:max-w-[380px]">
             <div className="overflow-hidden rounded-xl border border-border bg-card shadow-[0_24px_48px_-32px_rgb(80_20_0/0.4)]">
-              <h2 className="px-5.5 pt-5 text-[19px] font-extrabold tracking-[-0.02em]">Order summary</h2>
+              <h2 className="hidden px-5.5 pt-5 text-[19px] font-extrabold tracking-[-0.02em] min-[900px]:block">Order summary</h2>
+              <button
+                type="button"
+                onClick={() => setSummaryOpen((o) => !o)}
+                aria-expanded={summaryOpen}
+                aria-controls="order-summary"
+                className="flex min-h-14 w-full items-center gap-3 px-5.5 py-3 text-left min-[900px]:hidden"
+              >
+                <span className="text-[17px] font-extrabold tracking-[-0.02em]">Order summary</span>
+                <span className="ml-auto text-[17px] font-extrabold tracking-[-0.02em]">{inr(quote?.total ?? 0)}</span>
+                <svg className={cx("size-4 shrink-0 transition-transform", summaryOpen && "rotate-180")} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m6 9 6 6 6-6" /></svg>
+              </button>
+              <div id="order-summary" className={cx("min-[900px]:block", summaryOpen ? "block" : "hidden")}>
               <div className="grid gap-2.5 px-5.5 pt-3.5">
                 {quote?.lines.map((l) => (
                   <div key={`${l.type}-${l.id}`} className="flex justify-between gap-3 text-sm">
@@ -375,7 +342,7 @@ export function CartView(props: {
                 ))}
                 {!!quote?.discount && (
                   <div className="flex justify-between gap-3 text-sm">
-                    <span className="min-w-0 truncate text-secondary-foreground">{quote.coupon?.code ?? "Coupon"}</span>
+                    <span className="min-w-0 truncate text-secondary-foreground">Coupon{quote.coupon ? ` (${quote.coupon.code})` : ""}</span>
                     <span className="shrink-0 font-bold text-ok-strong">−{inr(quote.discount)}</span>
                   </div>
                 )}
@@ -388,30 +355,14 @@ export function CartView(props: {
               </div>
 
               {props.couponsEnabled && (
-                <div className="mx-5.5 mt-4 border-t border-border pt-4">
-                  {quote?.coupon ? (
-                    <div className="flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed border-ok bg-ok/7 px-3 py-2.5">
-                      <CheckIcon className="size-4 text-ok-strong" strokeWidth={2.5} />
-                      <span className="flex-1 text-[13px]"><b className="font-mono">{quote.coupon.code}</b> applied · {quote.coupon.message}</span>
-                      <button type="button" onClick={() => { setCoupon(null); setCouponInput(""); }} className="inline-flex min-h-11 items-center text-xs font-bold text-muted-foreground underline underline-offset-[3px]">Remove</button>
-                    </div>
-                  ) : (
-                    <>
-                      <form onSubmit={(e) => { e.preventDefault(); setCoupon(couponInput.trim() || null); }} className="flex gap-2">
-                        <input
-                          value={couponInput}
-                          onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                          placeholder="Coupon code"
-                          aria-label="Coupon code"
-                          className="h-12 min-w-0 flex-1 rounded-lg border border-input bg-card px-3 font-mono text-sm uppercase outline-none focus:border-ring"
-                        />
-                        <button className="h-12 shrink-0 rounded-lg border border-foreground bg-card px-4 text-[13px] font-bold">Apply</button>
-                      </form>
-                      {quote?.couponError && (
-                        <p role="alert" className="mt-1.5 flex items-start gap-1.5 text-xs font-semibold text-destructive"><CircleAlert className="mt-px size-3.5 shrink-0" />{quote.couponError}</p>
-                      )}
-                    </>
-                  )}
+                <div className="mx-5.5 mt-4 hidden border-t border-border pt-4 min-[900px]:block">
+                  <CouponField
+                    idPrefix="side-"
+                    applied={quote?.coupon ?? null}
+                    error={quote?.couponError ?? null}
+                    onApply={(code) => setCoupon(code)}
+                    onRemove={() => setCoupon(null)}
+                  />
                 </div>
               )}
 
@@ -442,7 +393,8 @@ export function CartView(props: {
                   {[
                     "Your chapters unlock on your account as soon as the payment is confirmed",
                     "Watch on phone and laptop",
-                    `Need help? WhatsApp us on ${formatPhone(meta.whatsapp)}`,
+                    ...accessParts,
+                    `Need help? WhatsApp ${formatPhone(meta.whatsapp)} or call ${supportPhone.display}`,
                   ].map((t) => (
                     <div key={t} className="flex gap-2.5 text-[13px] leading-[1.45] text-secondary-foreground">
                       <CheckIcon className="mt-0.5 size-3.5 shrink-0 text-ok" />
@@ -451,14 +403,22 @@ export function CartView(props: {
                   ))}
                 </div>
               </div>
+              </div>
             </div>
           </aside>
         </div>
+        {!empty && (
+          <p className="mt-6 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-xs leading-[1.5] text-secondary-foreground min-[900px]:hidden">
+            <LockIcon className="size-3 text-ok" /> Secure payment via Cashfree{accessParts.map((p) => ` · ${p}`).join("")} · Support{" "}
+            <a href={supportPhone.href} className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]">{supportPhone.display}</a> ·{" "}
+            <a href={`mailto:${supportEmail}`} className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]">{supportEmail}</a>
+          </p>
+        )}
       </main>
 
       {/* Phone: sticky total + pay bar */}
       {!empty && (
-        <div className="fixed inset-x-0 bottom-0 z-50 flex items-center gap-3.5 border-t border-border bg-card px-4 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_-18px_rgb(0_0_0/0.3)] min-[900px]:hidden">
+        <div style={{ bottom: kbOffset }} className="fixed inset-x-0 bottom-0 z-50 flex items-center gap-3.5 border-t border-border bg-card px-4 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_-18px_rgb(0_0_0/0.3)] min-[900px]:hidden">
           <div className="shrink-0">
             <div className="text-xs text-muted-foreground">Total</div>
             <div className="text-[22px] font-extrabold leading-[1.1] tracking-[-0.03em]">{inr(quote?.total ?? 0)}</div>
@@ -497,4 +457,20 @@ function InlineLogin({ next }: { next: string }) {
       </div>
     </form>
   );
+}
+
+// On phones the on-screen keyboard can cover a fixed bottom bar (iOS). Track the visual viewport
+// and lift the bar by the part of the layout viewport the keyboard hides.
+function useKeyboardOffset() {
+  const [offset, setOffset] = useState(0);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => setOffset(Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)));
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => { vv.removeEventListener("resize", update); vv.removeEventListener("scroll", update); };
+  }, []);
+  return offset;
 }

@@ -6,11 +6,11 @@ import { button, cx, tone } from "../ui";
 
 // 07 Meet the mentor: a 16:9 intro video (or "Video coming soon"), bio, the IIT Delhi
 // credential and the 1:1 call card (details on /book-a-call; it's the mentorship add-on).
-export function MentorSection({ mentorship, names }: { mentorship: { price: number } | null /* null hides the call card */; names: { short: string; full: string } }) {
+export function MentorSection({ mentorship, names, videoId = instructor.introVideoId, videoTitle }: { mentorship: { price: number } | null /* null hides the call card */; names: { short: string; full: string }; videoId?: string | null; videoTitle?: string }) {
   return (
     <section id="mentor" className="py-12 tablet:py-22">
       <div className="mx-auto grid w-[min(1120px,calc(100%-var(--gutter)*2))] items-center gap-x-14 gap-y-10 min-[960px]:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <VideoFrame videoId={instructor.introVideoId} caption={names.full} sub={instructor.title} className="aspect-video w-full" />
+        <VideoFrame videoId={videoId} caption={videoTitle ?? names.full} sub={videoTitle ? names.full : instructor.title} className="aspect-video w-full" />
         <div className="min-w-0">
           <Eyebrow>Your mentor</Eyebrow>
           <h2 className="mt-5.5 text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">

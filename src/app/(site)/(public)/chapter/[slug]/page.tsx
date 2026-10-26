@@ -94,7 +94,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
     { big: `${chapter.parts.length} parts`, small: totalSec ? `${duration(totalSec)} of video` : "Video lessons" },
     ...(chapter.jeeWeightage > 0 ? [{ big: `${chapter.jeeWeightage}%`, small: "of JEE Main" }] : []),
     ...(dpp + pyq > 0 ? [{ big: `${dpp + pyq} questions`, small: "DPPs + PYQs" }] : []),
-    ...(preview ? [{ big: `Part ${preview.order} free`, small: "No sign-up needed" }] : []),
+    ...(preview ? [{ big: "Free preview", small: "3–4 min, no sign-up" }] : []),
     { big: validity(chapter.validityDays), small: "of access" },
   ];
   const includes = [
@@ -208,7 +208,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
               <div className={cx("absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", chapter.symbol.length > 2 ? "text-[160px] tablet:text-[200px]" : "text-[240px] tablet:text-[320px]")}>{chapter.symbol}</div>
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.65))]" />
               <span className="absolute left-4.5 top-4 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">
-                {owned ? "Your chapter" : preview ? `Part ${preview.order} · Free preview` : "Preview"}
+                {owned ? "Your chapter" : preview ? "Free preview" : "Preview"}
               </span>
               {playHref ? (
                 <Link href={playHref} aria-label={owned ? "Continue watching" : "Play free preview"} className="absolute left-1/2 top-[45%] grid size-[84px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_14px_rgb(255_255_255/0.16)] transition hover:scale-[1.06]">

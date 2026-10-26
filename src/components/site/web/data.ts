@@ -1,9 +1,11 @@
 import "server-only";
+import { cache } from "react";
 import { db } from "@/lib/db";
 import { requestNow } from "@/lib/time";
 import type { Settings } from "@/lib/settings";
 import { activeEntitlements } from "@/lib/access";
 import { isStaff } from "@/lib/permissions";
+import type { CartMeta } from "./cart-meta";
 
 // Read-only lookups shared by the redesigned pages. Same filters the existing code uses.
 
@@ -86,3 +88,24 @@ export async function getSiteNavProps(
     contact: { whatsapp: settings.whatsappNumber, email: settings.supportEmail },
   };
 }
+
+// Light catalogue read for the cart drawer (mounted in the public layout): ids, titles, access
+// length and syllabus order. Display only; prices come from the server quote.
+export const getCartMeta = cache(async (): Promise<CartMeta> => {
+  const [chapters, courses] = await Promise.all([
+    db.chapter.findMany({
+      where: { isPublished: true },
+      orderBy: [{ classLevel: "asc" }, { sortOrder: "asc" }, { title: "asc" }],
+      select: { id: true, slug: true, title: true, classLevel: true, symbol: true, coverFrom: true, coverTo: true, price: true, mrp: true, validityDays: true },
+    }),
+    db.course.findMany({
+      where: { isPublished: true },
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, slug: true, title: true, validityDays: true, chapters: { select: { chapterId: true } } },
+    }),
+  ]);
+  return {
+    chapters: Object.fromEntries(chapters.map((c, order) => [c.id, { ...c, order }])),
+    courses: courses.map((c) => ({ id: c.id, slug: c.slug, title: c.title, validityDays: c.validityDays, chapterIds: c.chapters.map((x) => x.chapterId) })),
+  };
+});

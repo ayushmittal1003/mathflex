@@ -95,7 +95,7 @@ export default async function BookACallPage() {
             <div className="relative aspect-[16/10] overflow-hidden rounded-lg" style={{ background: PORTRAIT_TINT }}>
               {instructor.photo ? (
                 // eslint-disable-next-line @next/next/no-img-element -- static portrait from public/
-                <img src={instructor.photo} alt={names.full} className="absolute inset-0 size-full object-cover" />
+                <img src={instructor.photo} alt="Karan Mittal, JEE maths mentor and IIT Delhi alumnus" className="absolute inset-0 size-full object-cover" />
               ) : (
                 <div className="absolute inset-0 grid place-items-center">
                   <div className="text-center">

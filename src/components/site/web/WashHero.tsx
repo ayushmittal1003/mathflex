@@ -2,10 +2,10 @@ import { cx } from "./ui";
 
 // Framed wash hero (design.md §3.1): 16px frame, 12px radius, warm gradient. The site nav
 // floats over its top 86px, so content starts below that.
-export function WashHero({ children, className, peek = false }: { children: React.ReactNode; className?: string; peek?: boolean }) {
+export function WashHero({ children, className, peek = false, green = false }: { children: React.ReactNode; className?: string; peek?: boolean; green?: boolean }) {
   return (
     <div className="px-4 pt-4">
-      <section className={cx("relative overflow-hidden rounded-xl bg-wash pt-[86px]", !peek && "pb-16 tablet:pb-20", className)}>{children}</section>
+      <section className={cx("relative overflow-hidden rounded-xl pt-[86px]", green ? "bg-wash-ok" : "bg-wash", !peek && "pb-16 tablet:pb-20", className)}>{children}</section>
     </div>
   );
 }
