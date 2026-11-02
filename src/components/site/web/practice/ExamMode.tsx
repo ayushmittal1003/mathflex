@@ -1,6 +1,7 @@
 "use client";
 // Exam mode: a timed test in the NTA (JEE Main) computer-based-test layout. Answers are only
 // graded when the test ends (submitExam), so keys never reach the page during the test.
+import { MathText } from "@/components/MathText";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, Clock, LayoutGrid, X } from "lucide-react";
 import { submitExam, type ExamResult } from "@/app/actions/practice";
@@ -289,7 +290,7 @@ function ExamRunner({ chapterId, title, candidate, paper, seconds, onDone, onQui
             <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-bold">{FORMAT_LABEL[q.format]}</span>
             {(q.exam || q.year) && <span className="rounded-full bg-gold/20 px-2.5 py-1 text-xs font-bold">{[q.exam, q.year].filter(Boolean).join(" ")}</span>}
           </div>
-          <p className="mt-5 whitespace-pre-wrap text-[clamp(18px,1.6vw,22px)] font-bold leading-relaxed">{q.prompt}</p>
+          <p className="mt-5 whitespace-pre-wrap text-[clamp(18px,1.6vw,22px)] font-bold leading-relaxed"><MathText text={q.prompt} /></p>
 
           {q.format === "NUMERICAL" ? (
             <div className="mt-8 max-w-xs">
@@ -310,7 +311,7 @@ function ExamRunner({ chapterId, title, candidate, paper, seconds, onDone, onQui
                       className={cx("flex w-full items-center gap-4 rounded-xl border-2 px-4 py-4 text-left transition", on ? "border-primary bg-primary/5" : "border-border hover:border-foreground/30")}
                     >
                       <span className={cx("grid size-9 shrink-0 place-items-center rounded-md text-sm font-bold", on ? "bg-primary text-primary-foreground" : "bg-muted")}>{LETTERS[i]}</span>
-                      <span className="min-w-0 flex-1 whitespace-pre-wrap text-base">{o}</span>
+                      <span className="min-w-0 flex-1 text-base"><MathText text={o} /></span>
                       <span className={cx("grid size-6 shrink-0 place-items-center border-2", q.format === "MULTIPLE" ? "rounded-md" : "rounded-full", on ? "border-primary bg-primary text-primary-foreground" : "border-border")}>
                         {on && <Check className="size-3.5" />}
                       </span>
@@ -428,12 +429,12 @@ function ExamReview({ paper, result, onRetake }: { paper: ExamQuestion[]; result
               </span>
               {(q.exam || q.year) && <span className="rounded-full bg-gold/20 px-2.5 py-1">{[q.exam, q.year].filter(Boolean).join(" ")}</span>}
             </div>
-            <p className="mt-3 whitespace-pre-wrap font-semibold">{q.prompt}</p>
+            <p className="mt-3 font-semibold"><MathText text={q.prompt} /></p>
             {q.options.length > 0 && (
               <ul className="mt-3 grid gap-1.5 text-sm sm:grid-cols-2">
                 {q.options.map((o, k) => {
                   const isKey = q.format === "MULTIPLE" ? r!.key.correctIndices.includes(k) : q.format === "SINGLE" && r!.key.correctIndex === k;
-                  return <li key={k} className={cx("rounded-md px-2.5 py-1.5", isKey ? "bg-ok/12 font-semibold" : "bg-muted/60")}><b>{LETTERS[k]}.</b> {o}</li>;
+                  return <li key={k} className={cx("rounded-md px-2.5 py-1.5", isKey ? "bg-ok/12 font-semibold" : "bg-muted/60")}><b>{LETTERS[k]}.</b> <MathText text={o} /></li>;
                 })}
               </ul>
             )}
@@ -441,7 +442,7 @@ function ExamReview({ paper, result, onRetake }: { paper: ExamQuestion[]; result
             {r!.solution && (
               <div className="mt-3 rounded-lg bg-muted/60 p-3 text-sm">
                 <p className="mb-1 text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">Explanation</p>
-                <p className="whitespace-pre-wrap">{r!.solution}</p>
+                <p><MathText text={r!.solution} /></p>
               </div>
             )}
           </li>

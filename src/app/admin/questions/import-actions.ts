@@ -9,11 +9,14 @@ import { claudeConfigured } from "@/lib/flexcare";
 import { extractSourceText, fileKind, type Source } from "@/lib/question-import/extract";
 import { extractWithAi } from "@/lib/question-import/ai";
 import { parseQuestions, parseKey, type Draft } from "@/lib/question-import/parse";
+import { isTemplateFile, parseTemplate, type TemplateIssue } from "@/lib/question-import/template";
 import { saveFile, readStoredFile, deleteStoredFile, urlForKey } from "@/lib/storage";
 
 type KeptFile = { url: string; size: number; mimeType: "application/pdf"; name: string };
 
-export type PreviewState = { error?: string; drafts?: Draft[]; warnings?: string[]; via?: "text" | "ai"; filename?: string; kept?: KeptFile[] } | undefined;
+export type PreviewState = { error?: string; drafts?: Draft[]; warnings?: string[]; errors?: string[]; via?: "text" | "ai" | "format"; filename?: string; kept?: KeptFile[] } | undefined;
+
+const issueText = (i: TemplateIssue) => `Question ${i.question}, line ${i.line}: ${i.message}`;
 
 const KEY = /^resources\/[\w-]+\.(pdf|docx|txt|md|png|jpe?g|webp)$/;
 
@@ -74,6 +77,12 @@ export async function previewQuestionFile(_: PreviewState, form: FormData): Prom
         ? "This file has no selectable text (it looks scanned). Tick “Read with AI” and try again."
         : "This file has no selectable text (it looks scanned), so it can't be read without the AI. Upload a Word file or a PDF exported from Word." };
     }
+    // A file in the MathFlex format is read strictly: every problem is reported with its line.
+    if (isTemplateFile(main.text)) {
+      const t = parseTemplate(main.text, { fromPdf: main.kind === "pdf" });
+      if (!t.drafts.length) return { error: "No questions were found. Check that each question is separated by a line with three dashes (---). See Question file format." };
+      return { drafts: t.drafts, errors: t.errors.map(issueText), warnings: t.warnings.map(issueText), via: "format", filename: file.name, kept: await keepOrDrop([file, sol], keepPdf) };
+    }
     const solText = sol ? (await extractSourceText(sol)).text : "";
     const { drafts, warnings } = parseQuestions(main.text, solText);
     if (sol && solText.trim() && parseKey(solText).size === 0) warnings.push("Nothing could be read from the solutions file.");
@@ -85,14 +94,16 @@ export async function previewQuestionFile(_: PreviewState, form: FormData): Prom
 }
 
 const DraftIn = z.object({
-  prompt: z.string().trim().min(1).max(4000),
+  prompt: z.string().trim().min(1).max(8000),
   options: z.array(z.string().trim().max(1000)).max(6),
   format: z.enum(["SINGLE", "MULTIPLE", "NUMERICAL"]),
   correctIndex: z.number().int().min(0).max(5),
   correctIndices: z.array(z.number().int().min(0).max(5)).max(6),
   numericAnswer: z.number().finite().nullable(),
   tolerance: z.number().finite().min(0),
-  solution: z.string().max(6000),
+  solution: z.string().max(12000),
+  topic: z.string().trim().max(80).optional(),
+  difficulty: z.number().int().min(1).max(3).optional(),
   exam: z.string().trim().max(60).optional(),
   year: z.number().int().min(1990).max(2100).nullable().optional(),
 });
@@ -145,7 +156,8 @@ export async function commitQuestionDrafts(input: CommitInput): Promise<CommitSt
       // A year/exam read from the question wins over the batch default.
       exam: d.exam || c.exam || null,
       year: d.year ?? c.year,
-      difficulty: c.difficulty,
+      topic: d.topic || null,
+      difficulty: d.difficulty ?? c.difficulty,
       isPublished: c.publish,
     }];
   });

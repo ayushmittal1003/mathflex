@@ -1,4 +1,6 @@
 "use client";
+import Link from "next/link";
+import { MathText } from "@/components/MathText";
 import { useActionState, useState, useTransition, startTransition } from "react";
 import { commitQuestionDrafts, previewQuestionFile, type PreviewState } from "@/app/admin/questions/import-actions";
 import type { Draft } from "@/lib/question-import/parse";
@@ -7,6 +9,7 @@ type Row = Draft & { key: number; include: boolean };
 const L = "ABCDEF";
 
 function problems(d: Draft): string[] {
+  if (d.blocked) return [d.blocked];
   const opts = d.options.filter((o) => o.trim());
   if (!d.prompt.trim()) return ["Question text is empty."];
   if (d.format === "NUMERICAL") return d.numericAnswer === null || Number.isNaN(d.numericAnswer) ? ["Enter the numeric answer."] : [];
@@ -86,7 +89,7 @@ export function FileQuestionImport({ chapterId, kind, aiOn, direct }: { chapterI
     save(async () => {
       const res = await commitQuestionDrafts({
         chapterId, type, partOrder: 0, kept: state?.kept ?? [], exam: exam.trim(), year: year ? Number(year) : null, difficulty, publish,
-        drafts: ready.map((r) => ({ prompt: r.prompt, options: r.options, format: r.format, correctIndex: r.correctIndex, correctIndices: r.correctIndices, numericAnswer: r.numericAnswer, tolerance: r.tolerance, solution: r.solution, exam: r.exam, year: r.year ?? null })),
+        drafts: ready.map((r) => ({ prompt: r.prompt, options: r.options, format: r.format, correctIndex: r.correctIndex, correctIndices: r.correctIndices, numericAnswer: r.numericAnswer, tolerance: r.tolerance, solution: r.solution, exam: r.exam, year: r.year ?? null, topic: r.topic, difficulty: r.difficulty })),
       });
       setResult(res ?? null);
       if (res?.created) setRows((cur) => cur?.filter((r) => !ready.includes(r)) ?? null);
@@ -100,7 +103,7 @@ export function FileQuestionImport({ chapterId, kind, aiOn, direct }: { chapterI
         className="space-y-3"
       >
         <p className="text-sm text-muted">
-          Upload the {kind === "PYQ" ? "previous-year questions" : "daily practice problems"} as a <b>PDF or Word (.docx)</b>: one file with questions and solutions, or a questions file plus a solutions file. They become interactive {kind} practice for the whole chapter. You review everything before it goes live.
+          <Link href="/admin/question-format" target="_blank" className="font-semibold text-brand underline">Question file format, template and AI prompt</Link>. Upload the {kind === "PYQ" ? "previous-year questions" : "daily practice problems"} as a <b>PDF or Word (.docx)</b>: one file with questions and solutions, or a questions file plus a solutions file. They become interactive {kind} practice for the whole chapter. You review everything before it goes live.
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-sm font-semibold">Questions file
@@ -124,8 +127,20 @@ export function FileQuestionImport({ chapterId, kind, aiOn, direct }: { chapterI
 
       {rows && (
         <div className="space-y-4 border-t border-border pt-4">
-          <p className="text-sm"><b>{rows.length} question{rows.length === 1 ? "" : "s"} found, {rows.filter((r) => problems(r).length === 0).length} complete</b> in {state?.filename} ({state?.via === "ai" ? "read with AI" : "read from text"}). Check each one, fix anything wrong, untick any you don&apos;t want.</p>
-          {state?.warnings?.map((w) => <p key={w} className="rounded-xl bg-gold/20 px-3 py-2 text-sm">{w}</p>)}
+          <p className="text-sm"><b>{rows.length} question{rows.length === 1 ? "" : "s"} found, {rows.filter((r) => problems(r).length === 0).length} complete</b> in {state?.filename} ({state?.via === "ai" ? "read with AI" : state?.via === "format" ? "MathFlex format" : "read from text"}). Check each one, fix anything wrong, untick any you don&apos;t want.</p>
+          {!!state?.errors?.length && (
+            <div role="alert" className="rounded-xl bg-bad/10 px-3 py-2 text-sm text-bad">
+              <p className="font-bold">{state.errors.length} thing{state.errors.length === 1 ? "" : "s"} to fix in your file:</p>
+              <ul className="mt-1 list-disc space-y-0.5 pl-5">{state.errors.slice(0, 40).map((e) => <li key={e}>{e}</li>)}</ul>
+              {state.errors.length > 40 && <p className="mt-1">…and {state.errors.length - 40} more. Fix these in the file and upload it again; questions without problems can already be imported below.</p>}
+            </div>
+          )}
+          {!!state?.warnings?.length && (
+            <details className="rounded-xl bg-gold/20 px-3 py-2 text-sm">
+              <summary className="cursor-pointer font-semibold">{state.warnings.length} note{state.warnings.length === 1 ? "" : "s"} (not blocking)</summary>
+              <ul className="mt-1 list-disc space-y-0.5 pl-5">{state.warnings.slice(0, 60).map((w) => <li key={w}>{w}</li>)}</ul>
+            </details>
+          )}
 
           <div className="grid gap-3 rounded-xl bg-surface-2 p-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-xs font-semibold">Exam <input value={exam} onChange={(e) => setExam(e.target.value)} placeholder={type === "PYQ" ? "JEE Main" : "optional"} className="input mt-1" /></label>
@@ -153,6 +168,7 @@ export function FileQuestionImport({ chapterId, kind, aiOn, direct }: { chapterI
                     {r.warnings.filter((w) => !bad.length && w).map((w) => <span key={w} className="rounded bg-surface-2 px-2 py-0.5 text-xs text-muted">{w}</span>)}
                   </div>
                   <textarea value={r.prompt} onChange={(e) => patch(r.key, { prompt: e.target.value })} rows={2} className="input w-full text-sm" />
+                  <div className="mt-1.5 rounded-lg bg-surface-2 px-3 py-2 text-sm"><MathText text={r.prompt} /></div>
                   {r.format === "NUMERICAL" ? (
                     <div className="mt-2 flex flex-wrap gap-3 text-sm">
                       <label className="font-semibold">Answer <input type="number" step="any" value={r.numericAnswer ?? ""} onChange={(e) => patch(r.key, { numericAnswer: e.target.value === "" ? null : Number(e.target.value) })} className="input !w-32" /></label>

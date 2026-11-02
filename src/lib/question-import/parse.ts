@@ -23,6 +23,10 @@ export type Draft = {
   // Picked up from a tag like “(JEE Main 2021)” in the question text, if there is one.
   exam?: string;
   year?: number;
+  topic?: string;
+  difficulty?: number;
+  // Set when the file has a problem that must be fixed first (e.g. maths that can't be read).
+  blocked?: string;
   warnings: string[];
 };
 

@@ -1,4 +1,5 @@
 "use client";
+import { MathText } from "@/components/MathText";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Bookmark, BookmarkCheck, Check, X, ChevronRight, Lock, RotateCcw, Zap } from "lucide-react";
 import { answerQuestion, toggleBookmark } from "@/app/actions/learn";
@@ -126,7 +127,7 @@ export function Quiz({
               {marks[q.id] ? <BookmarkCheck className="size-5 fill-primary text-primary" /> : <Bookmark className="size-5 text-muted-foreground" />}
             </button>
           </div>
-          <p className="mt-3 whitespace-pre-line text-lg font-semibold leading-relaxed">{q.prompt}</p>
+          <p className="mt-3 whitespace-pre-line text-lg font-semibold leading-relaxed"><MathText text={q.prompt} /></p>
           <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
             {q.options.map((opt, i) => {
               const isAns = res && i === res.correctIndex;
@@ -143,7 +144,7 @@ export function Quiz({
                   <span className={`grid size-8 shrink-0 place-items-center rounded-full text-sm font-bold ${isAns ? "bg-ok text-white" : isWrongPick ? "bg-bad text-white" : "bg-surface-2"}`}>
                     {isAns ? <Check className="size-4" strokeWidth={3} /> : isWrongPick ? <X className="size-4" strokeWidth={3} /> : "ABCD"[i]}
                   </span>
-                  {opt}
+                  <MathText text={opt} />
                 </button>
               );
             })}
@@ -154,7 +155,7 @@ export function Quiz({
               <p className={`font-bold ${res.isCorrect ? "text-ok" : "text-bad"}`}>
                 {res.isCorrect ? ["Nailed it! 🎯", "Correct! 🔥", "Too easy 😎"][idx % 3] : res.selected === null ? "Skipped" : "Not quite — here's how"}
               </p>
-              {res.solution && <p className="mt-1 whitespace-pre-line text-sm leading-relaxed">{res.solution}</p>}
+              {res.solution && <p className="mt-1 text-sm leading-relaxed"><MathText text={res.solution} /></p>}
             </div>
           )}
 

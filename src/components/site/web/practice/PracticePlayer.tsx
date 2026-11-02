@@ -1,6 +1,7 @@
 "use client";
 // Practice player in the website design. Same logic as components/practice/PracticePlayer
 // (answers graded on the server by submitPracticeAnswer; keys only arrive with a result).
+import { MathText } from "@/components/MathText";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Bookmark, BookmarkCheck, Check, ChevronLeft, ChevronRight, CircleAlert, Clock, RotateCcw, X, Zap } from "lucide-react";
 import { submitPracticeAnswer, type PracticeResult } from "@/app/actions/practice";
@@ -189,7 +190,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
           </button>
         </div>
 
-        <p className="mt-5 whitespace-pre-line text-[clamp(19px,2vw,22px)] font-bold leading-[1.5] tracking-[-0.01em]">{q.prompt}</p>
+        <p className="mt-5 whitespace-pre-line text-[clamp(19px,2vw,22px)] font-bold leading-[1.5] tracking-[-0.01em]"><MathText text={q.prompt} /></p>
         {q.format === "MULTIPLE" && !res && <p className="mt-1.5 text-sm text-muted-foreground">One or more options are correct. Partial marks if you pick only correct ones.</p>}
 
         {q.format !== "NUMERICAL" ? (
@@ -217,7 +218,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
                   )}>
                     {r && isKey && !missed ? <Check className="size-4" strokeWidth={3} /> : wrongPick ? <X className="size-4" strokeWidth={3} /> : LETTERS[i]}
                   </span>
-                  <span className="min-w-0 flex-1">{opt}</span>
+                  <span className="min-w-0 flex-1"><MathText text={opt} /></span>
                   {missed && <span className="text-xs font-bold text-ok">missed</span>}
                 </button>
               );
@@ -258,7 +259,7 @@ export function PracticePlayer({ questions, sound }: { questions: PracticeQuesti
               <span className="rounded-md bg-card px-2 py-0.5 font-mono text-sm tabular-nums">{signed(r.marks)}</span>
               {r.isCorrect ? "Correct! Nicely done." : r.partial ? "Partially correct: you missed an option" : r.skipped ? "Skipped" : "Not quite. Here's how"}
             </p>
-            {r.solution && <p className="mt-2.5 whitespace-pre-line text-[16px] leading-[1.65] text-secondary-foreground">{r.solution}</p>}
+            {r.solution && <p className="mt-2.5 text-[16px] leading-[1.65] text-secondary-foreground"><MathText text={r.solution} /></p>}
           </div>
         )}
 
