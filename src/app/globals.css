@@ -68,7 +68,7 @@
 
   /* Website (v2) tokens */
   --wash: oklch(0.975 0.012 50);       /* warm base of the framed hero wash */
-  --ok-tint: oklch(0.965 0.032 149);   /* light green: pricing sections and the green hero wash. Pair with ok-strong text */
+  --ok-tint: oklch(0.965 0.032 149);   /* light green tint. Not used for pricing (see design.md). Pair with ok-strong text */
   --highlight: color-mix(in oklab, var(--brand-2) 16%, var(--card)); /* highlight box on white */
   --selected: color-mix(in oklab, var(--primary) 6%, var(--card));   /* chosen option / own row */
 
