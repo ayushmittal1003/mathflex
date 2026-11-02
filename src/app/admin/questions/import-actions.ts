@@ -1,6 +1,5 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireStaff } from "@/lib/auth";
 import { audit } from "@/lib/audit";
@@ -9,6 +8,7 @@ import { claudeConfigured } from "@/lib/flexcare";
 import { extractSourceText, fileKind, type Source } from "@/lib/question-import/extract";
 import { extractWithAi } from "@/lib/question-import/ai";
 import { parseQuestions, parseKey, type Draft } from "@/lib/question-import/parse";
+import { Commit, describeCommitIssue, type CommitInput } from "@/lib/question-import/commit-schema";
 import { isTemplateFile, parseTemplate, type TemplateIssue } from "@/lib/question-import/template";
 import { saveFile, readStoredFile, deleteStoredFile, urlForKey } from "@/lib/storage";
 
@@ -93,40 +93,16 @@ export async function previewQuestionFile(_: PreviewState, form: FormData): Prom
   }
 }
 
-const DraftIn = z.object({
-  prompt: z.string().trim().min(1).max(8000),
-  options: z.array(z.string().trim().max(1000)).max(6),
-  format: z.enum(["SINGLE", "MULTIPLE", "NUMERICAL"]),
-  correctIndex: z.number().int().min(0).max(5),
-  correctIndices: z.array(z.number().int().min(0).max(5)).max(6),
-  numericAnswer: z.number().finite().nullable(),
-  tolerance: z.number().finite().min(0),
-  solution: z.string().max(12000),
-  topic: z.string().trim().max(80).optional(),
-  difficulty: z.number().int().min(1).max(3).optional(),
-  exam: z.string().trim().max(60).optional(),
-  year: z.number().int().min(1990).max(2100).nullable().optional(),
-});
-const Commit = z.object({
-  chapterId: z.string().min(1),
-  type: z.enum(["DPP", "PYQ"]),
-  partOrder: z.number().int().min(0).max(200),
-  exam: z.string().max(60),
-  year: z.number().int().min(1990).max(2100).nullable(),
-  difficulty: z.number().int().min(1).max(3),
-  publish: z.boolean(),
-  drafts: z.array(DraftIn).min(1).max(400),
-  // PDFs stored at preview time, to list for download. Only our own /api/files/resources/ URLs.
-  kept: z.array(z.object({ url: z.string().regex(/^\/api\/files\/resources\/[\w-]+\.pdf$/), size: z.number().int().min(0), mimeType: z.literal("application/pdf"), name: z.string().max(200) })).max(2).default([]),
-});
-export type CommitInput = z.input<typeof Commit>;
 export type CommitState = { error?: string; created?: number; skipped?: string[] } | undefined;
 
 // Step 2: save the reviewed questions. Each one is checked again on the server.
 export async function commitQuestionDrafts(input: CommitInput): Promise<CommitState> {
   const me = await requireStaff("questions");
   const parsed = Commit.safeParse(input);
-  if (!parsed.success) return { error: "Some questions have invalid values. Check the highlighted ones." };
+  if (!parsed.success) {
+    console.error("[question-import] rejected", parsed.error.issues.slice(0, 5));
+    return { error: describeCommitIssue(parsed.error.issues) };
+  }
   const c = parsed.data;
   const chapter = await db.chapter.findUnique({ where: { id: c.chapterId }, select: { id: true, title: true, parts: { select: { id: true, order: true } } } });
   if (!chapter) return { error: "Chapter not found." };
@@ -138,7 +114,7 @@ export async function commitQuestionDrafts(input: CommitInput): Promise<CommitSt
     const bad =
       d.format === "NUMERICAL" ? d.numericAnswer === null
       : options.length < 2 ? true
-      : d.format === "SINGLE" ? d.correctIndex >= options.length
+      : d.format === "SINGLE" ? d.correctIndex < 0 || d.correctIndex >= options.length
       : d.correctIndices.length === 0 || d.correctIndices.some((x) => x >= options.length);
     if (bad) { skipped.push(`Question ${i + 1}`); return []; }
     return [{
