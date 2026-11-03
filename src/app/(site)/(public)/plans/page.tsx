@@ -1,3 +1,4 @@
+import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -27,7 +28,7 @@ export default async function PlansPage() {
       where: { userId: user.id },
       orderBy: { expiresAt: "asc" },
       include: {
-        chapter: { select: { id: true, slug: true, title: true, symbol: true, coverFrom: true, coverTo: true, price: true, validityDays: true, isPublished: true } },
+        chapter: { select: { id: true, slug: true, title: true, symbol: true, coverFrom: true, coverTo: true, coverImage: true, price: true, validityDays: true, isPublished: true } },
         course: { select: { id: true, slug: true, title: true, coverFrom: true, coverTo: true, price: true, validityDays: true, isPublished: true, _count: { select: { chapters: true } } } },
       },
     }),
@@ -61,7 +62,7 @@ export default async function PlansPage() {
       id: e.id, isCourse, item, order, paid, renewed, source: e.source, start: first, expiresAt: e.expiresAt, daysLeft,
       used: Math.min(1, Math.max(0, 1 - daysLeft / total)),
       canRenew: daysLeft <= RENEW_WINDOW && item.isPublished,
-      cover: isCourse ? { from: e.course!.coverFrom, to: e.course!.coverTo, symbol: "Σ" } : { from: e.chapter!.coverFrom, to: e.chapter!.coverTo, symbol: e.chapter!.symbol },
+      cover: isCourse ? { from: e.course!.coverFrom, to: e.course!.coverTo, symbol: "Σ", image: null } : { from: e.chapter!.coverFrom, to: e.chapter!.coverTo, symbol: e.chapter!.symbol, image: e.chapter!.coverImage },
       href: isCourse ? `/courses/${e.course!.slug}` : `/chapter/${e.chapter!.slug}`,
       sub: isCourse ? `Complete course · ${e.course!._count.chapters} chapters` : `Chapter · ${Math.round((progress.get(e.chapter!.id) ?? 0) * 100)}% done`,
     };
@@ -173,7 +174,7 @@ export default async function PlansPage() {
 type Plan = {
   id: string; isCourse: boolean; item: { id: string; title: string; price: number; validityDays: number }; order?: { orderNo: string; paidAt: Date | null; createdAt: Date };
   paid?: number; renewed: boolean; source: string; start: Date; expiresAt: Date; daysLeft: number; used: number; canRenew: boolean;
-  cover: { from: string; to: string; symbol: string }; href: string; sub: string;
+  cover: { from: string; to: string; symbol: string; image: string | null }; href: string; sub: string;
 };
 
 function PlanList({ title, plans }: { title: string; plans: Plan[] }) {
@@ -188,6 +189,7 @@ function PlanList({ title, plans }: { title: string; plans: Plan[] }) {
             <article key={p.id} className={cx(card, "grid overflow-hidden min-[860px]:grid-cols-[200px_1fr_auto]", ended && "opacity-80")}>
               <Link href={p.href} className="relative block min-h-[110px] overflow-hidden text-white" style={posterBg(p.cover.from, p.cover.to)}>
                 <span className={cx("absolute right-4 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none text-white/25", p.cover.symbol.length > 2 ? "text-[48px]" : "text-[84px]")}>{p.cover.symbol}</span>
+                {p.cover.image && <PosterImage src={p.cover.image} sizes="(max-width: 860px) 100vw, 320px" />}
                 <span className="absolute left-3 top-3 flex gap-1.5">
                   <span className="rounded-md bg-white/92 px-2 py-1 text-xs font-extrabold text-black">{p.isCourse ? "Course" : "Chapter"}</span>
                   {p.renewed && <span className="rounded-md bg-ok px-2 py-1 text-xs font-extrabold">Renewed</span>}

@@ -16,6 +16,7 @@ import { QuestionImport } from "@/components/admin/QuestionImport";
 import { FileQuestionImport } from "@/components/admin/FileQuestionImport";
 import { deleteChapterQuestions } from "@/app/admin/questions/import-actions";
 import { SyncDuration } from "@/components/admin/SyncDuration";
+import { ChapterThumbnail } from "@/components/admin/ChapterThumbnail";
 import { AnswerFields } from "@/components/admin/AnswerFields";
 import { FORMAT_LABEL } from "@/lib/grading";
 import {
@@ -111,9 +112,15 @@ function DetailsForm({ chapter: c }: { chapter: Chapter | null }) {
           <Field label="Gradient from"><input name="coverFrom" type="color" defaultValue={c?.coverFrom ?? "#FF2E63"} className="input !h-11 !p-1" /></Field>
           <Field label="Gradient to"><input name="coverTo" type="color" defaultValue={c?.coverTo ?? "#7C3AED"} className="input !h-11 !p-1" /></Field>
           <Field label="Poster symbol" hint="e.g. ∫, Σ, lim"><input name="symbol" defaultValue={c?.symbol ?? "∫"} className="input" /></Field>
-          <Field label="Or upload a poster image" hint="2:3 portrait works best"><input name="coverFile" type="file" accept="image/*" className="text-xs" /></Field>
+          {!c && <Field label="Thumbnail" hint="16:9, used everywhere this chapter appears"><input name="coverFile" type="file" accept="image/png,image/jpeg,image/webp" className="text-xs" /></Field>}
         </div>
-        {c?.coverImage && <label className="mt-3 flex items-center gap-2 text-sm"><input type="checkbox" name="removeCover" /> Remove uploaded poster image</label>}
+        {c && (
+          <div className="mt-4">
+            <p className="mb-1 text-sm font-semibold">Thumbnail</p>
+            <p className="mb-2 text-xs text-muted">Used everywhere this chapter appears. 16:9, PNG, JPG or WebP, under 4 MB. Saves as soon as you pick a file. Without one, the gradient and symbol show.</p>
+            <ChapterThumbnail chapterId={c.id} title={c.title} url={c.coverImage} />
+          </div>
+        )}
         <div className="mt-5">
           <p className="mb-1 text-sm font-semibold">30-second intro video (shown once after purchase)</p>
           <VideoField defaultProvider={c?.introVideoProvider ?? "URL"} defaultRef={c?.introVideoRef ?? ""} bunnyReady={bunnyConfigured()} title={`${c?.title ?? "Chapter"} intro`} prefix="intro" />

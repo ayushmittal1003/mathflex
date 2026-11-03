@@ -3,6 +3,7 @@ import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { inr } from "@/lib/format";
 import { PageHeader, Table, Td, Badge, LinkButton } from "@/components/admin/ui";
+import { ChapterThumbnail } from "@/components/admin/ChapterThumbnail";
 
 export const metadata = { title: "Chapters" };
 
@@ -16,21 +17,17 @@ export default async function AdminChapters({ searchParams }: { searchParams: Pr
   });
   return (
     <div>
-      <PageHeader title="Chapters & content" subtitle="Prices, parts, videos, DPPs, PYQs, notes and mind maps." action={<LinkButton href="/admin/chapters/new" primary>+ New chapter</LinkButton>} />
+      <PageHeader title="Chapters & content" subtitle={`Prices, parts, videos, DPPs, PYQs, notes and mind maps. ${chapters.filter((c) => c.coverImage).length} of ${chapters.length} have a thumbnail: click a box below to upload.`} action={<LinkButton href="/admin/chapters/new" primary>+ New chapter</LinkButton>} />
       <div className="mb-4 flex gap-2 text-sm font-semibold">
         {[["", "All"], ["11", "Class 11"], ["12", "Class 12"]].map(([v, l]) => (
           <Link key={v} href={v ? `/admin/chapters?class=${v}` : "/admin/chapters"} className={`rounded-full px-3 py-1.5 ${cls === v || (!cls && !v) ? "bg-fg text-bg" : "bg-surface-2 text-muted"}`}>{l}</Link>
         ))}
       </div>
-      <Table head={["Chapter", "Class", "Price", "Parts", "Questions", "Notes", "Sold", "Status"]} empty={!chapters.length}>
+      <Table head={["Thumbnail", "Chapter", "Class", "Price", "Parts", "Questions", "Notes", "Sold", "Status"]} empty={!chapters.length}>
         {chapters.map((c) => (
           <tr key={c.id} className="hover:bg-surface-2">
-            <Td>
-              <Link href={`/admin/chapters/${c.id}`} className="flex items-center gap-3 font-semibold hover:text-brand">
-                <span className="grid size-9 shrink-0 place-items-center rounded-lg text-xs font-bold text-white" style={{ background: `linear-gradient(135deg, ${c.coverFrom}, ${c.coverTo})` }}>{c.symbol.slice(0, 3)}</span>
-                {c.title}
-              </Link>
-            </Td>
+            <Td><ChapterThumbnail chapterId={c.id} title={c.title} url={c.coverImage} /></Td>
+            <Td><Link href={`/admin/chapters/${c.id}`} className="font-semibold hover:text-brand">{c.title}</Link></Td>
             <Td>{c.classLevel}</Td>
             <Td><span className="font-semibold">{inr(c.price)}</span> <span className="text-xs text-muted line-through">{inr(c.mrp)}</span></Td>
             <Td>{c._count.parts}</Td>

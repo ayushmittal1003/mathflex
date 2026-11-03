@@ -1,3 +1,5 @@
+import { PosterImage } from "@/components/site/web/PosterImage";
+import { HoverClip } from "@/components/site/web/HoverClip";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isStaff } from "@/lib/permissions";
@@ -117,6 +119,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
   const sectionH2 = "mt-14 scroll-mt-[150px] border-b-2 border-foreground pb-3.5 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.035em]";
   const playHref = !chapter.parts.length ? null : owned ? `/learn/${chapter.slug}?part=${resumePart?.order ?? 1}` : preview ? `/learn/${chapter.slug}?part=${preview.order}` : null;
   const heroPart = owned ? resumePart : preview ?? chapter.parts[0];
+  const heroThumb = heroPart?.thumbnailUrl ?? chapter.coverImage;
 
   const published = chapter.isPublished;
 
@@ -212,10 +215,10 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
               upgradeHref="#"
             >
             <div className="relative aspect-[16/10] overflow-hidden text-white" style={posterBg(chapter.coverFrom, chapter.coverTo)}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {heroPart?.thumbnailUrl && <img src={heroPart.thumbnailUrl} alt="" className="absolute inset-0 size-full object-cover" />}
-              {!heroPart?.thumbnailUrl && <div className={cx("absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", chapter.symbol.length > 2 ? "text-[160px] tablet:text-[200px]" : "text-[240px] tablet:text-[320px]")}>{chapter.symbol}</div>}
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.65))]" />
+              {heroThumb && <PosterImage src={heroThumb} sizes="(max-width: 900px) 100vw, 640px" />}
+              {!heroThumb && <div className={cx("absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", chapter.symbol.length > 2 ? "text-[160px] tablet:text-[200px]" : "text-[240px] tablet:text-[320px]")}>{chapter.symbol}</div>}
+              <div className={cx("absolute inset-0", heroThumb ? "bg-[linear-gradient(transparent_55%,rgb(0_0_0/0.65))]" : "bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.65))]")} />
+              {(owned || !preview) && <HoverClip chapterId={chapter.id} />}
               <span className="absolute left-4.5 top-4 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">
                 {owned ? "Your chapter" : preview ? "Free preview" : "Preview"}
               </span>
@@ -297,7 +300,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
                 <div className="flex items-center gap-5 border-b border-border py-5">
                   <span className="w-7 shrink-0 text-[26px] font-extrabold tracking-[-0.03em] text-muted-foreground">{p.order}</span>
                   <span className="relative aspect-[16/10] w-24 shrink-0 overflow-hidden rounded-lg text-white tablet:w-[120px]" style={posterBg(chapter.coverFrom, chapter.coverTo)}>
-                    <span className="absolute -right-1.5 top-1/2 -translate-y-1/2 whitespace-nowrap text-[56px] font-black leading-none text-white/20">{chapter.symbol}</span>
+                    {(p.thumbnailUrl ?? chapter.coverImage) ? <PosterImage src={(p.thumbnailUrl ?? chapter.coverImage)!} sizes="120px" /> : <span className="absolute -right-1.5 top-1/2 -translate-y-1/2 whitespace-nowrap text-[56px] font-black leading-none text-white/20">{chapter.symbol}</span>}
                     <span className={cx("absolute inset-0 grid place-items-center", st === "locked" ? "bg-black/45" : "bg-black/15")}>
                       <span className={cx("grid size-[34px] place-items-center rounded-full", st === "locked" ? "bg-white/20 text-white" : st === "done" ? "bg-ok text-white" : "bg-white text-primary")}>
                         {st === "locked" ? <LockIcon className="size-[13px]" /> : st === "done" ? <CheckIcon className="size-3.5" strokeWidth={3.5} /> : <PlayIcon className="size-3" />}

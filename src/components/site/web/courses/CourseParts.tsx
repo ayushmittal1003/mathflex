@@ -1,4 +1,5 @@
 "use client";
+import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { useState } from "react";
 import { inr, pctOff, validity } from "@/lib/format";
@@ -7,7 +8,7 @@ import { CheckIcon, Eyebrow, Mark, SectionHead } from "../primitives";
 import { splitH2 } from "../WashHero";
 import { cx } from "../ui";
 
-export type CourseChapter = { id: string; slug: string; title: string; classLevel: number; price: number; symbol: string; coverFrom: string; coverTo: string; parts: number; weight: number };
+export type CourseChapter = { id: string; slug: string; title: string; classLevel: number; price: number; symbol: string; coverFrom: string; coverTo: string; coverImage: string | null; parts: number; weight: number };
 export type CourseView = {
   id: string; slug: string; title: string; subtitle: string; price: number; mrp: number; highlights: string[]; validityDays: number; owned: boolean;
   hours: string | null; chapterSum: number; avgChapter: number; hasPractice: boolean; hasNotes: boolean; chapters: CourseChapter[];
@@ -109,8 +110,8 @@ export function CourseInside({ courses }: { courses: CourseView[] }) {
               <div className="mt-5 grid gap-3 min-[640px]:mt-6 min-[640px]:grid-cols-2 min-[640px]:gap-4 min-[1040px]:grid-cols-3">
                 {rows.map((r) => (
                   <Link key={r.id} href={`/chapter/${r.slug}`} className="flex min-h-[92px] items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5 text-foreground transition duration-300 hover:-translate-y-[3px] hover:border-[oklch(0.87_0.03_40)] hover:shadow-[0_18px_34px_-22px_rgb(80_20_0/0.45)]">
-                    <span className={cx("grid size-12 shrink-0 place-items-center rounded-[10px] font-black tracking-[-0.03em] text-white shadow-[0_6px_14px_-8px_rgb(0_0_0/0.4)]", r.symbol.length > 2 ? "text-[13px]" : "text-lg")} style={{ background: `linear-gradient(155deg, ${r.coverFrom}, ${r.coverTo})` }}>
-                      {r.symbol}
+                    <span className={cx("relative grid size-12 shrink-0 place-items-center overflow-hidden rounded-[10px] font-black tracking-[-0.03em] text-white shadow-[0_6px_14px_-8px_rgb(0_0_0/0.4)]", r.symbol.length > 2 ? "text-[13px]" : "text-lg")} style={{ background: `linear-gradient(155deg, ${r.coverFrom}, ${r.coverTo})` }}>
+                      {r.coverImage ? <PosterImage src={r.coverImage} sizes="48px" /> : r.symbol}
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="line-clamp-2 text-[15px] font-bold leading-[1.3] tracking-[-0.01em]">{r.title}</span>

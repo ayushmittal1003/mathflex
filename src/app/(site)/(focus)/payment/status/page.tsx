@@ -1,3 +1,4 @@
+import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { PendingNote } from "@/components/site/web/PendingNote";
 import { db } from "@/lib/db";
@@ -29,7 +30,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
   const chapterIds = order?.items.filter((i) => i.itemType === "CHAPTER").map((i) => i.itemId!) ?? [];
   const courseIds = order?.items.filter((i) => i.itemType === "COURSE").map((i) => i.itemId!) ?? [];
   const [chapters, courses, entitlements] = await Promise.all([
-    chapterIds.length ? db.chapter.findMany({ where: { id: { in: chapterIds } }, select: { id: true, slug: true, title: true, symbol: true, coverFrom: true, coverTo: true, classLevel: true, _count: { select: { parts: true } } } }) : [],
+    chapterIds.length ? db.chapter.findMany({ where: { id: { in: chapterIds } }, select: { id: true, slug: true, title: true, symbol: true, coverFrom: true, coverTo: true, coverImage: true, classLevel: true, _count: { select: { parts: true } } } }) : [],
     courseIds.length
       ? db.course.findMany({
           where: { id: { in: courseIds } },
@@ -145,9 +146,9 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
   const unlocked = [
     ...courses.map((c) => {
       const first = sortedCourseChapters(c)[0];
-      return { key: c.id, kind: "Course", title: c.title, sub: `${c.chapters.length} chapters${first ? ` · start with ${first.title}` : ""}`, until: until({ courseId: c.id }), href: first ? `/learn/${first.slug}` : "/my-learning", cta: first ? "Start Chapter 1" : "Open", symbol: "Σ", bg: "linear-gradient(135deg, var(--primary), var(--brand-2))" };
+      return { key: c.id, kind: "Course", title: c.title, sub: `${c.chapters.length} chapters${first ? ` · start with ${first.title}` : ""}`, until: until({ courseId: c.id }), href: first ? `/learn/${first.slug}` : "/my-learning", cta: first ? "Start Chapter 1" : "Open", symbol: "Σ", image: null, bg: "linear-gradient(135deg, var(--primary), var(--brand-2))" };
     }),
-    ...chapters.map((ch) => ({ key: ch.id, kind: "Chapter", title: ch.title, sub: `Class ${ch.classLevel} · ${ch._count.parts} parts · DPPs, PYQs, notes`, until: until({ chapterId: ch.id }), href: `/learn/${ch.slug}`, cta: "Start Part 1", symbol: ch.symbol, bg: `linear-gradient(155deg, ${ch.coverFrom}, ${ch.coverTo})` })),
+    ...chapters.map((ch) => ({ key: ch.id, kind: "Chapter", title: ch.title, sub: `Class ${ch.classLevel} · ${ch._count.parts} parts · DPPs, PYQs, notes`, until: until({ chapterId: ch.id }), href: `/learn/${ch.slug}`, cta: "Start Part 1", symbol: ch.symbol, image: ch.coverImage, bg: `linear-gradient(155deg, ${ch.coverFrom}, ${ch.coverTo})` })),
   ];
   const start = unlocked[0];
   const hasCall = paid.items.some((i) => i.itemType === "MENTORSHIP");
@@ -195,7 +196,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
               </div>
               {unlocked.map((it, i) => (
                 <div key={it.key} className="flex animate-mf-rise flex-wrap items-center gap-4 border-b border-border px-5 py-4 last:border-b-0" style={{ animationDelay: `${i * 80}ms` }}>
-                  <span className={cx("grid aspect-[16/10] w-20 shrink-0 place-items-center rounded-lg font-black tracking-[-0.04em] text-white", it.symbol.length > 2 ? "text-sm" : "text-2xl")} style={{ background: it.bg }}>{it.symbol}</span>
+                  <span className={cx("relative grid aspect-[16/10] w-20 shrink-0 place-items-center overflow-hidden rounded-lg font-black tracking-[-0.04em] text-white", it.symbol.length > 2 ? "text-sm" : "text-2xl")} style={{ background: it.bg }}>{it.image ? <PosterImage src={it.image} sizes="80px" /> : it.symbol}</span>
                   <div className="min-w-0 flex-[1_1_200px]">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                       <span className={cx("rounded px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.06em]", it.kind === "Course" ? "bg-primary text-white" : "bg-muted text-secondary-foreground")}>{it.kind}</span>

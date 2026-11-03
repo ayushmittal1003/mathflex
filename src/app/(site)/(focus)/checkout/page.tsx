@@ -17,13 +17,13 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     db.chapter.findMany({
       where: { isPublished: true },
       orderBy: [{ jeeWeightage: "desc" }, { sortOrder: "asc" }],
-      select: { id: true, title: true, symbol: true, coverFrom: true, coverTo: true, classLevel: true, price: true, mrp: true, _count: { select: { parts: true } } },
+      select: { id: true, title: true, symbol: true, coverFrom: true, coverTo: true, coverImage: true, classLevel: true, price: true, mrp: true, _count: { select: { parts: true } } },
     }),
     db.course.findMany({ where: { isPublished: true }, orderBy: { sortOrder: "asc" }, select: { id: true, title: true, price: true, chapters: { select: { chapterId: true } } } }),
   ]);
   const cartMeta = await getCartMeta();
   const meta: CheckoutMeta = {
-    chapters: Object.fromEntries(chapters.map((c) => [c.id, { title: c.title, symbol: c.symbol, coverFrom: c.coverFrom, coverTo: c.coverTo, classLevel: c.classLevel, parts: c._count.parts, price: c.price, mrp: c.mrp }])),
+    chapters: Object.fromEntries(chapters.map((c) => [c.id, { title: c.title, symbol: c.symbol, coverFrom: c.coverFrom, coverTo: c.coverTo, coverImage: c.coverImage, classLevel: c.classLevel, parts: c._count.parts, price: c.price, mrp: c.mrp }])),
     courses: courses.map((c) => ({ id: c.id, title: c.title, price: c.price, chapterIds: c.chapters.map((x) => x.chapterId), count: c.chapters.length })),
     user: user ? { name: user.name, email: user.email } : null,
     whatsapp: s.whatsappNumber,

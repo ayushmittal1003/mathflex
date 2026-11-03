@@ -1,4 +1,5 @@
 "use client";
+import { PosterImage } from "@/components/site/web/PosterImage";
 import { useEffect, useMemo, useState } from "react";
 import { cart, useCart } from "../cart-store";
 import { getQuote } from "@/app/actions/checkout";
@@ -35,11 +36,11 @@ export function Recommendations({ meta, max = 3, className }: { meta: CartMeta; 
         {shown.map((c) => (
           <li key={c.id} className="flex items-center gap-3 rounded-[10px] border border-border p-2.5">
             <span
-              className={cx("grid size-11 shrink-0 place-items-center rounded-lg font-black text-white", c.symbol.length > 2 ? "text-xs" : "text-lg")}
+              className={cx("relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-lg font-black text-white", c.symbol.length > 2 ? "text-xs" : "text-lg")}
               style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}
               aria-hidden
             >
-              {c.symbol}
+              {c.coverImage ? <PosterImage src={c.coverImage} sizes="44px" /> : c.symbol}
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-bold">{c.title}</span>

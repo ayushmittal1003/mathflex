@@ -21,6 +21,30 @@ const refreshSite = () => revalidatePath("/", "layout");
 
 /* ---------------- Chapters ---------------- */
 
+const THUMBNAIL_TYPES: Record<string, string> = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
+
+// Sets the chapter's thumbnail from the "file" field, or removes it when there is no file.
+export async function setChapterThumbnail(chapterId: string, form: FormData): Promise<{ error?: string; url?: string | null }> {
+  const me = await requireStaff("content");
+  const file = form.get("file");
+  let coverImage: string | null = null;
+  if (file instanceof File && file.size > 0) {
+    const ext = THUMBNAIL_TYPES[file.type];
+    if (!ext) return { error: "Use a PNG, JPG or WebP image." };
+    if (file.size > 4 * 1024 * 1024) return { error: "That image is over 4 MB." };
+    try {
+      coverImage = (await saveFile(new File([file], `thumbnail.${ext}`, { type: file.type }), "images")).url;
+    } catch (e) {
+      console.error("thumbnail upload failed", e);
+      return { error: "The upload failed. Please try again." };
+    }
+  }
+  const saved = await db.chapter.update({ where: { id: chapterId }, data: { coverImage } });
+  await audit(me, "chapter.update", `${coverImage ? "Set" : "Removed"} the thumbnail of “${saved.title}”`, { entity: "chapter", id: saved.id });
+  refreshSite();
+  return { url: coverImage };
+}
+
 export async function saveChapter(form: FormData) {
   const me = await requireStaff("content");
   const id = str(form, "id");

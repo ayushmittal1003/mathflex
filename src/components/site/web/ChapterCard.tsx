@@ -1,4 +1,6 @@
 "use client";
+import { PosterImage } from "@/components/site/web/PosterImage";
+import { HoverClip } from "@/components/site/web/HoverClip";
 import Link from "next/link";
 import { inr, pctOff, validity } from "@/lib/format";
 import { CheckIcon, PlayIcon } from "./primitives";
@@ -14,6 +16,7 @@ export type CardChapter = {
   mrp: number;
   coverFrom: string;
   coverTo: string;
+  coverImage: string | null;
   symbol: string;
   jeeWeightage: number;
   validityDays: number;
@@ -38,10 +41,17 @@ export function ChapterCard({ c, index = 0 }: { c: CardChapter; index?: number }
     >
       <Link href={c.owned ? `/learn/${c.slug}` : `/chapter/${c.slug}`} className="flex flex-1 flex-row text-foreground sm:flex-col">
         <span className="relative block w-24 shrink-0 self-stretch overflow-hidden text-white sm:aspect-video sm:w-auto sm:self-auto" style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}>
-          <span className={cx("absolute -right-1.5 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/22", c.symbol.length > 2 ? "text-[44px] sm:text-[64px]" : "text-[72px] sm:text-[110px]")}>
-            {c.symbol}
-          </span>
-          <span className="absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,rgb(255_255_255/0.22),transparent_50%)]" />
+          {c.coverImage ? (
+            <PosterImage src={c.coverImage} sizes="(max-width: 640px) 96px, (max-width: 1000px) 50vw, 320px" />
+          ) : (
+            <>
+              <span className={cx("absolute -right-1.5 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/22", c.symbol.length > 2 ? "text-[44px] sm:text-[64px]" : "text-[72px] sm:text-[110px]")}>
+                {c.symbol}
+              </span>
+              <span className="absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,rgb(255_255_255/0.22),transparent_50%)]" />
+            </>
+          )}
+          <HoverClip chapterId={c.id} />
           {c.owned ? (
             <span className="absolute bottom-2 left-2 rounded-md bg-white px-1.5 py-0.5 text-xs font-extrabold text-black sm:bottom-2.5 sm:left-2.5 sm:px-2 sm:py-1">Owned</span>
           ) : (

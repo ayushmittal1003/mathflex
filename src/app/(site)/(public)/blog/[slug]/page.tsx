@@ -1,3 +1,4 @@
+import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
@@ -22,7 +23,7 @@ function Rich({ text }: { text: string }) {
   return <>{text.split(/(\*\*[^*]+\*\*)/g).map((s, i) => (s.startsWith("**") ? <strong key={i} className="font-bold text-foreground">{s.slice(2, -2)}</strong> : s))}</>;
 }
 
-type InlineChapter = { slug: string; title: string; tagline: string; coverFrom: string; coverTo: string; symbol: string; free: boolean };
+type InlineChapter = { slug: string; title: string; tagline: string; coverFrom: string; coverTo: string; coverImage: string | null; symbol: string; free: boolean };
 
 // Blog article (dipankar-design/designs/Blog Article.dc.html).
 export default async function BlogArticlePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -37,7 +38,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
     chapterSlugs.length
       ? db.chapter.findMany({
           where: { slug: { in: chapterSlugs }, isPublished: true },
-          select: { slug: true, title: true, tagline: true, coverFrom: true, coverTo: true, symbol: true, parts: { where: { isFreePreview: true }, select: { id: true }, take: 1 } },
+          select: { slug: true, title: true, tagline: true, coverFrom: true, coverTo: true, coverImage: true, symbol: true, parts: { where: { isFreePreview: true }, select: { id: true }, take: 1 } },
         })
       : Promise.resolve([]),
     getPosts(),
@@ -181,7 +182,7 @@ function Block({ b, chapters }: { b: BlogBlock; chapters: Map<string, InlineChap
       return (
         <Link href={`/chapter/${c.slug}`} className="group mt-8 flex items-center gap-4 rounded-xl border border-border bg-card p-3 pr-5 text-foreground transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-24px_rgb(80_20_0/0.45)]">
           <span className="relative grid aspect-video w-28 flex-none place-items-center overflow-hidden rounded-lg font-black text-white/80 tablet:w-36" style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}>
-            <span className={c.symbol.length > 2 ? "text-xl" : "text-3xl"}>{c.symbol}</span>
+            {c.coverImage ? <PosterImage src={c.coverImage} sizes="144px" /> : <span className={c.symbol.length > 2 ? "text-xl" : "text-3xl"}>{c.symbol}</span>}
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">Chapter</span>

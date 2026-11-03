@@ -1,4 +1,5 @@
 "use client";
+import { PosterImage } from "@/components/site/web/PosterImage";
 import { useEffect, useState } from "react";
 import { howSteps } from "@/lib/site-content";
 import { CheckIcon, LockIcon, Mark, PlayIcon, SectionHead, posterBg } from "../primitives";
@@ -70,7 +71,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
               <div key="s0" className="animate-mf-rise p-5">
                 <div className="relative">
                   <div className="relative h-[270px] overflow-hidden rounded-lg text-white" style={bg}>
-                    <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 text-[160px] font-black leading-none tracking-[-0.05em] text-white/16 tablet:text-[216px]">{chapter.symbol}</div>
+                    {chapter.coverImage ? <PosterImage src={chapter.coverImage} sizes="(max-width: 860px) 100vw, 520px" /> : <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 text-[160px] font-black leading-none tracking-[-0.05em] text-white/16 tablet:text-[216px]">{chapter.symbol}</div>}
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent from-45% to-black/60" />
                     <div className="absolute inset-x-4 bottom-3.5">
                       <div className="relative h-[5px] rounded-full bg-white/30">
@@ -113,7 +114,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
               <div key="s1" className="relative animate-mf-rise p-5">
                 <div className="opacity-45">
                   <div className="relative h-[270px] overflow-hidden rounded-lg text-white" style={bg}>
-                    <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 text-[160px] font-black leading-none tracking-[-0.05em] text-white/16 tablet:text-[216px]">{chapter.symbol}</div>
+                    {chapter.coverImage ? <PosterImage src={chapter.coverImage} sizes="(max-width: 860px) 100vw, 520px" /> : <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 text-[160px] font-black leading-none tracking-[-0.05em] text-white/16 tablet:text-[216px]">{chapter.symbol}</div>}
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent from-45% to-black/60" />
                     <div className="absolute inset-x-4 bottom-3.5">
                       <div className="relative h-[5px] rounded-full bg-white/30">

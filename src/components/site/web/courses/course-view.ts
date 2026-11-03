@@ -8,7 +8,7 @@ export const COURSE_INCLUDE = {
     include: {
       chapter: {
         select: {
-          id: true, slug: true, title: true, classLevel: true, price: true, symbol: true, coverFrom: true, coverTo: true, jeeWeightage: true, sortOrder: true,
+          id: true, slug: true, title: true, classLevel: true, price: true, symbol: true, coverFrom: true, coverTo: true, coverImage: true, jeeWeightage: true, sortOrder: true,
           parts: { select: { durationSec: true } },
           _count: { select: { questions: true, resources: { where: { isPublished: true } } } },
         },
@@ -19,7 +19,7 @@ export const COURSE_INCLUDE = {
 
 type CourseRow = {
   id: string; slug: string; title: string; subtitle: string; price: number; mrp: number; highlights: string[]; validityDays: number;
-  chapters: { chapter: { id: string; slug: string; title: string; classLevel: number; price: number; symbol: string; coverFrom: string; coverTo: string; jeeWeightage: number; sortOrder: number; parts: { durationSec: number }[]; _count: { questions: number; resources: number } } }[];
+  chapters: { chapter: { id: string; slug: string; title: string; classLevel: number; price: number; symbol: string; coverFrom: string; coverTo: string; coverImage: string | null; jeeWeightage: number; sortOrder: number; parts: { durationSec: number }[]; _count: { questions: number; resources: number } } }[];
 };
 
 // Hours are summed from part lengths; the "one by one" sum uses each chapter's own price.
@@ -35,6 +35,6 @@ export function toCourseView(c: CourseRow, owned: boolean): CourseView {
     avgChapter: chs.length ? sum / chs.length : 0,
     hasPractice: chs.some((ch) => ch._count.questions > 0),
     hasNotes: chs.some((ch) => ch._count.resources > 0),
-    chapters: chs.map((ch) => ({ id: ch.id, slug: ch.slug, title: ch.title, classLevel: ch.classLevel, price: ch.price, symbol: ch.symbol, coverFrom: ch.coverFrom, coverTo: ch.coverTo, parts: ch.parts.length, weight: ch.jeeWeightage })),
+    chapters: chs.map((ch) => ({ id: ch.id, slug: ch.slug, title: ch.title, classLevel: ch.classLevel, price: ch.price, symbol: ch.symbol, coverFrom: ch.coverFrom, coverTo: ch.coverTo, coverImage: ch.coverImage, parts: ch.parts.length, weight: ch.jeeWeightage })),
   };
 }

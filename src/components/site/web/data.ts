@@ -48,7 +48,7 @@ export async function getInsideData(settings: Settings) {
       where: { isPublished: true, parts: { some: {} } },
       orderBy: [{ classLevel: "asc" }, { sortOrder: "asc" }],
       take: 2,
-      select: { id: true, slug: true, title: true, classLevel: true, price: true, mrp: true, coverFrom: true, coverTo: true, symbol: true, jeeWeightage: true, parts: { orderBy: { order: "asc" }, select: { id: true, order: true, title: true, durationSec: true, isFreePreview: true, watchThreshold: true } } },
+      select: { id: true, slug: true, title: true, classLevel: true, price: true, mrp: true, coverFrom: true, coverTo: true, coverImage: true, symbol: true, jeeWeightage: true, parts: { orderBy: { order: "asc" }, select: { id: true, order: true, title: true, durationSec: true, isFreePreview: true, watchThreshold: true } } },
     }),
     db.resource.findMany({ where: { isPublished: true }, orderBy: { createdAt: "asc" }, take: 3, select: { title: true, type: true } }),
     settings.features.leaderboard ? weeklyLeaders(new Date(requestNow())) : Promise.resolve([]),
@@ -59,7 +59,7 @@ export async function getInsideData(settings: Settings) {
 // Brand panel on log in / sign up: a few real chapters and live proof points.
 export async function getAuthPanel(settings: Settings) {
   const [rows, min, free] = await Promise.all([
-    db.chapter.findMany({ where: { isPublished: true }, orderBy: [{ jeeWeightage: "desc" }], take: 3, select: { title: true, symbol: true, coverFrom: true, coverTo: true } }),
+    db.chapter.findMany({ where: { isPublished: true }, orderBy: [{ jeeWeightage: "desc" }], take: 3, select: { title: true, symbol: true, coverFrom: true, coverTo: true, coverImage: true } }),
     db.chapter.aggregate({ where: { isPublished: true }, _min: { price: true } }),
     settings.features.freePreviews ? db.part.count({ where: { isFreePreview: true, chapter: { isPublished: true } } }) : Promise.resolve(0),
   ]);
@@ -96,7 +96,7 @@ export const getCartMeta = cache(async (): Promise<CartMeta> => {
     db.chapter.findMany({
       where: { isPublished: true },
       orderBy: [{ classLevel: "asc" }, { sortOrder: "asc" }, { title: "asc" }],
-      select: { id: true, slug: true, title: true, classLevel: true, symbol: true, coverFrom: true, coverTo: true, price: true, mrp: true, validityDays: true },
+      select: { id: true, slug: true, title: true, classLevel: true, symbol: true, coverFrom: true, coverTo: true, coverImage: true, price: true, mrp: true, validityDays: true },
     }),
     db.course.findMany({
       where: { isPublished: true },

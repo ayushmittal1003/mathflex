@@ -1,3 +1,4 @@
+import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -30,7 +31,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
   const user = await requireUser(`/practice/${slug}`);
   const settings = await getSettings();
   if (!settings.features.practice) notFound();
-  const chapter = await db.chapter.findUnique({ where: { slug }, select: { id: true, slug: true, title: true, classLevel: true, coverFrom: true, coverTo: true } });
+  const chapter = await db.chapter.findUnique({ where: { slug }, select: { id: true, slug: true, title: true, classLevel: true, coverFrom: true, coverTo: true, coverImage: true } });
   if (!chapter) notFound();
   if (!(await hasChapterAccess(user.id, chapter.id))) redirect(`/chapter/${slug}`);
 
@@ -113,6 +114,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
       {/* Chapter header */}
       <header className="mt-5 grid overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_2px_rgb(0_0_0/0.04),0_24px_48px_-38px_rgb(80_20_0/0.4)] min-[860px]:grid-cols-[300px_1fr]">
         <div className="relative min-h-[150px] overflow-hidden text-white" style={posterBg(chapter.coverFrom, chapter.coverTo)}>
+          {chapter.coverImage && <><PosterImage src={chapter.coverImage} sizes="(max-width: 860px) 100vw, 300px" /><span className="absolute inset-0 bg-black/35" /></>}
           <span className="absolute left-5 top-5 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">Question bank</span>
           <span className="absolute bottom-5 left-5 text-sm font-bold text-white/90">Class {chapter.classLevel} · marked +{settings.marking.correct} / {settings.marking.wrong}</span>
         </div>

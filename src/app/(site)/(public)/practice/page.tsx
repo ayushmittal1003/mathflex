@@ -1,3 +1,4 @@
+import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
@@ -32,7 +33,7 @@ export default async function PracticeDashboard() {
     db.chapter.findMany({
       where: { OR: [{ isPublished: true }, { id: { in: [...owned] } }] },
       orderBy: [{ classLevel: "asc" }, { sortOrder: "asc" }],
-      select: { id: true, slug: true, title: true, classLevel: true, coverFrom: true, coverTo: true, symbol: true, _count: { select: { questions: { where: { isPublished: true } } } } },
+      select: { id: true, slug: true, title: true, classLevel: true, coverFrom: true, coverTo: true, coverImage: true, symbol: true, _count: { select: { questions: { where: { isPublished: true } } } } },
     }),
   ]);
   const mine = chapters.filter((c) => owned.has(c.id));
@@ -130,7 +131,7 @@ export default async function PracticeDashboard() {
                 return (
                   <div key={c.id} className={cx(card, "flex flex-col p-5")}>
                     <div className="flex items-center gap-3.5">
-                      <span className={cx("grid size-12 shrink-0 place-items-center rounded-xl font-black text-white", c.symbol.length > 2 ? "text-xs" : "text-lg")} style={posterBg(c.coverFrom, c.coverTo)}>{c.symbol}</span>
+                      <span className={cx("relative grid size-12 shrink-0 place-items-center overflow-hidden rounded-xl font-black text-white", c.symbol.length > 2 ? "text-xs" : "text-lg")} style={posterBg(c.coverFrom, c.coverTo)}>{c.coverImage ? <PosterImage src={c.coverImage} sizes="48px" /> : c.symbol}</span>
                       <span className="min-w-0 flex-1">
                         <Link href={`/practice/${c.slug}`} className="flex min-h-11 items-center truncate text-[17px] font-extrabold tracking-[-0.02em] text-foreground hover:text-primary">{c.title}</Link>
                         <span className="text-xs font-semibold text-muted-foreground">Class {c.classLevel}</span>
@@ -179,7 +180,7 @@ export default async function PracticeDashboard() {
           <div className="grid gap-3 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-4">
             {locked.map((c) => (
               <Link key={c.id} href={`/chapter/${c.slug}`} className={cx(card, "flex items-center gap-3.5 p-4 text-foreground transition hover:-translate-y-0.5")}>
-                <span className={cx("grid size-11 shrink-0 place-items-center rounded-xl font-black text-white", c.symbol.length > 2 ? "text-xs" : "text-base")} style={posterBg(c.coverFrom, c.coverTo)}>{c.symbol}</span>
+                <span className={cx("relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-xl font-black text-white", c.symbol.length > 2 ? "text-xs" : "text-base")} style={posterBg(c.coverFrom, c.coverTo)}>{c.coverImage ? <PosterImage src={c.coverImage} sizes="44px" /> : c.symbol}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-bold">{c.title}</span>
                   <span className="text-xs font-semibold text-muted-foreground">{c._count.questions} questions</span>

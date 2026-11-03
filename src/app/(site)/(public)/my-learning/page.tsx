@@ -1,3 +1,5 @@
+import { PosterImage } from "@/components/site/web/PosterImage";
+import { HoverClip } from "@/components/site/web/HoverClip";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -162,7 +164,8 @@ export default async function MyLearning() {
         <section className="mt-12">
           <Link href={`/learn/${resume.slug}?part=${resume.next.order}`} className={cx(card, "group grid overflow-hidden text-foreground transition duration-300 ease-mf hover:-translate-y-0.5 min-[860px]:grid-cols-[1.1fr_1fr]")}>
             <span className="relative block aspect-[16/9] overflow-hidden text-white min-[860px]:aspect-auto min-[860px]:min-h-[280px]" style={posterBg(resume.coverFrom, resume.coverTo)}>
-              <span className={cx("absolute right-[6%] top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/20", resume.symbol.length > 2 ? "text-[110px]" : "text-[200px]")}>{resume.symbol}</span>
+              {resume.coverImage ? <PosterImage src={resume.coverImage} sizes="(max-width: 860px) 100vw, 640px" /> : <span className={cx("absolute right-[6%] top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/20", resume.symbol.length > 2 ? "text-[110px]" : "text-[200px]")}>{resume.symbol}</span>}
+              <HoverClip chapterId={resume.id} />
               <span className="absolute inset-0 bg-[linear-gradient(transparent_40%,rgb(0_0_0/0.5))]" />
               <span className="absolute left-4 top-4 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">Continue learning</span>
               <span className="absolute left-1/2 top-1/2 grid size-[72px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition group-hover:scale-[1.06]">
@@ -223,7 +226,8 @@ export default async function MyLearning() {
               return (
                 <div key={c.id} className={cx(card, "flex animate-mf-rise flex-col overflow-hidden transition duration-300 ease-mf hover:-translate-y-1")} style={{ animationDelay: `${Math.min(i, 9) * 40}ms` }}>
                   <Link href={href} className="group relative block aspect-video overflow-hidden text-white" style={posterBg(c.coverFrom, c.coverTo)}>
-                    <span className={cx("absolute right-[6%] top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/22", c.symbol.length > 2 ? "text-[64px]" : "text-[110px]")}>{c.symbol}</span>
+                    {c.coverImage ? <PosterImage src={c.coverImage} sizes="(max-width: 600px) 100vw, 400px" /> : <span className={cx("absolute right-[6%] top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/22", c.symbol.length > 2 ? "text-[64px]" : "text-[110px]")}>{c.symbol}</span>}
+                    <HoverClip chapterId={c.id} />
                     <span className="absolute inset-0 bg-[linear-gradient(transparent_45%,rgb(0_0_0/0.45))]" />
                     <span className="absolute left-3 top-3 flex gap-1.5">
                       <span className="rounded-md bg-white/92 px-2 py-1 text-xs font-extrabold text-black">Class {c.classLevel}</span>

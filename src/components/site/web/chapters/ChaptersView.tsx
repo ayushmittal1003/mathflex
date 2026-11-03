@@ -1,4 +1,6 @@
 "use client";
+import { PosterImage } from "@/components/site/web/PosterImage";
+import { HoverClip } from "@/components/site/web/HoverClip";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { inr } from "@/lib/format";
@@ -10,7 +12,7 @@ import { cx } from "../ui";
 import { clock } from "../home/types";
 
 type Peek = {
-  id: string; slug: string; title: string; classLevel: number; price: number; mrp: number; coverFrom: string; coverTo: string; symbol: string; jeeWeightage: number;
+  id: string; slug: string; title: string; classLevel: number; price: number; mrp: number; coverFrom: string; coverTo: string; coverImage: string | null; symbol: string; jeeWeightage: number;
   parts: { id: string; order: number; title: string; durationSec: number; isFreePreview: boolean }[];
 };
 type Bundle = { id: string; slug: string; title: string; subtitle: string; price: number; mrp: number; chapterCount: number; breakeven: number | null };
@@ -99,7 +101,8 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
                   {i + 1}
                 </span>
                 <span className="relative block aspect-[2/3] w-[130px] overflow-hidden rounded-xl shadow-[0_16px_32px_-16px_rgb(0_0_0/0.45)] transition-transform duration-300 hover:-translate-y-1.5 tablet:w-[170px]" style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}>
-                  <span className={cx("absolute -right-2.5 top-1 whitespace-nowrap font-black leading-none text-white/20", c.symbol.length > 2 ? "text-[56px]" : "text-[96px]")}>{c.symbol}</span>
+                  {c.coverImage ? <PosterImage src={c.coverImage} sizes="170px" /> : <span className={cx("absolute -right-2.5 top-1 whitespace-nowrap font-black leading-none text-white/20", c.symbol.length > 2 ? "text-[56px]" : "text-[96px]")}>{c.symbol}</span>}
+                  <HoverClip chapterId={c.id} />
                   <span className="absolute inset-0 bg-gradient-to-b from-transparent from-35% to-black/85" />
                   <span className="absolute left-2.5 top-2.5 rounded bg-white px-1.5 py-0.5 text-xs font-extrabold text-black">{c.jeeWeightage}% of JEE</span>
                   <span className="absolute inset-x-3 bottom-3">
@@ -270,8 +273,9 @@ function HeroPeek({ peek }: { peek: Peek }) {
   return (
     <div className="relative mx-auto mt-14 -mb-[150px] grid h-[420px] w-[min(980px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
       <div className="relative overflow-hidden text-white" style={{ background: `linear-gradient(125deg, ${peek.coverFrom}, ${peek.coverTo})` }}>
-        <div className="absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap text-[300px] font-black leading-none text-white/14">{peek.symbol}</div>
+        {peek.coverImage ? <PosterImage src={peek.coverImage} sizes="(max-width: 1000px) 100vw, 570px" /> : <div className="absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap text-[300px] font-black leading-none text-white/14">{peek.symbol}</div>}
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 to-transparent to-70%" />
+        <HoverClip chapterId={peek.id} />
         <div className="absolute left-5.5 top-5 flex gap-2">
           <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.08em]">Class {peek.classLevel}</span>
           {free && <span className="rounded-md bg-white px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] text-black">Free preview</span>}

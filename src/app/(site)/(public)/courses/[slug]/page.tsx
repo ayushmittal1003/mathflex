@@ -1,3 +1,4 @@
+import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
@@ -169,8 +170,8 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
               <div className="absolute inset-x-5 bottom-5">
                 <div className="flex -space-x-3">
                   {v.chapters.slice(0, 6).map((c) => (
-                    <span key={c.id} className={cx("grid size-14 place-items-center rounded-xl border-2 border-white/80 font-black shadow-[0_8px_18px_-8px_rgb(0_0_0/0.5)]", c.symbol.length > 2 ? "text-xs" : "text-lg")} style={posterBg(c.coverFrom, c.coverTo)}>
-                      {c.symbol}
+                    <span key={c.id} className={cx("relative grid size-14 place-items-center overflow-hidden rounded-xl border-2 border-white/80 font-black shadow-[0_8px_18px_-8px_rgb(0_0_0/0.5)]", c.symbol.length > 2 ? "text-xs" : "text-lg")} style={posterBg(c.coverFrom, c.coverTo)}>
+                      {c.coverImage ? <PosterImage src={c.coverImage} sizes="56px" /> : c.symbol}
                     </span>
                   ))}
                   {v.chapters.length > 6 && <span className="grid size-14 place-items-center rounded-xl border-2 border-white/80 bg-black/35 text-sm font-extrabold backdrop-blur">+{v.chapters.length - 6}</span>}
@@ -232,8 +233,8 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
                     const pct = p?.owned ? p.progress : 0;
                     return (
                       <Link key={r.id} href={owned ? `/learn/${r.slug}` : `/chapter/${r.slug}`} className="flex min-h-[100px] items-center gap-4 rounded-xl border border-border bg-card px-5 py-4 text-foreground transition duration-300 hover:-translate-y-[3px] hover:shadow-[0_18px_34px_-22px_rgb(80_20_0/0.45)]">
-                        <span className={cx("grid size-14 shrink-0 place-items-center rounded-xl font-black tracking-[-0.03em] text-white shadow-[0_6px_14px_-8px_rgb(0_0_0/0.4)]", r.symbol.length > 2 ? "text-[13px]" : "text-lg")} style={posterBg(r.coverFrom, r.coverTo)}>
-                          {r.symbol}
+                        <span className={cx("relative grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl font-black tracking-[-0.03em] text-white shadow-[0_6px_14px_-8px_rgb(0_0_0/0.4)]", r.symbol.length > 2 ? "text-[13px]" : "text-lg")} style={posterBg(r.coverFrom, r.coverTo)}>
+                          {r.coverImage ? <PosterImage src={r.coverImage} sizes="56px" /> : r.symbol}
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="line-clamp-2 text-base font-bold leading-[1.3] tracking-[-0.01em]">{r.title}</span>

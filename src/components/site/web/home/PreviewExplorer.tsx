@@ -1,4 +1,6 @@
 "use client";
+import { PosterImage } from "@/components/site/web/PosterImage";
+import { HoverClip } from "@/components/site/web/HoverClip";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { inr, pctOff } from "@/lib/format";
@@ -78,8 +80,8 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
                     active ? "border-foreground shadow-[0_10px_24px_-14px_rgb(0_0_0/0.35)]" : "border-border",
                   )}
                 >
-                  <span className="grid h-[58px] w-[46px] shrink-0 place-items-center overflow-hidden rounded-lg text-[15px] font-black tracking-[-0.03em] text-white/85" style={posterBg(c.coverFrom, c.coverTo)}>
-                    {c.symbol}
+                  <span className="relative grid h-[58px] w-[46px] shrink-0 place-items-center overflow-hidden rounded-lg text-[15px] font-black tracking-[-0.03em] text-white/85" style={posterBg(c.coverFrom, c.coverTo)}>
+                    {c.coverImage ? <PosterImage src={c.coverImage} sizes="46px" /> : c.symbol}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[15px] font-bold tracking-[-0.01em]">{c.title}</span>
@@ -111,17 +113,21 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
             </div>
           ) : (
             <div className="relative aspect-video overflow-hidden text-white" style={posterBg(cur.coverFrom, cur.coverTo)}>
-              <div className={cx("absolute -right-6 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", glyphSize(cur.symbol, "text-[150px] tablet:text-[220px]", "text-[220px] tablet:text-[380px]"))}>
-                {cur.symbol}
-              </div>
+              {cur.coverImage ? (
+                <PosterImage src={cur.coverImage} sizes="(max-width: 1000px) 100vw, 760px" />
+              ) : (
+                <div className={cx("absolute -right-6 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none tracking-[-0.05em] text-white/16", glyphSize(cur.symbol, "text-[150px] tablet:text-[220px]", "text-[220px] tablet:text-[380px]"))}>
+                  {cur.symbol}
+                </div>
+              )}
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_0_0/0.55),rgb(0_0_0/0.05)_70%),linear-gradient(transparent_50%,rgb(0_0_0/0.6))]" />
+              <HoverClip key={cur.id} chapterId={cur.id} />
               <div className="absolute left-5 top-4.5 flex gap-2">
                 <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.08em] backdrop-blur-md">Class {cur.classLevel}</span>
                 {cur.jeeWeightage > 0 && <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] backdrop-blur-md">{cur.jeeWeightage}% of JEE Main</span>}
               </div>
               <span className="absolute left-1/2 top-[46%] grid -translate-x-1/2 -translate-y-1/2 place-items-center gap-3 text-center">
                 <span className="grid size-[76px] place-items-center rounded-full bg-white/20 text-white shadow-[0_0_0_12px_rgb(255_255_255/0.08)] backdrop-blur-sm"><PlayIcon className="size-6.5" /></span>
-                <span className="rounded-md bg-black/45 px-3 py-1.5 text-xs font-bold backdrop-blur">Preview coming soon</span>
               </span>
               <div className="absolute inset-x-5 bottom-4">
                 <div className="text-xs font-semibold opacity-85">Chapter preview · 3–4 min</div>

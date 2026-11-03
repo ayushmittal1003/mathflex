@@ -10,6 +10,7 @@ export type HomeChapter = {
   mrp: number;
   coverFrom: string;
   coverTo: string;
+  coverImage: string | null;
   symbol: string;
   jeeWeightage: number;
   parts: HomePart[];

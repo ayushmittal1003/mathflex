@@ -1,4 +1,5 @@
 "use client";
+import { PosterImage } from "@/components/site/web/PosterImage";
 import type { ResourceType } from "@/generated/prisma/enums";
 import { useEffect, useRef, useState } from "react";
 import { chapterIncludes, mockLabels } from "@/lib/site-content";
@@ -74,7 +75,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
               <div className="mt-2.5 grid grid-cols-2 gap-2.5">
                 {chapters.map((c, i) => (
                   <div key={c.id} className="flex items-center gap-2.5">
-                    <div className="grid h-[72px] w-[54px] shrink-0 place-items-center rounded-md text-base font-black text-white/70" style={posterBg(c.coverFrom, c.coverTo)}>{c.symbol}</div>
+                    <div className="relative grid h-[72px] w-[54px] shrink-0 place-items-center overflow-hidden rounded-md text-base font-black text-white/70" style={posterBg(c.coverFrom, c.coverTo)}>{c.coverImage ? <PosterImage src={c.coverImage} sizes="54px" /> : c.symbol}</div>
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-[13px] font-bold">{c.title}</div>
                       <div className="text-xs text-muted-foreground">Part {Math.min(i + 1, c.parts.length)} of {c.parts.length} · {[62, 24][i]}%</div>

@@ -1,3 +1,4 @@
+import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { connection } from "next/server";
 import { db } from "@/lib/db";
@@ -29,7 +30,7 @@ export default async function NotFound() {
         where: { isPublished: true },
         orderBy: [{ jeeWeightage: "desc" }, { sortOrder: "asc" }],
         take: 4,
-        select: { id: true, slug: true, title: true, classLevel: true, price: true, symbol: true, coverFrom: true, coverTo: true },
+        select: { id: true, slug: true, title: true, classLevel: true, price: true, symbol: true, coverFrom: true, coverTo: true, coverImage: true },
       })
       .catch(() => []),
   ]);
@@ -86,7 +87,7 @@ export default async function NotFound() {
                     <div className="mt-6 grid grid-cols-[repeat(auto-fill,minmax(min(100%,250px),1fr))] gap-3">
                       {chapters.map((c) => (
                         <Link key={c.id} href={`/chapter/${c.slug}`} className="flex min-h-[76px] items-center gap-3.5 rounded-xl border border-border bg-card px-3.5 py-3 text-foreground transition duration-300 hover:-translate-y-[3px] hover:shadow-[0_18px_34px_-22px_rgb(80_20_0/0.45)]">
-                          <span className={cx("grid size-12 shrink-0 place-items-center rounded-[10px] font-black text-white", c.symbol.length > 2 ? "text-[13px]" : "text-lg")} style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}>{c.symbol}</span>
+                          <span className={cx("relative grid size-12 shrink-0 place-items-center overflow-hidden rounded-[10px] font-black text-white", c.symbol.length > 2 ? "text-[13px]" : "text-lg")} style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}>{c.coverImage ? <PosterImage src={c.coverImage} sizes="48px" /> : c.symbol}</span>
                           <span className="min-w-0">
                             <span className="line-clamp-2 text-[15px] font-bold leading-[1.3]">{c.title}</span>
                             <span className="mt-1 block text-xs font-semibold text-muted-foreground">Class {c.classLevel} · {inr(c.price)}</span>

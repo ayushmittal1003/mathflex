@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash } from "node:crypto";
 import type { VideoProvider } from "@/generated/prisma/enums";
+import { SITE_URL } from "./seo/config";
 
 // One place that knows how each video host works. Swap providers per video from admin.
 
@@ -113,6 +114,19 @@ export async function bunnyVideoInfo(videoId: string): Promise<BunnyResult<{ dur
   // status 4 = finished encoding, 5 = failed
   if (r.data.status === 5) return { ok: false, message: "Bunny couldn't encode this video. Re-upload it in Bunny." };
   return { ok: true, data: { durationSec: r.data.length, ready: r.data.status === 4, encodeProgress: r.data.encodeProgress, title: r.data.title } };
+}
+
+// The silent preview clip Bunny makes for every video. Fetched on the server because the CDN only
+// accepts requests from our own site, and so the video's address stays out of the page.
+export async function bunnyPreviewClip(ref: string) {
+  const host = process.env.BUNNY_CDN_HOSTNAME;
+  if (!host) return null;
+  try {
+    const res = await fetch(`https://${host}/${normalizeBunnyRef(ref)}/preview.webp`, { headers: { Referer: `${SITE_URL}/` } });
+    return res.ok ? res.body : null;
+  } catch {
+    return null;
+  }
 }
 
 // Admin "Test connection": proves the library ID and API key work together.

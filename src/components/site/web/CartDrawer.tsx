@@ -1,4 +1,5 @@
 "use client";
+import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, useTransition } from "react";
@@ -95,11 +96,11 @@ function CartDrawer({ meta, onClose }: { meta: CartMeta; onClose: () => void }) 
                   return (
                     <li key={`${l.type}-${l.id}`} className="flex items-center gap-3 py-3.5">
                       <span
-                        className={cx("grid aspect-[16/10] w-16 shrink-0 place-items-center overflow-hidden rounded-lg font-black tracking-[-0.04em] text-white", ch && ch.symbol.length > 2 ? "text-xs" : "text-xl")}
+                        className={cx("relative grid aspect-[16/10] w-16 shrink-0 place-items-center overflow-hidden rounded-lg font-black tracking-[-0.04em] text-white", ch && ch.symbol.length > 2 ? "text-xs" : "text-xl")}
                         style={{ background: ch ? `linear-gradient(155deg, ${ch.coverFrom}, ${ch.coverTo})` : "linear-gradient(135deg, var(--primary), var(--brand-2))" }}
                         aria-hidden
                       >
-                        {ch ? ch.symbol : "Σ"}
+                        {ch?.coverImage ? <PosterImage src={ch.coverImage} sizes="64px" /> : ch ? ch.symbol : "Σ"}
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="text-[15px] font-bold leading-[1.3] tracking-[-0.01em]">{l.title}</div>

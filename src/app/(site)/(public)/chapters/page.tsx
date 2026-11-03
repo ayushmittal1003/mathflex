@@ -35,7 +35,7 @@ export default async function ChaptersPage({ searchParams }: { searchParams: Pro
   const peek = peekId
     ? await db.chapter.findUnique({
         where: { id: peekId },
-        select: { id: true, slug: true, title: true, classLevel: true, price: true, mrp: true, coverFrom: true, coverTo: true, symbol: true, jeeWeightage: true, parts: { orderBy: { order: "asc" }, select: { id: true, order: true, title: true, durationSec: true, isFreePreview: true } } },
+        select: { id: true, slug: true, title: true, classLevel: true, price: true, mrp: true, coverFrom: true, coverTo: true, coverImage: true, symbol: true, jeeWeightage: true, parts: { orderBy: { order: "asc" }, select: { id: true, order: true, title: true, durationSec: true, isFreePreview: true } } },
       })
     : null;
 

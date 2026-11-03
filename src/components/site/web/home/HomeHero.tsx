@@ -1,3 +1,4 @@
+import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { inr } from "@/lib/format";
 import { DEFAULT_DESCRIPTION } from "@/lib/seo/config";
@@ -90,7 +91,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
               {peek.map((c, i) => (
                 <div key={c.id} className="rounded-xl border border-border p-3">
                   <div className="relative h-[70px] overflow-hidden rounded-lg" style={posterBg(c.coverFrom, c.coverTo)}>
-                    <span className="absolute -top-1 right-1.5 text-[52px] font-black text-white/25">{c.symbol}</span>
+                    {c.coverImage ? <PosterImage src={c.coverImage} sizes="200px" /> : <span className="absolute -top-1 right-1.5 text-[52px] font-black text-white/25">{c.symbol}</span>}
                   </div>
                   <div className="mt-2.5 truncate text-sm font-bold">{c.title}</div>
                   <div className="mt-0.5 text-xs text-muted-foreground">Part {Math.min(i + 1, c.parts.length)} of {c.parts.length}</div>

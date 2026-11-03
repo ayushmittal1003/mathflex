@@ -32,7 +32,7 @@ export default async function Home() {
       where: { isPublished: true },
       orderBy: [{ classLevel: "asc" }, { sortOrder: "asc" }, { title: "asc" }],
       select: {
-        id: true, slug: true, title: true, classLevel: true, price: true, mrp: true, coverFrom: true, coverTo: true, symbol: true, jeeWeightage: true,
+        id: true, slug: true, title: true, classLevel: true, price: true, mrp: true, coverFrom: true, coverTo: true, coverImage: true, symbol: true, jeeWeightage: true,
         parts: { orderBy: { order: "asc" }, select: { id: true, order: true, title: true, durationSec: true, isFreePreview: true, watchThreshold: true } },
       },
     }),

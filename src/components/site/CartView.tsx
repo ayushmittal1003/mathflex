@@ -1,4 +1,5 @@
 "use client";
+import { PosterImage } from "@/components/site/web/PosterImage";
 import { formatPhone, mentorshipCall, mentorshipPlan, supportEmail, supportPhone } from "@/lib/site-content";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
@@ -20,7 +21,7 @@ import { cx } from "./web/ui";
 
 // Display-only details for cart lines and suggestions (prices always come from getQuote).
 export type CheckoutMeta = {
-  chapters: Record<string, { title: string; symbol: string; coverFrom: string; coverTo: string; classLevel: number; parts: number; price: number; mrp: number }>;
+  chapters: Record<string, { title: string; symbol: string; coverFrom: string; coverTo: string; coverImage: string | null; classLevel: number; parts: number; price: number; mrp: number }>;
   courses: { id: string; title: string; price: number; chapterIds: string[]; count: number }[];
   user: { name: string; email: string } | null;
   whatsapp: string;
@@ -179,7 +180,7 @@ export function CartView(props: {
                       className={cx("relative grid aspect-[16/10] w-20 shrink-0 place-items-center overflow-hidden rounded-lg font-black tracking-[-0.04em] text-white tablet:w-24", ch && ch.symbol.length > 2 ? "text-base" : "text-2xl")}
                       style={{ background: ch ? `linear-gradient(155deg, ${ch.coverFrom}, ${ch.coverTo})` : "linear-gradient(135deg, var(--primary), var(--brand-2))" }}
                     >
-                      {ch ? ch.symbol : "Σ"}
+                      {ch?.coverImage ? <PosterImage src={ch.coverImage} sizes="96px" /> : ch ? ch.symbol : "Σ"}
                     </span>
                     <div className="min-w-0 flex-1">
                       <span className={cx("rounded px-1.5 py-0.5 text-xs font-extrabold uppercase tracking-[0.06em]", l.type === "COURSE" ? "bg-primary text-white" : "bg-muted text-secondary-foreground")}>
