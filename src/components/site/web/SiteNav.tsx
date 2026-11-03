@@ -89,7 +89,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
               href={l.href}
               aria-current={isActive(l.href) ? "page" : undefined}
               className={cx(
-                "rounded-md px-3.5 py-[7px] text-[13px] transition-colors",
+                "rounded-md px-3.5 py-[7px] text-[13px] transition-colors pointer-coarse:py-2.5",
                 isActive(l.href) ? "bg-card font-bold text-foreground" : "font-semibold text-white/75 hover:text-white",
               )}
             >

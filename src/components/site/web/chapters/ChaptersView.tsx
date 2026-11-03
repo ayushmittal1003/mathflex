@@ -275,23 +275,26 @@ function HeroPeek({ peek }: { peek: Peek }) {
   const free = peek.parts.find((p) => p.isFreePreview);
   const shown = peek.parts.slice(0, 3);
   return (
-    <div className="relative mx-auto mt-14 -mb-[150px] grid h-[420px] w-[min(980px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+    <div className="relative mx-auto mb-4 mt-10 grid w-[min(980px,calc(100%-var(--gutter)*2))] tablet:mt-14 tablet:-mb-[150px] tablet:h-[420px] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
       <div className="relative overflow-hidden text-white" style={{ background: `linear-gradient(125deg, ${peek.coverFrom}, ${peek.coverTo})` }}>
+        {/* Phones show the whole 16:9 thumbnail with the title under it; wider screens overlay the title. */}
+        <div className="relative aspect-video tablet:absolute tablet:inset-0 tablet:aspect-auto">
         {peek.coverImage ? <PosterImage src={peek.coverImage} sizes="(max-width: 1000px) 100vw, 570px" /> : <div className="absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap text-[300px] font-black leading-none text-white/14">{peek.symbol}</div>}
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 to-transparent to-70%" />
         <HoverClip chapterId={peek.id} />
-        <div className="absolute left-5.5 top-5 flex gap-2">
+        <div className="absolute left-3 top-3 flex gap-2 tablet:left-5.5 tablet:top-5">
           <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.08em]">Class {peek.classLevel}</span>
           {free && <span className="rounded-md bg-white px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] text-black">Free preview</span>}
         </div>
         {free && (
-          <Link href={`/learn/${peek.slug}?part=${free.order}`} aria-label={`Watch Part ${free.order} of ${peek.title} free`} className="absolute left-1/2 top-[38%] grid size-18 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition hover:scale-[1.06]">
+          <Link href={`/learn/${peek.slug}?part=${free.order}`} aria-label={`Watch Part ${free.order} of ${peek.title} free`} className="absolute left-1/2 top-1/2 grid size-14 tablet:top-[38%] tablet:size-18 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition hover:scale-[1.06]">
             <PlayIcon className="size-6" />
           </Link>
         )}
-        <div className="absolute inset-x-5.5 top-[200px] text-left">
+        </div>
+        <div className="relative bg-foreground p-4 text-left tablet:absolute tablet:inset-x-5.5 tablet:top-[200px] tablet:bg-transparent tablet:p-0">
           {free && <div className="text-[13px] font-semibold opacity-85">Part {free.order} · {free.title}</div>}
-          <div className="mt-1 text-[30px] font-extrabold tracking-[-0.03em]">{peek.title}</div>
+          <div className="mt-1 text-[22px] font-extrabold tracking-[-0.03em] tablet:text-[30px]">{peek.title}</div>
         </div>
       </div>
       <div className="hidden flex-col gap-2.5 p-5 text-left tablet:flex">

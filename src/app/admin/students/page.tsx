@@ -130,7 +130,7 @@ export default async function Students({ searchParams }: { searchParams: Promise
         <p className="text-muted">
           Showing <b className="text-fg">{matching ? (page - 1) * per + 1 : 0}–{Math.min(page * per, matching)}</b> of <b className="text-fg">{matching.toLocaleString("en-IN")}</b>
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-muted">Rows</span>
           {PER_PAGE.map((n) => (
             <Link key={n} href={href({ per: n === 25 ? undefined : String(n) })} className={`rounded-lg px-2.5 py-1 font-semibold ${per === n ? "bg-fg text-bg" : "bg-surface-2 text-muted"}`}>{n}</Link>

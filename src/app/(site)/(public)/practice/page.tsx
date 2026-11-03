@@ -175,7 +175,7 @@ export default async function PracticeDashboard() {
         <section className="mt-16">
           <div className="mb-6 flex items-end justify-between gap-4">
             <h2 className={h2}>Unlock more question banks</h2>
-            <Link href="/chapters" className="inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary hover:underline">All chapters →</Link>
+            <Link href="/chapters" className="inline-flex min-h-11 items-center tablet:pointer-fine:min-h-0 text-sm font-bold text-primary hover:underline">All chapters →</Link>
           </div>
           <div className="grid gap-3 min-[600px]:grid-cols-2 min-[1000px]:grid-cols-4">
             {locked.map((c) => (

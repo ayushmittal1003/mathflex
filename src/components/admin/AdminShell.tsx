@@ -81,7 +81,7 @@ export function AdminShell({ name, role, permissions, children }: { name: string
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
           <aside className="absolute inset-y-0 left-0 w-72 overflow-y-auto bg-surface pt-[env(safe-area-inset-top)]">
-            <div className="flex items-center justify-between p-4"><Logo size={26} /><button onClick={() => setOpen(false)} aria-label="Close"><X /></button></div>
+            <div className="flex items-center justify-between p-4"><Logo size={26} /><button onClick={() => setOpen(false)} aria-label="Close" className="grid size-10 place-items-center"><X /></button></div>
             {nav}
           </aside>
         </div>

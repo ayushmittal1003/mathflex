@@ -365,12 +365,12 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
             <h2 id="instructor" className={sectionH2}>Your instructor</h2>
             <div className="mt-5.5 flex flex-wrap items-center gap-x-6 gap-y-5">
-              <VideoFrame videoId={instructor.introVideoId} className="aspect-[16/10] w-[200px] shrink-0 !border-4 [&_span]:!text-xs" />
+              <VideoFrame videoId={instructor.introVideoId} className="aspect-[16/10] w-full max-w-[360px] shrink-0 !border-4 tablet:w-[200px] [&_span]:!text-xs" />
               <div className="min-w-0 flex-[1_1_260px]">
                 <div className="text-xl font-extrabold tracking-[-0.02em]">{names.full}</div>
                 <div className="mt-0.5 text-sm text-muted-foreground">{instructor.title} · {instructor.studentsGuided} JEE aspirants mentored</div>
                 <p className="mt-2.5 text-[15px] leading-[1.6] text-secondary-foreground">{names.short} {instructorChapterLine}</p>
-                <Link href="/about" className="mt-1 inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary">More about {names.short} →</Link>
+                <Link href="/about" className="mt-1 inline-flex min-h-11 items-center tablet:pointer-fine:min-h-0 text-sm font-bold text-primary">More about {names.short} →</Link>
               </div>
             </div>
 
@@ -424,7 +424,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
           <div className="mx-auto w-[min(1180px,calc(100%-var(--gutter)*2))]">
             <div className="flex items-baseline justify-between gap-4">
               <h2 className="text-[clamp(26px,3vw,38px)] font-extrabold tracking-[-0.035em]">More Class {chapter.classLevel} chapters</h2>
-              <Link href={`/chapters?class=${chapter.classLevel}`} className="inline-flex min-h-11 items-center tablet:min-h-0 whitespace-nowrap text-sm font-bold text-primary">All chapters →</Link>
+              <Link href={`/chapters?class=${chapter.classLevel}`} className="inline-flex min-h-11 items-center tablet:pointer-fine:min-h-0 whitespace-nowrap text-sm font-bold text-primary">All chapters →</Link>
             </div>
             <div className="mt-7 grid grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))] gap-5">
               {related.map((c, i) => <ChapterCard key={c.id} c={c} index={i} />)}

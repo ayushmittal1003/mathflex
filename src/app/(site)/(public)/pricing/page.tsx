@@ -85,7 +85,7 @@ export default async function PricingPage() {
             <AddOn dot="primary" kicker="Add-on" title={`1:1 call with ${names.short}`}>
               <div className="mt-3 flex items-baseline gap-2"><span className="text-[32px] font-extrabold tracking-[-0.04em]">{inr(mentorship.mentorshipPrice)}</span><span className="text-sm text-muted-foreground">per call</span></div>
               <p className="mt-2.5 text-[15px] leading-[1.6] text-secondary-foreground">{mentorship.mentorshipBlurb}</p>
-              <Link href="/book-a-call" className="mt-1.5 inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary">Book a call with {names.short} →</Link>
+              <Link href="/book-a-call" className="mt-1.5 inline-flex min-h-11 items-center tablet:pointer-fine:min-h-0 text-sm font-bold text-primary">Book a call with {names.short} →</Link>
             </AddOn>
           )}
           {coupon && (

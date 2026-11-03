@@ -164,7 +164,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
           {/* Course cover: the chapters it contains, stacked. */}
           <div className="order-1 min-w-0 flex-[1.1_1_360px] min-[900px]:order-2">
-            <div className="relative aspect-[16/11] overflow-hidden rounded-xl text-white shadow-[0_40px_80px_-30px_rgb(80_20_0/0.5)]" style={posterBg(course.coverFrom, course.coverTo)}>
+            <div className="relative aspect-[16/11] max-h-[380px] w-full overflow-hidden rounded-xl text-white shadow-[0_40px_80px_-30px_rgb(80_20_0/0.5)]" style={posterBg(course.coverFrom, course.coverTo)}>
               <span aria-hidden className="absolute -right-4 top-1/2 -translate-y-1/2 text-[clamp(220px,26vw,340px)] font-black leading-none text-white/14">Σ</span>
               <span className="absolute left-5 top-5 rounded-md bg-white px-2 py-1 text-xs font-extrabold uppercase tracking-[0.06em] text-black">Complete course</span>
               <div className="absolute inset-x-5 bottom-5">

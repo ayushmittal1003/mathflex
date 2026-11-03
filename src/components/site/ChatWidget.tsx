@@ -143,7 +143,7 @@ export function ChatWidget({ name, greeting, avatar, starters, lifted: liftedPro
   // Keep the button clear of the phone tab bar and the video player controls.
   const lifted = liftedProp && !pathname.startsWith("/learn/");
   // It would cover the pay bar on checkout (design.md §6a).
-  const hideButton = pathname.startsWith("/checkout") || pathname.startsWith("/cart");
+  const hideButton = pathname.startsWith("/checkout") || pathname.startsWith("/cart") || pathname.startsWith("/login") || pathname.startsWith("/signup");
 
   return (
     <>

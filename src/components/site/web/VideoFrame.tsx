@@ -18,7 +18,7 @@ export function VideoFrame({ videoId, caption, sub, className, hoverPlay }: { vi
         <>
           <div className="absolute inset-0 bg-video-stripes" />
           <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_100%,color-mix(in_oklab,var(--primary)_35%,transparent),transparent_70%)]" />
-          <div className="absolute inset-0 grid place-items-center">
+          <div className={cx("absolute", caption || sub ? "left-3 top-3" : "inset-0 grid place-items-center")}>
             <span className="rounded-lg bg-black/45 px-4 py-2 text-sm font-bold tracking-wide text-white/85 backdrop-blur">Video coming soon</span>
           </div>
           {(caption || sub) && (

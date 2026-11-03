@@ -82,7 +82,7 @@ export default async function Dashboard() {
         <Stat label="Student success · 7 days" value={practiced7 ? `${Math.round((correct7 / practiced7) * 100)}%` : "–"} sub="share of answers correct" />
         <Stat label="Questions in the bank" value={questionCount.toLocaleString("en-IN")} sub="published" />
       </div>
-      {money && <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+      {money && <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.5fr_1fr]">
         <Card title="Daily revenue · last 30 days"><Bars data={series} format="inr" /></Card>
         <Card title="Best sellers">
           <ul className="space-y-3 text-sm">
@@ -97,7 +97,7 @@ export default async function Dashboard() {
           </ul>
         </Card>
       </div>}
-      <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.5fr_1fr]">
         {allow("orders") && <Card title="Recent orders" action={<Link href="/admin/orders" className="text-sm font-bold text-brand">All orders</Link>}>
           <ul className="divide-y divide-border text-sm">
             {recent.map((o) => (

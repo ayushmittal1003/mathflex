@@ -37,7 +37,7 @@ export function AuthForm({ mode, next, panel, paused = false, googleReady = fals
       <div className="flex min-w-0 flex-[1_1_520px] flex-col">
         <header className="flex items-center justify-between gap-4 px-4 pt-1.5">
           <Link href="/" aria-label="Mathflex home" className="tap relative inline-block"><SiteLogo /></Link>
-          <Link href="/" className="inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-secondary-foreground hover:text-foreground">← Back to home</Link>
+          <Link href="/" className="inline-flex min-h-11 items-center tablet:pointer-fine:min-h-0 text-sm font-bold text-secondary-foreground hover:text-foreground">← Back to home</Link>
         </header>
         <main id="main" className="grid flex-1 place-items-center px-4 py-10">
           <div className="w-[min(420px,100%)] animate-mf-rise">

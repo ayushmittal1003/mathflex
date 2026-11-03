@@ -114,7 +114,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
         <section className={cx(container.listing, "pb-28 pt-20")}>
           <div className="mb-8 flex items-end justify-between gap-4">
             <h2 className="text-[clamp(26px,3.4vw,40px)] font-extrabold tracking-[-0.04em]">Keep reading</h2>
-            <Link href="/blog" className="inline-flex min-h-11 items-center tablet:min-h-0 text-sm font-bold text-primary hover:underline">All articles →</Link>
+            <Link href="/blog" className="inline-flex min-h-11 items-center tablet:pointer-fine:min-h-0 text-sm font-bold text-primary hover:underline">All articles →</Link>
           </div>
           <div className="grid gap-x-6 gap-y-10 min-[600px]:grid-cols-2 min-[900px]:grid-cols-3">
             {related.map((p, i) => <BlogCard key={p.slug} post={p} index={i} />)}

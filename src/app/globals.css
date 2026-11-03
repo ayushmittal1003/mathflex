@@ -149,10 +149,10 @@
 :root { --gutter: 1rem; }
 @media (min-width: 47.5rem) { :root { --gutter: 1.5rem; } }
 
-/* iOS zooms the page when a field under 16px gets focus, so every text field on the public site is
-   16px on phones. This is plain (unlayered) CSS on purpose: it beats size utilities like text-sm. */
+/* iOS zooms the page when a field under 16px gets focus, so every text field (public site and admin)
+   is 16px on phones. This is plain (unlayered) CSS on purpose: it beats size utilities like text-sm. */
 @media (max-width: 47.49rem) {
-  .site-light :where(input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="hidden"]), select, textarea) { font-size: 16px; }
+  :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="hidden"]), select, textarea) { font-size: 16px; }
 }
 
 @theme inline {

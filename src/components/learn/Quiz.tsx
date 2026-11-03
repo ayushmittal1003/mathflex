@@ -94,7 +94,7 @@ export function Quiz({
       </div>
 
       {/* progress dots */}
-      <div className="no-scrollbar mb-4 flex gap-1.5 overflow-x-auto pb-1">
+      <div className="no-scrollbar mb-4 flex gap-1.5 overflow-x-auto p-1">
         {visible.map((v, i) => {
           const r = results[v.id];
           return (

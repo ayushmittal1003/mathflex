@@ -141,7 +141,7 @@ export default async function PlansPage() {
                     <span className="mt-3 flex items-baseline gap-2">
                       <span className="text-xl font-extrabold">{inr(c.price)}</span>
                       {c.mrp > c.price && <span className="text-sm text-muted-foreground line-through">{inr(c.mrp)}</span>}
-                      <span className="ml-auto text-sm font-bold text-primary transition group-hover:translate-x-1">View →</span>
+                      <span className="ml-auto whitespace-nowrap text-sm font-bold text-primary transition group-hover:translate-x-1">View →</span>
                     </span>
                   </span>
                 </Link>
@@ -187,7 +187,7 @@ function PlanList({ title, plans }: { title: string; plans: Plan[] }) {
           const warn = !ended && p.daysLeft <= RENEW_WINDOW;
           return (
             <article key={p.id} className={cx(card, "grid overflow-hidden min-[860px]:grid-cols-[200px_1fr_auto]", ended && "opacity-80")}>
-              <Link href={p.href} className="relative block min-h-[110px] overflow-hidden text-white" style={posterBg(p.cover.from, p.cover.to)}>
+              <Link href={p.href} className="relative block aspect-video overflow-hidden text-white min-[860px]:aspect-auto min-[860px]:min-h-[110px]" style={posterBg(p.cover.from, p.cover.to)}>
                 <span className={cx("absolute right-4 top-1/2 -translate-y-1/2 whitespace-nowrap font-black leading-none text-white/25", p.cover.symbol.length > 2 ? "text-[48px]" : "text-[84px]")}>{p.cover.symbol}</span>
                 {p.cover.image && <PosterImage src={p.cover.image} sizes="(max-width: 860px) 100vw, 320px" />}
                 <span className="absolute left-3 top-3 flex gap-1.5">
