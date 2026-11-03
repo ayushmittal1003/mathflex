@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
 import type { FirebaseWebConfig } from "@/lib/firebase";
-import { firebaseAuth, firebaseMessage } from "../FirebaseSignIn";
+import { firebaseAuth, firebaseMessage, freshCaptchaBox } from "../FirebaseSignIn";
 import { button, cx, tone } from "./ui";
 
 const field = "w-full rounded-lg border border-border bg-card px-4 py-3 text-[15px] outline-none transition focus:border-foreground";
@@ -39,7 +39,7 @@ export function VerifyPhone({ config, initial }: { config: FirebaseWebConfig; in
     return run(async () => {
       const { auth, api } = await firebaseAuth(config);
       try {
-        verifier.current ??= new api.RecaptchaVerifier(auth, captcha.current!, { size: "invisible" });
+        verifier.current ??= new api.RecaptchaVerifier(auth, freshCaptchaBox(captcha.current!), { size: "invisible" });
         confirmation.current = await api.signInWithPhoneNumber(auth, `+91${phone}`, verifier.current);
         setCode("");
         setSent(true);

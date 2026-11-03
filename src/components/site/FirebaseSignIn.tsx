@@ -20,13 +20,26 @@ const MESSAGES: Record<string, string> = {
 const SILENT = new Set(["auth/popup-closed-by-user", "auth/cancelled-popup-request"]);
 const RESEND_AFTER = 30;
 
-export const firebaseMessage = (e: unknown) => MESSAGES[(e as { code?: string }).code ?? ""] ?? "Something went wrong. Please try again.";
+// An error without a message of its own shows its code, so a set-up problem can be told apart from a bad try.
+export function firebaseMessage(e: unknown) {
+  const code = (e as { code?: string }).code ?? "";
+  if (MESSAGES[code]) return MESSAGES[code];
+  console.error("firebase sign-in failed", e);
+  return `Something went wrong. Please try again.${code ? ` (${code})` : ""}`;
+}
 
 export async function firebaseAuth(config: FirebaseWebConfig) {
   // Loaded only when someone starts signing in, so the page itself stays light.
   const [{ getApps, initializeApp }, auth] = await Promise.all([import("firebase/app"), import("firebase/auth")]);
   const app = getApps()[0] ?? initializeApp({ apiKey: config.apiKey, authDomain: config.authDomain, projectId: config.projectId, appId: config.appId });
   return { auth: auth.getAuth(app), api: auth };
+}
+
+// reCAPTCHA refuses to render twice in one element and clear() doesn't empty it, so every new verifier gets a new box.
+export function freshCaptchaBox(host: HTMLElement) {
+  const box = document.createElement("div");
+  host.replaceChildren(box);
+  return box;
 }
 
 export function FirebaseSignIn({ config, next, field }: { config: FirebaseWebConfig; next: string; field: string }) {
@@ -97,7 +110,7 @@ export function FirebaseSignIn({ config, next, field }: { config: FirebaseWebCon
     return run(async () => {
       const { auth, api } = await firebaseAuth(config);
       try {
-        verifier.current ??= new api.RecaptchaVerifier(auth, captcha.current!, { size: "invisible" });
+        verifier.current ??= new api.RecaptchaVerifier(auth, freshCaptchaBox(captcha.current!), { size: "invisible" });
         confirmation.current = await api.signInWithPhoneNumber(auth, `+91${phone}`, verifier.current);
         setCode("");
         setStep("code");
