@@ -20,7 +20,9 @@ const MESSAGES: Record<string, string> = {
 const SILENT = new Set(["auth/popup-closed-by-user", "auth/cancelled-popup-request"]);
 const RESEND_AFTER = 30;
 
-async function firebaseAuth(config: FirebaseWebConfig) {
+export const firebaseMessage = (e: unknown) => MESSAGES[(e as { code?: string }).code ?? ""] ?? "Something went wrong. Please try again.";
+
+export async function firebaseAuth(config: FirebaseWebConfig) {
   // Loaded only when someone starts signing in, so the page itself stays light.
   const [{ getApps, initializeApp }, auth] = await Promise.all([import("firebase/app"), import("firebase/auth")]);
   const app = getApps()[0] ?? initializeApp({ apiKey: config.apiKey, authDomain: config.authDomain, projectId: config.projectId, appId: config.appId });
@@ -50,7 +52,7 @@ export function FirebaseSignIn({ config, next, field }: { config: FirebaseWebCon
 
   const showError = (e: unknown) => {
     const c = (e as { code?: string }).code ?? "";
-    if (!SILENT.has(c)) setError(MESSAGES[c] ?? "Something went wrong. Please try again.");
+    if (!SILENT.has(c)) setError(firebaseMessage(e));
   };
 
   // Hand the proven identity to our server, which starts the session.
@@ -177,7 +179,7 @@ export function FirebaseSignIn({ config, next, field }: { config: FirebaseWebCon
             Your name
             <input value={name} onChange={(e) => setName(e.target.value)} maxLength={60} autoComplete="name" autoFocus className={field} />
           </label>
-          <p className="text-sm leading-[1.5] text-secondary-foreground">No account uses this number yet, so this creates a new one. Bought chapters with an email or Google login? Use that login instead to see them.</p>
+          <p className="text-sm leading-[1.5] text-secondary-foreground">No account uses this number yet, so this creates a new one. Bought chapters with an email or Google login? Log in that way instead, then verify this number in your profile.</p>
           <button disabled={busy} className={primary}>{busy ? "Creating…" : "Create my account"}</button>
         </form>
       )}

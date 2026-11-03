@@ -7,6 +7,9 @@ import { accountContact, inr } from "@/lib/format";
 import { levelFromXp } from "@/lib/gamification";
 import { logout } from "@/app/actions/auth";
 import { ProfileForm } from "@/components/site/web/ProfileForm";
+import { VerifyPhone } from "@/components/site/web/VerifyPhone";
+import { firebaseWebConfig } from "@/lib/firebase";
+import { isStaff } from "@/lib/permissions";
 import { button, container, cx, tone } from "@/components/site/web/ui";
 import { privateMetadata } from "@/lib/seo/metadata";
 
@@ -29,6 +32,7 @@ export default async function Profile() {
   const active = ents.filter((e) => e.expiresAt.getTime() > now);
   const soon = active.filter((e) => e.expiresAt.getTime() - now < 30 * 86_400_000).length;
   const lvl = levelFromXp(user.xp);
+  const firebase = firebaseWebConfig();
 
   return (
     <div className={cx(container.detail, "pb-28 pt-[calc(86px+36px)]")}>
@@ -56,6 +60,19 @@ export default async function Profile() {
           <h2 className="text-xl font-extrabold tracking-[-0.025em]">Your details</h2>
           <p className="mt-1 text-sm text-muted-foreground">Your mobile number is needed to pay and for call bookings.</p>
           <div className="mt-6"><ProfileForm user={user} /></div>
+          {!isStaff(user.role) && (user.verifiedPhone || firebase?.phone) && (
+            <div className="mt-8 border-t border-border pt-6">
+              <h3 className="text-base font-extrabold tracking-[-0.015em]">Log in with your mobile number</h3>
+              {user.verifiedPhone ? (
+                <p className="mt-1 text-sm text-secondary-foreground">Verified: {user.verifiedPhone.replace(/^\+91/, "+91 ")}. You can log in with an OTP sent to this number.</p>
+              ) : (
+                <>
+                  <p className="mb-4 mt-1 text-sm text-secondary-foreground">Verify your number once to log in to this account with an OTP. Your chapters stay with you.</p>
+                  <VerifyPhone config={firebase!} initial={user.phone ?? ""} />
+                </>
+              )}
+            </div>
+          )}
         </section>
 
         <div className="grid gap-6">
