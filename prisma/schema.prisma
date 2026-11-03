@@ -76,6 +76,8 @@ model User {
   name         String
   email        String    @unique
   phone        String?
+  // A number proven by OTP. `phone` is typed in without proof, so it never logs anyone in.
+  verifiedPhone String?  @unique
   passwordHash String
   role         Role      @default(STUDENT)
   classLevel   Int? // 11, 12 or 13 (dropper)

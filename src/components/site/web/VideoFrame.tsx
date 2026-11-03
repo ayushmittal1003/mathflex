@@ -5,7 +5,7 @@ import { VideoPlayFacade } from "./VideoPlayFacade";
 // Dark-framed video (design.md §3.4). With a Bunny video ID it renders the existing signed
 // Bunny embed from playbackFor, exactly like chapter videos, behind a click-to-play facade. Without one it shows a
 // "Video coming soon" frame: no play button, no broken embed.
-export function VideoFrame({ videoId, caption, sub, className }: { videoId: string | null; caption?: string; sub?: string; className?: string }) {
+export function VideoFrame({ videoId, caption, sub, className, hoverPlay }: { videoId: string | null; caption?: string; sub?: string; className?: string; hoverPlay?: boolean }) {
   const playback = videoId ? playbackFor("BUNNY", videoId) : { kind: "none" as const };
   const cdn = process.env.NEXT_PUBLIC_BUNNY_CDN_HOSTNAME;
   const poster = videoId && cdn ? `https://${cdn}/${videoId}/thumbnail.jpg` : null;
@@ -13,7 +13,7 @@ export function VideoFrame({ videoId, caption, sub, className }: { videoId: stri
   return (
     <div className={cx("relative overflow-hidden rounded-xl border-[6px] border-foreground bg-foreground text-white shadow-[0_40px_80px_-36px_rgb(80_20_0/0.5)]", className)}>
       {playback.kind === "iframe" ? (
-        <VideoPlayFacade poster={poster} src={playback.src} title={caption ?? "Video"} caption={caption} sub={sub} />
+        <VideoPlayFacade poster={poster} src={playback.src} title={caption ?? "Video"} caption={caption} sub={sub} hoverPlay={hoverPlay} />
       ) : (
         <>
           <div className="absolute inset-0 bg-video-stripes" />

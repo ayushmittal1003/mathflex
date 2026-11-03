@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { isStaff } from "@/lib/permissions";
 import { getAuthPanel } from "@/components/site/web/data";
 import { googleConfigured } from "@/lib/google";
+import { firebaseWebConfig } from "@/lib/firebase";
 import { privateMetadata } from "@/lib/seo/metadata";
 
 export const metadata = privateMetadata("Sign up");
@@ -17,5 +18,5 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
   // Already signed in: skip the form and go where they were headed.
   if (user) redirect(safeNext(next) ?? (isStaff(user.role) ? "/admin" : "/my-learning"));
   const panel = await getAuthPanel(settings);
-  return <AuthForm mode="signup" next={safeNext(next) ?? "/my-learning"} panel={panel} googleReady={googleConfigured()} error={error} paused={!settings.features.signupOpen} />;
+  return <AuthForm mode="signup" next={safeNext(next) ?? "/my-learning"} panel={panel} googleReady={googleConfigured()} firebase={firebaseWebConfig()} error={error} paused={!settings.features.signupOpen} />;
 }

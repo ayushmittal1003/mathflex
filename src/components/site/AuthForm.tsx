@@ -4,6 +4,8 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { CircleAlert } from "lucide-react";
 import { login, signup, type AuthState } from "@/app/actions/auth";
+import { FirebaseSignIn } from "./FirebaseSignIn";
+import type { FirebaseWebConfig } from "@/lib/firebase";
 import { SiteLogo } from "./web/SiteLogo";
 import { Mark } from "./web/primitives";
 import { cx } from "./web/ui";
@@ -15,7 +17,7 @@ export type AuthPanel = {
 
 // Log in / sign up (dipankar-design/designs/Login.dc.html). Same server actions and fields as
 // before (login: email, password; signup: name, email, optional phone, class incl. Dropper,
-// password). Google, OTP and password reset aren't shown: there's no backend for them.
+// password). Google and mobile OTP go through Firebase when it is set up. Password reset isn't shown: there's no backend for it.
 const GOOGLE_ERRORS: Record<string, string> = {
   google_unavailable: "Google sign-in is being set up. Use your email for now.",
   google_cancelled: "Google sign-in was cancelled.",
@@ -24,7 +26,7 @@ const GOOGLE_ERRORS: Record<string, string> = {
   signup_paused: "New sign-ups are paused right now. Existing accounts can still log in.",
 };
 
-export function AuthForm({ mode, next, panel, paused = false, googleReady = false, error }: { mode: "login" | "signup"; next: string; panel?: AuthPanel; paused?: boolean; googleReady?: boolean; error?: string }) {
+export function AuthForm({ mode, next, panel, paused = false, googleReady = false, firebase = null, error }: { mode: "login" | "signup"; next: string; panel?: AuthPanel; paused?: boolean; googleReady?: boolean; firebase?: FirebaseWebConfig | null; error?: string }) {
   const [state, action, pending] = useActionState<AuthState, FormData>(mode === "login" ? login : signup, undefined);
   const isSignup = mode === "signup";
   const field = "h-12 w-full rounded-lg border border-input bg-card px-3.5 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-3 focus:ring-ring/25";
@@ -53,7 +55,9 @@ export function AuthForm({ mode, next, panel, paused = false, googleReady = fals
             )}
             {!(isSignup && paused) && (
               <>
-                {googleReady ? (
+                {firebase ? (
+                  <FirebaseSignIn config={firebase} next={next} field={field} />
+                ) : googleReady ? (
                   <a href={`/api/auth/google?next=${encodeURIComponent(next)}`} className="mt-6 flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-border bg-card text-[15px] font-bold text-foreground shadow-[0_1px_4px_0_rgb(0_0_0/0.06)] transition hover:bg-muted">
                     <GoogleMark /> Continue with Google
                   </a>

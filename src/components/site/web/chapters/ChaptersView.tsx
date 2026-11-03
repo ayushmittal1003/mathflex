@@ -19,7 +19,7 @@ type Bundle = { id: string; slug: string; title: string; subtitle: string; price
 type Sort = "default" | "weight" | "price";
 const SORTS: [Sort, string][] = [["default", "Syllabus order"], ["weight", "Sort: JEE weightage"], ["price", "Sort: price, low to high"]];
 
-export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: CardChapter[]; peek: Peek | null; bundles: Bundle[]; initial: { q: string; cls: number | "all"; sort: Sort } }) {
+export function ChaptersView({ chapters, top5, peek, bundles, initial }: { chapters: CardChapter[]; top5: (CardChapter & { formulas: string[] })[]; peek: Peek | null; bundles: Bundle[]; initial: { q: string; cls: number | "all"; sort: Sort } }) {
   const [q, setQ] = useState(initial.q);
   const [cls, setCls] = useState<number | "all">(initial.cls);
   const [sort, setSort] = useState<Sort>(initial.sort);
@@ -32,7 +32,6 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
   const parts = chapters.map((c) => c.partsCount).filter(Boolean);
   const partsRange = parts.length ? (Math.min(...parts) === Math.max(...parts) ? `${Math.min(...parts)}` : `${Math.min(...parts)}–${Math.max(...parts)}`) : null;
   const popular = chapters.filter((c) => c.isTrending).slice(0, 4);
-  const top5 = [...chapters].filter((c) => c.jeeWeightage > 0).sort((a, b) => b.jeeWeightage - a.jeeWeightage).slice(0, 5);
   const best = bundles.length > 1 ? [...bundles].sort((a, b) => b.chapterCount - a.chapterCount)[0] : null;
   const breakeven = bundles.map((b) => b.breakeven).filter((n): n is number => !!n && n > 1).sort((a, b) => a - b)[0];
 
@@ -101,9 +100,14 @@ export function ChaptersView({ chapters, peek, bundles, initial }: { chapters: C
                   {i + 1}
                 </span>
                 <span className="relative block aspect-[2/3] w-[130px] overflow-hidden rounded-xl shadow-[0_16px_32px_-16px_rgb(0_0_0/0.45)] transition-transform duration-300 hover:-translate-y-1.5 tablet:w-[170px]" style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}>
-                  {c.coverImage ? <PosterImage src={c.coverImage} sizes="170px" /> : <span className={cx("absolute -right-2.5 top-1 whitespace-nowrap font-black leading-none text-white/20", c.symbol.length > 2 ? "text-[56px]" : "text-[96px]")}>{c.symbol}</span>}
-                  <HoverClip chapterId={c.id} />
+                  {c.formulas.length === 0 && <span className={cx("absolute -right-2.5 top-1 whitespace-nowrap font-black leading-none text-white/20", c.symbol.length > 2 ? "text-[56px]" : "text-[96px]")}>{c.symbol}</span>}
                   <span className="absolute inset-0 bg-gradient-to-b from-transparent from-35% to-black/85" />
+                  {c.formulas.length > 0 && (
+                    <span aria-hidden className="absolute inset-x-2.5 top-10.5 flex flex-col gap-2 text-[11px] tablet:top-13 tablet:gap-3 tablet:text-[13px]">
+                      {/* rendered on the server by chapterFormulas from our own list */}
+                      {c.formulas.map((f) => <span key={f} className="block whitespace-nowrap" dangerouslySetInnerHTML={{ __html: f }} />)}
+                    </span>
+                  )}
                   <span className="absolute left-2.5 top-2.5 rounded bg-white px-1.5 py-0.5 text-xs font-extrabold text-black">{c.jeeWeightage}% of JEE</span>
                   <span className="absolute inset-x-3 bottom-3">
                     <span className="block text-[15px] font-extrabold leading-[1.15]">{c.title}</span>

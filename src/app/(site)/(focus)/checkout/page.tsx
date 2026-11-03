@@ -1,3 +1,4 @@
+import { accountContact } from "@/lib/format";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
@@ -25,7 +26,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const meta: CheckoutMeta = {
     chapters: Object.fromEntries(chapters.map((c) => [c.id, { title: c.title, symbol: c.symbol, coverFrom: c.coverFrom, coverTo: c.coverTo, coverImage: c.coverImage, classLevel: c.classLevel, parts: c._count.parts, price: c.price, mrp: c.mrp }])),
     courses: courses.map((c) => ({ id: c.id, title: c.title, price: c.price, chapterIds: c.chapters.map((x) => x.chapterId), count: c.chapters.length })),
-    user: user ? { name: user.name, email: user.email } : null,
+    user: user ? { name: user.name, email: accountContact(user.email) } : null,
     whatsapp: s.whatsappNumber,
   };
   return (

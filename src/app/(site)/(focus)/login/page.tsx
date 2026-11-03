@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { isStaff } from "@/lib/permissions";
 import { getAuthPanel } from "@/components/site/web/data";
 import { googleConfigured } from "@/lib/google";
+import { firebaseWebConfig } from "@/lib/firebase";
 import { privateMetadata } from "@/lib/seo/metadata";
 
 export const metadata = privateMetadata("Log in");
@@ -17,5 +18,5 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   // Already signed in: skip the form and go where they were headed.
   if (user) redirect(safeNext(next) ?? (isStaff(user.role) ? "/admin" : "/my-learning"));
   const panel = await getAuthPanel(settings);
-  return <AuthForm mode="login" next={safeNext(next) ?? "/my-learning"} panel={panel} googleReady={googleConfigured()} error={error} />;
+  return <AuthForm mode="login" next={safeNext(next) ?? "/my-learning"} panel={panel} googleReady={googleConfigured()} firebase={firebaseWebConfig()} error={error} />;
 }

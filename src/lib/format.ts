@@ -18,3 +18,12 @@ export function validity(days: number) {
   if (days >= 30 && days % 30 === 0) { const m = days / 30; return `${m} month${m > 1 ? "s" : ""}`; }
   return `${days} day${days === 1 ? "" : "s"}`;
 }
+
+// Mobile-only accounts have no email, but every account needs a unique one, so they get this stand-in
+// (nothing is ever delivered to it). `accountContact` shows the number instead.
+const PHONE_EMAIL = /^91(\d{5})(\d{5})@phone\.mathflex\.in$/;
+export const phoneOnlyEmail = (e164: string) => `${e164.replace(/^\+/, "")}@phone.mathflex.in`;
+export function accountContact(email: string) {
+  const m = email.match(PHONE_EMAIL);
+  return m ? `+91 ${m[1]} ${m[2]}` : email;
+}

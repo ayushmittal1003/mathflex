@@ -4,7 +4,7 @@ import { PendingNote } from "@/components/site/web/PendingNote";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
-import { inr } from "@/lib/format";
+import { accountContact, inr } from "@/lib/format";
 import { firstWeek, instructor, instructorNames, mentorshipCall } from "@/lib/site-content";
 import { PaidCelebration } from "@/components/site/PaidCelebration";
 import { PaymentPoller } from "@/components/site/PaymentPoller";
@@ -252,7 +252,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                 paid.paidAt && { k: "Date", v: paid.paidAt.toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" }) },
                 method && { k: "Paid with", v: method },
                 reference && { k: "Cashfree ref", v: reference },
-                { k: "Account", v: user.email },
+                { k: "Account", v: accountContact(user.email) },
               ].filter(Boolean).map((m) => (
                 <div key={(m as { k: string }).k} className="flex justify-between gap-4 border-b border-border py-3 text-sm">
                   <span className="text-muted-foreground">{(m as { k: string }).k}</span>

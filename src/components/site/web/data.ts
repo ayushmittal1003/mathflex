@@ -1,3 +1,4 @@
+import { accountContact } from "@/lib/format";
 import "server-only";
 import { cache } from "react";
 import { db } from "@/lib/db";
@@ -83,7 +84,7 @@ export async function getSiteNavProps(
     : null;
   const f = settings.features;
   return {
-    user: user ? { name: user.name, email: user.email, avatarColor: user.avatarColor, isStaff: isStaff(user.role), xp: user.xp, streak: user.streak, planSummary } : null,
+    user: user ? { name: user.name, email: accountContact(user.email), avatarColor: user.avatarColor, isStaff: isStaff(user.role), xp: user.xp, streak: user.streak, planSummary } : null,
     features: { leaderboard: f.leaderboard, practice: f.practice, referAndEarn: f.referAndEarn },
     contact: { whatsapp: settings.whatsappNumber, email: settings.supportEmail },
   };

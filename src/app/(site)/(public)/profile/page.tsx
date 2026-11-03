@@ -3,7 +3,7 @@ import { requestNow } from "@/lib/time";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
-import { inr } from "@/lib/format";
+import { accountContact, inr } from "@/lib/format";
 import { levelFromXp } from "@/lib/gamification";
 import { logout } from "@/app/actions/auth";
 import { ProfileForm } from "@/components/site/web/ProfileForm";
@@ -40,7 +40,7 @@ export default async function Profile() {
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-[clamp(28px,3.6vw,44px)] font-extrabold leading-[1.05] tracking-[-0.04em]">{user.name}</h1>
           <p className="mt-1 text-[15px] text-secondary-foreground">
-            {user.email} · Member since {user.createdAt.toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
+            {accountContact(user.email)} · Member since {user.createdAt.toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
           </p>
         </div>
         <div className="flex flex-wrap gap-2 text-sm font-extrabold">

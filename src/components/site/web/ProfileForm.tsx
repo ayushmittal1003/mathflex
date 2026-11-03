@@ -1,6 +1,7 @@
 "use client";
 import { useActionState } from "react";
 import { updateProfile } from "@/app/actions/profile";
+import { accountContact } from "@/lib/format";
 import { button, cx, tone } from "./ui";
 
 // Website-styled profile form. Same fields and server action as components/site/ProfileForm.
@@ -13,8 +14,8 @@ export function ProfileForm({ user }: { user: { name: string; email: string; pho
     <form action={action} className="grid gap-5">
       <label className={label}>Full name<input name="name" defaultValue={user.name} autoComplete="name" className={field} /></label>
       <label className={label}>
-        Email
-        <input value={user.email} disabled className={field} />
+        Login
+        <input value={accountContact(user.email)} disabled className={field} />
         <span className="mt-1.5 block text-xs font-medium text-muted-foreground">Used to log in. Write to support to change it.</span>
       </label>
       <div className="grid gap-5 min-[560px]:grid-cols-2">
