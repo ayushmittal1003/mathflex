@@ -6,9 +6,10 @@ import { requireUser } from "@/lib/auth";
 import { hasChapterAccess } from "@/lib/access";
 import { getSettings } from "@/lib/settings";
 import { questionStatuses, type QuestionStatus } from "@/lib/qbank";
-import { accuracyOf, fmtTime, FORMAT_LABEL } from "@/lib/grading";
+import { accuracyOf, DIFFICULTY_LABEL, fmtTime, FORMAT_LABEL } from "@/lib/grading";
 import { PracticePlayer, type PracticeQuestion } from "@/components/site/web/practice/PracticePlayer";
 import { ExamMode } from "@/components/site/web/practice/ExamMode";
+import { FilterMenus, type FilterMenu } from "@/components/site/web/practice/FilterMenus";
 import { Download } from "lucide-react";
 import { posterBg } from "@/components/site/web/primitives";
 import { container, cx } from "@/components/site/web/ui";
@@ -25,6 +26,9 @@ type Search = { status?: string; difficulty?: string; type?: string; format?: st
 const RESOURCE_LABEL: Record<string, string> = { DPP_SHEET: "DPP", PYQ_SHEET: "PYQ", HANDWRITTEN: "Handwritten notes", NOTES: "Short notes", FORMULA_SHEET: "Formula sheet", MINDMAP: "Mind map", OTHER: "PDF" };
 
 const STATUS_FILTERS: [string, string][] = [["all", "All"], ["new", "Unattempted"], ["mistakes", "Mistakes"], ["bookmarked", "Bookmarked"], ["solved", "Solved"]];
+
+// Grid and Sector aren't answer formats yet, so no question can match them and they stay greyed out.
+const QUESTION_TYPES: [string, string][] = [["NUMERICAL", FORMAT_LABEL.NUMERICAL], ["MULTIPLE", FORMAT_LABEL.MULTIPLE], ["SINGLE", FORMAT_LABEL.SINGLE], ["GRID", "Grid"], ["SECTOR", "Sector"]];
 
 export default async function ChapterPractice({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Search> }) {
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
@@ -53,6 +57,10 @@ export default async function ChapterPractice({ params, searchParams }: { params
   const solved = rows.filter((r) => r.status === "correct").length;
   const mistakes = rows.filter((r) => r.status === "incorrect" || r.status === "partial").length;
 
+  // The dropdowns allow several values at once, joined by commas in the URL (?year=2023,2021).
+  const list = (v?: string) => String(v ?? "").split(",").filter(Boolean);
+  const picked = { difficulty: list(sp.difficulty), format: list(sp.format), year: list(sp.year) };
+
   const status = sp.status ?? "all";
   const matchStatus = (s: QuestionStatus, id: string) =>
     status === "new" ? s === "new" || s === "skipped"
@@ -62,11 +70,11 @@ export default async function ChapterPractice({ params, searchParams }: { params
     : true;
   const shown = rows.filter(({ q, status: s }) =>
     matchStatus(s, q.id) &&
-    (!sp.difficulty || q.difficulty === Number(sp.difficulty)) &&
+    (!picked.difficulty.length || picked.difficulty.includes(String(q.difficulty))) &&
     (!sp.type || q.type === sp.type) &&
-    (!sp.format || q.format === sp.format) &&
+    (!picked.format.length || picked.format.includes(q.format)) &&
     (!sp.topic || q.topic?.toLowerCase() === sp.topic.toLowerCase()) &&
-    (!sp.year || q.year === Number(sp.year)),
+    (!picked.year.length || picked.year.includes(String(q.year))),
   );
   // Retrying mistakes or skipped ones starts clean: hide the old answer and key until they answer again.
   const fresh = status === "mistakes" || status === "new";
@@ -85,11 +93,15 @@ export default async function ChapterPractice({ params, searchParams }: { params
   });
 
   const topics = [...new Set(questions.map((q) => q.topic).filter((t): t is string => !!t))].sort();
-  const formats = [...new Set(questions.map((q) => q.format))];
   // Years that have questions in this chapter, newest first, with how many each.
   const yearCounts = new Map<number, number>();
   for (const q of questions) if (q.year) yearCounts.set(q.year, (yearCounts.get(q.year) ?? 0) + 1);
   const years = [...yearCounts.keys()].sort((a, b) => b - a);
+  const menus: FilterMenu[] = [
+    { param: "difficulty", all: "All levels", noun: "levels", options: [1, 2, 3].map((d) => ({ value: String(d), label: DIFFICULTY_LABEL[d], count: questions.filter((q) => q.difficulty === d).length })) },
+    { param: "format", all: "All question types", noun: "types", options: QUESTION_TYPES.map(([value, label]) => ({ value, label, count: questions.filter((q) => q.format === value).length })) },
+    ...(years.length ? [{ param: "year", all: "All years", noun: "years", options: years.map((y) => ({ value: String(y), label: String(y), count: yearCounts.get(y)! })) }] : []),
+  ];
   const href = (patch: Partial<Search>) => {
     const next = { ...sp, ...patch };
     const qs = new URLSearchParams(Object.entries(next).filter(([, v]) => v && v !== "all") as [string, string][]);
@@ -165,26 +177,11 @@ export default async function ChapterPractice({ params, searchParams }: { params
           ))}
         </Chips>}
         <Chips>
-          <Chip href={href({ difficulty: undefined })} active={!sp.difficulty}>Any level</Chip>
-          {["1", "2", "3"].map((d) => <Chip key={d} href={href({ difficulty: d })} active={sp.difficulty === d}>{["", "Easy", "Medium", "Hard"][+d]}</Chip>)}
-          <span className="mx-1 w-px self-stretch bg-border" />
           <Chip href={href({ type: undefined })} active={!sp.type}>DPP + PYQ</Chip>
           <Chip href={href({ type: "DPP" })} active={sp.type === "DPP"}>DPPs only</Chip>
           <Chip href={href({ type: "PYQ" })} active={sp.type === "PYQ"}>PYQs only</Chip>
-          {formats.length > 1 && (
-            <>
-              <span className="mx-1 w-px self-stretch bg-border" />
-              <Chip href={href({ format: undefined })} active={!sp.format}>All formats</Chip>
-              {formats.map((f) => <Chip key={f} href={href({ format: f })} active={sp.format === f}>{FORMAT_LABEL[f]}</Chip>)}
-            </>
-          )}
         </Chips>
-        {years.length > 0 && (
-          <Chips>
-            <Chip href={href({ year: undefined })} active={!sp.year}>All years</Chip>
-            {years.map((y) => <Chip key={y} href={href({ year: String(y) })} active={sp.year === String(y)}>{y} ({yearCounts.get(y)})</Chip>)}
-          </Chips>
-        )}
+        <FilterMenus path={`/practice/${slug}`} query={sp} menus={menus} selected={picked} />
         {topics.length > 0 && (
           <Chips>
             <Chip href={href({ topic: undefined })} active={!sp.topic}>All topics</Chip>
