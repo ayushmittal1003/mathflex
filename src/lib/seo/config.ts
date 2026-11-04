@@ -21,6 +21,6 @@ export const DEFAULT_DESCRIPTION =
 
 // Social profiles that are really linked in the footer (src/lib/site-content.ts `socials`). Add a
 // profile here only when it is live and linked; no "coming soon" or placeholder links.
-export const SOCIAL_PROFILES = ["https://www.instagram.com/mathflex.in/"];
+export const SOCIAL_PROFILES = ["https://www.instagram.com/mathflex.in/", "https://www.youtube.com/@Mathflex-IIT"];
 
 export const absoluteUrl = (path = "/") => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;

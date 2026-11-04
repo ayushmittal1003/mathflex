@@ -20,19 +20,24 @@ export function SiteFooter({ settings }: { settings: Settings }) {
             Chapter-wise JEE maths for Class 11 and 12, taught by IIT Delhi alumnus {names.full}.
           </p>
           <div className="mt-4 flex gap-1">
-            <a
-              href={socials.instagram.href}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={`Mathflex on ${socials.instagram.label}`}
-              className="relative grid size-11 place-items-center rounded-lg border border-border bg-secondary text-secondary-foreground transition hover:scale-[1.06] hover:text-primary"
-            >
+            <SocialIcon href={socials.instagram.href} label={`Mathflex on ${socials.instagram.label}`}>
               <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <rect x="3" y="3" width="18" height="18" rx="5" />
                 <circle cx="12" cy="12" r="4" />
                 <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
               </svg>
-            </a>
+            </SocialIcon>
+            <SocialIcon href={socials.youtube.href} label={`Mathflex on ${socials.youtube.label}`}>
+              <svg className="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <rect x="2.5" y="5.5" width="19" height="13" rx="4" />
+                <path d="m10 9.5 4.5 2.5-4.5 2.5z" fill="currentColor" />
+              </svg>
+            </SocialIcon>
+            <SocialIcon href={wa} label="WhatsApp Mathflex support">
+              <svg className="size-[18px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                <path d="M12.04 2a9.9 9.9 0 0 0-8.47 15.03L2.5 21.5l4.6-1.05A9.9 9.9 0 1 0 12.04 2Zm0 18.1c-1.5 0-2.97-.4-4.25-1.17l-.3-.18-2.73.63.64-2.66-.2-.31a8.1 8.1 0 1 1 6.84 3.69Zm4.44-6.06c-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.77.95-.14.16-.28.18-.53.06-.24-.12-1.03-.38-1.96-1.21a7.4 7.4 0 0 1-1.36-1.69c-.14-.24-.02-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.32-.75-1.81-.2-.48-.4-.41-.55-.42h-.47c-.16 0-.42.06-.65.3-.22.24-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.71 2.61 4.14 3.66.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z" />
+              </svg>
+            </SocialIcon>
           </div>
           <p className="mt-3 text-[13px] text-muted-foreground">Coming soon: {socialsComingSoon.join(", ")}</p>
         </div>
@@ -77,6 +82,14 @@ export function SiteFooter({ settings }: { settings: Settings }) {
         mathflex
       </div>
     </footer>
+  );
+}
+
+function SocialIcon({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer" aria-label={label} className="relative grid size-11 place-items-center rounded-lg border border-border bg-secondary text-secondary-foreground transition hover:scale-[1.06] hover:text-primary">
+      {children}
+    </a>
   );
 }
 

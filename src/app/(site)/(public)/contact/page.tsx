@@ -71,6 +71,7 @@ export default async function ContactPage() {
             <div className="mt-3.5 border-t border-border">
               {[
                 { k: socials.instagram.label, v: socials.instagram.handle, href: socials.instagram.href, icon: "IG", bg: "bg-xp" },
+                { k: socials.youtube.label, v: socials.youtube.handle, href: socials.youtube.href, icon: "YT", bg: "bg-bad" },
                 { k: "Website", v: "mathflex.in", href: "https://mathflex.in", icon: "↗", bg: "bg-brand-2" },
               ].map((c) => (
                 <a key={c.k} href={c.href} target="_blank" rel="noreferrer" className="flex items-center gap-3.5 border-b border-border py-4 text-foreground hover:text-primary">

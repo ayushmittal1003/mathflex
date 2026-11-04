@@ -33,9 +33,10 @@ export const placeholders = {
 // feeds Organization sameAs). Never use "#" or empty hrefs.
 export const socials = {
   instagram: { label: "Instagram", handle: "@mathflex.in", href: "https://www.instagram.com/mathflex.in/" },
+  youtube: { label: "YouTube", handle: "@Mathflex-IIT", href: "https://www.youtube.com/@Mathflex-IIT" },
 };
 // Shown as plain, non-clickable "coming soon" text until they exist. Added in the next branch.
-export const socialsComingSoon = ["WhatsApp channel", "LinkedIn", "YouTube"];
+export const socialsComingSoon = ["WhatsApp channel", "LinkedIn"];
 
 // ---- Instructor -----------------------------------------------------------------------
 // shortName everywhere on the site (CTAs, call booking, FAQs, tips, leaderboard, upsells);
