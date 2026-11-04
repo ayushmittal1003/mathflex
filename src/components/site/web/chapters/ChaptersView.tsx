@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { inr } from "@/lib/format";
 import { ChapterCard, type CardChapter } from "../ChapterCard";
 import { BottomSheet } from "../BottomSheet";
-import { Caret, CheckIcon, Eyebrow, LockIcon, Mark, PlayIcon, SectionHead } from "../primitives";
+import { Caret, CheckIcon, Eyebrow, LockIcon, Mark, MathSymbol, PlayIcon, SectionHead, cleanSymbol } from "../primitives";
 import { WashHero, heroH1, heroLead, splitH2 } from "../WashHero";
 import { cx } from "../ui";
 import { clock } from "../home/types";
@@ -19,7 +19,7 @@ type Bundle = { id: string; slug: string; title: string; subtitle: string; price
 type Sort = "default" | "weight" | "price";
 const SORTS: [Sort, string][] = [["default", "Syllabus order"], ["weight", "Sort: JEE weightage"], ["price", "Sort: price, low to high"]];
 
-export function ChaptersView({ chapters, top5, peek, bundles, initial }: { chapters: CardChapter[]; top5: (CardChapter & { formulas: string[] })[]; peek: Peek | null; bundles: Bundle[]; initial: { q: string; cls: number | "all"; sort: Sort } }) {
+export function ChaptersView({ chapters, top5, peek, bundles, initial }: { chapters: CardChapter[]; top5: (CardChapter & { formula: string | null; focus: string[] })[]; peek: Peek | null; bundles: Bundle[]; initial: { q: string; cls: number | "all"; sort: Sort } }) {
   const [q, setQ] = useState(initial.q);
   const [cls, setCls] = useState<number | "all">(initial.cls);
   const [sort, setSort] = useState<Sort>(initial.sort);
@@ -90,29 +90,33 @@ export function ChaptersView({ chapters, top5, peek, bundles, initial }: { chapt
             eyebrow="Highest JEE weightage"
             dot="gold"
             title={<>Most marks for your <Mark>time</Mark>.</>}
-            lead={`These ${top5.length} chapters carry the most weight in JEE Main. Short on time? Start here.`}
+            lead="The chapters that carry the most weight across recent JEE Main papers. Short on time? Start here."
           />
           <div className="no-scrollbar mx-auto mt-10 w-[min(1240px,calc(100%-var(--gutter)*2))] overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 pb-5 pt-6">
-            <div className="mx-auto flex w-max gap-2">
+            <div className="mx-auto flex w-max gap-4">
             {top5.map((c, i) => (
-              <Link key={c.id} href={`/chapter/${c.slug}`} className="flex shrink-0 items-end text-white">
-                <span aria-hidden className="-mr-6.5 select-none text-[120px] font-black leading-[0.78] tracking-[-0.06em] text-transparent [-webkit-text-stroke:3px_var(--muted-foreground)] tablet:text-[180px]">
-                  {i + 1}
-                </span>
-                <span className="relative block aspect-[2/3] w-[130px] overflow-hidden rounded-xl shadow-[0_16px_32px_-16px_rgb(0_0_0/0.45)] transition-transform duration-300 hover:-translate-y-1.5 tablet:w-[170px]" style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})` }}>
-                  {c.formulas.length === 0 && <span className={cx("absolute -right-2.5 top-1 whitespace-nowrap font-black leading-none text-white/20", c.symbol.length > 2 ? "text-[56px]" : "text-[96px]")}>{c.symbol}</span>}
-                  <span className="absolute inset-0 bg-gradient-to-b from-transparent from-35% to-black/85" />
-                  {c.formulas.length > 0 && (
-                    <span aria-hidden className="absolute inset-x-2.5 top-10.5 flex flex-col gap-2 text-[11px] tablet:top-13 tablet:gap-3 tablet:text-[13px]">
-                      {/* rendered on the server by chapterFormulas from our own list */}
-                      {c.formulas.map((f) => <span key={f} className="block whitespace-nowrap" dangerouslySetInnerHTML={{ __html: f }} />)}
+              <Link key={c.id} href={`/chapter/${c.slug}`} className="relative flex w-[232px] shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-card p-5 text-foreground shadow-[0_1px_2px_rgb(0_0_0/0.04),0_24px_48px_-38px_rgb(80_20_0/0.4)] transition duration-300 ease-mf hover:-translate-y-1 hover:border-primary/40">
+                <span aria-hidden className={cx("absolute -right-1 -top-1 whitespace-nowrap font-black leading-none text-primary/10", cleanSymbol(c.symbol).length > 2 ? "text-[48px]" : "text-[84px]")}><MathSymbol symbol={cleanSymbol(c.symbol)} /></span>
+                <span className="grid size-8 place-items-center rounded-lg bg-foreground text-sm font-extrabold text-card">{i + 1}</span>
+                <span className="mt-4 block text-[40px] font-black leading-none tracking-[-0.04em] text-primary tabular-nums">{c.jeeWeightage}%</span>
+                <span className="mt-1 block text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">JEE Main weightage</span>
+                <span aria-hidden className="mt-3 block h-1 overflow-hidden rounded-full bg-muted"><span className="block h-full rounded-full bg-primary" style={{ width: `${(c.jeeWeightage / top5[0].jeeWeightage) * 100}%` }} /></span>
+                <span className="mt-4 block text-[17px] font-extrabold leading-[1.2] tracking-[-0.02em]">{c.title}</span>
+                {c.formula && (
+                  // rendered on the server by chapterFormulas from our own list
+                  <span aria-hidden className="mt-3 block overflow-hidden whitespace-nowrap rounded-lg bg-muted px-3 py-2.5 text-[13px]" dangerouslySetInnerHTML={{ __html: c.formula }} />
+                )}
+                <span className="mt-4 block text-xs font-bold uppercase tracking-[0.06em] text-muted-foreground">Focus on</span>
+                <span className="mt-2 mb-4 flex flex-col gap-1.5">
+                  {c.focus.map((f) => (
+                    <span key={f} className="flex items-start gap-2 text-[13px] font-semibold leading-[1.3] text-secondary-foreground">
+                      <CheckIcon className="mt-0.5 size-3 shrink-0 text-primary" strokeWidth={3.5} /> {f}
                     </span>
-                  )}
-                  <span className="absolute left-2.5 top-2.5 rounded bg-white px-1.5 py-0.5 text-xs font-extrabold text-black">{c.jeeWeightage}% of JEE</span>
-                  <span className="absolute inset-x-3 bottom-3">
-                    <span className="block text-[15px] font-extrabold leading-[1.15]">{c.title}</span>
-                    <span className="mt-1 block text-xs opacity-80">Class {c.classLevel} · {inr(c.price)}</span>
-                  </span>
+                  ))}
+                </span>
+                <span className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-3 text-[13px]">
+                  <span className="text-muted-foreground">Class {c.classLevel} · {inr(c.price)}</span>
+                  <span className="font-extrabold text-primary">Start →</span>
                 </span>
               </Link>
             ))}

@@ -79,3 +79,17 @@ export function LockIcon({ className = "size-3" }: { className?: string }) {
 export function posterBg(from: string, to: string) {
   return { background: `linear-gradient(155deg, ${from}, ${to})` };
 }
+
+// Chapter symbols as big display glyphs. The site font has no combining arrow (v⃗ shows a "no glyph" box),
+// so the arrow is drawn on top, and the limits of ∫ₐᵇ are dropped because they don't scale at this size.
+export const cleanSymbol = (symbol: string) => symbol.replace(/[ₐᵇ]/g, "");
+export function MathSymbol({ symbol }: { symbol: string }) {
+  const base = symbol.replace("⃗", "");
+  if (base === symbol) return <>{symbol}</>;
+  return (
+    <span className="relative inline-block">
+      {base}
+      <span className="absolute inset-x-0 -top-[0.1em] text-center text-[0.5em] leading-none">→</span>
+    </span>
+  );
+}

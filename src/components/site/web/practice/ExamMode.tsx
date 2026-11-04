@@ -3,7 +3,7 @@
 // graded when the test ends (submitExam), so keys never reach the page during the test.
 import { MathText } from "@/components/MathText";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Check, Clock, LayoutGrid, X } from "lucide-react";
+import { Check, Clock, LayoutGrid, Minus, Plus, X } from "lucide-react";
 import { submitExam, type ExamResult } from "@/app/actions/practice";
 import { FORMAT_LABEL, type Answer } from "@/lib/grading";
 import { cx } from "../ui";
@@ -22,6 +22,7 @@ type Status = "notVisited" | "notAnswered" | "answered" | "marked" | "answeredMa
 type Slot = { visited: boolean; marked: boolean; saved: Answer | null; ms: number };
 
 const LETTERS = "ABCDEFGH";
+const MIN_QUESTIONS = 20;
 // Milliseconds since `t` (only ever called from event handlers).
 const since = (t: number) => Date.now() - t;
 const empty = (a: Answer | null | undefined) => !a || ((a.selected ?? null) === null && !(a.selectedMany?.length) && (a.numericValue ?? null) === null);
@@ -81,14 +82,23 @@ export function ExamMode({ chapterId, chapterTitle, section, candidate, question
   marking: { correct: number; wrong: number };
 }) {
   const [phase, setPhase] = useState<"setup" | "running" | "result">("setup");
-  const [count, setCount] = useState(Math.min(questions.length, 20));
+  const [countText, setCountText] = useState(String(MIN_QUESTIONS));
   const [perQ, setPerQ] = useState(2); // minutes per question; 0 = untimed
   const [mix, setMix] = useState(true);
   const [paper, setPaper] = useState<ExamQuestion[]>([]);
   const [result, setResult] = useState<ExamResult | null>(null);
 
+  const count = Number(countText);
+  const total = questions.length;
+  const countError =
+    total < MIN_QUESTIONS ? `Only ${total} ${total === 1 ? "question matches" : "questions match"} these filters. A test needs at least ${MIN_QUESTIONS}.`
+    : count < MIN_QUESTIONS ? `Enter minimum ${MIN_QUESTIONS} questions to create a test.`
+    : count > total ? `Only ${total} questions match these filters.`
+    : "";
+
   function start() {
-    const picked = (mix ? shuffle(questions) : questions).slice(0, Math.max(1, count));
+    if (countError) return;
+    const picked = (mix ? shuffle(questions) : questions).slice(0, count);
     setPaper(picked);
     setResult(null);
     setPhase("running");
@@ -116,32 +126,54 @@ export function ExamMode({ chapterId, chapterTitle, section, candidate, question
     return <ExamReview paper={paper} result={result} onRetake={() => setPhase("setup")} />;
   }
 
-  const counts = [10, 20, 30, 50].filter((n) => n < questions.length);
+  const times: [number, string][] = [[2, "2 min / question"], [3, "3 min / question"], [0, "No time limit"]];
+  const stepCls = "grid size-11 shrink-0 place-items-center text-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-35";
   return (
     <div className="rounded-xl border border-border bg-card p-6 tablet:p-8">
       <h2 className="text-2xl font-extrabold tracking-[-0.03em]">Exam mode</h2>
       <p className="mt-1 text-sm text-muted-foreground">
         A timed test in the JEE Main computer-based layout. Answers and solutions appear when you end the test. Marking: +{marking.correct} correct, {marking.wrong} wrong, 0 unattempted.
       </p>
-      <div className="mt-6 grid gap-5 sm:grid-cols-3">
-        <label className="text-sm font-bold">Questions
-          <select value={count} onChange={(e) => setCount(Number(e.target.value))} className="mt-1.5 block w-full rounded-lg border border-border bg-card px-3 py-2.5 font-semibold">
-            {counts.map((n) => <option key={n} value={n}>{n} questions</option>)}
-            <option value={questions.length}>All {questions.length}</option>
-          </select>
-        </label>
-        <label className="text-sm font-bold">Time
-          <select value={perQ} onChange={(e) => setPerQ(Number(e.target.value))} className="mt-1.5 block w-full rounded-lg border border-border bg-card px-3 py-2.5 font-semibold">
-            <option value={2}>2 min per question ({count * 2} min)</option>
-            <option value={3}>3 min per question ({count * 3} min)</option>
-            <option value={0}>No time limit</option>
-          </select>
-        </label>
-        <label className="flex items-end gap-2 pb-3 text-sm font-bold">
+      <div className="mt-6 grid gap-6 min-[860px]:grid-cols-[auto_1fr]">
+        <div>
+          <label htmlFor="exam-count" className="block text-sm font-bold">Number of questions</label>
+          <div className="mt-2 inline-flex items-center overflow-hidden rounded-lg border border-border">
+            <button type="button" aria-label="One question fewer" disabled={count <= MIN_QUESTIONS} onClick={() => setCountText(String(Math.max(MIN_QUESTIONS, count - 1)))} className={stepCls}><Minus className="size-4" /></button>
+            <input
+              id="exam-count"
+              inputMode="numeric"
+              autoComplete="off"
+              value={countText}
+              onChange={(e) => setCountText(e.target.value.replace(/\D/g, "").slice(0, 5))}
+              aria-invalid={!!countError}
+              aria-describedby="exam-count-note"
+              className="h-11 w-20 border-x border-border bg-card text-center font-bold tabular-nums outline-none focus:bg-muted"
+            />
+            <button type="button" aria-label="One question more" disabled={count >= total} onClick={() => setCountText(String(Math.min(total, Math.max(MIN_QUESTIONS, count + 1))))} className={stepCls}><Plus className="size-4" /></button>
+          </div>
+          <p id="exam-count-note" role={countError ? "alert" : undefined} className={cx("mt-2 text-sm", countError ? "font-semibold text-destructive" : "text-muted-foreground")}>
+            {countError ? `* ${countError}` : `${MIN_QUESTIONS} to ${total} questions`}
+          </p>
+        </div>
+        <fieldset>
+          <legend className="text-sm font-bold">Time</legend>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {times.map(([m, label]) => (
+              <label key={m} className={cx("flex h-11 cursor-pointer items-center rounded-lg border px-4 text-sm font-semibold transition has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground", perQ === m ? "border-foreground bg-foreground text-card" : "border-border hover:border-foreground/40")}>
+                <input type="radio" name="exam-time" checked={perQ === m} onChange={() => setPerQ(m)} className="sr-only" />
+                {label}
+              </label>
+            ))}
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">{perQ && !countError ? `${count * perQ} minutes in total` : perQ ? "Total time depends on the number of questions" : "Take as long as you like"}</p>
+        </fieldset>
+      </div>
+      <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-4 border-t border-border pt-6">
+        <button type="button" onClick={start} disabled={!!countError} className="h-11 rounded-lg bg-[oklch(0.45_0.13_150)] px-6 text-sm font-bold text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50">Start test</button>
+        <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm font-bold">
           <input type="checkbox" checked={mix} onChange={(e) => setMix(e.target.checked)} className="size-4" /> Shuffle questions
         </label>
       </div>
-      <button type="button" onClick={start} className="mt-7 rounded-lg bg-[oklch(0.45_0.13_150)] px-6 py-3 text-sm font-bold text-white hover:brightness-110">Start test</button>
     </div>
   );
 }

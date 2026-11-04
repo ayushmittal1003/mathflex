@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { accountContact, inr } from "@/lib/format";
-import { firstWeek, instructor, instructorNames, mentorshipCall } from "@/lib/site-content";
+import { firstWeek, instructorNames, mentorshipCall } from "@/lib/site-content";
 import { PaidCelebration } from "@/components/site/PaidCelebration";
 import { PaymentPoller } from "@/components/site/PaymentPoller";
 import { SiteLogo } from "@/components/site/web/SiteLogo";
@@ -182,7 +182,8 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
           </div>
 
           <VideoFrame
-            videoId={instructor.welcomeVideoId}
+            videoId={settings.siteVideos.mentor.videoId || null}
+            poster={settings.siteVideos.mentor.poster}
             caption={`Welcome from ${instructorNames(settings).short}`}
             sub="What is Mathflex and how students benefit from it"
             className="mx-auto mt-12 aspect-video w-[min(720px,calc(100%-var(--gutter)*2))]"

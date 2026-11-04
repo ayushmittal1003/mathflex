@@ -790,13 +790,33 @@ export async function deleteKnowledge(id: string) {
 
 /* ---------------- Settings ---------------- */
 
+// One entry of the Site videos card: the Bunny ID plus a new, kept or removed thumbnail.
+async function siteVideoFrom(form: FormData, key: keyof Settings["siteVideos"], cur: Settings["siteVideos"]) {
+  const videoId = normalizeBunnyRef(str(form, `siteVideos.${key}.VideoRef`));
+  const file = form.get(`siteVideos.${key}.posterFile`);
+  if (file instanceof File && file.size > 0) {
+    const ext = THUMBNAIL_TYPES[file.type];
+    if (!ext || file.size > 4 * 1024 * 1024) return { video: { ...cur[key], videoId }, failed: true };
+    try {
+      const poster = (await saveFile(new File([file], `thumbnail.${ext}`, { type: file.type }), "images")).url;
+      return { video: { videoId, poster }, failed: false };
+    } catch (e) {
+      console.error("video thumbnail upload failed", e);
+      return { video: { ...cur[key], videoId }, failed: true };
+    }
+  }
+  return { video: { videoId, poster: bool(form, `siteVideos.${key}.removePoster`) ? "" : cur[key].poster }, failed: false };
+}
+
 export async function saveSettings(form: FormData) {
   const me = await requireStaff("settings");
   const cur = await getSettings();
+  const [mentorVideo, callVideo] = await Promise.all([siteVideoFrom(form, "mentor", cur.siteVideos), siteVideoFrom(form, "call", cur.siteVideos)]);
   const features = Object.fromEntries(Object.keys(cur.features).map((k) => [k, bool(form, `features.${k}`)])) as Settings["features"];
   const xp = Object.fromEntries(Object.keys(cur.xp).map((k) => [k, int(form, `xp.${k}`, cur.xp[k as keyof Settings["xp"]])])) as Settings["xp"];
   const marking = Object.fromEntries(Object.keys(cur.marking).map((k) => [k, num(form, `marking.${k}`, cur.marking[k as keyof Settings["marking"]])])) as Settings["marking"];
   await Promise.all([
+    saveSetting("siteVideos", { mentor: mentorVideo.video, call: callVideo.video }),
     saveSetting("siteName", str(form, "siteName") || cur.siteName),
     saveSetting("tagline", str(form, "tagline")),
     saveSetting("supportEmail", str(form, "supportEmail")),
@@ -814,5 +834,5 @@ export async function saveSettings(form: FormData) {
   const flipped = (Object.keys(features) as (keyof Settings["features"])[]).filter((k) => features[k] !== cur.features[k]).map((k) => `${k} ${features[k] ? "on" : "off"}`);
   await audit(me, "settings.update", `Saved settings${flipped.length ? `: ${flipped.join(", ")}` : ""}`, { entity: "settings" });
   refreshSite();
-  redirect("/admin/settings?saved=1");
+  redirect(mentorVideo.failed || callVideo.failed ? "/admin/settings?error=thumbnail" : "/admin/settings?saved=1");
 }

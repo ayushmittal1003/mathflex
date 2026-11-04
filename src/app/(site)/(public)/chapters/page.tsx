@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getCatalog } from "@/lib/catalog";
 import { getSettings } from "@/lib/settings";
 import { chapterFormulas } from "@/lib/chapter-formulas";
+import { TOP_WEIGHTAGE } from "@/lib/top-weightage";
 import { ChaptersView } from "@/components/site/web/chapters/ChaptersView";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -31,11 +32,10 @@ export default async function ChaptersPage({ searchParams }: { searchParams: Pro
   const freeIds = settings.features.freePreviews ? new Set(freeParts.map((p) => p.chapterId)) : new Set<string>();
   const chapters = catalog.map((c) => ({ ...c, free: freeIds.has(c.id) }));
 
-  const top5 = [...chapters]
-    .filter((c) => c.jeeWeightage > 0)
-    .sort((a, b) => b.jeeWeightage - a.jeeWeightage)
-    .slice(0, 5)
-    .map((c) => ({ ...c, formulas: chapterFormulas(c.slug) }));
+  const top5 = TOP_WEIGHTAGE.flatMap((t) => {
+    const c = chapters.find((x) => x.slug === t.slug);
+    return c ? [{ ...c, jeeWeightage: t.weightage, focus: t.focus, formula: chapterFormulas(c.slug)[0] ?? null }] : [];
+  });
 
   // Hero peek: a featured chapter (or the highest-weightage one), preferring one with a free part.
   const pool = [...chapters].sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || Number(b.free) - Number(a.free) || b.jeeWeightage - a.jeeWeightage);

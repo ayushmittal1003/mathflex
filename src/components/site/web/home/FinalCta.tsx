@@ -1,14 +1,12 @@
 "use client";
-import { PosterImage } from "@/components/site/web/PosterImage";
-import { HoverClip } from "@/components/site/web/HoverClip";
 import Link from "next/link";
 import { useState } from "react";
 import { inr } from "@/lib/format";
-import { Caret, Mark, PlayIcon } from "../primitives";
+import { Caret, Mark, MathSymbol, PlayIcon, cleanSymbol } from "../primitives";
 import { button, cx, tone } from "../ui";
 import { glyphSize, type HomeChapter } from "./types";
 
-// 12 Final CTA with a fan of real chapter posters that spreads on hover.
+// 12 Final CTA with a fan of chapter cards, each showing its maths symbol, that spreads on hover.
 export function FinalCta({ chapters, minPrice }: { chapters: HomeChapter[]; minPrice: number | null }) {
   const [spread, setSpread] = useState(false);
   // Prefer high-weightage chapters for the fan, like the design's hand-picked set.
@@ -54,13 +52,12 @@ export function FinalCta({ chapters, minPrice }: { chapters: HomeChapter[]; minP
               <Link
                 key={c.id}
                 href={`/chapter/${c.slug}`}
-                className="absolute -bottom-[110px] left-1/2 -ml-[85px] aspect-[2/3] w-[170px] origin-[50%_140%] overflow-hidden rounded-xl text-white shadow-[0_20px_40px_-16px_rgb(0_0_0/0.4)] transition-transform duration-700 ease-mf"
-                style={{ background: `linear-gradient(155deg, ${c.coverFrom}, ${c.coverTo})`, transform: `translate(${x}px, ${y}px) rotate(${rot}deg)`, zIndex: 10 - Math.abs(Math.round(k)) }}
+                className="absolute -bottom-[110px] left-1/2 -ml-[85px] aspect-[2/3] w-[170px] origin-[50%_140%] overflow-hidden rounded-xl border border-white/10 bg-foreground text-white shadow-[0_20px_40px_-16px_rgb(0_0_0/0.4)] transition-transform duration-700 ease-mf"
+                style={{ transform: `translate(${x}px, ${y}px) rotate(${rot}deg)`, zIndex: 10 - Math.abs(Math.round(k)) }}
               >
-                {c.coverImage ? <PosterImage src={c.coverImage} sizes="170px" /> : <div className={cx("absolute -right-2 top-1 whitespace-nowrap font-black leading-none text-white/20", glyphSize(c.symbol, "text-[70px]", "text-[120px]"))}>{c.symbol}</div>}
-                <HoverClip chapterId={c.id} />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgb(255_255_255/0.22),transparent_45%),linear-gradient(transparent_30%,rgb(0_0_0/0.75)_60%)]" />
-                <div className="absolute inset-x-3 top-[150px] text-[15px] font-extrabold leading-[1.15] tracking-[-0.02em]">{c.title}</div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,color-mix(in_oklab,var(--primary)_55%,transparent),transparent_65%)]" />
+                <div aria-hidden className={cx("absolute inset-x-0 top-5 whitespace-nowrap text-center font-black leading-[1.1]", glyphSize(cleanSymbol(c.symbol), "text-[48px]", "text-[72px]"))}><MathSymbol symbol={cleanSymbol(c.symbol)} /></div>
+                <div className="absolute inset-x-3 top-[104px] line-clamp-2 text-center text-[14px] font-extrabold leading-[1.15] tracking-[-0.02em]">{c.title}</div>
               </Link>
             );
           })}

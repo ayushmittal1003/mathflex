@@ -9,7 +9,7 @@ import { questionStatuses, type QuestionStatus } from "@/lib/qbank";
 import { accuracyOf, DIFFICULTY_LABEL, fmtTime, FORMAT_LABEL } from "@/lib/grading";
 import { PracticePlayer, type PracticeQuestion } from "@/components/site/web/practice/PracticePlayer";
 import { ExamMode } from "@/components/site/web/practice/ExamMode";
-import { FilterMenus, type FilterMenu } from "@/components/site/web/practice/FilterMenus";
+import { PracticeFilters, type FilterGroup } from "@/components/site/web/practice/PracticeFilters";
 import { Download } from "lucide-react";
 import { posterBg } from "@/components/site/web/primitives";
 import { container, cx } from "@/components/site/web/ui";
@@ -25,10 +25,9 @@ type Search = { status?: string; difficulty?: string; type?: string; format?: st
 
 const RESOURCE_LABEL: Record<string, string> = { DPP_SHEET: "DPP", PYQ_SHEET: "PYQ", HANDWRITTEN: "Handwritten notes", NOTES: "Short notes", FORMULA_SHEET: "Formula sheet", MINDMAP: "Mind map", OTHER: "PDF" };
 
-const STATUS_FILTERS: [string, string][] = [["all", "All"], ["new", "Unattempted"], ["mistakes", "Mistakes"], ["bookmarked", "Bookmarked"], ["solved", "Solved"]];
+const STATUS_FILTERS: [string, string][] = [["new", "Unattempted"], ["mistakes", "Mistakes"], ["bookmarked", "Bookmarked"], ["solved", "Solved"]];
 
-// Grid and Sector aren't answer formats yet, so no question can match them and they stay greyed out.
-const QUESTION_TYPES: [string, string][] = [["NUMERICAL", FORMAT_LABEL.NUMERICAL], ["MULTIPLE", FORMAT_LABEL.MULTIPLE], ["SINGLE", FORMAT_LABEL.SINGLE], ["GRID", "Grid"], ["SECTOR", "Sector"]];
+const QUESTION_TYPES = ["NUMERICAL", "MULTIPLE", "SINGLE"] as const;
 
 export default async function ChapterPractice({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Search> }) {
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
@@ -57,7 +56,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
   const solved = rows.filter((r) => r.status === "correct").length;
   const mistakes = rows.filter((r) => r.status === "incorrect" || r.status === "partial").length;
 
-  // The dropdowns allow several values at once, joined by commas in the URL (?year=2023,2021).
+  // Difficulty, type and year allow several values at once, joined by commas in the URL (?year=2023,2021).
   const list = (v?: string) => String(v ?? "").split(",").filter(Boolean);
   const picked = { difficulty: list(sp.difficulty), format: list(sp.format), year: list(sp.year) };
 
@@ -97,11 +96,27 @@ export default async function ChapterPractice({ params, searchParams }: { params
   const yearCounts = new Map<number, number>();
   for (const q of questions) if (q.year) yearCounts.set(q.year, (yearCounts.get(q.year) ?? 0) + 1);
   const years = [...yearCounts.keys()].sort((a, b) => b - a);
-  const menus: FilterMenu[] = [
-    { param: "difficulty", all: "All levels", noun: "levels", options: [1, 2, 3].map((d) => ({ value: String(d), label: DIFFICULTY_LABEL[d], count: questions.filter((q) => q.difficulty === d).length })) },
-    { param: "format", all: "All question types", noun: "types", options: QUESTION_TYPES.map(([value, label]) => ({ value, label, count: questions.filter((q) => q.format === value).length })) },
-    ...(years.length ? [{ param: "year", all: "All years", noun: "years", options: years.map((y) => ({ value: String(y), label: String(y), count: yearCounts.get(y)! })) }] : []),
+  const statusCounts: Record<string, number> = {
+    new: rows.filter((r) => r.status === "new" || r.status === "skipped").length,
+    mistakes,
+    bookmarked: rows.filter((r) => marked.has(r.q.id)).length,
+    solved,
+  };
+  const groups: FilterGroup[] = [
+    ...(!exam ? [{ param: "status", title: "Status", all: "All questions", options: STATUS_FILTERS.map(([value, label]) => ({ value, label, count: statusCounts[value] })) }] : []),
+    { param: "type", title: "Source", all: "DPP + PYQ", options: [["DPP", "DPPs only"], ["PYQ", "PYQs only"]].map(([value, label]) => ({ value, label, count: questions.filter((q) => q.type === value).length })) },
+    { param: "difficulty", title: "Difficulty", all: "All levels", multi: true, options: [1, 2, 3].map((d) => ({ value: String(d), label: DIFFICULTY_LABEL[d], count: questions.filter((q) => q.difficulty === d).length })) },
+    { param: "format", title: "Question type", all: "All question types", multi: true, options: QUESTION_TYPES.map((f) => ({ value: f, label: FORMAT_LABEL[f], count: questions.filter((q) => q.format === f).length })) },
+    ...(years.length ? [{ param: "year", title: "Year", all: "All years", multi: true, compact: true, options: years.map((y) => ({ value: String(y), label: String(y), count: yearCounts.get(y)! })) }] : []),
+    ...(topics.length ? [{ param: "topic", title: "Topic", all: "All topics", options: topics.map((t) => ({ value: t, label: t, count: questions.filter((q) => q.topic === t).length })) }] : []),
   ];
+  const activeTopic = topics.find((t) => t.toLowerCase() === sp.topic?.toLowerCase());
+  const pickedAll: Record<string, string[]> = {
+    ...picked,
+    status: status === "all" ? [] : [status],
+    type: sp.type ? [sp.type] : [],
+    topic: activeTopic ? [activeTopic] : [],
+  };
   const href = (patch: Partial<Search>) => {
     const next = { ...sp, ...patch };
     const qs = new URLSearchParams(Object.entries(next).filter(([, v]) => v && v !== "all") as [string, string][]);
@@ -158,37 +173,18 @@ export default async function ChapterPractice({ params, searchParams }: { params
         </section>
       )}
 
-      {/* How to practise: instant feedback, or a timed test in the JEE computer-based layout. */}
-      <div className="mt-8 inline-flex rounded-lg bg-foreground p-1" role="tablist" aria-label="Practice mode">
-        {([["instant", "Instant answers"], ["exam", "Exam mode"]] as const).map(([k, label]) => (
-          <Link key={k} href={href({ mode: k === "exam" ? "exam" : undefined, status: k === "exam" ? undefined : sp.status })} scroll={false} role="tab" aria-selected={(k === "exam") === exam}
-            className={cx("rounded-md px-4 py-2 text-sm font-bold transition", (k === "exam") === exam ? "bg-card text-foreground" : "text-card/75 hover:text-card")}>{label}</Link>
-        ))}
+      <div className="mt-8">
+        <PracticeFilters path={`/practice/${slug}`} query={sp} groups={groups} picked={pickedAll}>
+          {/* How to practise: instant feedback, or a timed test in the JEE computer-based layout. */}
+          <div className="inline-flex rounded-lg bg-foreground p-1" role="tablist" aria-label="Practice mode">
+            {([["instant", "Instant answers"], ["exam", "Exam mode"]] as const).map(([k, label]) => (
+              <Link key={k} href={href({ mode: k === "exam" ? "exam" : undefined, status: k === "exam" ? undefined : sp.status })} scroll={false} role="tab" aria-selected={(k === "exam") === exam}
+                className={cx("rounded-md px-4 py-2 text-sm font-bold transition", (k === "exam") === exam ? "bg-card text-foreground" : "text-card/75 hover:text-card")}>{label}</Link>
+            ))}
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">{exam ? "A timed test: answers and explanations appear when you end the test." : "See the answer and explanation right after each question."}</p>
+        </PracticeFilters>
       </div>
-      <p className="mt-2 text-sm text-muted-foreground">{exam ? "A timed test: answers and explanations appear when you end the test." : "See the answer and explanation right after each question."}</p>
-
-      {/* Filters */}
-      <nav className="mt-6 space-y-3" aria-label="Filters">
-        {!exam && <Chips>
-          {STATUS_FILTERS.map(([k, label]) => (
-            <Chip key={k} href={href({ status: k })} active={status === k}>
-              {label}{k === "mistakes" && mistakes ? ` (${mistakes})` : ""}
-            </Chip>
-          ))}
-        </Chips>}
-        <Chips>
-          <Chip href={href({ type: undefined })} active={!sp.type}>DPP + PYQ</Chip>
-          <Chip href={href({ type: "DPP" })} active={sp.type === "DPP"}>DPPs only</Chip>
-          <Chip href={href({ type: "PYQ" })} active={sp.type === "PYQ"}>PYQs only</Chip>
-        </Chips>
-        <FilterMenus path={`/practice/${slug}`} query={sp} menus={menus} selected={picked} />
-        {topics.length > 0 && (
-          <Chips>
-            <Chip href={href({ topic: undefined })} active={!sp.topic}>All topics</Chip>
-            {topics.map((t) => <Chip key={t} href={href({ topic: t })} active={sp.topic?.toLowerCase() === t.toLowerCase()}>{t}</Chip>)}
-          </Chips>
-        )}
-      </nav>
 
       <div className="mt-8">
         {questions.length && exam ? (
@@ -208,24 +204,5 @@ export default async function ChapterPractice({ params, searchParams }: { params
         )}
       </div>
     </div>
-  );
-}
-
-function Chips({ children }: { children: React.ReactNode }) {
-  return <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">{children}</div>;
-}
-
-function Chip({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      scroll={false}
-      className={cx(
-        "tap relative shrink-0 rounded-full border px-4 py-2 text-sm font-bold transition duration-200 ease-mf",
-        active ? "border-foreground bg-foreground text-card" : "border-border bg-card text-secondary-foreground hover:border-foreground/40",
-      )}
-    >
-      {children}
-    </Link>
   );
 }

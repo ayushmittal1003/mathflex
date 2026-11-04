@@ -2,6 +2,8 @@ import { getSettings, DEFAULT_SETTINGS } from "@/lib/settings";
 import { requireStaff } from "@/lib/auth";
 import { cashfreeConfigured, cashfreeMode } from "@/lib/cashfree";
 import { Card, Field, PageHeader, Toggle, SubmitButton } from "@/components/admin/ui";
+import { VideoField } from "@/components/admin/VideoField";
+import { bunnyConfigured } from "@/lib/video";
 import { saveSettings } from "../actions";
 
 export const metadata = { title: "Settings" };
@@ -21,6 +23,11 @@ const FEATURE_LABELS: Record<keyof typeof DEFAULT_SETTINGS.features, [string, st
   practice: ["Practice question bank", "Chapter-wise Q bank with accuracy & marks analytics"],
 };
 
+const SITE_VIDEOS: { key: keyof typeof DEFAULT_SETTINGS.siteVideos; title: string; hint: string }[] = [
+  { key: "mentor", title: "Mentor video", hint: "“Your mentor” section on the home and About pages, and the welcome screen after payment" },
+  { key: "call", title: "Book a call video", hint: "“What happens on the call” on the Book a call page" },
+];
+
 const MARKING_LABELS: Record<keyof typeof DEFAULT_SETTINGS.marking, [string, string]> = {
   correct: ["Correct answer", "JEE: +4"],
   wrong: ["Wrong (single / numerical)", "JEE Main: −1"],
@@ -36,9 +43,9 @@ const XP_LABELS: Record<keyof typeof DEFAULT_SETTINGS.xp, string> = {
   dailyStreakBonus: "Daily streak bonus",
 };
 
-export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
   await requireStaff("settings");
-  const [s, { saved }] = await Promise.all([getSettings(), searchParams]);
+  const [s, { saved, error }] = await Promise.all([getSettings(), searchParams]);
   return (
     <form action={saveSettings} className="max-w-4xl space-y-6">
       <PageHeader title="Settings & features" subtitle="Switch features on and off and change prices — live instantly, no deploy needed." action={<SubmitButton>Save all</SubmitButton>} />
@@ -48,6 +55,30 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <div className="grid gap-1 sm:grid-cols-2">
           {(Object.keys(FEATURE_LABELS) as (keyof typeof FEATURE_LABELS)[]).map((k) => (
             <Toggle key={k} name={`features.${k}`} label={FEATURE_LABELS[k][0]} hint={FEATURE_LABELS[k][1]} defaultChecked={s.features[k]} />
+          ))}
+        </div>
+      </Card>
+
+      {error && <p role="alert" className="rounded-xl bg-bad/10 p-3 text-sm font-semibold text-bad">Other settings were saved, but a thumbnail wasn&apos;t: use a PNG, JPG or WebP image under 4 MB.</p>}
+
+      <Card title="Site videos" action={<span className="text-xs text-muted">Play on hover, muted until the visitor clicks</span>}>
+        <div className="grid gap-6 lg:grid-cols-2">
+          {SITE_VIDEOS.map((v) => (
+            <div key={v.key} className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold">{v.title}</p>
+                <p className="text-xs text-muted">{v.hint}</p>
+              </div>
+              <VideoField bunnyOnly defaultProvider="BUNNY" defaultRef={s.siteVideos[v.key].videoId} bunnyReady={bunnyConfigured()} title={v.title} prefix={`siteVideos.${v.key}.`} />
+              <Field label="Thumbnail" hint="16:9 works best. Without one, Bunny's auto-generated frame is used.">
+                {s.siteVideos[v.key].poster && (
+                  // eslint-disable-next-line @next/next/no-img-element -- admin preview of an uploaded thumbnail
+                  <img src={s.siteVideos[v.key].poster} alt="" className="mb-2 aspect-video w-48 rounded-lg border border-border object-cover" />
+                )}
+                <input name={`siteVideos.${v.key}.posterFile`} type="file" accept="image/png,image/jpeg,image/webp" className="input" />
+              </Field>
+              {s.siteVideos[v.key].poster && <label className="flex items-center gap-2 text-sm"><input type="checkbox" name={`siteVideos.${v.key}.removePoster`} /> Remove this thumbnail</label>}
+            </div>
           ))}
         </div>
       </Card>

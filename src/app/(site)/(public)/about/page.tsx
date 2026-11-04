@@ -200,7 +200,7 @@ export default async function AboutPage() {
       </section>
 
       <div>
-        <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} videoId={instructor.welcomeVideoId} videoTitle={`Meet ${names.full.split(" ")[0]} — what MathFlex is and how it helps you`} />
+        <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} videoId={settings.siteVideos.mentor.videoId || null} poster={settings.siteVideos.mentor.poster} videoTitle={`Meet ${names.full.split(" ")[0]} — what MathFlex is and how it helps you`} />
       </div>
 
       <CtaBand>

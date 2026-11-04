@@ -11,14 +11,16 @@ export function VideoField({
   bunnyReady,
   title,
   prefix = "",
+  bunnyOnly = false,
 }: {
   defaultProvider: string;
   defaultRef: string;
   bunnyReady: boolean;
   title: string;
   prefix?: string;
+  bunnyOnly?: boolean; // for videos played through the Bunny player: hides the provider choice
 }) {
-  const [provider, setProvider] = useState(defaultProvider || "URL");
+  const [provider, setProvider] = useState(bunnyOnly ? "BUNNY" : defaultProvider || "URL");
   const [ref, setRef] = useState(defaultRef);
   const [pct, setPct] = useState<number | null>(null);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
@@ -47,7 +49,7 @@ export function VideoField({
         up.start();
       });
       setRef(ticket.videoId);
-      setMsg({ text: "Uploaded! Bunny is encoding it now. Save the part, then use “Sync duration” in a few minutes.", ok: true });
+      setMsg({ text: bunnyOnly ? "Uploaded! Bunny is encoding it now. Click “Save all” to put it on the site." : "Uploaded! Bunny is encoding it now. Save the part, then use “Sync duration” in a few minutes.", ok: true });
     } catch (e) {
       setMsg({ text: (e as Error).message || "The upload failed. Please try again.", ok: false });
     } finally {
@@ -59,12 +61,14 @@ export function VideoField({
 
   return (
     <div className="space-y-2">
-      <div className="grid gap-2 sm:grid-cols-[160px_1fr]">
-        <select name={prefix ? `${prefix}VideoProvider` : "videoProvider"} value={provider} onChange={(e) => setProvider(e.target.value)} className="input">
-          <option value="BUNNY">Bunny Stream</option>
-          <option value="YOUTUBE">YouTube (unlisted)</option>
-          <option value="URL">Direct URL</option>
-        </select>
+      <div className={bunnyOnly ? "" : "grid gap-2 sm:grid-cols-[160px_1fr]"}>
+        {!bunnyOnly && (
+          <select name={prefix ? `${prefix}VideoProvider` : "videoProvider"} value={provider} onChange={(e) => setProvider(e.target.value)} className="input">
+            <option value="BUNNY">Bunny Stream</option>
+            <option value="YOUTUBE">YouTube (unlisted)</option>
+            <option value="URL">Direct URL</option>
+          </select>
+        )}
         <input name={prefix ? `${prefix}VideoRef` : "videoRef"} value={ref} onChange={(e) => setRef(e.target.value)} placeholder={placeholder} className="input" />
       </div>
       {provider === "BUNNY" && (

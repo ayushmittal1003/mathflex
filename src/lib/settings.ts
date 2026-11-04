@@ -11,6 +11,12 @@ export const DEFAULT_SETTINGS = {
   whatsappNumber: "917888558921",
   mentorName: "Karan",
 
+  // Videos on the home/about pages and /book-a-call: a Bunny video ID and an uploaded thumbnail ("" = none).
+  siteVideos: {
+    mentor: { videoId: "581f9d86-7fe5-4e96-b2e2-88a6d7ed36fe", poster: "" },
+    call: { videoId: "", poster: "" },
+  },
+
   // Commerce
   currencySymbol: "₹",
   mentorshipPrice: 300,

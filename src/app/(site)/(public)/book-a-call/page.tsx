@@ -67,7 +67,7 @@ export default async function BookACallPage() {
             <a href="#what" className={cx(button.md, tone.glass)}>What you get</a>
           </div>
         </div>
-        <VideoFrame videoId={instructor.introVideoId} caption="What happens on the call" sub={`${names.short} explains`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-var(--gutter)*2))]" />
+        <VideoFrame videoId={settings.siteVideos.call.videoId || null} poster={settings.siteVideos.call.poster} hoverPlay caption="What happens on the call" sub={`${names.short} explains`} className="mx-auto mt-12 aspect-video w-[min(980px,calc(100%-var(--gutter)*2))]" />
       </WashHero>
 
       <section id="what" className="scroll-mt-20 pb-12 pt-12 tablet:pb-22 tablet:pt-24">

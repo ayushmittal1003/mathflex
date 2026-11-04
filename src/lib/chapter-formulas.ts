@@ -1,8 +1,9 @@
 import { toHtml } from "./math-html";
 
-// Two signature formulas per chapter, for the "Most marks for your time" posters. They are short on
-// purpose: the posters are narrow. A chapter missing from this list shows its symbol instead.
+// Two signature formulas per chapter, for the "Most marks for your time" cards. They are short on
+// purpose: the cards are narrow. A chapter missing from this list simply shows no formula.
 const FORMULAS: Record<string, [string, string]> = {
+  "application-of-derivatives": ["f'(x)>0\\Rightarrow f\\uparrow", "f'(c)=0"],
   "3d-geometry": ["l^2+m^2+n^2=1", "\\vec r=\\vec a+\\lambda\\vec b"],
   "basic-maths": ["\\log_a b=\\frac{\\ln b}{\\ln a}", "|x|=\\sqrt{x^2}"],
   "binomial-theorem": ["T_{r+1}={}^nC_r\\,a^{n-r}b^r", "\\sum_{r=0}^{n}{}^nC_r=2^n"],
