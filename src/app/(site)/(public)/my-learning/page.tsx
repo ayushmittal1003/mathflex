@@ -10,7 +10,10 @@ import { levelFromXp } from "@/lib/gamification";
 import { activitySeries } from "@/lib/analytics";
 import { requestNow } from "@/lib/time";
 import { isStaff } from "@/lib/permissions";
-import { duration } from "@/lib/format";
+import { duration, inr, isGuestEmail } from "@/lib/format";
+import { BuyButton } from "@/components/site/web/BuyButton";
+import { firebaseWebConfig } from "@/lib/firebase";
+import { SecureAccess } from "@/components/site/web/SecureAccess";
 import { PlayIcon, posterBg } from "@/components/site/web/primitives";
 import { ChapterCard } from "@/components/site/web/ChapterCard";
 import { button, container, cx, tone } from "@/components/site/web/ui";
@@ -42,7 +45,7 @@ export default async function MyLearning() {
     db.partProgress.findFirst({ where: { userId: user.id, part: { chapterId: { in: ownedIds } } }, orderBy: { updatedAt: "desc" }, select: { part: { select: { chapterId: true } } } }),
     db.partProgress.findMany({ where: { userId: user.id, videoDone: true, practiceDone: true }, select: { partId: true } }),
     db.part.findMany({ where: { isFreePreview: true }, select: { chapterId: true } }),
-    db.entitlement.findMany({ where: { userId: user.id, expiresAt: { lte: new Date(now) } }, select: { chapterId: true, courseId: true, chapter: { select: { title: true } }, course: { select: { title: true } } } }),
+    db.entitlement.findMany({ where: { userId: user.id, expiresAt: { lte: new Date(now) } }, orderBy: { expiresAt: "asc" }, select: { chapterId: true, courseId: true, expiresAt: true, chapter: { select: { title: true, slug: true, price: true, isPublished: true } }, course: { select: { title: true, slug: true, price: true, isPublished: true } } } }),
   ]);
   const f = settings.features;
 
@@ -84,7 +87,10 @@ export default async function MyLearning() {
   const ended = [...new Map(
     endedEnts
       .filter((e) => (e.chapterId ? !owned.has(e.chapterId) : !activeCourseIds.has(e.courseId)))
-      .map((e) => [e.chapterId ?? e.courseId, e.chapter?.title ?? e.course?.title ?? "A plan"]),
+      .map((e) => {
+        const item = e.chapter ?? e.course!;
+        return [e.chapterId ?? e.courseId, { ...item, id: (e.chapterId ?? e.courseId)!, type: (e.chapterId ? "CHAPTER" : "COURSE") as "CHAPTER" | "COURSE", expiresAt: e.expiresAt }] as const;
+      }),
   ).values()];
 
   const suggestions = catalog
@@ -106,6 +112,7 @@ export default async function MyLearning() {
 
   return (
     <div className={cx(container.listing, "pb-28 pt-[calc(86px+36px)]")}>
+      {isGuestEmail(user.email) && <SecureAccess firebase={firebaseWebConfig()} className="mb-8" />}
       {isStaff(user.role) && (
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-muted px-5 py-3.5 text-[15px] font-semibold">
           <span>You&apos;re signed in as a team member.</span>
@@ -194,12 +201,25 @@ export default async function MyLearning() {
 
       {/* Plans that ended */}
       {ended.length > 0 && (
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/60 px-5 py-4">
-          <span className="text-[15px] font-semibold">
-            {ended.length === 1 ? `Your access to ${ended[0]} has ended.` : `Access to ${ended.length} of your plans has ended.`} <span className="font-normal text-secondary-foreground">Your progress is saved; renew to pick up where you left off.</span>
-          </span>
-          <Link href="/plans" className={cx(button.sm, tone.primaryFlat)}>See plans</Link>
-        </div>
+        <section className="mt-6 rounded-xl border border-bad/30 bg-bad/5 px-5 py-4" aria-labelledby="expired-plans">
+          <h2 id="expired-plans" className="text-[17px] font-extrabold tracking-[-0.02em]">Expired</h2>
+          <p className="mt-0.5 text-sm text-secondary-foreground">Your progress is saved. Buy again to pick up where you left off.</p>
+          <ul className="mt-3 divide-y divide-border">
+            {ended.map((p) => (
+              <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                <span className="min-w-0">
+                  <span className="block text-[15px] font-bold">{p.title}</span>
+                  <span className="block text-[13px] text-bad">Expired on {p.expiresAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
+                </span>
+                {p.isPublished ? (
+                  <BuyButton item={{ type: p.type, id: p.id }} className={cx(button.sm, tone.primaryFlat)}>Renew · {inr(p.price)}</BuyButton>
+                ) : (
+                  <span className="text-xs text-muted-foreground">No longer on sale</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {/* Plans running out */}

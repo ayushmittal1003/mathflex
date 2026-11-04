@@ -102,7 +102,7 @@ export default async function Dashboard() {
           <ul className="divide-y divide-border text-sm">
             {recent.map((o) => (
               <li key={o.id} className="flex items-center gap-3 py-2.5">
-                <span className="min-w-0 flex-1 truncate"><span className="font-semibold">{o.user.name}</span> <span className="text-muted">· {o.orderNo}</span></span>
+                <span className="min-w-0 flex-1 truncate"><span className="font-semibold">{o.user?.name ?? "Guest"}</span> <span className="text-muted">· {o.orderNo}</span></span>
                 <Badge tone={o.status === "PAID" ? "ok" : o.status === "PENDING" ? "gold" : "bad"}>{o.status}</Badge>
                 <span className="w-16 text-right font-bold">{inr(o.total)}</span>
               </li>

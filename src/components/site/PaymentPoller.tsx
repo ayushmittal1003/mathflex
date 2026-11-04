@@ -5,7 +5,7 @@ import { refreshPaymentStatus } from "@/app/actions/checkout";
 
 // While an order is still processing, ask the server (which asks Cashfree) every few
 // seconds for up to two minutes, then re-render the page once it settles.
-export function PaymentPoller({ orderNo }: { orderNo: string }) {
+export function PaymentPoller({ orderNo, token }: { orderNo: string; token?: string }) {
   const router = useRouter();
   useEffect(() => {
     let tries = 0;
@@ -13,7 +13,7 @@ export function PaymentPoller({ orderNo }: { orderNo: string }) {
     const t = setInterval(async () => {
       if (stopped) return;
       tries++;
-      const status = await refreshPaymentStatus(orderNo).catch(() => "ERROR");
+      const status = await refreshPaymentStatus(orderNo, token).catch(() => "ERROR");
       if (status !== "PENDING" && status !== "ERROR") {
         stopped = true;
         clearInterval(t);
@@ -23,6 +23,6 @@ export function PaymentPoller({ orderNo }: { orderNo: string }) {
       }
     }, 4000);
     return () => clearInterval(t);
-  }, [orderNo, router]);
+  }, [orderNo, token, router]);
   return null;
 }

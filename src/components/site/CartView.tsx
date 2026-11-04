@@ -1,13 +1,12 @@
 "use client";
 import { PosterImage } from "@/components/site/web/PosterImage";
 import { formatPhone, mentorshipCall, mentorshipPlan, supportEmail, supportPhone } from "@/lib/site-content";
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CircleAlert, Loader2 } from "lucide-react";
 import { cart, useCart } from "./cart-store";
 import { getQuote, placeOrder } from "@/app/actions/checkout";
-import { login, type AuthState } from "@/app/actions/auth";
 import { load } from "@cashfreepayments/cashfree-js";
 import type { Quote } from "@/lib/pricing";
 import { inr, pctOff, validity } from "@/lib/format";
@@ -23,7 +22,7 @@ import { cx } from "./web/ui";
 export type CheckoutMeta = {
   chapters: Record<string, { title: string; symbol: string; coverFrom: string; coverTo: string; coverImage: string | null; classLevel: number; parts: number; price: number; mrp: number }>;
   courses: { id: string; title: string; price: number; chapterIds: string[]; count: number }[];
-  user: { name: string; email: string } | null;
+  user: { name: string; email: string; needEmail: boolean; needPhone: boolean } | null;
   whatsapp: string;
 };
 
@@ -43,8 +42,11 @@ export function CartView(props: {
   const [mentorChoice, setMentorChoice] = useState<boolean | null>(props.initialMentorship);
   const mentor = props.mentorship.enabled && (mentorChoice ?? items.length > 0);
   const [error, setError] = useState<string | null>(null);
-  const [needPhone, setNeedPhone] = useState(false);
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [fieldError, setFieldError] = useState<{ email?: string; phone?: string }>({});
+  const emailInput = useRef<HTMLInputElement>(null);
+  const phoneInput = useRef<HTMLInputElement>(null);
   const [summaryOpen, setSummaryOpen] = useState(false); // phones: the summary is a collapsible bar at the top
   const kbOffset = useKeyboardOffset();
   const [paying, startPay] = useTransition();
@@ -66,16 +68,26 @@ export function CartView(props: {
 
   const empty = items.length === 0 && !mentor;
 
+  const askEmail = !props.loggedIn || !!props.meta.user?.needEmail;
+  const askPhone = !props.loggedIn || !!props.meta.user?.needPhone;
+  const emailOk = !askEmail || /^\S+@\S+\.\S+$/.test(email.trim());
+  const phoneOk = !askPhone || /^[6-9]\d{9}$/.test(phone);
+
   function pay() {
     setError(null);
+    setFieldError({});
+    if (!emailOk || !phoneOk) {
+      setFieldError({ email: emailOk ? undefined : "Enter a valid email address.", phone: phoneOk ? undefined : "Enter your 10-digit mobile number." });
+      (emailOk ? phoneInput : emailInput).current?.focus();
+      return;
+    }
     startPay(async () => {
-      const res = await placeOrder(items, coupon, mentor, needPhone ? phone : undefined);
+      const res = await placeOrder(items, coupon, mentor, { email: askEmail ? email : undefined, phone: askPhone ? phone : undefined });
       if (!res.ok) {
         if (res.login) router.push(`/login?next=${encodeURIComponent(`/checkout?mentorship=${mentor ? 1 : 0}`)}`);
-        else {
-          if (res.needPhone) setNeedPhone(true);
-          setError(res.error);
-        }
+        else if (res.needEmail) setFieldError({ email: res.error });
+        else if (res.needPhone) setFieldError({ phone: res.error });
+        else setError(res.error);
         return;
       }
       if (res.mode === "free") {
@@ -83,7 +95,7 @@ export function CartView(props: {
         router.push(`/payment/status?order=${res.orderNo}`);
       } else if (res.mode === "mock") {
         cart.clear();
-        router.push(`/payment/mock?order=${res.orderId}`);
+        router.push(`/payment/mock?order=${res.orderId}${res.token ? `&t=${res.token}` : ""}`);
       } else {
         await openCashfree(res.paymentSessionId, res.env);
       }
@@ -110,7 +122,7 @@ export function CartView(props: {
   const canPay = !paying && !loading && !!quote?.lines.length;
   const mrpTotal = quote?.lines.reduce((s, l) => s + l.mrp, 0) ?? 0;
   const saved = quote ? mrpTotal - quote.subtotal + quote.discount : 0;
-  const step = empty ? 0 : signedIn ? 2 : 1;
+  const step = empty ? 0 : emailOk && phoneOk ? 2 : 1;
 
   // Access length per kind of line, from the catalogue (display only).
   const daysOf = (type: "CHAPTER" | "COURSE") => [...new Set((quote?.lines ?? []).filter((l) => l.type === type).map((l) => (type === "CHAPTER" ? props.cartMeta.chapters[l.id ?? ""]?.validityDays : props.cartMeta.courses.find((c) => c.id === l.id)?.validityDays)).filter((n): n is number => !!n))].sort((a, b) => a - b);
@@ -118,7 +130,7 @@ export function CartView(props: {
     ...(daysOf("CHAPTER").length ? [`${daysOf("CHAPTER").map(validity).join(" / ")} access per chapter`] : []),
     ...(daysOf("COURSE").length ? [`${daysOf("COURSE").map(validity).join(" / ")} access per course`] : []),
   ];
-  const payLabel = !quote?.lines.length ? "Your cart is empty" : signedIn ? `Pay ${inr(quote?.total ?? 0)}` : "Log in to pay";
+  const payLabel = !quote?.lines.length ? "Your cart is empty" : `Pay ${inr(quote?.total ?? 0)}`;
   const card = "overflow-hidden rounded-xl border border-border bg-card";
   const stepDot = (n: number, done: boolean, active: boolean) => (
     <span className={cx("grid size-7 shrink-0 place-items-center rounded-full text-[13px] font-extrabold", done ? "bg-ok text-white" : active ? "bg-foreground text-white" : "bg-muted text-muted-foreground")}>
@@ -132,7 +144,7 @@ export function CartView(props: {
         <div className="mx-auto grid h-18 w-[min(1160px,calc(100%-var(--gutter)*2))] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
           <Link href="/" className="tap relative justify-self-start" aria-label="Mathflex home"><SiteLogo className="h-[25px]" /></Link>
           <ol className="hidden items-center gap-2.5 tablet:flex" aria-label="Checkout steps">
-            {["Cart", "Sign in", "Pay"].map((label, i) => {
+            {["Cart", "Your details", "Pay"].map((label, i) => {
               const done = i < step;
               const active = i === step;
               return (
@@ -161,7 +173,7 @@ export function CartView(props: {
         </div>
 
         <div className="mt-7 flex flex-wrap items-start gap-7">
-          <div className="grid min-w-0 flex-[1_1_560px] gap-5">
+          <div className="grid min-w-0 flex-[1_1_560px] grid-cols-[minmax(0,1fr)] gap-5">
             {/* 1 · Cart */}
             <section className={card}>
               <div className="flex items-center gap-3 border-b border-border px-5.5 py-5">
@@ -253,13 +265,13 @@ export function CartView(props: {
             {/* Upsell: related chapters (server prices) */}
             {!empty && <Recommendations meta={props.cartMeta} max={3} className="rounded-xl border border-border bg-card px-5.5 py-5" />}
 
-            {/* 2 · Sign in (email + password, the existing login action) */}
-            <section className={cx(card, !signedIn && !empty && "border-foreground")}>
+            {/* 2 · Contact details. No login needed to pay or to start learning. */}
+            <section className={cx(card, step === 1 && "border-foreground")}>
               <div className="flex items-center gap-3 border-b border-border px-5.5 py-5">
-                {stepDot(2, signedIn, step === 1)}
-                <h2 className="text-[19px] font-extrabold tracking-[-0.02em]">{signedIn ? "Signed in" : "Sign in to pay"}</h2>
+                {stepDot(2, step === 2, step === 1)}
+                <h2 className="text-[19px] font-extrabold tracking-[-0.02em]">{signedIn ? "Signed in" : "Your details"}</h2>
               </div>
-              {signedIn && meta.user ? (
+              {signedIn && meta.user && (
                 <div className="flex animate-mf-rise items-center gap-3.5 px-5.5 py-4.5">
                   <span className="grid size-[42px] shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-brand-2 font-extrabold text-white">{meta.user.name.trim()[0]?.toUpperCase()}</span>
                   <div className="min-w-0">
@@ -268,13 +280,57 @@ export function CartView(props: {
                   </div>
                   <span className="ml-auto shrink-0 rounded-md bg-ok/14 px-2 py-1 text-xs font-bold text-ok-strong">Signed in</span>
                 </div>
-              ) : (
-                <InlineLogin next={`/checkout?mentorship=${mentor ? 1 : 0}`} />
+              )}
+              {(askEmail || askPhone) && (
+                <div className="grid gap-4 px-5.5 pb-5.5 pt-5">
+                  {!signedIn && <p className="text-sm leading-[1.5] text-secondary-foreground">No account or password needed. Your chapters open as soon as your payment is confirmed. Use details you can access: they let you log back in later.</p>}
+                  {askEmail && (
+                    <label className="grid gap-1.5">
+                      <span className="text-[13px] font-bold">Email</span>
+                      <input
+                        ref={emailInput}
+                        value={email}
+                        onChange={(e) => { setEmail(e.target.value); setFieldError((f) => ({ ...f, email: undefined })); }}
+                        type="email"
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        aria-invalid={!!fieldError.email}
+                        className="h-12 min-w-0 rounded-lg border border-input bg-card px-3.5 text-base outline-none focus:border-ring focus:ring-3 focus:ring-ring/25"
+                      />
+                      {fieldError.email && <span role="alert" className="text-[13px] font-semibold text-bad">{fieldError.email}</span>}
+                    </label>
+                  )}
+                  {askPhone && (
+                    <label className="grid gap-1.5">
+                      <span className="text-[13px] font-bold">Mobile number</span>
+                      <span className="flex gap-2">
+                        <span className="grid h-12 shrink-0 place-items-center rounded-lg border border-border bg-muted px-3.5 text-[15px] font-bold">+91</span>
+                        <input
+                          ref={phoneInput}
+                          value={phone}
+                          onChange={(e) => { setPhone(e.target.value.replace(/\D/g, "").slice(0, 10)); setFieldError((f) => ({ ...f, phone: undefined })); }}
+                          type="tel"
+                          inputMode="numeric"
+                          autoComplete="tel-national"
+                          placeholder="10-digit mobile"
+                          aria-invalid={!!fieldError.phone}
+                          className="h-12 min-w-0 flex-1 rounded-lg border border-input bg-card px-3.5 text-base tracking-[0.02em] outline-none focus:border-ring focus:ring-3 focus:ring-ring/25"
+                        />
+                      </span>
+                      {fieldError.phone && <span role="alert" className="text-[13px] font-semibold text-bad">{fieldError.phone}</span>}
+                    </label>
+                  )}
+                  {!signedIn && (
+                    <span className="text-xs text-muted-foreground">
+                      Already have an account? <Link href={`/login?next=${encodeURIComponent(`/checkout?mentorship=${mentor ? 1 : 0}`)}`} className="inline-flex min-h-11 items-center font-bold text-primary">Log in</Link>
+                    </span>
+                  )}
+                </div>
               )}
             </section>
 
             {/* 3 · Payment */}
-            <section className={cx(card, !signedIn && "opacity-55")}>
+            <section className={card}>
               <div className="flex items-center gap-3 px-5.5 py-5">
                 {stepDot(3, false, step === 2)}
                 <h2 className="text-[19px] font-extrabold tracking-[-0.02em]">Payment</h2>
@@ -292,27 +348,13 @@ export function CartView(props: {
                   </div>
                 )}
                 <p className="text-sm leading-[1.5] text-secondary-foreground">
-                  {signedIn ? "You'll pay on Cashfree's secure page and come straight back here." : "Sign in above, then pay on Cashfree's secure page."}
+                  You&apos;ll pay on Cashfree&apos;s secure page and come straight back here.
                 </p>
                 <div className="mt-3.5 flex flex-wrap gap-2">
                   {["UPI", "Debit / credit card", "Netbanking"].map((m) => <span key={m} className="rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-bold">{m}</span>)}
                 </div>
-                {needPhone && (
-                  <label className="mt-4.5 grid gap-1.5">
-                    <span className="text-[13px] font-bold">Mobile number</span>
-                    <span className="flex gap-2">
-                      <span className="grid h-12 shrink-0 place-items-center rounded-lg border border-border bg-muted px-3.5 text-[15px] font-bold">+91</span>
-                      <input
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                        inputMode="numeric"
-                        autoComplete="tel-national"
-                        placeholder="10-digit mobile"
-                        className="h-12 min-w-0 flex-1 rounded-lg border border-input bg-card px-3.5 text-base tracking-[0.02em] outline-none focus:border-ring focus:ring-3 focus:ring-ring/25"
-                      />
-                    </span>
-                    <span className="text-xs text-muted-foreground">Needed by the payment gateway for receipts. Saved to your profile.</span>
-                  </label>
+                {error && (
+                  <p role="alert" className="mt-4 flex items-start gap-2 rounded-lg bg-bad/10 p-3 text-sm font-medium text-bad min-[900px]:hidden"><CircleAlert className="mt-0.5 size-4 shrink-0" />{error}</p>
                 )}
               </div>
             </section>
@@ -375,7 +417,7 @@ export function CartView(props: {
 
               <div className="px-5.5 pb-5.5 pt-4.5">
                 {error && (
-                  <p role="alert" className="mb-3 flex items-start gap-2 rounded-lg bg-bad/10 p-3 text-sm font-medium text-bad"><CircleAlert className="mt-0.5 size-4 shrink-0" />{error}</p>
+                  <p role="alert" className="mb-3 hidden items-start gap-2 rounded-lg bg-bad/10 p-3 text-sm font-medium text-bad min-[900px]:flex"><CircleAlert className="mt-0.5 size-4 shrink-0" />{error}</p>
                 )}
                 <button
                   type="button"
@@ -392,7 +434,7 @@ export function CartView(props: {
                 </div>
                 <div className="mt-4.5 grid gap-3 px-1">
                   {[
-                    "Your chapters unlock on your account as soon as the payment is confirmed",
+                    "Your chapters unlock as soon as the payment is confirmed",
                     "Watch on phone and laptop",
                     ...accessParts,
                     `Need help? WhatsApp ${formatPhone(meta.whatsapp)} or call ${supportPhone.display}`,
@@ -430,33 +472,6 @@ export function CartView(props: {
         </div>
       )}
     </>
-  );
-}
-
-// Email + password sign-in using the existing login server action; returns to checkout.
-function InlineLogin({ next }: { next: string }) {
-  const [state, action, pending] = useActionState<AuthState, FormData>(login, undefined);
-  const field = "h-12 rounded-lg border border-input bg-card px-3.5 text-base outline-none focus:border-ring focus:ring-3 focus:ring-ring/25";
-  return (
-    <form action={action} className="px-5.5 pb-5.5 pt-5">
-      <p className="mb-4 text-sm leading-[1.5] text-secondary-foreground">Your cart is saved. Sign in so we can unlock your chapters on your account right after you pay.</p>
-      <input type="hidden" name="next" value={next} />
-      <div className="grid gap-3">
-        <label className="grid gap-1.5">
-          <span className="text-[13px] font-bold">Email</span>
-          <input name="email" type="email" autoComplete="email" required placeholder="you@example.com" className={field} />
-        </label>
-        <label className="grid gap-1.5">
-          <span className="text-[13px] font-bold">Password</span>
-          <input name="password" type="password" autoComplete="current-password" required placeholder="Your password" className={field} />
-        </label>
-        {state?.error && <p role="alert" className="flex items-start gap-2 rounded-lg bg-bad/10 px-3 py-2 text-sm font-medium text-bad"><CircleAlert className="mt-0.5 size-4 shrink-0" />{state.error}</p>}
-        <button disabled={pending} className="h-12 rounded-lg bg-foreground text-[15px] font-bold text-white disabled:opacity-60">{pending ? "Signing in…" : "Continue"}</button>
-        <span className="text-center text-xs text-muted-foreground">
-          New here? <Link href={`/signup?next=${encodeURIComponent(next)}`} className="font-bold text-primary">Create an account</Link>
-        </span>
-      </div>
-    </form>
   );
 }
 

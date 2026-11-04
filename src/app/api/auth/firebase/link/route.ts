@@ -1,9 +1,11 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { getCurrentUser, getImpersonator } from "@/lib/auth";
+import { createSession, getCurrentUser, getImpersonator } from "@/lib/auth";
+import { isGuestEmail, phoneOnlyEmail } from "@/lib/format";
 import { isStaff } from "@/lib/permissions";
 import { allow } from "@/lib/rate-limit";
 import { verifyFirebaseToken } from "@/lib/firebase";
+import { claimGuestOrders } from "@/lib/orders";
 
 const fail = (error: string, status = 400) => Response.json({ error }, { status });
 
@@ -23,11 +25,24 @@ export async function POST(req: Request) {
   const who = typeof body?.idToken === "string" ? await verifyFirebaseToken(body.idToken) : null;
   if (who?.provider !== "phone") return fail("We couldn't verify that number. Please try again.", 401);
 
+  // A guest account whose number already has an account joins that one and carries on from there.
+  if (isGuestEmail(user.email)) {
+    const existing = await db.user.findUnique({ where: { verifiedPhone: who.phone } });
+    if (existing?.isBlocked) return fail("This account is suspended. Please contact support.", 403);
+    if (existing) {
+      await claimGuestOrders(existing.id, { phone: who.phone }, user.id);
+      await createSession(existing.id, existing.role);
+      revalidatePath("/profile");
+      return Response.json({ ok: true });
+    }
+  }
+
   try {
-    await db.user.update({ where: { id: user.id }, data: { verifiedPhone: who.phone, phone: who.phone.replace(/^\+91/, "") } });
+    await db.user.update({ where: { id: user.id }, data: { verifiedPhone: who.phone, phone: who.phone.replace(/^\+91/, ""), ...(isGuestEmail(user.email) ? { email: phoneOnlyEmail(who.phone) } : {}) } });
   } catch {
     return fail("This number already has its own account. Contact support to combine them.", 409);
   }
+  await claimGuestOrders(user.id, { phone: who.phone });
   revalidatePath("/profile");
   return Response.json({ ok: true });
 }

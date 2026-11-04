@@ -158,7 +158,7 @@ export default async function Student({ params }: { params: Promise<{ id: string
         <ul className="divide-y divide-border text-sm">
           {u.orders.map((o) => (
             <li key={o.id} className="flex items-center gap-3 py-2.5">
-              <span className="font-mono text-xs">{o.orderNo}</span>
+              <Link href={`/admin/orders/${o.id}`} className="font-mono text-xs font-bold hover:text-brand">{o.orderNo}</Link>
               <span className="min-w-0 flex-1 truncate">{o.items.map((i) => i.title).join(", ")}</span>
               <Badge tone={o.status === "PAID" ? "ok" : o.status === "PENDING" ? "gold" : "bad"}>{o.status}</Badge>
               <span className="font-bold">{inr(o.total)}</span>

@@ -63,6 +63,10 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
   if (!chapter || (!chapter.isPublished && !isStaff(user?.role))) notFound();
 
   const owned = await hasChapterAccess(user?.id, chapter.id);
+  // Bought before, directly or through a course, and it has run out: this page is where they renew.
+  const expired = user && !owned
+    ? await db.entitlement.findFirst({ where: { userId: user.id, expiresAt: { lte: new Date() }, OR: [{ chapterId: chapter.id }, { course: { chapters: { some: { chapterId: chapter.id } } } }] }, orderBy: { expiresAt: "desc" }, select: { expiresAt: true } })
+    : null;
   const progress = user ? await db.partProgress.findMany({ where: { userId: user.id, partId: { in: chapter.parts.map((p) => p.id) } } }) : [];
   const progMap = new Map(progress.map((p) => [p.partId, p]));
   const freeOn = settings.features.freePreviews;
@@ -191,13 +195,18 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
               </div>
             ) : (
               <>
+                {expired && (
+                  <p role="status" className="mt-6 rounded-lg bg-bad/10 px-4 py-3 text-sm leading-[1.5] text-foreground">
+                    <b>Your access expired on {expired.expiresAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}.</b> Your progress is saved. Buy it again to continue from where you left off.
+                  </p>
+                )}
                 <div className="mt-7">
                   <div className="flex flex-wrap items-baseline gap-2">
                     <span className="text-[40px] font-extrabold tracking-[-0.035em]">{inr(chapter.price)}</span>
                     {chapter.mrp > chapter.price && <span className="text-base text-muted-foreground line-through">{inr(chapter.mrp)}</span>}
                     {off > 0 && <span className="rounded-md bg-ok px-2 py-0.5 text-xs font-extrabold text-white">{off}% OFF</span>}
                   </div>
-                  <div className="mt-0.5 text-[13px] text-secondary-foreground">{validity(chapter.validityDays)} access · all parts, DPPs, PYQs &amp; notes</div>
+                  <div className="mt-0.5 text-[13px] text-secondary-foreground">{validity(chapter.validityDays)} access, then it expires and can be renewed · all parts, DPPs, PYQs &amp; notes</div>
                 </div>
                 <div className="mt-5.5 flex flex-wrap gap-2.5">
                   <BuyNow item={item} />

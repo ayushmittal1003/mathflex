@@ -223,6 +223,8 @@ async function main() {
   await bundle("class-12-complete", { title: "Class 12 Complete", subtitle: "All 15 Class 12 chapters.", price: 2999, mrp: 5999, from: "#6366F1", to: "#EC4899", ids: ids12, highlights: ["45+ hours of video", "DPPs + 15 years of PYQs", "Formula sheets & mind maps"], order: 2 });
   await bundle("class-11-and-12", { title: "Class 11 + 12 Combo", subtitle: "The full JEE maths syllabus.", price: 4999, mrp: 11998, from: "#F59E0B", to: "#DC2626", ids: [...ids11, ...ids12], highlights: ["Every chapter, both years", "Best value — save 58%", "Free 1:1 planning call"], order: 0 });
 
+  await db.course.update({ where: { slug: "class-11-and-12" }, data: { validityDays: 730 } });
+
   // Coupons
   await db.coupon.upsert({ where: { code: "WELCOME20" }, update: {}, create: { code: "WELCOME20", description: "20% off your first order (up to ₹200)", type: "PERCENT", value: 20, maxDiscount: 200, isPublic: true } });
   await db.coupon.upsert({ where: { code: "FLEX100" }, update: {}, create: { code: "FLEX100", description: "₹100 off orders above ₹499", type: "FLAT", value: 100, minAmount: 499, isPublic: true, perUserLimit: 3 } });
@@ -247,7 +249,7 @@ async function main() {
   if ((await db.knowledgeEntry.count()) === 0) {
     await db.knowledgeEntry.createMany({
       data: [
-        { question: "How long do I get access after buying?", answer: "Each chapter or course has its validity shown on its page (365 days by default). You can see your plan expiry in the menu under Plan validity, and renew from there." },
+        { question: "How long do I get access after buying?", answer: "Each chapter or course has its validity shown on its page (single chapters 3 months, a one-class course 1 year, the Class 11 + 12 combo 2 years). You can see your plan expiry in the menu under Plan validity, and renew from there." },
         { question: "Can I watch on my phone or iPad?", answer: "Yes. MathFlex works in any browser on phones, iPads and laptops. Your progress syncs across devices." },
         { question: "Why is Part 2 locked?", answer: "Parts unlock one by one: finish Part 1's video and its practice set (DPPs + PYQs), and Part 2 unlocks automatically." },
         { question: "How does the mentorship call work?", answer: "Add the 1:1 mentorship call at checkout. After payment, our team contacts you on WhatsApp to schedule a 45-minute call." },

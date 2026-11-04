@@ -1,10 +1,15 @@
 import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { SecureAccess } from "@/components/site/web/SecureAccess";
 import { PendingNote } from "@/components/site/web/PendingNote";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/auth";
+import { getCurrentUser, requireUser } from "@/lib/auth";
+import { firebaseWebConfig } from "@/lib/firebase";
+import { validGuestOrderToken } from "@/lib/orders";
+import { GuestPaymentStatus } from "@/components/site/web/GuestPaymentStatus";
 import { getSettings } from "@/lib/settings";
-import { accountContact, inr } from "@/lib/format";
+import { accountContact, inr, isGuestEmail } from "@/lib/format";
 import { firstWeek, instructorNames, mentorshipCall } from "@/lib/site-content";
 import { PaidCelebration } from "@/components/site/PaidCelebration";
 import { PaymentPoller } from "@/components/site/PaymentPoller";
@@ -18,12 +23,21 @@ import { privateMetadata } from "@/lib/seo/metadata";
 export const metadata = privateMetadata("Payment status");
 
 // Payment status + thank you (Payment Status.dc.html, Thank You.dc.html). Same lookup and
-// polling as before: the order must belong to the signed-in user, PaymentPoller asks the
+// polling as before: the order must belong to the signed-in user (a guest gets
+// GuestPaymentStatus through their signed link instead), PaymentPoller asks the
 // server (which asks Cashfree) while it's pending, and PaidCelebration clears the cart once
 // it's paid. Payment method and Cashfree reference only show when Cashfree's stored data has them.
-export default async function PaymentStatus({ searchParams }: { searchParams: Promise<{ order?: string }> }) {
-  const { order: orderNo } = await searchParams;
-  const user = await requireUser("/my-learning");
+export default async function PaymentStatus({ searchParams }: { searchParams: Promise<{ order?: string; t?: string; manual?: string }> }) {
+  const { order: orderNo, t, manual } = await searchParams;
+  const viewer = await getCurrentUser();
+  // A guest's own link. An order that belongs to the person viewing gets the full page below.
+  if (orderNo && validGuestOrderToken(orderNo, t)) {
+    const guestOrder = await db.order.findUnique({ where: { orderNo }, include: { items: true } });
+    // Paid and not on an account yet: open one for them. If that can't happen, `manual` shows the login page.
+    if (guestOrder?.status === "PAID" && !guestOrder.userId && !viewer && !manual) redirect(`/api/payments/guest-access?order=${encodeURIComponent(orderNo)}&t=${encodeURIComponent(t!)}`);
+    if (guestOrder && (!viewer || guestOrder.userId !== viewer.id)) return <GuestPaymentStatus order={guestOrder} token={t!} firebase={firebaseWebConfig()} />;
+  }
+  const user = viewer ?? (await requireUser("/my-learning"));
   const settings = await getSettings();
   const order = orderNo ? await db.order.findFirst({ where: { orderNo, userId: user.id }, include: { items: true } }) : null;
 
@@ -47,6 +61,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
   const tax = order ? Math.max(0, order.total - (order.subtotal - order.discount)) : 0;
   const status = order?.status ?? "MISSING";
   const firstName = user.name.trim().split(" ")[0];
+  const guestAccount = isGuestEmail(user.email);
 
   const header = (
     <header className="border-b border-border bg-card">
@@ -170,16 +185,18 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
             <span className="inline-grid size-[84px] animate-mf-pop place-items-center rounded-full bg-ok shadow-[0_0_0_12px_color-mix(in_oklab,var(--ok)_18%,transparent),0_20px_40px_-14px_color-mix(in_oklab,var(--ok)_70%,transparent)]">
               <CheckIcon className="size-9.5 text-white" />
             </span>
-            <div className="mt-6.5 text-sm font-bold text-ok-strong">Payment successful · {inr(paid.total)}</div>
+            <div className="mt-6.5 text-sm font-bold text-ok-strong">Thank you! Your order is confirmed · {inr(paid.total)}</div>
             <h1 className="mx-auto mt-3.5 max-w-[960px] text-[clamp(36px,6.6vw,84px)] font-extrabold leading-[1.1] tablet:leading-none tracking-[-0.045em] text-balance">
-              You&apos;re in, {firstName}. Let&apos;s get you that <Mark onWash>seat<Caret /></Mark>
+              You&apos;re in{guestAccount ? "" : `, ${firstName}`}. Let&apos;s get you that <Mark onWash>seat<Caret /></Mark>
             </h1>
-            <p className="mx-auto mt-5 max-w-[560px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">Everything you bought is unlocked on your account.</p>
+            <p className="mx-auto mt-5 max-w-[560px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">Thank you for your purchase. Everything you bought is unlocked and ready to start now.</p>
             <div className="mt-7.5 cta-row">
               <Link href="/my-learning" className={cx(button.lg, tone.primary)}>Continue to My Learning</Link>
               {start && <Link href={start.href} className={cx(button.lg, tone.glass)}><PlayIcon className="size-3.5" /> Start {start.title}</Link>}
             </div>
           </div>
+
+          {guestAccount && <SecureAccess firebase={firebaseWebConfig()} className="mx-auto mt-10 w-[min(560px,calc(100%-var(--gutter)*2))]" />}
 
           <VideoFrame
             videoId={settings.siteVideos.mentor.videoId || null}
@@ -253,7 +270,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                 paid.paidAt && { k: "Date", v: paid.paidAt.toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" }) },
                 method && { k: "Paid with", v: method },
                 reference && { k: "Cashfree ref", v: reference },
-                { k: "Account", v: accountContact(user.email) },
+                { k: "Account", v: guestAccount ? (paid.contactEmail ?? "Guest account") : accountContact(user.email) },
               ].filter(Boolean).map((m) => (
                 <div key={(m as { k: string }).k} className="flex justify-between gap-4 border-b border-border py-3 text-sm">
                   <span className="text-muted-foreground">{(m as { k: string }).k}</span>

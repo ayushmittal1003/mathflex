@@ -1,12 +1,13 @@
 import { randomBytes } from "node:crypto";
 import { db } from "@/lib/db";
-import { createSession, hashPassword } from "@/lib/auth";
+import { createSession, getCurrentUser, hashPassword } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { isStaff } from "@/lib/permissions";
 import { appHref, STUDENT_HOME } from "@/lib/hosts";
 import { allow, clientIp } from "@/lib/rate-limit";
 import { verifyFirebaseToken } from "@/lib/firebase";
-import { phoneOnlyEmail } from "@/lib/format";
+import { isGuestEmail, phoneOnlyEmail } from "@/lib/format";
+import { claimGuestOrders, guestOrderWaiting } from "@/lib/orders";
 
 const AVATAR_COLORS = ["#F43F5E", "#FB923C", "#8B5CF6", "#0EA5E9", "#10B981", "#EC4899", "#F59E0B"];
 const safeNext = (n: unknown) => (typeof n === "string" && n.startsWith("/") && !n.startsWith("//") && !n.includes("\\") ? n : "");
@@ -33,12 +34,15 @@ export async function POST(req: Request) {
 
   // An OTP proves the number, so it only opens an account whose number was proven the same way, never
   // the unverified "phone" someone typed in, which could be another person's number.
+  const proof = who.provider === "google" ? { email: who.email } : { phone: who.phone };
   const find = () => (who.provider === "google" ? db.user.findUnique({ where: { email: who.email } }) : db.user.findUnique({ where: { verifiedPhone: who.phone } }));
+  const current = await getCurrentUser();
+  const sessionGuestId = current && isGuestEmail(current.email) ? current.id : undefined;
   let user = await find();
   if (user?.isBlocked) return fail("This account is suspended. Please contact support.", 403);
 
   if (!user) {
-    if (!(await getSettings()).features.signupOpen) return fail("New sign-ups are paused right now. Existing accounts can still log in.", 403);
+    if (!(await getSettings()).features.signupOpen && !sessionGuestId && !(await guestOrderWaiting(proof))) return fail("New sign-ups are paused right now. Existing accounts can still log in.", 403);
     let name = who.provider === "google" ? who.name : typeof body.name === "string" ? body.name.trim() : "";
     if (who.provider === "phone" && (name.length < 2 || name.length > 60)) return Response.json({ needName: true });
     if (who.provider === "google" && name.length < 2) name = who.email.split("@")[0];
@@ -55,6 +59,7 @@ export async function POST(req: Request) {
     }
   }
 
+  await claimGuestOrders(user.id, proof, sessionGuestId);
   await createSession(user.id, user.role);
   const dest = safeNext(body.next);
   return Response.json({ redirect: appHref(dest && dest !== "/" ? dest : isStaff(user.role) ? "/admin" : STUDENT_HOME) });

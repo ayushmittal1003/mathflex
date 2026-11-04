@@ -20,7 +20,7 @@ export type Quote = {
 // prices always come from the database so they can be changed from admin.
 export async function quoteCart(
   items: CartLine[],
-  opts: { userId?: string; couponCode?: string | null; mentorship?: boolean },
+  opts: { userId?: string; couponCode?: string | null; mentorship?: boolean; contact?: { email: string; phone: string } },
 ): Promise<Quote> {
   const settings = await getSettings();
   const chapterIds = items.filter((i) => i.type === "CHAPTER").map((i) => i.id);
@@ -61,7 +61,7 @@ export async function quoteCart(
   let couponError: string | null = null;
 
   if (opts.couponCode && settings.features.coupons) {
-    const res = await evaluateCoupon(opts.couponCode, subtotal, opts.userId);
+    const res = await evaluateCoupon(opts.couponCode, subtotal, opts.userId, opts.contact);
     if ("error" in res) couponError = res.error ?? null;
     else {
       discount = res.discount;
@@ -74,7 +74,7 @@ export async function quoteCart(
   return { lines, subtotal, discount, tax, total: taxable + tax, coupon, couponError, skipped };
 }
 
-export async function evaluateCoupon(rawCode: string, subtotal: number, userId?: string) {
+export async function evaluateCoupon(rawCode: string, subtotal: number, userId?: string, contact?: { email: string; phone: string }) {
   const code = rawCode.trim().toUpperCase();
   const c = await db.coupon.findUnique({ where: { code } });
   const now = new Date();
@@ -86,6 +86,13 @@ export async function evaluateCoupon(rawCode: string, subtotal: number, userId?:
   if (userId) {
     const used = await db.couponRedemption.count({ where: { couponId: c.id, userId } });
     if (used >= c.perUserLimit) return { error: "You've already used this coupon." };
+  } else if (contact) {
+    // A guest has no account yet, so count this coupon's uses against the details they typed.
+    const [redeemed, unclaimed] = await Promise.all([
+      db.couponRedemption.count({ where: { couponId: c.id, user: { OR: [{ email: contact.email }, { verifiedPhone: contact.phone }] } } }),
+      db.order.count({ where: { couponCode: code, userId: null, status: "PAID", OR: [{ contactEmail: contact.email }, { contactPhone: contact.phone }] } }),
+    ]);
+    if (redeemed + unclaimed >= c.perUserLimit) return { error: "You've already used this coupon." };
   }
   let discount = c.type === "PERCENT" ? Math.floor((subtotal * c.value) / 100) : c.value;
   if (c.maxDiscount != null) discount = Math.min(discount, c.maxDiscount);

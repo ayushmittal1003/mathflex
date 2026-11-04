@@ -23,7 +23,15 @@ export function validity(days: number) {
 // (nothing is ever delivered to it). `accountContact` shows the number instead.
 const PHONE_EMAIL = /^91(\d{5})(\d{5})@phone\.mathflex\.in$/;
 export const phoneOnlyEmail = (e164: string) => `${e164.replace(/^\+/, "")}@phone.mathflex.in`;
+export const isPhoneOnlyEmail = (email: string) => email.endsWith("@phone.mathflex.in");
+// Someone who paid without logging in gets an account straight away, so they can start at once. It
+// has this stand-in too, because the email they typed isn't proven. See startGuestAccess in lib/orders.
+const GUEST_DOMAIN = "@guest.mathflex.in";
+export const guestEmail = (orderNo: string) => `guest-${orderNo.toLowerCase()}${GUEST_DOMAIN}`;
+export const isGuestEmail = (email: string) => email.endsWith(GUEST_DOMAIN);
+export const isPlaceholderEmail = (email: string) => isPhoneOnlyEmail(email) || isGuestEmail(email);
 export function accountContact(email: string) {
+  if (isGuestEmail(email)) return "Guest account";
   const m = email.match(PHONE_EMAIL);
   return m ? `+91 ${m[1]} ${m[2]}` : email;
 }

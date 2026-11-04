@@ -94,7 +94,7 @@ function DetailsForm({ chapter: c }: { chapter: Chapter | null }) {
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Price (₹)"><input name="price" type="number" min={0} defaultValue={c?.price ?? 299} required className="input" /></Field>
           <Field label="MRP (₹)" hint="Shown struck through"><input name="mrp" type="number" min={0} defaultValue={c?.mrp ?? 599} className="input" /></Field>
-          <Field label="Validity (days)"><input name="validityDays" type="number" min={1} defaultValue={c?.validityDays ?? 365} className="input" /></Field>
+          <Field label="Validity (days)"><input name="validityDays" type="number" min={1} defaultValue={c?.validityDays ?? 90} className="input" /></Field>
         </div>
       </Card>
       <Card title="JEE insights">

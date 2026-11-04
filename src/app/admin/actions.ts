@@ -62,7 +62,7 @@ export async function saveChapter(form: FormData) {
     description: str(form, "description"),
     price: int(form, "price"),
     mrp: int(form, "mrp"),
-    validityDays: int(form, "validityDays", 365),
+    validityDays: int(form, "validityDays", 90),
     coverFrom: str(form, "coverFrom") || "#FF2E63",
     coverTo: str(form, "coverTo") || "#7C3AED",
     symbol: str(form, "symbol") || "∫",
@@ -578,7 +578,7 @@ export async function markOrderPaid(id: string) {
   const me = await requireStaff("orders");
   await fulfilOrder(id, { txnId: "MANUAL", raw: { manual: true, at: new Date().toISOString(), by: me.email } });
   const o = await db.order.findUniqueOrThrow({ where: { id } });
-  await audit(me, "order.markPaid", `Marked order ${o.orderNo} as paid (₹${o.total})`, { entity: "user", id: o.userId, meta: { orderId: id } });
+  await audit(me, "order.markPaid", `Marked order ${o.orderNo} as paid (₹${o.total})`, { entity: o.userId ? "user" : "order", id: o.userId ?? id, meta: { orderId: id } });
   revalidatePath("/admin/orders");
 }
 
@@ -588,7 +588,7 @@ export async function refundOrder(id: string) {
     db.entitlement.deleteMany({ where: { orderId: id } }),
     db.order.update({ where: { id }, data: { status: "REFUNDED" } }),
   ]);
-  await audit(me, "order.refund", `Refunded order ${o.orderNo} (₹${o.total}) and removed its access`, { entity: "user", id: o.userId, meta: { orderId: id } });
+  await audit(me, "order.refund", `Refunded order ${o.orderNo} (₹${o.total}) and removed its access`, { entity: o.userId ? "user" : "order", id: o.userId ?? id, meta: { orderId: id } });
   revalidatePath("/admin/orders");
 }
 
@@ -607,7 +607,7 @@ export async function recheckPayment(id: string): Promise<string> {
   const order = await db.order.findUniqueOrThrow({ where: { id } });
   if (order.gateway !== "cashfree" || !cashfreeConfigured()) return "Cashfree isn't configured on this server.";
   const result = await syncCashfreeOrder(order.orderNo);
-  await audit(me, "order.recheck", `Re-checked order ${order.orderNo} with Cashfree: ${result}`, { entity: "user", id: order.userId, meta: { orderId: id } });
+  await audit(me, "order.recheck", `Re-checked order ${order.orderNo} with Cashfree: ${result}`, { entity: order.userId ? "user" : "order", id: order.userId ?? id, meta: { orderId: id } });
   revalidatePath("/admin/orders");
   return RECHECK_MESSAGE[result] ?? result;
 }

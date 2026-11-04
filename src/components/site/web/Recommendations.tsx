@@ -3,7 +3,7 @@ import { PosterImage } from "@/components/site/web/PosterImage";
 import { useEffect, useMemo, useState } from "react";
 import { cart, useCart } from "../cart-store";
 import { getQuote } from "@/app/actions/checkout";
-import { inr } from "@/lib/format";
+import { inr, validity } from "@/lib/format";
 import type { CartMeta } from "./cart-meta";
 import { recommendChapters } from "./cart-logic";
 import { cx } from "./ui";
@@ -32,7 +32,7 @@ export function Recommendations({ meta, max = 3, className }: { meta: CartMeta; 
   return (
     <section className={className} aria-labelledby="also-take">
       <h3 id="also-take" className="text-[15px] font-extrabold tracking-[-0.01em]">Students also take</h3>
-      <ul className="mt-2.5 grid gap-2">
+      <ul className="mt-2.5 grid grid-cols-[minmax(0,1fr)] gap-2">
         {shown.map((c) => (
           <li key={c.id} className="flex items-center gap-3 rounded-[10px] border border-border p-2.5">
             <span
@@ -44,7 +44,7 @@ export function Recommendations({ meta, max = 3, className }: { meta: CartMeta; 
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-bold">{c.title}</span>
-              <span className="block text-xs text-muted-foreground">Class {c.classLevel} · {inr(prices.byId[c.id])}</span>
+              <span className="block text-xs text-muted-foreground">Class {c.classLevel} · {inr(prices.byId[c.id])} · {validity(c.validityDays)} access</span>
             </span>
             <button
               type="button"

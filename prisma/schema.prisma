@@ -113,7 +113,7 @@ model Chapter {
   description   String   @default("")
   price         Int // rupees
   mrp           Int // struck-through price
-  validityDays  Int      @default(365)
+  validityDays  Int      @default(90)
   coverFrom     String   @default("#F43F5E") // gradient start for the poster
   coverTo       String   @default("#7C3AED") // gradient end
   coverImage    String? // optional uploaded poster image
@@ -374,8 +374,11 @@ model CouponRedemption {
 model Order {
   id           String      @id @default(cuid())
   orderNo      String      @unique
-  userId       String
-  user         User        @relation(fields: [userId], references: [id])
+  // Empty on a guest order until its buyer logs in with the email or number below.
+  userId       String?
+  user         User?       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  contactEmail String?
+  contactPhone String? // +91XXXXXXXXXX
   status       OrderStatus @default(PENDING)
   subtotal     Int
   discount     Int         @default(0)
@@ -390,6 +393,8 @@ model Order {
   items OrderItem[]
 
   @@index([status, createdAt])
+  @@index([contactEmail])
+  @@index([contactPhone])
 }
 
 model OrderItem {
