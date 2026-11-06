@@ -26,6 +26,9 @@ export const DEFAULT_SETTINGS = {
   mentorshipPrice: 300,
   mentorshipTitle: "1:1 mentorship call with Karan",
   mentorshipBlurb: "45 minutes. Your doubts, your study plan, your rank strategy.",
+  // Karan's Calendly event for paid 1:1 calls (e.g. https://calendly.com/karan/1-1-call). Students
+  // only reach it after paying; Calendly creates the Google Meet link and emails it to both sides.
+  calendlyUrl: "",
   gstPercent: 0, // set to 18 to add GST on top at checkout
 
   // Feature flags (the "open functionalities")

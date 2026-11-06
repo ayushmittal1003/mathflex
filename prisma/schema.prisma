@@ -429,10 +429,13 @@ model MentorshipBooking {
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderId     String?
-  status      String    @default("REQUESTED") // REQUESTED | SCHEDULED | DONE | CANCELLED
+  status      String    @default("REQUESTED") // REQUESTED (waiting for the student) | SUGGESTED (they proposed times) | SCHEDULED | DONE | CANCELLED
   scheduledAt DateTime?
   meetLink    String?
   notes       String    @default("")
+  calendlyEvent  String? // the Calendly scheduled event the student booked
+  requestedTimes DateTime[] @default([]) // times the student suggested when no Calendly slot suited them
+  requestNote    String     @default("")
   createdAt   DateTime  @default(now())
 }
 

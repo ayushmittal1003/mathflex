@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { requireStaff } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { can, isStaff } from "@/lib/permissions";
+import { saveMentorPrivate } from "@/lib/mentor-private";
 import { saveSetting, getSettings, BOT_PROMPT_MAX, BOT_KNOWLEDGE_MAX, type Settings } from "@/lib/settings";
 import { saveFile, readStoredFile, keyFromUrl, urlForKey, deleteStoredFile } from "@/lib/storage";
 import { bunnyConfigured, bunnyHealth, bunnyVideoInfo, createBunnyUpload, normalizeBunnyRef } from "@/lib/video";
@@ -867,6 +868,8 @@ export async function saveSettings(form: FormData) {
     saveSetting("mentorshipPrice", int(form, "mentorshipPrice", cur.mentorshipPrice)),
     saveSetting("mentorshipTitle", str(form, "mentorshipTitle")),
     saveSetting("mentorshipBlurb", str(form, "mentorshipBlurb")),
+    saveSetting("calendlyUrl", /^https:\/\/calendly\.com\/[\w./-]+$/.test(str(form, "calendlyUrl")) ? str(form, "calendlyUrl") : ""),
+    saveMentorPrivate({ whatsapp: str(form, "mentorWhatsapp").replace(/\D/g, "") }),
     saveSetting("gstPercent", num(form, "gstPercent")),
     saveSetting("features", features),
     saveSetting("xp", xp),

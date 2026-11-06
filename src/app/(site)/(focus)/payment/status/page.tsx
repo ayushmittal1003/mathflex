@@ -167,6 +167,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
   ];
   const start = unlocked[0];
   const hasCall = paid.items.some((i) => i.itemType === "MENTORSHIP");
+  const callBooking = hasCall ? await db.mentorshipBooking.findFirst({ where: { orderId: paid.id, userId: user.id }, select: { id: true } }) : null;
   const steps = firstWeek.map((s, i) => ({ ...s, n: `0${i + 1}`, href: [start?.href ?? "/my-learning", "/#how", "/leaderboard"][i] })).filter((s) => s.href !== "/leaderboard" || settings.features.leaderboard);
 
   return (
@@ -234,9 +235,13 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
                   </span>
                   <div className="min-w-0 flex-[1_1_220px]">
                     <div className="text-base font-bold">{settings.mentorshipTitle}</div>
-                    <div className="mt-0.5 text-[13px] text-muted-foreground">{mentorshipCall.contactNote}</div>
+                    <div className="mt-0.5 text-[13px] text-muted-foreground">{callBooking && settings.calendlyUrl ? "Pick a time that suits you. The Google Meet link is emailed to you straight away." : mentorshipCall.contactNote}</div>
                   </div>
-                  <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className="shrink-0 whitespace-nowrap rounded-lg bg-foreground px-3.5 py-2.5 text-[13px] font-bold text-white hover:brightness-130">WhatsApp us</a>
+                  {callBooking ? (
+                    <Link href={`/book-call/${callBooking.id}`} className="shrink-0 whitespace-nowrap rounded-lg bg-primary px-3.5 py-2.5 text-[13px] font-bold text-primary-foreground hover:brightness-108">Book your call</Link>
+                  ) : (
+                    <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noreferrer" className="shrink-0 whitespace-nowrap rounded-lg bg-foreground px-3.5 py-2.5 text-[13px] font-bold text-white hover:brightness-130">WhatsApp us</a>
+                  )}
                 </div>
               )}
             </div>

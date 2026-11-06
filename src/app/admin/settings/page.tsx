@@ -1,4 +1,5 @@
 import { getSettings, DEFAULT_SETTINGS } from "@/lib/settings";
+import { getMentorPrivate } from "@/lib/mentor-private";
 import { requireStaff } from "@/lib/auth";
 import { cashfreeConfigured, cashfreeMode } from "@/lib/cashfree";
 import { Card, Field, PageHeader, Toggle, SubmitButton } from "@/components/admin/ui";
@@ -45,7 +46,7 @@ const XP_LABELS: Record<keyof typeof DEFAULT_SETTINGS.xp, string> = {
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
   await requireStaff("settings");
-  const [s, { saved, error }] = await Promise.all([getSettings(), searchParams]);
+  const [s, { saved, error }, mentor] = await Promise.all([getSettings(), searchParams, getMentorPrivate()]);
   return (
     <form action={saveSettings} className="max-w-4xl space-y-6">
       <PageHeader title="Settings & features" subtitle="Switch features on and off and change prices — live instantly, no deploy needed." action={<SubmitButton>Save all</SubmitButton>} />
@@ -103,6 +104,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <Field label="Mentor name"><input name="mentorName" defaultValue={s.mentorName} className="input" /></Field>
           <Field label="Title"><input name="mentorshipTitle" defaultValue={s.mentorshipTitle} className="input" /></Field>
           <Field label="Pitch" className="sm:col-span-3"><input name="mentorshipBlurb" defaultValue={s.mentorshipBlurb} className="input" /></Field>
+          <Field label="Calendly link for paid calls" hint="Students see it only after paying. e.g. https://calendly.com/karan/1-1-call" className="sm:col-span-2"><input name="calendlyUrl" defaultValue={s.calendlyUrl} placeholder="https://calendly.com/…" className="input" /></Field>
+          <Field label="Mentor's WhatsApp (team only)" hint="Never shown to students. With country code."><input name="mentorWhatsapp" defaultValue={mentor.whatsapp} className="input" /></Field>
         </div>
       </Card>
 

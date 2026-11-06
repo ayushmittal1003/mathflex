@@ -109,9 +109,13 @@ export default async function Profile() {
                   <li key={m.id} className="flex items-center justify-between gap-3 rounded-lg bg-muted px-4 py-3 text-sm">
                     <span className="min-w-0">
                       <span className="block font-bold">{settings.mentorshipTitle}</span>
-                      <span className="text-muted-foreground">{m.scheduledAt ? m.scheduledAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }) : m.status.toLowerCase()}</span>
+                      <span className="text-muted-foreground">{m.scheduledAt ? m.scheduledAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }) : m.status === "REQUESTED" ? "Not booked yet" : m.status === "SUGGESTED" ? "Waiting for confirmation" : m.status.toLowerCase()}</span>
                     </span>
-                    {m.meetLink && <a href={m.meetLink} className={cx(button.sm, tone.primaryFlat)}>Join</a>}
+                    {m.meetLink && m.status === "SCHEDULED" ? (
+                      <a href={m.meetLink} target="_blank" rel="noreferrer" className={cx(button.sm, tone.primaryFlat)}>Join</a>
+                    ) : m.status === "REQUESTED" || m.status === "SUGGESTED" || m.status === "SCHEDULED" ? (
+                      <Link href={`/book-call/${m.id}`} className={cx(button.sm, m.status === "REQUESTED" ? tone.primaryFlat : tone.secondary)}>{m.status === "REQUESTED" ? "Book a time" : "View"}</Link>
+                    ) : null}
                   </li>
                 ))}
               </ul>
