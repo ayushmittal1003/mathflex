@@ -22,7 +22,7 @@ export default async function AppShellLayout({ children }: { children: React.Rea
     <div className="site-light min-h-dvh overflow-x-clip bg-card pb-[calc(64px+env(safe-area-inset-bottom))] text-foreground tablet:pb-0">
       <ToastProvider>
       <SkipLink />
-        <Marquee items={marquee.map((m) => ({ id: m.id, title: m.title, href: m.ctaHref }))} />
+        <Marquee items={marquee.map((m) => ({ id: m.id, title: m.title, href: m.ctaHref }))} colors={settings.strip} />
         <div className="relative">
           <SiteNav {...nav} />
           <main id="main" className="min-h-[70vh] [--nav-h:7rem]">{children}</main>

@@ -17,6 +17,10 @@ export const DEFAULT_SETTINGS = {
     call: { videoId: "", poster: "" },
   },
 
+  // The running strip above the navbar. Empty colours use the brand gradient. Its messages are MARQUEE
+  // banners, and features.marquee shows or hides it; all three are edited on Admin → Banners & popups.
+  strip: { from: "", to: "", text: "#FFFFFF" },
+
   // Commerce
   currencySymbol: "₹",
   mentorshipPrice: 300,
@@ -46,6 +50,17 @@ export const DEFAULT_SETTINGS = {
     wrong: -1, // single-correct and numerical
     multiWrong: -2, // multi-correct: any wrong option picked
     multiPartial: 1, // multi-correct: per correct option when none are wrong
+  },
+
+  // Milestone rewards. A tier is reached when all three targets are met: parts watched to the end,
+  // different questions answered correctly, and the best daily streak so far. The team fulfils each
+  // claim by hand from Admin → Rewards, where these numbers and rewards are edited.
+  rewards: {
+    tiers: [
+      { key: "BRONZE", name: "Bronze", parts: 20, correct: 200, streak: 14, reward: "One chapter of your choice free, with 3 months of access" },
+      { key: "SILVER", name: "Silver", parts: 40, correct: 500, streak: 30, reward: "A free 45-minute 1:1 call with Karan" },
+      { key: "GOLD", name: "Gold", parts: 70, correct: 1000, streak: 60, reward: "Mathflex merchandise and a signed certificate, plus a shout-out on our website and Instagram if you'd like one" },
+    ],
   },
 
   // Gamification rules

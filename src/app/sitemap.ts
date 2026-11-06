@@ -9,7 +9,7 @@ import { absoluteUrl } from "@/lib/seo/config";
 // `lastModified` is only given where a real updatedAt exists (Chapter); Course has none yet.
 export const dynamic = "force-dynamic";
 
-const STATIC_PATHS = ["/", "/chapters", "/courses", "/pricing", "/about", "/contact", "/faq", "/book-a-call", "/privacy", "/terms", "/refund-policy"];
+const STATIC_PATHS = ["/", "/chapters", "/courses", "/pricing", "/about", "/contact", "/faq", "/jee-exam", "/book-a-call", "/privacy", "/terms", "/refund-policy"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [chapters, courses, posts] = await Promise.all([

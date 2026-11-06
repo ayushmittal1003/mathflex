@@ -2,7 +2,8 @@
 import { PosterImage } from "@/components/site/web/PosterImage";
 import { HoverClip } from "@/components/site/web/HoverClip";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { inr } from "@/lib/format";
 import { ChapterCard, type CardChapter } from "../ChapterCard";
 import { BottomSheet } from "../BottomSheet";
@@ -36,8 +37,7 @@ export function ChaptersView({ chapters, top5, peek, bundles, initial }: { chapt
   const breakeven = bundles.map((b) => b.breakeven).filter((n): n is number => !!n && n > 1).sort((a, b) => a - b)[0];
 
   const list = useMemo(() => {
-    const term = q.trim().toLowerCase();
-    let l = chapters.filter((c) => (cls === "all" || c.classLevel === cls) && (!freeOnly || c.free) && (!term || c.title.toLowerCase().includes(term)));
+    let l = chapters.filter((c) => (cls === "all" || c.classLevel === cls) && (!freeOnly || c.free) && matchesChapter(c.title, q));
     if (sort === "weight") l = [...l].sort((a, b) => b.jeeWeightage - a.jeeWeightage);
     if (sort === "price") l = [...l].sort((a, b) => a.price - b.price);
     return l;
@@ -61,14 +61,7 @@ export function ChaptersView({ chapters, top5, peek, bundles, initial }: { chapt
           <p className={cx(heroLead, "mt-5.5")}>
             Every chapter is split into {partsRange ? `${partsRange} parts` : "short parts"}, with DPPs, PYQs and notes. Buy just the one you need{minPrice !== null && `, from ${inr(minPrice)}`}.
           </p>
-          <form
-            onSubmit={(e) => { e.preventDefault(); goList(); }}
-            className="mx-auto mt-8 flex w-[min(640px,100%)] items-center gap-2.5 rounded-xl bg-card py-2 pl-4.5 pr-2 shadow-[0_20px_50px_-20px_rgb(120_40_0/0.35)]"
-          >
-            <svg className="size-5 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Try integrals, vectors, P&C…" aria-label="Search chapters" className="h-full min-w-0 flex-1 bg-transparent py-2.5 text-[17px] text-foreground outline-none placeholder:text-muted-foreground" />
-            <button className="shrink-0 rounded-lg bg-primary px-5 py-3 text-[15px] font-bold text-primary-foreground transition hover:brightness-108">Search</button>
-          </form>
+          <ChapterSearch chapters={chapters} q={q} setQ={setQ} onSeeAll={goList} />
           {popular.length > 0 && (
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2 max-sm:[&>button:nth-of-type(n+3)]:hidden">
               <span className="text-[13px] text-secondary-foreground">Popular:</span>
@@ -92,6 +85,9 @@ export function ChaptersView({ chapters, top5, peek, bundles, initial }: { chapt
             title={<>Most marks for your <Mark>time</Mark>.</>}
             lead="The chapters that carry the most weight across recent JEE Main papers. Short on time? Start here."
           />
+          <p className="mt-3 text-center text-sm text-muted-foreground">
+            New to JEE? Read the <Link href="/jee-exam" className="font-bold text-primary underline underline-offset-[3px]">JEE 2027 exam guide</Link>: dates, pattern and syllabus.
+          </p>
           <div className="no-scrollbar mx-auto mt-10 w-[min(1240px,calc(100%-var(--gutter)*2))] overflow-x-auto overflow-y-hidden overscroll-x-contain px-1 pb-5 pt-6">
             <div className="mx-auto flex w-max gap-4">
             {top5.map((c, i) => (
@@ -278,27 +274,35 @@ export function ChaptersView({ chapters, top5, peek, bundles, initial }: { chapt
 function HeroPeek({ peek }: { peek: Peek }) {
   const free = peek.parts.find((p) => p.isFreePreview);
   const shown = peek.parts.slice(0, 3);
+  // An uploaded thumbnail is shown whole (16:9) with the title under it, so its own text is never cut off.
+  const fit = !!peek.coverImage;
+  // On an uploaded thumbnail these would cover its corner, so they move into the title bar under it.
+  const labels = (
+    <div className={cx("flex gap-2", fit ? "mb-2" : "absolute left-3 top-3 tablet:left-5.5 tablet:top-5")}>
+      <span className={cx("rounded-md px-2 py-1 text-xs font-bold uppercase tracking-[0.08em]", fit ? "bg-white/15" : "bg-black/35")}>Class {peek.classLevel}</span>
+      {free && <span className="rounded-md bg-white px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] text-black">Free preview</span>}
+    </div>
+  );
   return (
-    <div className="relative mx-auto mb-4 mt-10 grid w-[min(980px,calc(100%-var(--gutter)*2))] tablet:mt-14 tablet:-mb-[150px] tablet:h-[420px] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+    <div className={cx("relative mx-auto mb-4 mt-10 grid w-[min(980px,calc(100%-var(--gutter)*2))] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:mt-14 tablet:-mb-[150px] tablet:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]", !fit && "tablet:h-[420px]")}>
       <div className="relative overflow-hidden text-white" style={{ background: `linear-gradient(125deg, ${peek.coverFrom}, ${peek.coverTo})` }}>
-        {/* Phones show the whole 16:9 thumbnail with the title under it; wider screens overlay the title. */}
-        <div className="relative aspect-video tablet:absolute tablet:inset-0 tablet:aspect-auto">
+        {/* Phones always show the whole 16:9 thumbnail with the title under it; wider screens do too when there's an
+            uploaded thumbnail, and overlay the title on the gradient poster when there isn't. */}
+        <div className={cx("relative aspect-video", !fit && "tablet:absolute tablet:inset-0 tablet:aspect-auto")}>
         {peek.coverImage ? <PosterImage src={peek.coverImage} sizes="(max-width: 1000px) 100vw, 570px" /> : <div className="absolute -right-5 top-1/2 -translate-y-1/2 whitespace-nowrap text-[300px] font-black leading-none text-white/14">{peek.symbol}</div>}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/55 to-transparent to-70%" />
+        {!fit && <div className="absolute inset-0 bg-gradient-to-r from-black/55 to-transparent to-70%" />}
         <HoverClip chapterId={peek.id} />
-        <div className="absolute left-3 top-3 flex gap-2 tablet:left-5.5 tablet:top-5">
-          <span className="rounded-md bg-black/35 px-2 py-1 text-xs font-bold uppercase tracking-[0.08em]">Class {peek.classLevel}</span>
-          {free && <span className="rounded-md bg-white px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] text-black">Free preview</span>}
-        </div>
+        {!fit && labels}
         {free && (
-          <Link href={`/learn/${peek.slug}?part=${free.order}`} aria-label={`Watch Part ${free.order} of ${peek.title} free`} className="absolute left-1/2 top-1/2 grid size-14 tablet:top-[38%] tablet:size-18 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition hover:scale-[1.06]">
+          <Link href={`/learn/${peek.slug}?part=${free.order}`} aria-label={`Watch Part ${free.order} of ${peek.title} free`} className={cx("absolute left-1/2 top-1/2 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-primary shadow-[0_0_0_12px_rgb(255_255_255/0.16)] transition hover:scale-[1.06] tablet:size-18", !fit && "tablet:top-[38%]")}>
             <PlayIcon className="size-6" />
           </Link>
         )}
         </div>
-        <div className="relative bg-foreground p-4 text-left tablet:absolute tablet:inset-x-5.5 tablet:top-[200px] tablet:bg-transparent tablet:p-0">
+        <div className={cx("relative bg-foreground p-4 text-left", !fit && "tablet:absolute tablet:inset-x-5.5 tablet:top-[200px] tablet:bg-transparent tablet:p-0")}>
+          {fit && labels}
           {free && <div className="text-[13px] font-semibold opacity-85">Part {free.order} · {free.title}</div>}
-          <div className="mt-1 text-[22px] font-extrabold tracking-[-0.03em] tablet:text-[30px]">{peek.title}</div>
+          <div className={cx("mt-1 text-[22px] font-extrabold tracking-[-0.03em]", !fit && "tablet:text-[30px]")}>{peek.title}</div>
         </div>
       </div>
       <div className="hidden flex-col gap-2.5 p-5 text-left tablet:flex">
@@ -325,6 +329,92 @@ function HeroPeek({ peek }: { peek: Peek }) {
           {peek.mrp > peek.price && <span className="text-[13px] text-muted-foreground line-through">{inr(peek.mrp)}</span>}
         </div>
       </div>
+    </div>
+  );
+}
+
+// "&" and "and" read the same, and every word typed must appear in the title ("int calc" finds Integral Calculus).
+function matchesChapter(title: string, q: string) {
+  const norm = (t: string) => t.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9 ]/g, " ");
+  const words = norm(q).split(/\s+/).filter(Boolean);
+  const t = norm(title);
+  return words.every((w) => t.includes(w));
+}
+
+// The hero search: results appear under the box as you type, without pressing Enter or scrolling. Picking one opens
+// the chapter; "See all" scrolls to the filtered list below. Arrow keys move through the results, Enter opens one.
+function ChapterSearch({ chapters, q, setQ, onSeeAll }: { chapters: CardChapter[]; q: string; setQ: (q: string) => void; onSeeAll: () => void }) {
+  const router = useRouter();
+  const id = useId();
+  const box = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+  const all = q.trim() ? chapters.filter((c) => matchesChapter(c.title, q)) : [];
+  const hits = all.slice(0, 6);
+  const show = open && !!q.trim();
+  const go = (c: CardChapter) => router.push(`/chapter/${c.slug}`);
+
+  return (
+    <div
+      ref={box}
+      className="relative z-20 mx-auto mt-8 w-[min(640px,100%)] text-left"
+      onBlur={(e) => { if (!box.current?.contains(e.relatedTarget)) setOpen(false); }}
+    >
+      <form
+        role="search"
+        onSubmit={(e) => { e.preventDefault(); if (hits[active]) go(hits[active]); else { setOpen(false); onSeeAll(); } }}
+        className="flex items-center gap-2.5 rounded-xl bg-card py-2 pl-4.5 pr-2 shadow-[0_20px_50px_-20px_rgb(120_40_0/0.35)]"
+      >
+        <svg className="size-5 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+        <input
+          value={q}
+          onChange={(e) => { setQ(e.target.value); setOpen(true); setActive(-1); }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown") { e.preventDefault(); setOpen(true); setActive((a) => Math.min(hits.length - 1, a + 1)); }
+            if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(-1, a - 1)); }
+            if (e.key === "Escape") setOpen(false);
+          }}
+          placeholder="Search a chapter: integrals, vectors…"
+          aria-label="Search chapters"
+          role="combobox"
+          aria-expanded={show}
+          aria-controls={`${id}-list`}
+          aria-autocomplete="list"
+          aria-activedescendant={active >= 0 ? `${id}-${active}` : undefined}
+          className="h-full min-w-0 flex-1 bg-transparent py-2.5 text-[17px] text-foreground outline-none placeholder:text-muted-foreground"
+        />
+        {q && <button type="button" onClick={() => { setQ(""); setActive(-1); }} aria-label="Clear search" className="tap relative grid size-6 shrink-0 place-items-center rounded-full bg-muted text-sm leading-none text-muted-foreground hover:text-foreground">×</button>}
+        <button className="shrink-0 rounded-lg bg-primary px-5 py-3 text-[15px] font-bold text-primary-foreground transition hover:brightness-108">Search</button>
+      </form>
+      {show && (
+        <div className="absolute inset-x-0 top-full mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-[0_30px_60px_-20px_rgb(80_20_0/0.35)]">
+          <ul id={`${id}-list`} role="listbox" aria-label="Matching chapters">
+            {hits.map((c, i) => (
+              <li key={c.id} id={`${id}-${i}`} role="option" aria-selected={i === active}>
+                <Link
+                  href={`/chapter/${c.slug}`}
+                  onMouseEnter={() => setActive(i)}
+                  className={cx("flex min-h-12 items-center gap-3 px-4 py-2.5 text-foreground", i === active ? "bg-selected" : "hover:bg-muted")}
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[15px] font-bold">{c.title}</span>
+                    <span className="block text-xs text-muted-foreground">Class {c.classLevel} · {c.partsCount} parts{c.free ? " · Free preview" : ""}</span>
+                  </span>
+                  <span className="shrink-0 text-sm font-bold">{c.owned ? "Owned" : inr(c.price)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          {hits.length ? (
+            <button type="button" onClick={() => { setOpen(false); onSeeAll(); }} className="flex min-h-11 w-full items-center justify-center border-t border-border text-sm font-bold text-primary hover:bg-muted">
+              See all {all.length} result{all.length === 1 ? "" : "s"} below
+            </button>
+          ) : (
+            <p className="px-4 py-4 text-sm text-muted-foreground">No chapter matches “{q.trim()}”. Try a shorter word.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

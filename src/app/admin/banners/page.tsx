@@ -3,7 +3,8 @@ import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Field, PageHeader, Toggle, SubmitButton, Badge } from "@/components/admin/ui";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
-import { saveBanner, deleteBanner } from "../actions";
+import { saveBanner, deleteBanner, saveStrip } from "../actions";
+import { getSettings } from "@/lib/settings";
 import type { Banner } from "@/generated/prisma/client";
 
 export const metadata = { title: "Banners & popups" };
@@ -19,13 +20,14 @@ const dt = (d: Date | null) => (d ? new Date(d.getTime() + 330 * 60_000).toISOSt
 
 export default async function Banners() {
   await requireStaff("banners");
-  const banners = await db.banner.findMany({ orderBy: [{ kind: "asc" }, { sortOrder: "asc" }] });
+  const [banners, settings] = await Promise.all([db.banner.findMany({ orderBy: [{ kind: "asc" }, { sortOrder: "asc" }] }), getSettings()]);
   return (
     <div className="max-w-4xl space-y-8">
       <PageHeader title="Banners & popups" subtitle="Promotions across the site. Schedule them and they switch on and off by themselves." />
       {(Object.keys(KINDS) as (keyof typeof KINDS)[]).map((kind) => (
         <section key={kind} className="space-y-3">
           <h2 className="font-bold">{KINDS[kind]}</h2>
+          {kind === "MARQUEE" && <StripForm strip={settings.strip} show={settings.features.marquee} sample={banners.find((b) => b.kind === "MARQUEE" && b.isActive)?.title ?? "Your message here"} />}
           {banners.filter((b) => b.kind === kind).map((b) => (
             <details key={b.id} className="card group overflow-hidden">
               <summary className="flex cursor-pointer list-none items-center gap-3 p-4">
@@ -48,6 +50,28 @@ export default async function Banners() {
         </section>
       ))}
     </div>
+  );
+}
+
+// One form for the whole strip: on/off, background colours and text colour. Each message below is its own banner.
+function StripForm({ strip, show, sample }: { strip: { from: string; to: string; text: string }; show: boolean; sample: string }) {
+  const brand = !strip.from || !strip.to;
+  const preview = brand ? "linear-gradient(135deg, var(--primary), var(--brand-2))" : `linear-gradient(135deg, ${strip.from}, ${strip.to})`;
+  return (
+    <form action={saveStrip} className="card space-y-4 p-4">
+      <div className="flex min-h-11 items-center gap-6 overflow-hidden whitespace-nowrap rounded-lg px-4 text-sm font-semibold" style={{ background: preview, color: strip.text }} aria-label="Current strip">
+        <span>{sample}</span><span aria-hidden>✦</span><span>{sample}</span>
+      </div>
+      <Toggle name="show" label="Show the strip on the site" defaultChecked={show} />
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Field label="Colour from"><input type="color" name="from" defaultValue={strip.from || "#E11D48"} className="input !h-11 !p-1" /></Field>
+        <Field label="Colour to"><input type="color" name="to" defaultValue={strip.to || "#F97316"} className="input !h-11 !p-1" /></Field>
+        <Field label="Text colour"><input type="color" name="text" defaultValue={strip.text || "#FFFFFF"} className="input !h-11 !p-1" /></Field>
+      </div>
+      <Toggle name="brand" label="Use the Mathflex brand colours instead (ignores the two colours above)" defaultChecked={brand} />
+      <p className="text-xs text-muted">The messages below scroll in this strip. Turn one off, or schedule it, to hide just that message.</p>
+      <SubmitButton>Save strip</SubmitButton>
+    </form>
   );
 }
 

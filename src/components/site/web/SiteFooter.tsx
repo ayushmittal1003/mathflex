@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Settings } from "@/lib/settings";
-import { instructorNames, placeholders, socials, socialsComingSoon, supportPhone } from "@/lib/site-content";
+import { instructorNames, placeholders, socials, supportPhone } from "@/lib/site-content";
 import { SiteLogo } from "./SiteLogo";
 import { container } from "./ui";
 
@@ -39,7 +39,6 @@ export function SiteFooter({ settings }: { settings: Settings }) {
               </svg>
             </SocialIcon>
           </div>
-          <p className="mt-3 text-[13px] text-muted-foreground">Coming soon: {socialsComingSoon.join(", ")}</p>
         </div>
 
         <FooterCol title="Learn">
@@ -57,6 +56,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
         <FooterCol title="Resources">
           <Link href="/blog" className={linkCls}>Blog</Link>
           <Link href="/free-practice" className={linkCls}>Free practice</Link>
+          <Link href="/jee-exam" className={linkCls}>JEE 2027 exam guide</Link>
         </FooterCol>
         <FooterCol title="Support">
           <a href={`mailto:${settings.supportEmail}`} className={`${linkCls} break-all`}>{settings.supportEmail}</a>

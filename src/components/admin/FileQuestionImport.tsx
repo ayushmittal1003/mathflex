@@ -4,6 +4,7 @@ import { MathText } from "@/components/MathText";
 import { useActionState, useState, useTransition, startTransition } from "react";
 import { commitQuestionDrafts, previewQuestionFile, type PreviewState } from "@/app/admin/questions/import-actions";
 import type { Draft } from "@/lib/question-import/parse";
+import { EXAM_LEVELS, examLevel } from "@/lib/exam-level";
 
 type Row = Draft & { key: number; include: boolean };
 const L = "ABCDEF";
@@ -16,6 +17,13 @@ function problems(d: Draft): string[] {
   if (opts.length < 2) return ["Needs at least 2 options."];
   if (d.format === "SINGLE") return d.correctIndex < 0 || d.correctIndex >= opts.length ? ["Pick the correct option."] : [];
   return d.correctIndices.length ? [] : ["Tick the correct options."];
+}
+
+// What students will filter this question under, so a tag that sorts to neither paper is caught here.
+function ExamChip({ exam }: { exam: string }) {
+  const level = examLevel(exam);
+  if (level) return <span className="rounded bg-ok/15 px-2 py-0.5 text-xs font-semibold text-ok">{EXAM_LEVELS.find((x) => x.value === level)!.label}</span>;
+  return <span className="rounded bg-surface-2 px-2 py-0.5 text-xs text-muted" title="Students only see it under &quot;Any exam&quot;. Start the exam with JEE Main or JEE Advanced to sort it.">{exam ? "Not JEE Main / Advanced" : "No exam"}</span>;
 }
 
 // Upload a PDF / Word file of DPP or PYQ questions, review what was found, then import.
@@ -162,7 +170,8 @@ export function FileQuestionImport({ chapterId, kind, aiOn, direct }: { chapterI
                     <select value={r.format} onChange={(e) => patch(r.key, { format: e.target.value as Draft["format"], options: e.target.value === "NUMERICAL" ? [] : r.options.length ? r.options : ["", "", "", ""] })} className="input !w-auto !py-1 text-xs">
                       <option value="SINGLE">One correct answer</option><option value="MULTIPLE">Several correct</option><option value="NUMERICAL">Numerical answer</option>
                     </select>
-                    <input value={r.exam ?? ""} onChange={(e) => patch(r.key, { exam: e.target.value })} placeholder="Exam" className="input !w-28 !py-1 text-xs" aria-label="Exam" />
+                    <input value={r.exam ?? ""} onChange={(e) => patch(r.key, { exam: e.target.value })} placeholder={exam || "Exam"} className="input !w-28 !py-1 text-xs" aria-label="Exam" />
+                    <ExamChip exam={r.exam || exam} />
                     <input value={r.year ?? ""} onChange={(e) => { const v = e.target.value.replace(/\D/g, "").slice(0, 4); patch(r.key, { year: v ? Number(v) : undefined }); }} placeholder="Year" className="input !w-20 !py-1 text-xs" aria-label="Year" />
                     {bad.map((b) => <span key={b} className="rounded bg-gold/25 px-2 py-0.5 text-xs font-semibold">{b}</span>)}
                     {r.warnings.filter((w) => !bad.length && w).map((w) => <span key={w} className="rounded bg-surface-2 px-2 py-0.5 text-xs text-muted">{w}</span>)}

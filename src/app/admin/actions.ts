@@ -565,11 +565,53 @@ export async function saveBanner(form: FormData) {
   refreshSite();
 }
 
+const HEX = /^#[0-9a-f]{6}$/i;
+
+// The top strip's look and whether it shows. Its messages are the MARQUEE banners above.
+export async function saveStrip(form: FormData) {
+  const me = await requireStaff("banners");
+  const cur = await getSettings();
+  const brand = bool(form, "brand");
+  const colour = (k: string, fallback: string) => (HEX.test(str(form, k)) ? str(form, k) : fallback);
+  const strip = { from: brand ? "" : colour("from", "#FF2E63"), to: brand ? "" : colour("to", "#FF8A3D"), text: colour("text", "#FFFFFF") };
+  const on = bool(form, "show");
+  await Promise.all([saveSetting("strip", strip), saveSetting("features", { ...cur.features, marquee: on })]);
+  await audit(me, "banner.strip", `Top strip ${on ? "shown" : "hidden"}, colours ${brand ? "brand gradient" : `${strip.from} → ${strip.to}`}, text ${strip.text}`, { entity: "banner" });
+  refreshSite();
+}
+
 export async function deleteBanner(id: string) {
   const me = await requireStaff("banners");
   const b = await db.banner.delete({ where: { id } });
   await audit(me, "banner.delete", `Deleted banner “${b.title}”`, { entity: "banner", id });
   refreshSite();
+}
+
+/* ---------------- Rewards ---------------- */
+
+// Tier targets and reward text. Tier keys stay fixed so existing claims keep pointing at the right tier.
+export async function saveRewardTiers(form: FormData) {
+  const me = await requireStaff("students");
+  const cur = await getSettings();
+  const tiers = cur.rewards.tiers.map((t) => ({
+    ...t,
+    name: str(form, `${t.key}.name`) || t.name,
+    parts: Math.max(1, int(form, `${t.key}.parts`, t.parts)),
+    correct: Math.max(1, int(form, `${t.key}.correct`, t.correct)),
+    streak: Math.max(1, int(form, `${t.key}.streak`, t.streak)),
+    reward: str(form, `${t.key}.reward`) || t.reward,
+  }));
+  await saveSetting("rewards", { tiers });
+  await audit(me, "rewards.update", `Updated reward tiers: ${tiers.map((t) => `${t.name} ${t.parts}/${t.correct}/${t.streak}`).join(", ")}`, { entity: "rewards" });
+  revalidatePath("/admin/rewards");
+  revalidatePath("/rewards");
+}
+
+export async function setRewardClaim(id: string, status: "SENT" | "DECLINED" | "REQUESTED") {
+  const me = await requireStaff("students");
+  const c = await db.rewardClaim.update({ where: { id }, data: { status, handledAt: status === "REQUESTED" ? null : new Date() }, include: { user: { select: { name: true } } } });
+  await audit(me, "rewards.claim", `Marked ${c.tier.toLowerCase()} reward for ${c.user.name} as ${status.toLowerCase()}`, { entity: "user", id: c.userId, meta: { claimId: id } });
+  revalidatePath("/admin/rewards");
 }
 
 /* ---------------- Orders ---------------- */

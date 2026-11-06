@@ -102,6 +102,23 @@ model User {
   couponUses   CouponRedemption[]
   auditLogs    AuditLog[]
   invitesSent  StaffInvite[]
+  rewardClaims RewardClaim[]
+}
+
+// A student asking for a milestone reward. The team fulfils it by hand and marks it sent.
+model RewardClaim {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tier      String // BRONZE | SILVER | GOLD
+  status    String    @default("REQUESTED") // REQUESTED | SENT | DECLINED
+  shoutout  Boolean   @default(false) // agreed to be featured on the site and Instagram
+  note      String    @default("")
+  createdAt DateTime  @default(now())
+  handledAt DateTime?
+
+  @@unique([userId, tier])
+  @@index([status, createdAt])
 }
 
 model Chapter {

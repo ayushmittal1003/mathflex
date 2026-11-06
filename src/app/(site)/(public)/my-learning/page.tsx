@@ -165,6 +165,9 @@ export default async function MyLearning() {
           </div>
         ))}
       </section>
+      <p className="mt-3 text-right text-sm">
+        <Link href="/rewards" className="inline-flex min-h-11 items-center font-bold text-primary underline underline-offset-[3px]">How streaks, XP and rewards work →</Link>
+      </p>
 
       {/* Continue learning */}
       {resume?.next && (

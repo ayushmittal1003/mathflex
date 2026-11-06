@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CloseX, useSwipeDown } from "./BottomSheet";
 import { useFocusTrap } from "./useFocusTrap";
-import { BookOpen, CalendarClock, Gift, GraduationCap, Home, LayoutGrid, LogOut, Mail, MessageCircle, PlayCircle, Shield, ShoppingBag, Target, Trophy, User } from "lucide-react";
+import { BookOpen, CalendarClock, Flame, Gift, GraduationCap, Home, LayoutGrid, LogOut, Mail, MessageCircle, PlayCircle, Shield, ShoppingBag, Target, Trophy, User } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import { useCart } from "../cart-store";
 import { SiteLogo } from "./SiteLogo";
@@ -247,6 +247,7 @@ function AccountMenu({ user, features, contact, onNavigate, compact = false }: {
         <Link href="/my-learning" className={item}><PlayCircle className={icon} /> My Learning</Link>
         <Link href="/profile" className={item}><User className={icon} /> Profile</Link>
         <Link href="/plans" className={item}><CalendarClock className={icon} /> Plan validity &amp; renewal</Link>
+        <Link href="/rewards" className={item}><Flame className={icon} /> Streaks &amp; rewards</Link>
         {features.referAndEarn && <Link href="/profile#refer" className={item}><Gift className={icon} /> Refer &amp; Earn</Link>}
         {rule}
         <a href={`https://wa.me/${contact.whatsapp}`} target="_blank" rel="noreferrer" className={item}><MessageCircle className="size-[18px] flex-none text-ok" /> WhatsApp support</a>
@@ -317,6 +318,8 @@ function MoreSheet({ user, features, contact, onClose }: { user: SiteNavUser; fe
     { href: "/pricing", label: "Pricing", sub: "Chapters and courses" },
     ...(features.leaderboard ? [{ href: "/leaderboard", label: "Leaderboard", sub: "This week's top students" }] : []),
     { href: "/free-practice", label: "Free practice", sub: "Easy to hard sets" },
+    { href: "/jee-exam", label: "JEE 2027 exam guide", sub: "Dates, pattern, syllabus" },
+    { href: "/rewards", label: "Streaks & rewards", sub: "How XP works, milestone rewards" },
     { href: "/blog", label: "Blog", sub: "Study tips and guides" },
     { href: "/book-a-call", label: "Book a 1:1 call", sub: "With Karan bhaiya" },
     { href: "/about", label: "About us", sub: "Our story" },

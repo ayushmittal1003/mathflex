@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSettings } from "@/lib/settings";
-import { placeholders, socials, socialsComingSoon, supportPhone } from "@/lib/site-content";
+import { placeholders, socials, supportPhone } from "@/lib/site-content";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { buildMetadata } from "@/lib/seo/metadata";
 
@@ -83,7 +83,6 @@ export default async function ContactPage() {
                 </a>
               ))}
             </div>
-            <p className="mt-4 text-[13px] text-muted-foreground">Coming soon: {socialsComingSoon.join(", ")}</p>
             <div className="mt-5.5 text-sm leading-[1.6] text-secondary-foreground"><b className="text-foreground">Hours</b><br />{placeholders.hours} IST</div>
             <Link href="/faq" className="mt-5.5 flex items-center justify-between gap-3 rounded-xl bg-muted px-4.5 py-4 text-foreground hover:brightness-98">
               <span className="text-sm leading-[1.4]"><b>Quick answers</b><br /><span className="text-muted-foreground">Payments, refunds, access and more</span></span>

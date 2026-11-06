@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EXAM_LEVELS, examLevel } from "@/lib/exam-level";
 import { requireStaff } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { FORMAT_LABEL, DIFFICULTY_LABEL } from "@/lib/grading";
@@ -9,7 +10,7 @@ import type { Prisma } from "@/generated/prisma/client";
 
 export const metadata = { title: "Question bank" };
 
-type Search = { q?: string; chapter?: string; type?: string; format?: string; difficulty?: string; status?: string; flag?: string; view?: string; page?: string };
+type Search = { q?: string; chapter?: string; exam?: string; type?: string; format?: string; difficulty?: string; status?: string; flag?: string; view?: string; page?: string };
 
 const PAGE = 50;
 const FLAG_MIN_ATTEMPTS = 10;
@@ -70,7 +71,8 @@ export default async function QuestionBank({ searchParams }: { searchParams: Pro
       const rate = st?.attempts ? Math.round((st.correct / st.attempts) * 100) : null;
       return { q, attempts: st?.attempts ?? 0, rate, flags: flagsFor(q, st?.attempts ?? 0, rate) };
     })
-    .filter((r) => !sp.flag || r.flags.some((f) => f.key === sp.flag));
+    .filter((r) => !sp.flag || r.flags.some((f) => f.key === sp.flag))
+    .filter((r) => !sp.exam || (sp.exam === "NONE" ? !examLevel(r.q.exam) : examLevel(r.q.exam) === sp.exam));
   const page = Math.max(1, Number(sp.page) || 1);
   const pages = Math.max(1, Math.ceil(rows.length / PAGE));
   const shown = rows.slice((page - 1) * PAGE, page * PAGE);
@@ -122,6 +124,11 @@ export default async function QuestionBank({ searchParams }: { searchParams: Pro
             </select>
             <select name="difficulty" defaultValue={sp.difficulty ?? ""} className="input"><option value="">Any level</option><option value="1">Easy</option><option value="2">Medium</option><option value="3">Hard</option></select>
             <select name="status" defaultValue={sp.status ?? ""} className="input"><option value="">Any status</option><option value="published">Published</option><option value="hidden">Hidden</option></select>
+            <select name="exam" defaultValue={sp.exam ?? ""} className="input">
+              <option value="">Any exam</option>
+              {EXAM_LEVELS.map((x) => <option key={x.value} value={x.value}>{x.label}</option>)}
+              <option value="NONE">Not JEE Main / Advanced</option>
+            </select>
             <select name="flag" defaultValue={sp.flag ?? ""} className="input">
               <option value="">No flag filter</option>
               <option value="key">Check answer key</option>
@@ -145,6 +152,7 @@ export default async function QuestionBank({ searchParams }: { searchParams: Pro
                     <p className="line-clamp-2 font-semibold">{q.prompt}</p>
                     <p className="mt-0.5 text-xs text-muted">
                       <Badge tone={q.type === "PYQ" ? "gold" : "brand"}>{q.type}</Badge>{" "}
+                      {examLevel(q.exam) && <><Badge tone="ok">{EXAM_LEVELS.find((x) => x.value === examLevel(q.exam))!.label}</Badge>{" "}</>}
                       {q.exam ? `${q.exam}${q.year ? ` ${q.year}` : ""} · ` : ""}{q.topic ?? "no topic"}
                     </p>
                   </Td>

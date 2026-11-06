@@ -67,7 +67,7 @@ RULES
 1. The first lines are: format: mathflex-1, then title: <chapter and DPP or PYQ>.
 2. Put a line with only --- before every question.
 3. Each question starts with Q<number>, then these detail lines, one per line. Leave out any you don't know:
-   exam: <e.g. JEE Main · 24 Jan 2023 Shift 1>
+   exam: <e.g. JEE Main · 24 Jan 2023 Shift 1, or JEE Advanced 2019 Paper 1. Always start with "JEE Main" or "JEE Advanced", because students filter tests by it>
    year: <4 digits>
    type: single, multiple or numerical
    difficulty: easy, medium or hard

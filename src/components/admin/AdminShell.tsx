@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   LayoutDashboard, BookOpen, ListChecks, Layers, Ticket, Megaphone, Receipt, Users, PhoneCall, Bot, Settings, Menu, X, ExternalLink, Video,
-  KeyRound, ShieldCheck, ScrollText, UserCog,
+  KeyRound, ShieldCheck, ScrollText, UserCog, Gift,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
@@ -23,6 +23,7 @@ const NAV: { group: string; items: Item[] }[] = [
     { href: "/admin/students", label: "Students", icon: Users, perm: "students" },
     { href: "/admin/access", label: "Grant access", icon: KeyRound, perm: "access" },
     { href: "/admin/mentorship", label: "Mentorship calls", icon: PhoneCall, perm: "mentorship" },
+    { href: "/admin/rewards", label: "Rewards", icon: Gift, perm: "students" },
     { href: "/admin/flexcare", label: "MathMate chatbot", icon: Bot, perm: "flexcare" },
   ] },
   { group: "Commerce & marketing", items: [

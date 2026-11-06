@@ -10,7 +10,7 @@ Every new or changed public page must follow this file. It describes what the co
 | `/chapters`, `/courses` | yes | yes | ItemList | |
 | `/chapter/[slug]` | yes, only when published | yes (`lastModified` = `updatedAt`) | Course + BreadcrumbList | Unpublished: 404 for the public |
 | `/courses/[slug]` | yes, only when published | yes | Course (+ breadcrumb) | |
-| `/pricing`, `/about`, `/contact`, `/faq`, `/book-a-call`, `/privacy`, `/terms`, `/refund-policy` | yes | yes | none | |
+| `/pricing`, `/about`, `/contact`, `/faq`, `/jee-exam`, `/book-a-call`, `/privacy`, `/terms`, `/refund-policy` | yes | yes | none | |
 | `/blog`, `/blog/[slug]` | **only real posts** | real posts only | BreadcrumbList on real posts | Posts with `placeholder: true` in `src/lib/blog.ts` are `noindex` and out of the sitemap automatically |
 | `/free-practice` | **no, for now** | no | none | Hard-coded `noindex: true` in its `page.tsx` |
 | `/leaderboard`, `/login`, `/signup`, `/my-learning`, `/profile`, `/plans`, `/practice*`, `/learn/*`, `/checkout`, `/cart`, `/payment/*`, `/invite/*` | no (`noindex, follow`) | no | none | Use `privateMetadata()`. **Never block these in robots.txt**: a blocked page can't show its noindex |

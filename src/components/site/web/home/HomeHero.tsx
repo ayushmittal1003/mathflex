@@ -6,6 +6,7 @@ import { instructor, mockLabels } from "@/lib/site-content";
 import { Caret, CheckIcon, Eyebrow, Mark, PlayIcon, posterBg } from "../primitives";
 import { button, cx, tone } from "../ui";
 import type { HomeChapter } from "./types";
+import { HeroTour } from "./HeroTour";
 
 // 01 Hero: framed wash, headline, proof points, CTAs and a dashboard peek that overlaps
 // into the next section. Peek rows are real chapters; progress numbers are illustrative.
@@ -61,6 +62,8 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
               Browse {chapterCount} chapters →
             </Link>
           </div>
+
+          <HeroTour />
 
           <div className="mt-7 flex items-center justify-center gap-3">
             <div className="flex" aria-hidden>

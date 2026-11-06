@@ -26,7 +26,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <CartDrawerProvider meta={cartMeta}>
       <SkipLink />
       {/* Admin-managed running ticker, kept from the original shell. */}
-      <Marquee items={marquee.map((m) => ({ id: m.id, title: m.title, href: m.ctaHref }))} />
+      <Marquee items={marquee.map((m) => ({ id: m.id, title: m.title, href: m.ctaHref }))} colors={settings.strip} />
       <div className="relative">
         <SiteNav {...nav} />
         <main id="main">{children}</main>

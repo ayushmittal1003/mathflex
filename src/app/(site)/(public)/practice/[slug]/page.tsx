@@ -14,6 +14,7 @@ import { Download } from "lucide-react";
 import { posterBg } from "@/components/site/web/primitives";
 import { container, cx } from "@/components/site/web/ui";
 import { privateMetadata } from "@/lib/seo/metadata";
+import { EXAM_LEVELS, examLevel } from "@/lib/exam-level";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return privateMetadata(c ? `${c.title} · Practice` : "Practice");
 }
 
-type Search = { status?: string; difficulty?: string; type?: string; format?: string; topic?: string; year?: string; mode?: string };
+type Search = { status?: string; exam?: string; difficulty?: string; type?: string; format?: string; topic?: string; year?: string; mode?: string };
 
 const RESOURCE_LABEL: Record<string, string> = { DPP_SHEET: "DPP", PYQ_SHEET: "PYQ", HANDWRITTEN: "Handwritten notes", NOTES: "Short notes", FORMULA_SHEET: "Formula sheet", MINDMAP: "Mind map", OTHER: "PDF" };
 
@@ -56,9 +57,11 @@ export default async function ChapterPractice({ params, searchParams }: { params
   const solved = rows.filter((r) => r.status === "correct").length;
   const mistakes = rows.filter((r) => r.status === "incorrect" || r.status === "partial").length;
 
-  // Difficulty, type and year allow several values at once, joined by commas in the URL (?year=2023,2021).
+  // Exam, difficulty, type and year allow several values at once, joined by commas in the URL (?year=2023,2021).
   const list = (v?: string) => String(v ?? "").split(",").filter(Boolean);
-  const picked = { difficulty: list(sp.difficulty), format: list(sp.format), year: list(sp.year) };
+  const picked = { exam: list(sp.exam), difficulty: list(sp.difficulty), format: list(sp.format), year: list(sp.year) };
+  // Sorted once from each question's exam tag. Picking JEE Main and/or JEE Advanced leaves out untagged questions.
+  const level = new Map(questions.map((q) => [q.id, examLevel(q.exam)]));
 
   const status = sp.status ?? "all";
   const matchStatus = (s: QuestionStatus, id: string) =>
@@ -69,6 +72,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
     : true;
   const shown = rows.filter(({ q, status: s }) =>
     matchStatus(s, q.id) &&
+    (!picked.exam.length || picked.exam.includes(level.get(q.id) ?? "")) &&
     (!picked.difficulty.length || picked.difficulty.includes(String(q.difficulty))) &&
     (!sp.type || q.type === sp.type) &&
     (!picked.format.length || picked.format.includes(q.format)) &&
@@ -104,6 +108,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
   };
   const groups: FilterGroup[] = [
     ...(!exam ? [{ param: "status", title: "Status", all: "All questions", options: STATUS_FILTERS.map(([value, label]) => ({ value, label, count: statusCounts[value] })) }] : []),
+    { param: "exam", title: "Exam", all: "Any exam", multi: true, options: EXAM_LEVELS.map((x) => ({ value: x.value, label: x.label, count: questions.filter((q) => level.get(q.id) === x.value).length })) },
     { param: "type", title: "Source", all: "DPP + PYQ", options: [["DPP", "DPPs only"], ["PYQ", "PYQs only"]].map(([value, label]) => ({ value, label, count: questions.filter((q) => q.type === value).length })) },
     { param: "difficulty", title: "Difficulty", all: "All levels", multi: true, options: [1, 2, 3].map((d) => ({ value: String(d), label: DIFFICULTY_LABEL[d], count: questions.filter((q) => q.difficulty === d).length })) },
     { param: "format", title: "Question type", all: "All question types", multi: true, options: QUESTION_TYPES.map((f) => ({ value: f, label: FORMAT_LABEL[f], count: questions.filter((q) => q.format === f).length })) },
@@ -192,7 +197,7 @@ export default async function ChapterPractice({ params, searchParams }: { params
             key={JSON.stringify(sp)}
             chapterId={chapter.id}
             chapterTitle={chapter.title}
-            section={sp.type === "PYQ" ? "PYQs" : sp.type === "DPP" ? "DPPs" : "DPPs + PYQs"}
+            section={[EXAM_LEVELS.filter((x) => picked.exam.includes(x.value)).map((x) => x.label).join(" + "), sp.type === "PYQ" ? "PYQs" : sp.type === "DPP" ? "DPPs" : "DPPs + PYQs"].filter(Boolean).join(" · ")}
             candidate={user.name}
             marking={settings.marking}
             questions={shown.map(({ q }) => ({ id: q.id, type: q.type, format: q.format, exam: q.exam, year: q.year, prompt: q.prompt, options: q.options }))}
