@@ -153,6 +153,7 @@ export function ChatWidget({ name, greeting, avatar, starters, lifted: liftedPro
           lifted ? "bottom-[calc(76px+env(safe-area-inset-bottom))]" : "bottom-4"
         } ${open || hideButton ? "scale-0" : ""} ${hideButton ? "pointer-events-none" : ""}`}
         aria-label={`Open ${name} chat`}
+        data-tour="chat"
         aria-hidden={hideButton || undefined}
         tabIndex={hideButton ? -1 : undefined}
       >

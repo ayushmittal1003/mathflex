@@ -32,11 +32,15 @@ export function PromoPopup({ promo }: { promo: Promo | null }) {
     } catch {}
     if (seen) return;
     let t: ReturnType<typeof setTimeout> | undefined;
-    const open = () => { t = setTimeout(() => setShow(true), 600); };
-    if (views >= 2) { open(); return () => clearTimeout(t); }
+    // Wait for the home page walkthrough (HomeTour) to finish rather than opening over it.
+    const open = () => {
+      if (document.documentElement.dataset.tour === "on") window.addEventListener("mf-tour-end", open, { once: true });
+      else t = setTimeout(() => setShow(true), 600);
+    };
+    if (views >= 2) { open(); return () => { window.removeEventListener("mf-tour-end", open); clearTimeout(t); }; }
     const onScroll = () => { if (window.scrollY > 80) { window.removeEventListener("scroll", onScroll); open(); } };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { window.removeEventListener("scroll", onScroll); clearTimeout(t); };
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("mf-tour-end", open); clearTimeout(t); };
   }, [promo, pathname, quiet]);
 
   const close = () => {

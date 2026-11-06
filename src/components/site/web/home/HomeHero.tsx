@@ -6,7 +6,7 @@ import { instructor, mockLabels } from "@/lib/site-content";
 import { Caret, CheckIcon, Eyebrow, Mark, PlayIcon, posterBg } from "../primitives";
 import { button, cx, tone } from "../ui";
 import type { HomeChapter } from "./types";
-import { HeroTour } from "./HeroTour";
+import { HomeTour, StartTourButton } from "./HomeTour";
 
 // 01 Hero: framed wash, headline, proof points, CTAs and a dashboard peek that overlaps
 // into the next section. Peek rows are real chapters; progress numbers are illustrative.
@@ -54,7 +54,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
 
           <div className="mt-8.5 cta-row">
             {chapterCount > 0 && (
-              <a href="#previews" className={cx(button.lg, tone.primary)}>
+              <a href="#previews" data-tour="preview" className={cx(button.lg, tone.primary)}>
                 <PlayIcon /> Watch a preview
               </a>
             )}
@@ -63,7 +63,8 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
             </Link>
           </div>
 
-          <HeroTour />
+          <HomeTour />
+          <StartTourButton />
 
           <div className="mt-7 flex items-center justify-center gap-3">
             <div className="flex" aria-hidden>

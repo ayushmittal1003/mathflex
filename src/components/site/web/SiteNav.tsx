@@ -87,6 +87,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
             <Link
               key={l.href}
               href={l.href}
+              data-tour={l.href === "/chapters" ? "chapters" : undefined}
               aria-current={isActive(l.href) ? "page" : undefined}
               className={cx(
                 "rounded-md px-3.5 py-[7px] text-[13px] transition-colors pointer-coarse:py-2.5",
@@ -102,6 +103,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
           <button
             type="button"
             onClick={() => drawer?.open()}
+            data-tour="cart"
             aria-haspopup="dialog"
             aria-label={`Cart, ${cartCount} item${cartCount === 1 ? "" : "s"}`}
             className={cx("relative grid size-11 place-items-center rounded-lg transition hover:scale-[1.06]", secondary)}
@@ -145,7 +147,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
               </>
             ) : (
               <>
-                <Link href="/login" className={cx(button.sm, secondary)}>Log in</Link>
+                <Link href="/login" data-tour="login" className={cx(button.sm, secondary)}>Log in</Link>
                 <Link href="/signup" className={cx(button.sm, tone.primary)}>Start free</Link>
               </>
             )}
@@ -157,7 +159,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
               {user.name.trim()[0]?.toUpperCase() ?? "?"}
             </button>
           ) : (
-            <Link href="/login" className={cx(button.sm, secondary, "h-11 tablet:hidden")}>Log in</Link>
+            <Link href="/login" data-tour="login" className={cx(button.sm, secondary, "h-11 tablet:hidden")}>Log in</Link>
           )}
 
           <button
@@ -279,7 +281,7 @@ function MobileTabBar({ pathname, user, features, onMore, moreOpen }: { pathname
           const active = !moreOpen && (href === "/" ? pathname === "/" : pathname.startsWith(href));
           return (
             <li key={href}>
-              <Link href={href} aria-current={active ? "page" : undefined} className={cx(item, active ? "text-primary" : "text-muted-foreground")}>
+              <Link href={href} data-tour={href === "/chapters" ? "chapters" : undefined} aria-current={active ? "page" : undefined} className={cx(item, active ? "text-primary" : "text-muted-foreground")}>
                 {active && <span className="absolute top-0 h-[3px] w-8 rounded-b-full bg-primary" aria-hidden />}
                 <Icon className="size-[22px]" strokeWidth={active ? 2.5 : 2} />
                 {label}
