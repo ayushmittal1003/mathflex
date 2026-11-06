@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { VercelAnalytics } from "@/components/VercelAnalytics";
 import { Inter, JetBrains_Mono, Noto_Serif } from "next/font/google";
 import "./globals.css";
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, LOCALE, SITE_NAME, SITE_URL } from "@/lib/seo/config";
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="theme" strategy="beforeInteractive">{themeScript}</Script>
         {children}
         <SpeedInsights />
+        <VercelAnalytics />
       </body>
     </html>
   );

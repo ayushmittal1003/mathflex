@@ -9,6 +9,7 @@ import { startImpersonation } from "@/app/actions/impersonation";
 import { inr } from "@/lib/format";
 import { levelFromXp } from "@/lib/gamification";
 import { getSettings } from "@/lib/settings";
+import { fmtDuration, recentSessions } from "@/lib/site-analytics";
 import { getAccessibleChapterIds } from "@/lib/access";
 import { practiceAnalytics } from "@/lib/qbank";
 import { accuracyOf, fmtTime, strengthOf } from "@/lib/grading";
@@ -45,7 +46,7 @@ export default async function Student({ params }: { params: Promise<{ id: string
   const canAccess = can(me.role, "access");
   const staffTarget = isStaff(u.role);
   const settings = await getSettings();
-  const pa = await practiceAnalytics(u.id, await getAccessibleChapterIds(u.id), settings.marking);
+  const [pa, visits] = await Promise.all([practiceAnalytics(u.id, await getAccessibleChapterIds(u.id), settings.marking), recentSessions({ userId: u.id, days: 180, limit: 10 })]);
   const chapterTitle = new Map(chapters.map((c) => [c.id, c.title]));
   const practiced = [...pa.byChapter.entries()].filter(([, t]) => t.attempted > 0).sort((a, b) => accuracyOf(a[1]) - accuracyOf(b[1]));
   const lvl = levelFromXp(u.xp);
@@ -153,6 +154,18 @@ export default async function Student({ params }: { params: Promise<{ id: string
         ) : (
           <p className="text-sm text-muted">No activity yet.</p>
         )}
+      </Card>
+      <Card title="Recent visits" action={<Link href="/admin/analytics" className="text-sm font-bold text-brand">Analytics</Link>}>
+        <ul className="divide-y divide-border text-sm">
+          {visits.map((v) => (
+            <li key={v.sessionId} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5">
+              <span className="whitespace-nowrap text-xs text-muted">{v.start.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}</span>
+              <span className="min-w-0 flex-1 truncate">{v.pages} page{v.pages === 1 ? "" : "s"} · {v.events} action{v.events === 1 ? "" : "s"} · {fmtDuration(v.durationMs)} · from {v.source ?? "direct"}</span>
+              <Link href={`/admin/analytics/${v.sessionId}`} className="font-bold text-brand">Journey →</Link>
+            </li>
+          ))}
+          {!visits.length && <li className="py-2 text-muted">No visits recorded yet.</li>}
+        </ul>
       </Card>
       <Card title="Orders">
         <ul className="divide-y divide-border text-sm">

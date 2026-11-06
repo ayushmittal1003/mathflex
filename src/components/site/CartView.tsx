@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CircleAlert, Loader2 } from "lucide-react";
 import { cart, useCart } from "./cart-store";
+import { track } from "@/lib/track";
 import { getQuote, placeOrder } from "@/app/actions/checkout";
 import { load } from "@cashfreepayments/cashfree-js";
 import type { Quote } from "@/lib/pricing";
@@ -81,6 +82,7 @@ export function CartView(props: {
       (emailOk ? phoneInput : emailInput).current?.focus();
       return;
     }
+    track("begin_checkout", quote ? `₹${quote.total}` : undefined);
     startPay(async () => {
       const res = await placeOrder(items, coupon, mentor, { email: askEmail ? email : undefined, phone: askPhone ? phone : undefined });
       if (!res.ok) {

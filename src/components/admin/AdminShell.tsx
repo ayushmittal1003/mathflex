@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   LayoutDashboard, BookOpen, ListChecks, Layers, Ticket, Megaphone, Receipt, Users, PhoneCall, Bot, Settings, Menu, X, ExternalLink, Video,
-  KeyRound, ShieldCheck, ScrollText, UserCog, Gift,
+  KeyRound, ShieldCheck, ScrollText, UserCog, Gift, BarChart3,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
@@ -12,7 +12,7 @@ import { ROLE_LABEL, type Permission, type StaffRole } from "@/lib/permissions";
 
 type Item = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; perm: Permission };
 const NAV: { group: string; items: Item[] }[] = [
-  { group: "", items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard, perm: "dashboard" }] },
+  { group: "", items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard, perm: "dashboard" }, { href: "/admin/analytics", label: "Analytics", icon: BarChart3, perm: "dashboard" }] },
   { group: "Content", items: [
     { href: "/admin/chapters", label: "Chapters & content", icon: BookOpen, perm: "content" },
     { href: "/admin/questions", label: "Question bank", icon: ListChecks, perm: "questions" },

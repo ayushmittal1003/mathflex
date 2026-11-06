@@ -115,6 +115,8 @@ These technologies may be used to:
 - Improve website performance and security
 - Measure the effectiveness of marketing campaigns, where applicable
 
+Our own visit statistics use two first-party cookies with random identifiers: one for your browser (kept for up to a year) and one for your current visit (ended after 30 minutes without activity). With them we record which pages are opened, how long they stay open, which buttons and links are tapped, and actions such as adding to cart, together with your device type, your country and the website or campaign that brought you. We do not store your IP address for this. When you are logged in, these records are linked to your account. They are kept for up to 180 days and used only to understand and improve MathFlex. Our hosting provider, Vercel, also counts page views for us.
+
 Some cookies may be provided by third-party services integrated into our website.
 
 You may be able to manage or disable cookies through your browser settings. However, disabling certain cookies may affect features such as login, checkout, or access to purchased content.

@@ -43,7 +43,7 @@ export function GuestPaymentStatus({ order, token, firebase }: { order: GuestOrd
         <div className="w-[min(560px,100%)] animate-mf-rise text-center">
           {order.status === "PAID" ? (
             <>
-              <PaidCelebration />
+              <PaidCelebration orderNo={order.orderNo} />
               <span className="inline-grid size-20 animate-mf-pop place-items-center rounded-full bg-ok"><CheckIcon className="size-9 text-white" /></span>
               <h1 className={cx(title, "mt-6.5")}>Thank you! Your order is confirmed</h1>
               {order.userId ? (

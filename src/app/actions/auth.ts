@@ -7,6 +7,7 @@ import { createSession, destroySession, hashPassword, verifyPassword } from "@/l
 import { getSettings } from "@/lib/settings";
 import { allow, clientIp } from "@/lib/rate-limit";
 import { appHref, STUDENT_HOME } from "@/lib/hosts";
+import { trackServer } from "@/lib/analytics-server";
 
 // Compared against when the email is unknown, so response time doesn't reveal which emails have accounts.
 const DUMMY_HASH = "$2b$10$X3JZmmyNzQ2K5OUExlckcOK3FKv/I0h5pE17c4UW/Nym6beKJfdJa";
@@ -33,6 +34,7 @@ export async function login(_: AuthState, form: FormData): Promise<AuthState> {
   if (!user || !ok) return { error: "Wrong email or password." };
   if (user.isBlocked) return { error: "This account is suspended. Please contact support." };
   await createSession(user.id, user.role);
+  await trackServer("login", user.id, "email");
   const next = safeNext(form.get("next"));
   // Team members signing in from the plain login page go straight to the admin panel.
   // Students go to the app (app.mathflex.in once it is set up); team members to the admin.
@@ -66,6 +68,7 @@ export async function signup(_: AuthState, form: FormData): Promise<AuthState> {
     },
   });
   await createSession(user.id, user.role);
+  await trackServer("sign_up", user.id, "email");
   const next = safeNext(form.get("next"));
   redirect(appHref(next === "/" ? STUDENT_HOME : next));
 }

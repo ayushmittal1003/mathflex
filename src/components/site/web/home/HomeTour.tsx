@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { track } from "@/lib/track";
 
 const DONE = "mf-tour-done";
 const START = "mf-tour-start";
@@ -36,11 +37,13 @@ export function HomeTour() {
     const live = STEPS.filter((s) => find(s.target));
     if (!live.length) return;
     document.documentElement.dataset.tour = "on";
+    track("tour_start");
     setSteps(live);
     setI(0);
   }, []);
 
-  const end = useCallback(() => {
+  const end = useCallback((finished = false) => {
+    track(finished ? "tour_complete" : "tour_skip");
     setI(-1);
     delete document.documentElement.dataset.tour;
     window.dispatchEvent(new Event("mf-tour-end"));
@@ -81,7 +84,7 @@ export function HomeTour() {
   if (i < 0 || !rect || !steps[i]) return null;
   const step = steps[i];
   const last = i === steps.length - 1;
-  const go = () => (last ? end() : setI(i + 1));
+  const go = () => (last ? end(true) : setI(i + 1));
 
   // The spotlight hugs the button; the tooltip sits below it, or above when there's no room.
   const hole = { top: rect.top - PAD, left: rect.left - PAD, width: rect.width + PAD * 2, height: rect.height + PAD * 2 };
@@ -110,7 +113,7 @@ export function HomeTour() {
         <h2 id="tour-title" className="mt-1 text-[17px] font-extrabold tracking-[-0.02em]">{step.title}</h2>
         <p id="tour-body" className="mt-1.5 text-sm leading-[1.5] text-secondary-foreground">{step.body}</p>
         <div className="mt-4 flex items-center gap-2">
-          <button type="button" onClick={end} className="min-h-11 px-1 text-sm font-bold text-muted-foreground hover:text-foreground">Skip tour</button>
+          <button type="button" onClick={() => end()} className="min-h-11 px-1 text-sm font-bold text-muted-foreground hover:text-foreground">Skip tour</button>
           <span className="ml-auto flex gap-2">
             {i > 0 && <button type="button" onClick={() => setI(i - 1)} className="min-h-11 rounded-lg border border-border px-3.5 text-sm font-bold hover:bg-muted">Back</button>}
             <button ref={next} type="button" onClick={go} className="min-h-11 rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground shadow-cta hover:brightness-108">{last ? "Let's go" : "Next"}</button>

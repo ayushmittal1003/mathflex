@@ -1,4 +1,5 @@
 "use client";
+import { track } from "@/lib/track";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -148,7 +149,7 @@ export function ChatWidget({ name, greeting, avatar, starters, lifted: liftedPro
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => { setOpen(true); track("chat_open"); }}
         className={`chat-fab fixed right-4 z-40 transition hover:scale-105 tablet:bottom-6 tablet:right-6 ${
           lifted ? "bottom-[calc(76px+env(safe-area-inset-bottom))]" : "bottom-4"
         } ${open || hideButton ? "scale-0" : ""} ${hideButton ? "pointer-events-none" : ""}`}

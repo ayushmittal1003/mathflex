@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PlayIcon } from "./primitives";
+import { track } from "@/lib/track";
 
 type PlayerJs = { on: (ev: string, cb: () => void) => void; play: () => void; pause: () => void; unmute: () => void; setVolume: (v: number) => void };
 const playerjs = () => (window as unknown as { playerjs?: { Player: new (el: HTMLIFrameElement) => PlayerJs } }).playerjs;
@@ -119,7 +120,7 @@ export function VideoPlayFacade({ src, title, caption, sub, poster, hoverPlay = 
       ) : (
         <button
           type="button"
-          onClick={() => { clearTimeout(timer.current); stayOn.current = true; setPlaying(true); }}
+          onClick={() => { clearTimeout(timer.current); stayOn.current = true; setPlaying(true); track("video_play", title); }}
           aria-label={`Play video: ${title}`}
           className="group absolute inset-0 grid size-full place-items-center text-left"
         >

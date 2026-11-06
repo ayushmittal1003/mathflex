@@ -2,6 +2,7 @@
 import { cart, useCart, type CartItem } from "../cart-store";
 import { useToast } from "./Toast";
 import { useCartDrawer } from "./CartDrawer";
+import { track } from "@/lib/track";
 
 // Add/remove on the existing guest cart (ids only; prices are recomputed on the server)
 // with the design's "Added X to cart · View cart" toast.
@@ -12,6 +13,7 @@ export function useAddToCart() {
   const has = (id: string) => items.some((i) => i.id === id);
   const add = (item: CartItem, title: string) => {
     cart.add(item);
+    track("add_to_cart", title);
     if (drawer) return drawer.open();
     const n = has(item.id) ? items.length : items.length + 1;
     toast(`Added ${title} to cart`, { label: `View cart · ${n}`, href: "/checkout" });

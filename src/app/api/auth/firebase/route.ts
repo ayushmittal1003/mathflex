@@ -8,6 +8,7 @@ import { allow, clientIp } from "@/lib/rate-limit";
 import { verifyFirebaseToken } from "@/lib/firebase";
 import { isGuestEmail, phoneOnlyEmail } from "@/lib/format";
 import { claimGuestOrders, guestOrderWaiting } from "@/lib/orders";
+import { trackServer } from "@/lib/analytics-server";
 
 const AVATAR_COLORS = ["#F43F5E", "#FB923C", "#8B5CF6", "#0EA5E9", "#10B981", "#EC4899", "#F59E0B"];
 const safeNext = (n: unknown) => (typeof n === "string" && n.startsWith("/") && !n.startsWith("//") && !n.includes("\\") ? n : "");
@@ -39,6 +40,7 @@ export async function POST(req: Request) {
   const current = await getCurrentUser();
   const sessionGuestId = current && isGuestEmail(current.email) ? current.id : undefined;
   let user = await find();
+  const isNew = !user;
   if (user?.isBlocked) return fail("This account is suspended. Please contact support.", 403);
 
   if (!user) {
@@ -61,6 +63,7 @@ export async function POST(req: Request) {
 
   await claimGuestOrders(user.id, proof, sessionGuestId);
   await createSession(user.id, user.role);
+  await trackServer(isNew ? "sign_up" : "login", user.id, who.provider === "google" ? "google" : "mobile");
   const dest = safeNext(body.next);
   return Response.json({ redirect: appHref(dest && dest !== "/" ? dest : isStaff(user.role) ? "/admin" : STUDENT_HOME) });
 }

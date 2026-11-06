@@ -8,6 +8,7 @@ import { getSettings } from "@/lib/settings";
 import { isStaff } from "@/lib/permissions";
 import { appHref, STUDENT_HOME } from "@/lib/hosts";
 import { claimGuestOrders, guestOrderWaiting } from "@/lib/orders";
+import { trackServer } from "@/lib/analytics-server";
 import { GOOGLE_STATE_COOKIE, googleConfigured, googleProfileFromCode } from "@/lib/google";
 
 const AVATAR_COLORS = ["#F43F5E", "#FB923C", "#8B5CF6", "#0EA5E9", "#10B981", "#EC4899", "#F59E0B"];
@@ -35,6 +36,7 @@ export async function GET(req: Request) {
   const current = await getCurrentUser();
   const sessionGuestId = current && isGuestEmail(current.email) ? current.id : undefined;
   let user = await db.user.findUnique({ where: { email: profile.email } });
+  const isNew = !user;
   if (user?.isBlocked) return back("blocked", next);
   if (!user) {
     const settings = await getSettings();
@@ -52,6 +54,7 @@ export async function GET(req: Request) {
 
   await claimGuestOrders(user.id, { email: profile.email }, sessionGuestId);
   await createSession(user.id, user.role);
+  await trackServer(isNew ? "sign_up" : "login", user.id, "google");
   const dest = next || (isStaff(user.role) ? "/admin" : STUDENT_HOME);
   return NextResponse.redirect(new URL(appHref(dest), base()), 303);
 }

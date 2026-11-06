@@ -530,3 +530,27 @@ model BotPromptVersion {
 
   @@index([createdAt])
 }
+
+// First-party site analytics (Admin → Analytics). Anonymous visitor and session ids from first-party
+// cookies; userId only while logged in. No IP address. Pruned after 180 days.
+model AnalyticsEvent {
+  id        BigInt   @id @default(autoincrement())
+  at        DateTime @default(now())
+  visitorId String
+  sessionId String
+  userId    String? // not a relation: the history stays countable if an account is deleted
+  name      String // page_view | page_leave | click | add_to_cart | begin_checkout | purchase | login | sign_up | ...
+  path      String   @default("")
+  label     String? // what was clicked, the search term, the order number...
+  ms        Int? // page_leave: time spent on the page
+  source    String? // where the session came from: utm_source or the referring site
+  medium    String?
+  campaign  String?
+  device    String? // mobile | tablet | desktop
+  country   String? // from Vercel's edge, two letters
+
+  @@index([at])
+  @@index([name, at])
+  @@index([sessionId])
+  @@index([userId, at])
+}

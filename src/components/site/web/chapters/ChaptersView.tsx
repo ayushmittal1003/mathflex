@@ -2,7 +2,8 @@
 import { PosterImage } from "@/components/site/web/PosterImage";
 import { HoverClip } from "@/components/site/web/HoverClip";
 import Link from "next/link";
-import { useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { track } from "@/lib/track";
 import { useRouter } from "next/navigation";
 import { inr } from "@/lib/format";
 import { ChapterCard, type CardChapter } from "../ChapterCard";
@@ -353,6 +354,13 @@ function ChapterSearch({ chapters, q, setQ, onSeeAll }: { chapters: CardChapter[
   const hits = all.slice(0, 6);
   const show = open && !!q.trim();
   const go = (c: CardChapter) => router.push(`/chapter/${c.slug}`);
+  // One "search" event per pause in typing, with how many chapters matched.
+  useEffect(() => {
+    const term = q.trim();
+    if (term.length < 2) return;
+    const t = setTimeout(() => track("search", `${term.slice(0, 60)} (${chapters.filter((c) => matchesChapter(c.title, term)).length})`), 1200);
+    return () => clearTimeout(t);
+  }, [q, chapters]);
 
   return (
     <div
