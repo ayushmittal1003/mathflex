@@ -89,6 +89,18 @@ function Avatar({ src, size, ring = false }: { src: string; size: number; ring?:
 
 export function ChatWidget({ name, greeting, avatar, starters, lifted: liftedProp = true }: { name: string; greeting: string; avatar: string; starters: string[]; lifted?: boolean }) {
   const [open, setOpen] = useState(false);
+  // Phones: the bubble slides out of the way while reading down the page and returns on scroll up.
+  const [tucked, setTucked] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (window.innerWidth < 760 && Math.abs(y - last) > 12) setTucked(y > last && y > 240);
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -152,7 +164,7 @@ export function ChatWidget({ name, greeting, avatar, starters, lifted: liftedPro
         onClick={() => { setOpen(true); track("chat_open"); }}
         className={`chat-fab fixed right-4 z-40 transition hover:scale-105 tablet:bottom-6 tablet:right-6 ${
           lifted ? "bottom-[calc(76px+env(safe-area-inset-bottom))]" : "bottom-4"
-        } ${open || hideButton ? "scale-0" : ""} ${hideButton ? "pointer-events-none" : ""}`}
+        } ${open || hideButton ? "scale-0" : ""} ${hideButton ? "pointer-events-none" : ""} ${tucked && !open ? "translate-x-[140%] tablet:translate-x-0" : ""}`}
         aria-label={`Open ${name} chat`}
         data-tour="chat"
         aria-hidden={hideButton || undefined}
@@ -161,9 +173,9 @@ export function ChatWidget({ name, greeting, avatar, starters, lifted: liftedPro
         <span className="relative block">
           {avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatar} alt="" className="size-16 rounded-full border-[3px] border-primary bg-card object-cover shadow-cta" />
+            <img src={avatar} alt="" className="size-14 rounded-full border-[3px] border-primary bg-card object-cover shadow-cta tablet:size-16" />
           ) : (
-            <span className="grid size-16 place-items-center rounded-full bg-gradient-to-br from-primary to-brand-2 text-white shadow-cta"><Sparkles className="size-7" /></span>
+            <span className="grid size-14 place-items-center rounded-full bg-gradient-to-br from-primary to-brand-2 text-white shadow-cta tablet:size-16"><Sparkles className="size-6 tablet:size-7" /></span>
           )}
           <span className="absolute bottom-0.5 right-0.5 size-4 rounded-full border-2 border-white bg-ok" aria-hidden />
         </span>

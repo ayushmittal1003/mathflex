@@ -59,7 +59,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
         </div>
 
         <div className="z-[2] min-w-0 flex-[1.15_1_380px] tablet:sticky tablet:top-[max(24px,calc(50vh-260px))]">
-          <div className="h-[480px] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-frame tablet:h-[520px]">
+          <div className="min-h-[480px] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-frame tablet:h-[520px]">
             <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5">
               <span className="truncate text-[13px] font-bold">My Learning · {chapter.title}</span>
               <div className="flex gap-1" aria-hidden>
@@ -83,7 +83,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
                   <div className="absolute left-1/2 top-[42%] grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/50 bg-white/22 backdrop-blur-md">
                     <svg className="size-5" viewBox="0 0 24 24" fill="#fff" aria-hidden><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
                   </div>
-                  <div className="absolute bottom-7.5 whitespace-nowrap rounded-md bg-white px-2 py-1 text-xs font-bold text-foreground" style={{ left: `calc(${threshold}% - 60px)` }}>Practice unlocks here</div>
+                  <div className="absolute bottom-7.5 whitespace-nowrap rounded-md bg-white px-2 py-1 text-xs font-bold text-foreground" style={{ left: `clamp(8px, calc(${threshold}% - 60px), calc(100% - 158px))` }}>Practice unlocks here</div>
                 </div>
                 <div className="mt-4.5 flex items-end justify-between gap-3">
                   <div className="min-w-0">

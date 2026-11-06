@@ -26,8 +26,8 @@ export function VideoFrame({ videoId, caption, sub, className, hoverPlay, poster
             <span className="rounded-lg bg-black/45 px-4 py-2 text-sm font-bold tracking-wide text-white/85 backdrop-blur">Video coming soon</span>
           </div>
           {(caption || sub) && (
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-b from-transparent to-black/75 p-6">
-              {caption && <div className="text-[22px] font-extrabold tracking-[-0.025em]">{caption}</div>}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-b from-transparent to-black/75 p-4 tablet:p-6">
+              {caption && <div className="text-lg font-extrabold leading-tight tracking-[-0.025em] tablet:text-[22px]">{caption}</div>}
               {sub && <div className="mt-1 text-[13px] text-white/75">{sub}</div>}
             </div>
           )}

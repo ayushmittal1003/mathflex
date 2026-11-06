@@ -122,7 +122,8 @@ function DetailsForm({ chapter: c }: { chapter: Chapter | null }) {
           </div>
         )}
         <div className="mt-5">
-          <p className="mb-1 text-sm font-semibold">30-second intro video (shown once after purchase)</p>
+          <p className="mb-1 text-sm font-semibold">How to prepare video (shown once, the first time a student opens this chapter after buying it)</p>
+          <p className="mb-2 text-xs text-muted">Only shows while &quot;How to prepare video&quot; is on in Admin → Settings &amp; features.</p>
           <VideoField defaultProvider={c?.introVideoProvider ?? "URL"} defaultRef={c?.introVideoRef ?? ""} bunnyReady={bunnyConfigured()} title={`${c?.title ?? "Chapter"} intro`} prefix="intro" />
         </div>
       </Card>

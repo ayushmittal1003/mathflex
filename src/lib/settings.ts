@@ -35,7 +35,10 @@ export const DEFAULT_SETTINGS = {
     mentorshipUpsell: true,
     coupons: true,
     referAndEarn: false,
-    introPopupVideo: true,
+    // "How to prepare" video that pops up the first time a student opens a chapter they've bought.
+    // Off until the videos are uploaded (each chapter's own video in Admin → Chapters). Replaces the
+    // old introPopupVideo switch, so it starts off even where that one was saved as on.
+    prepVideo: false,
     celebrationSound: true,
     sequentialUnlock: true, // Part 2 unlocks only after Part 1 video + practice
     freePreviews: true,

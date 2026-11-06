@@ -70,7 +70,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
     <header
       className={cx(
         stuck
-          ? "fixed inset-x-0 top-0 z-40 animate-mf-drop border-b border-border bg-card/90 pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-16px_rgb(0_0_0/0.25)] backdrop-blur-xl"
+          ? "fixed inset-x-0 top-0 z-40 animate-mf-drop border-b border-border bg-card pt-[env(safe-area-inset-top)] shadow-[0_8px_24px_-16px_rgb(0_0_0/0.25)]"
           : "absolute inset-x-4 top-4 z-30",
       )}
     >

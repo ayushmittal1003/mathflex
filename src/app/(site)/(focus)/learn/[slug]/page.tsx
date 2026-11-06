@@ -57,9 +57,9 @@ export default async function LearnPage({ params, searchParams }: { params: Prom
     };
   });
 
-  // 30-sec intro from the mentor, shown once after purchase.
+  // The chapter's "How to prepare" video, shown once after purchase while that switch is on.
   let intro = null;
-  if (owned && user && settings.features.introPopupVideo && chapter.introVideoRef) {
+  if (owned && user && settings.features.prepVideo && chapter.introVideoRef) {
     const ent = await db.entitlement.findFirst({ where: { userId: user.id, chapterId: chapter.id } });
     const firstVisit = ent ? !ent.introSeen : progress.length === 0;
     if (firstVisit) intro = playbackFor(chapter.introVideoProvider, chapter.introVideoRef);

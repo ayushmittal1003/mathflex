@@ -86,7 +86,8 @@ function BannerForm({ b, kind }: { b: Banner | null; kind: string }) {
         {kind !== "MARQUEE" && kind !== "OFFER" && <Field label="Button text"><input name="ctaText" defaultValue={b?.ctaText} className="input" /></Field>}
         <Field label="Link" hint="e.g. /chapter/3d-geometry or /cart?mentorship=1"><input name="ctaHref" defaultValue={b?.ctaHref} className="input" /></Field>
       </div>
-      {kind !== "MARQUEE" && (
+      {kind === "POPUP" && <p className="text-xs text-muted">The popup uses the site&apos;s dark theme. Write the coupon code in capitals in the headline or subtitle (e.g. WELCOME10) and it appears as a copyable ticket.</p>}
+      {kind !== "MARQUEE" && kind !== "POPUP" && (
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Colour from"><input type="color" name="colorFrom" defaultValue={b?.colorFrom ?? "#FF2E63"} className="input !h-11 !p-1" /></Field>
           <Field label="Colour to"><input type="color" name="colorTo" defaultValue={b?.colorTo ?? "#7C3AED"} className="input !h-11 !p-1" /></Field>

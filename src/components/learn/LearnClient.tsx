@@ -272,7 +272,7 @@ export function LearnClient(props: {
       {showIntro && props.intro && props.intro.kind !== "none" && (
         <div className="fixed inset-0 z-[75] grid place-items-center bg-black/80 p-4 backdrop-blur">
           <div className="animate-pop w-full max-w-2xl">
-            <p className="mb-3 text-center text-xl font-extrabold tracking-[-0.02em] text-white">A quick hello before you start 👋</p>
+            <p className="mb-3 text-center text-xl font-extrabold tracking-[-0.02em] text-white">How to prepare for this chapter</p>
             <VideoPlayer playback={props.intro} initialWatched={0} onProgress={() => {}} />
             <button
               onClick={() => { setShowIntro(false); markIntroSeen(chapter.id); try { localStorage.setItem(`mf-intro-${chapter.id}`, "1"); } catch {} }}

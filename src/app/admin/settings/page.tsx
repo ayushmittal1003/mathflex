@@ -14,7 +14,7 @@ const FEATURE_LABELS: Record<keyof typeof DEFAULT_SETTINGS.features, [string, st
   mentorshipUpsell: ["Mentorship upsell", "Offer the 1:1 call at checkout and on home"],
   coupons: ["Coupon codes", "Coupon field at checkout"],
   referAndEarn: ["Refer & Earn", "Referral section in the menu and profile"],
-  introPopupVideo: ["Intro popup video", "30-sec mentor intro after purchasing a chapter"],
+  prepVideo: ["How to prepare video", "Pops up the first time a student opens a chapter they bought. Upload each chapter's video in Admin → Chapters first"],
   celebrationSound: ["Celebration sounds", "Chimes on correct answers and unlocks"],
   sequentialUnlock: ["Sequential part unlock", "Part 2 opens only after Part 1 video + practice"],
   freePreviews: ["Free previews", "Parts marked as free preview are watchable without buying"],

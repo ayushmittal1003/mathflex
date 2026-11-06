@@ -38,9 +38,9 @@ export function CompareTable({ fullPrice, callPrice }: { fullPrice: number | nul
         {rows.map((r, ri) => {
           const last = ri === rows.length - 1;
           return (
-            <div key={r.label} className="max-[859px]:rounded-xl max-[859px]:border max-[859px]:border-border max-[859px]:bg-card max-[859px]:p-4 min-[860px]:contents">
+            <div key={r.label} className="max-[859px]:rounded-xl max-[859px]:border max-[859px]:border-border max-[859px]:bg-card max-[859px]:p-3.5 min-[860px]:contents">
               <div className="text-base font-extrabold leading-snug min-[860px]:border-t min-[860px]:border-border min-[860px]:py-4.5 min-[860px]:pr-3 min-[860px]:text-[15px] min-[860px]:font-bold">{r.label}</div>
-              <div className="mt-3 grid grid-cols-3 gap-2 max-[359px]:grid-cols-1 min-[860px]:contents">
+              <div className="mt-2.5 grid grid-cols-3 gap-1.5 max-[359px]:grid-cols-1 min-[860px]:contents">
                 {r.cells.map((cell, ci) => {
                   const us = ci === 0;
                   return (
@@ -48,12 +48,12 @@ export function CompareTable({ fullPrice, callPrice }: { fullPrice: number | nul
                       key={ci}
                       className={cx(
                         us
-                          ? "col-span-3 max-[359px]:col-span-1 flex items-center justify-between gap-3 rounded-lg border-2 border-primary bg-selected px-3.5 py-3 font-extrabold text-foreground min-[860px]:col-span-1 min-[860px]:justify-center min-[860px]:rounded-none min-[860px]:border-0 min-[860px]:border-t min-[860px]:border-x-2 min-[860px]:border-primary min-[860px]:border-t-border min-[860px]:px-3 min-[860px]:py-4.5 min-[860px]:text-center min-[860px]:text-sm"
-                          : "flex flex-col items-start gap-1.5 max-[359px]:flex-row max-[359px]:items-center max-[359px]:justify-between rounded-lg bg-muted/60 px-3 py-2.5 text-sm font-medium text-muted-foreground min-[860px]:items-center min-[860px]:justify-center min-[860px]:gap-0 min-[860px]:rounded-none min-[860px]:border-t min-[860px]:border-border min-[860px]:bg-transparent min-[860px]:px-3 min-[860px]:py-4.5 min-[860px]:text-center",
+                          ? "col-span-3 max-[359px]:col-span-1 flex items-center justify-between gap-3 rounded-lg border-2 border-primary bg-selected px-3.5 py-2.5 font-extrabold text-foreground min-[860px]:col-span-1 min-[860px]:justify-center min-[860px]:rounded-none min-[860px]:border-0 min-[860px]:border-t min-[860px]:border-x-2 min-[860px]:border-primary min-[860px]:border-t-border min-[860px]:px-3 min-[860px]:py-4.5 min-[860px]:text-center min-[860px]:text-sm"
+                          : "flex flex-col items-start gap-1 max-[359px]:flex-row max-[359px]:items-center max-[359px]:justify-between rounded-lg bg-muted/60 px-2.5 py-2 text-[13px] font-medium leading-snug min-[860px]:text-sm text-muted-foreground min-[860px]:items-center min-[860px]:justify-center min-[860px]:gap-0 min-[860px]:rounded-none min-[860px]:border-t min-[860px]:border-border min-[860px]:bg-transparent min-[860px]:px-3 min-[860px]:py-4.5 min-[860px]:text-center",
                         us && last && "min-[860px]:rounded-b-xl min-[860px]:border-b-2",
                       )}
                     >
-                      <span className={cx("text-xs font-bold min-[860px]:hidden", us ? "text-foreground" : "text-muted-foreground")}>{us ? wordmark : comparison.columns[ci - 1]}</span>
+                      <span className={cx("text-[11px] font-bold leading-tight min-[860px]:hidden", us ? "text-foreground" : "text-muted-foreground")}>{us ? wordmark : comparison.columns[ci - 1]}</span>
                       {value(cell)}
                     </div>
                   );

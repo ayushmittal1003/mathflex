@@ -36,7 +36,7 @@ export function CostCompare({ fullCourse, minChapterPrice }: { fullCourse: HomeC
         {rows.map((r, i) => (
           <div
             key={r.name}
-            className={cx("grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-7 gap-y-4 px-5 py-6 sm:px-7", i > 0 && "border-t border-border", r.us && "bg-primary/4")}
+            className={cx("grid grid-cols-1 items-start gap-x-7 gap-y-3 px-5 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-y-4 sm:px-7 sm:py-6", i > 0 && "border-t border-border", r.us && "bg-primary/4")}
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -45,9 +45,9 @@ export function CostCompare({ fullCourse, minChapterPrice }: { fullCourse: HomeC
               </div>
               <div className="mt-1 text-sm leading-[1.45] text-muted-foreground">{r.note}</div>
             </div>
-            <div className="text-right">
-              <div className={cx("whitespace-nowrap text-[30px] font-extrabold leading-none tracking-[-0.035em]", r.us ? "text-primary" : "text-foreground")}>{inr(r.price)}</div>
-              <div className="mt-1 whitespace-nowrap text-xs font-semibold text-muted-foreground">{r.unit}</div>
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 sm:block sm:text-right">
+              <div className={cx("whitespace-nowrap text-[26px] font-extrabold leading-none tracking-[-0.035em] sm:text-[30px]", r.us ? "text-primary" : "text-foreground")}>{inr(r.price)}</div>
+              <div className="whitespace-nowrap text-xs font-semibold text-muted-foreground sm:mt-1">{r.unit}</div>
             </div>
             <div className="col-span-full h-3.5 overflow-hidden rounded-full bg-muted">
               <div

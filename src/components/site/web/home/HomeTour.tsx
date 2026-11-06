@@ -34,6 +34,7 @@ export function HomeTour() {
   const [cardH, setCardH] = useState(180);
 
   const start = useCallback(() => {
+    if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
     const live = STEPS.filter((s) => find(s.target));
     if (!live.length) return;
     document.documentElement.dataset.tour = "on";
@@ -45,9 +46,10 @@ export function HomeTour() {
   const end = useCallback((finished = false) => {
     track(finished ? "tour_complete" : "tour_skip");
     setI(-1);
+    // Saved before announcing the end: the offer popup checks it when it hears mf-tour-end.
+    try { localStorage.setItem(DONE, "1"); } catch {}
     delete document.documentElement.dataset.tour;
     window.dispatchEvent(new Event("mf-tour-end"));
-    try { localStorage.setItem(DONE, "1"); } catch {}
   }, []);
 
   useEffect(() => {
@@ -64,7 +66,11 @@ export function HomeTour() {
     const el = find(steps[i].target);
     if (!el) return; // steps were checked when the tour started
     const r0 = el.getBoundingClientRect();
-    if (getComputedStyle(el).position !== "fixed" && (r0.top < 80 || r0.bottom > innerHeight - 220)) el.scrollIntoView({ block: "center", behavior: "smooth" });
+    // Scroll the page itself, never scrollIntoView: in WebKit (every iPhone browser) that also scrolls the
+    // hero's overflow-hidden box, sliding its content up under the menu bar.
+    if (getComputedStyle(el).position !== "fixed" && (r0.top < 80 || r0.bottom > innerHeight - 220)) {
+      window.scrollTo({ top: Math.max(0, window.scrollY + r0.top + r0.height / 2 - innerHeight / 2), behavior: "smooth" });
+    }
     let raf = 0;
     const track = () => { setRect(el.getBoundingClientRect()); raf = requestAnimationFrame(track); };
     track();

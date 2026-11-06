@@ -21,13 +21,13 @@ export function Eyebrow({ children, dot = "primary", onWash = false }: { childre
 
 // Blinking caret after the highlighted word in hero headings.
 export function Caret({ green = false }: { green?: boolean }) {
-  return <span aria-hidden className={cx("ml-1.5 inline-block h-[0.82em] w-1 animate-mf-blink align-[-0.04em]", green ? "bg-ok-strong" : "bg-primary")} />;
+  return <span aria-hidden className={cx("ml-1 inline-block h-[0.82em] w-[3px] animate-mf-blink align-[-0.04em] tablet:ml-1.5 tablet:w-1", green ? "bg-ok-strong" : "bg-primary")} />;
 }
 
 // One key word per heading sits in this box: white on the wash, warm tint on white sections.
 export function Mark({ children, onWash = false, pointer = false, green = false }: { children: React.ReactNode; onWash?: boolean; pointer?: boolean; green?: boolean }) {
   return (
-    <span className={cx("relative inline-block px-3 pb-1 shadow-highlight", onWash ? "bg-card px-3.5 pb-1.5" : green ? "bg-ok-tint" : "bg-highlight")}>
+    <span className={cx("relative inline-block px-1.5 pb-1 shadow-highlight tablet:px-3", onWash ? "bg-card pb-1.5 tablet:px-3.5" : green ? "bg-ok-tint" : "bg-highlight")}>
       {children}
       {pointer && (
         <span
@@ -44,7 +44,7 @@ export function SectionHead({ eyebrow, dot, title, lead, className }: { eyebrow:
   return (
     <div className={cx("px-4 text-center tablet:px-6", className)}>
       <Eyebrow dot={dot}>{eyebrow}</Eyebrow>
-      <h2 className="mx-auto mt-6 max-w-[960px] text-[clamp(28px,5.6vw,72px)] font-extrabold leading-[1.02] tracking-[-0.045em] text-balance">{title}</h2>
+      <h2 className="mx-auto mt-5 max-w-[960px] text-[clamp(28px,5.6vw,72px)] font-extrabold leading-[1.08] tracking-[-0.045em] text-balance tablet:mt-6 tablet:leading-[1.02]">{title}</h2>
       {lead && <p className="mx-auto mt-5.5 max-w-[580px] text-[17px] leading-[1.55] text-secondary-foreground text-pretty">{lead}</p>}
     </div>
   );

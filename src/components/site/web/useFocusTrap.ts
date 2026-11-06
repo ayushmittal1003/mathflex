@@ -10,7 +10,8 @@ export function useFocusTrap(ref: RefObject<HTMLElement | null>) {
     if (!root) return;
     const opener = document.activeElement as HTMLElement | null;
     const items = () => [...root.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.offsetParent !== null || el === document.activeElement);
-    (items().find((el) => el.tagName !== "BUTTON" || el.getAttribute("aria-label") !== "Close") ?? root).focus();
+    // preventScroll: focusing must not move the page (on iPhones it scrolled the home page under the menu bar).
+    (items().find((el) => el.tagName !== "BUTTON" || el.getAttribute("aria-label") !== "Close") ?? root).focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Tab") return;
       const list = items();
@@ -20,6 +21,6 @@ export function useFocusTrap(ref: RefObject<HTMLElement | null>) {
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     };
     root.addEventListener("keydown", onKey);
-    return () => { root.removeEventListener("keydown", onKey); opener?.focus?.(); };
+    return () => { root.removeEventListener("keydown", onKey); opener?.focus?.({ preventScroll: true }); };
   }, [ref]);
 }
