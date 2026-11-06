@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Inter, JetBrains_Mono, Noto_Serif } from "next/font/google";
 import "./globals.css";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* next/script injects this into the initial HTML; a raw <script> would warn on client renders. */}
         <Script id="theme" strategy="beforeInteractive">{themeScript}</Script>
         {children}
+        <Analytics />
         <SpeedInsights />
       </body>
     </html>
