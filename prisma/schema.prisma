@@ -404,6 +404,8 @@ model Order {
   gateway      String      @default("paytm")
   gatewayTxnId String?
   gatewayRaw   Json?
+  // Browser details kept at checkout so a confirmed payment can be reported to Meta (Conversions API).
+  metaMatch    Json?
   paidAt       DateTime?
   createdAt    DateTime    @default(now())
 

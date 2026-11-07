@@ -1,5 +1,7 @@
 import "server-only";
+import { after } from "next/server";
 import { db } from "./db";
+import { sendMetaPurchase } from "./meta-capi";
 import { fulfilOrder } from "./orders";
 import { CashfreeError, getCashfreeOrder, getCashfreePayments } from "./cashfree";
 
@@ -32,6 +34,8 @@ export async function syncCashfreeOrder(orderNo: string): Promise<SyncResult> {
     const payments = await getCashfreePayments(orderNo).catch(() => []);
     const success = payments.find((p) => p.payment_status === "SUCCESS");
     await fulfilOrder(order.id, { txnId: success ? String(success.cf_payment_id) : cf.cf_order_id, raw: { order: cf, payment: success ?? null } });
+    // Reported to Meta after the response, so a slow or failing Meta call never delays access.
+    after(() => sendMetaPurchase(order.id));
     console.info(`[payments] ${orderNo} paid ₹${order.total} (cf_payment_id ${success?.cf_payment_id ?? "n/a"})`);
     return "PAID";
   }

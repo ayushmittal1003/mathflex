@@ -1,5 +1,6 @@
 "use client";
 import { useSyncExternalStore } from "react";
+import { metaTrack } from "@/lib/meta-pixel";
 
 // Cart lives in localStorage so guests can shop before signing up.
 // It only stores ids — prices are always re-computed on the server.
@@ -73,7 +74,9 @@ function subscribe(l: () => void) {
 export const cart = {
   add(item: CartItem) {
     const items = read();
-    if (!items.some((i) => i.id === item.id)) write([...items, item]);
+    if (items.some((i) => i.id === item.id)) return;
+    write([...items, item]);
+    metaTrack("AddToCart", { content_ids: [item.id], content_type: "product", currency: "INR" });
   },
   remove(id: string) {
     write(read().filter((i) => i.id !== id));

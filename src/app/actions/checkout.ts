@@ -11,6 +11,7 @@ import { allow, clientIp } from "@/lib/rate-limit";
 import { CashfreeError, cashfreeConfigured, cashfreeMode, createCashfreeOrder, type CashfreeMode } from "@/lib/cashfree";
 import { syncCashfreeOrder } from "@/lib/payments";
 import { mockPaymentsAllowed } from "@/lib/orders";
+import { captureMetaMatch } from "@/lib/meta-capi";
 
 const Items = z.array(z.object({ type: z.enum(["CHAPTER", "COURSE"]), id: z.string().min(1) })).max(50);
 
@@ -88,7 +89,8 @@ export async function placeOrder(items: unknown, coupon: string | null, mentorsh
         // Cashfree only calls HTTPS webhooks, so local http dev skips it (the return check still runs).
         notifyUrl: base.startsWith("https://") ? `${base}/api/payments/cashfree/webhook` : null,
       });
-      await db.order.update({ where: { id: order.id }, data: { gatewayRaw: { cf_order_id: cfOrderId } } });
+      const metaMatch = await captureMetaMatch();
+      await db.order.update({ where: { id: order.id }, data: { gatewayRaw: { cf_order_id: cfOrderId }, ...(metaMatch ? { metaMatch } : {}) } });
       console.info(`[checkout] ${order.orderNo} created for ₹${order.total} (${user ? `user ${user.id}` : "guest"})`);
       return { ok: true, mode: "cashfree", orderNo: order.orderNo, paymentSessionId, env: cashfreeMode() };
     } catch (e) {

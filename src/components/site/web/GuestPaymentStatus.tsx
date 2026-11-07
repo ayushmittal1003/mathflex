@@ -14,7 +14,7 @@ const FIELD = "h-12 w-full rounded-lg border border-input bg-card px-3.5 text-ba
 const maskEmail = (email: string) => email.replace(/^(.).*(@.*)$/, "$1•••$2");
 const maskPhone = (phone: string) => `+91 ••••••${phone.slice(-4)}`;
 
-type GuestOrder = { orderNo: string; status: string; total: number; gateway: string; userId: string | null; contactEmail: string | null; contactPhone: string | null; items: { id: string; title: string }[] };
+type GuestOrder = { orderNo: string; status: string; total: number; gateway: string; userId: string | null; contactEmail: string | null; contactPhone: string | null; items: { id: string; itemId: string | null; title: string }[] };
 
 // The payment page for someone with no session: while it confirms, if it failed, or if the order is
 // already on an account (the link is reopened elsewhere). Anyone holding the link can see this, so
@@ -43,7 +43,7 @@ export function GuestPaymentStatus({ order, token, firebase }: { order: GuestOrd
         <div className="w-[min(560px,100%)] animate-mf-rise text-center">
           {order.status === "PAID" ? (
             <>
-              <PaidCelebration orderNo={order.orderNo} />
+              <PaidCelebration orderNo={order.orderNo} value={order.total} ids={order.items.map((i) => i.itemId ?? "mentorship-call")} />
               <span className="inline-grid size-20 animate-mf-pop place-items-center rounded-full bg-ok"><CheckIcon className="size-9 text-white" /></span>
               <h1 className={cx(title, "mt-6.5")}>Thank you! Your order is confirmed</h1>
               {order.userId ? (

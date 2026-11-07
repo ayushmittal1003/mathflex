@@ -5,6 +5,7 @@ import { ImpersonationBanner } from "@/components/site/ImpersonationBanner";
 import { getSettings } from "@/lib/settings";
 import { CelebrateProvider } from "@/components/site/Celebrate";
 import { Tracker } from "@/components/site/Tracker";
+import { MetaPixel } from "@/components/MetaPixel";
 
 // Shared by both site shells: (public) has the redesigned website chrome, (app) keeps the
 // original nav/footer for pages that haven't been redesigned yet and for the learner app.
@@ -17,6 +18,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       {impersonator && user && <ImpersonationBanner student={user.name} admin={impersonator.name} />}
       {user && <AccessWatcher initial={accessSnapshot(user.role, ents)} />}
       <Tracker />
+      <MetaPixel />
       {children}
     </CelebrateProvider>
   );

@@ -172,7 +172,7 @@ export default async function PaymentStatus({ searchParams }: { searchParams: Pr
 
   return (
     <div className="min-h-dvh bg-card">
-      <PaidCelebration orderNo={paid.orderNo} />
+      <PaidCelebration orderNo={paid.orderNo} value={paid.total} ids={paid.items.map((i) => i.itemId ?? "mentorship-call")} />
       <div className="px-4 pt-4">
         <section className="relative overflow-hidden rounded-xl bg-wash pb-18">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-5.5 tablet:px-8">

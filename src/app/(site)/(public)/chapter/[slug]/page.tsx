@@ -24,6 +24,7 @@ import { clock } from "@/components/site/web/home/types";
 import { buildMetadata, chapterBlurb } from "@/lib/seo/metadata";
 import { getChapterSeo } from "@/lib/seo/queries";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { MetaViewContent } from "@/components/site/web/MetaViewContent";
 import * as schema from "@/lib/seo/schema";
 import { Breadcrumbs } from "@/components/site/web/Breadcrumbs";
 
@@ -129,6 +130,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
   return (
     <>
+      <MetaViewContent id={chapter.id} name={chapter.title} value={chapter.price} kind="chapter" />
       {published && (
         <JsonLd
           data={schema.course({

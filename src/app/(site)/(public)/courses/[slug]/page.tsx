@@ -20,6 +20,7 @@ import { CtaBand } from "@/components/site/web/CtaBand";
 import { buildMetadata, stripHtml } from "@/lib/seo/metadata";
 import { getCourseSeo } from "@/lib/seo/queries";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { MetaViewContent } from "@/components/site/web/MetaViewContent";
 import * as schema from "@/lib/seo/schema";
 import { Breadcrumbs } from "@/components/site/web/Breadcrumbs";
 
@@ -93,6 +94,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
   return (
     <>
+      <MetaViewContent id={v.id} name={v.title} value={v.price} kind="course" />
       {course.isPublished && (
         <JsonLd
           data={schema.course({
