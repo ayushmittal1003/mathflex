@@ -244,6 +244,10 @@
   --breakpoint-tablet: 47.5rem; /* 760px: design.md §6 single-column switch */
 }
 
+@keyframes mf-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
 @keyframes mfrise {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: none; }

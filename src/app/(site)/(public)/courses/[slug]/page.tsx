@@ -7,7 +7,7 @@ import { getSettings } from "@/lib/settings";
 import { getCatalog } from "@/lib/catalog";
 import { isStaff } from "@/lib/permissions";
 import { inr, pctOff, validity } from "@/lib/format";
-import { courseFaqs, fillFaq, instructor, instructorNames } from "@/lib/site-content";
+import { courseFaqs, fillFaq, instructor, instructorNames, mentorProfile } from "@/lib/site-content";
 import { WashHero } from "@/components/site/web/WashHero";
 import { CheckIcon, Mark, posterBg } from "@/components/site/web/primitives";
 import { AddToCartButton, BuyNow } from "@/components/site/web/CartButtons";
@@ -269,8 +269,8 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
           <div className="min-w-0 flex-[1_1_300px]">
             <div className="text-xs font-extrabold uppercase tracking-[0.1em] text-muted-foreground">Taught by</div>
             <div className="mt-1.5 text-[clamp(26px,3vw,34px)] font-extrabold tracking-[-0.035em]">{names.full}</div>
-            <div className="text-[15px] font-semibold text-secondary-foreground">{instructor.title}</div>
-            <p className="mt-3 max-w-[560px] text-[15px] leading-[1.6] text-secondary-foreground">{names.short} {instructor.bio}</p>
+            <div className="text-[15px] font-semibold text-secondary-foreground">{mentorProfile(settings).title}</div>
+            <p className="mt-3 max-w-[560px] text-[15px] leading-[1.6] text-secondary-foreground">{names.short} {mentorProfile(settings).bio}</p>
           </div>
         </div>
       </section>

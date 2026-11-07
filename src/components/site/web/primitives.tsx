@@ -25,6 +25,11 @@ export function Caret({ green = false }: { green?: boolean }) {
 }
 
 // One key word per heading sits in this box: white on the wash, warm tint on white sections.
+// Admin-editable heading text: words wrapped in *stars* get the highlighter mark.
+export function Marked({ text }: { text: string }) {
+  return <>{text.split(/(\*[^*]+\*)/g).map((p, i) => (/^\*[^*]+\*$/.test(p) ? <Mark key={i}>{p.slice(1, -1)}</Mark> : p))}</>;
+}
+
 export function Mark({ children, onWash = false, pointer = false, green = false }: { children: React.ReactNode; onWash?: boolean; pointer?: boolean; green?: boolean }) {
   return (
     <span className={cx("relative inline-block px-1.5 pb-1 shadow-highlight tablet:px-3", onWash ? "bg-card pb-1.5 tablet:px-3.5" : green ? "bg-ok-tint" : "bg-highlight")}>

@@ -6,22 +6,22 @@ import { button, cx, tone } from "../ui";
 
 // 07 Meet the mentor: a 16:9 intro video (or "Video coming soon"), bio, the IIT Delhi
 // credential and the 1:1 call card (details on /book-a-call; it's the mentorship add-on).
-export function MentorSection({ mentorship, names, videoId = instructor.introVideoId, videoTitle, poster }: { mentorship: { price: number } | null /* null hides the call card */; names: { short: string; full: string }; videoId?: string | null; videoTitle?: string; poster?: string }) {
+export function MentorSection({ mentorship, names, profile = { title: instructor.title, bio: instructor.bio }, videoId = instructor.introVideoId, videoTitle, poster }: { mentorship: { price: number } | null /* null hides the call card */; names: { short: string; full: string }; profile?: { title: string; bio: string }; videoId?: string | null; videoTitle?: string; poster?: string }) {
   return (
-    <section id="mentor" className="py-12 tablet:py-22">
+    <section id="mentor" className="py-9 tablet:py-14">
       <div className="mx-auto grid w-[min(1120px,calc(100%-var(--gutter)*2))] items-center gap-x-14 gap-y-10 min-[960px]:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <VideoFrame videoId={videoId} caption={videoTitle ?? names.full} sub={videoTitle ? names.full : instructor.title} className="aspect-video w-full" hoverPlay poster={poster} />
+        <VideoFrame videoId={videoId} caption={videoTitle ?? names.full} sub={videoTitle ? names.full : profile.title} className="aspect-video w-full" hoverPlay poster={poster} />
         <div className="min-w-0">
           <Eyebrow>Your mentor</Eyebrow>
           <h2 className="mt-5.5 text-[clamp(28px,4.2vw,54px)] font-extrabold leading-[1.04] tracking-[-0.045em] text-balance">
             Learn from someone who&apos;s <Mark>been there</Mark>.
           </h2>
           <p className="mt-5 max-w-[520px] text-[17px] leading-[1.6] text-secondary-foreground text-pretty">
-            {names.full} {instructor.bio}
+            {names.full} {profile.bio}
           </p>
           <p className="mt-4 text-[15px] font-bold">{names.full} · <span className="font-semibold text-secondary-foreground">{instructor.jobTitle}</span></p>
           <div className="mt-4 flex flex-wrap gap-2.5">
-            {instructor.credentials.map((c) => (
+            {[{ org: profile.title, role: instructor.credentials[0].role }].map((c) => (
               <div key={c.org} className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-[0_10px_24px_-20px_rgb(80_20_0/0.5)]">
                 <span aria-hidden className="grid size-10 place-items-center rounded-lg bg-foreground text-[13px] font-black text-white">IIT</span>
                 <span>

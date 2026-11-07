@@ -24,7 +24,7 @@ export function PreviewExplorer({ chapters, chapterCount, mentorShort }: { chapt
   const off = pctOff(cur.price, cur.mrp);
 
   return (
-    <section id="previews" className="scroll-mt-6 py-12 tablet:py-22">
+    <section id="previews" className="scroll-mt-6 py-9 tablet:py-14">
       <SectionHead
         eyebrow="Chapter previews"
         dot="ok"

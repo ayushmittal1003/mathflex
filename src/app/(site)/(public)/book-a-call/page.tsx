@@ -2,7 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { inr } from "@/lib/format";
-import { bookCall, fillFaq, instructor, instructorNames } from "@/lib/site-content";
+import { bookCall, fillFaq, instructor, instructorNames, mentorProfile } from "@/lib/site-content";
 import { Caret, CheckIcon, Eyebrow, Mark, SectionHead } from "@/components/site/web/primitives";
 import { DiagnosisVisual, PlanVisual, StrategyVisual } from "@/components/site/web/book-call/CallVisuals";
 import { WashHero, heroH1, heroLead } from "@/components/site/web/WashHero";
@@ -112,7 +112,7 @@ export default async function BookACallPage() {
             </div>
             <div className="mt-5">
               <div className="text-[22px] font-extrabold leading-tight tracking-[-0.025em]">{names.full}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{instructor.title} · {instructor.studentsGuided} JEE aspirants mentored</div>
+              <div className="mt-1 text-sm text-muted-foreground">{mentorProfile(settings).title} · {instructor.studentsGuided} JEE aspirants mentored</div>
             </div>
             <dl className="mt-5 grid border-t border-border">
               <Detail icon="clock" label="The call">{settings.mentorshipBlurb}</Detail>
@@ -160,7 +160,7 @@ export default async function BookACallPage() {
 
 
       <div>
-        <MentorSection mentorship={null} names={names} />
+        <MentorSection mentorship={null} profile={mentorProfile(settings)} names={names} />
       </div>
 
       <section className="py-12 tablet:py-20">

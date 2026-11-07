@@ -13,6 +13,7 @@ export const PERMISSIONS = {
   banners: "Banners & popups",
   orders: "Orders & payments",
   students: "Students",
+  leads: "Leads & enquiries",
   access: "Grant & revoke access",
   mentorship: "Mentorship calls",
   flexcare: "MathMate chatbot",
@@ -29,7 +30,7 @@ const ALL = Object.keys(PERMISSIONS) as Permission[];
 export const ROLE_PERMISSIONS: Record<StaffRole, Permission[]> = {
   ADMIN: ALL,
   EDITOR: ["dashboard", "content", "questions", "courses", "banners", "flexcare", "video"],
-  SUPPORT: ["dashboard", "students", "access", "orders", "mentorship", "flexcare"],
+  SUPPORT: ["dashboard", "students", "leads", "access", "orders", "mentorship", "flexcare"],
 };
 
 export const ROLE_LABEL: Record<AnyRole, string> = { ADMIN: "Super Admin", EDITOR: "Editor", SUPPORT: "Support", STUDENT: "Student" };

@@ -559,3 +559,42 @@ model AnalyticsEvent {
   @@index([sessionId])
   @@index([userId, at])
 }
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  INTERESTED
+  CONVERTED
+  NOT_INTERESTED
+}
+
+// An enquiry from the /enquiry form (mostly ad traffic). The team calls the student back.
+model Lead {
+  id          String     @id @default(cuid())
+  name        String
+  phone       String // +91XXXXXXXXXX
+  email       String
+  classLevel  String // "11", "12", "DROPPER"
+  goal        String // "MAIN", "ADVANCED", "BOARDS"
+  weakAreas   String[]   @default([])
+  callTime    String     @default("") // "MORNING", "AFTERNOON", "EVENING"
+  message     String     @default("")
+  status      LeadStatus @default(NEW)
+  notes       String     @default("")
+  // Where the lead came from: ad tags on the landing URL and the Meta click id.
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmContent  String?
+  fbclid      String?
+  landingPath String?
+  // Browser details for Meta's Conversions API (same shape as Order.metaMatch).
+  metaMatch   Json?
+  userId      String?
+  contactedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([status, createdAt])
+  @@index([phone])
+}

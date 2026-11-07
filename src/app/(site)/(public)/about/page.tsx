@@ -2,7 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { duration, inr } from "@/lib/format";
-import { about, aboutPillars, aboutTimeline, fillFaq, instructor, instructorNames } from "@/lib/site-content";
+import { about, aboutPillars, aboutTimeline, fillFaq, instructor, instructorNames, mentorProfile } from "@/lib/site-content";
 import { Caret, Eyebrow, Mark, SectionHead } from "@/components/site/web/primitives";
 import { WashHero, heroH1, heroLead } from "@/components/site/web/WashHero";
 import { VideoFrame } from "@/components/site/web/VideoFrame";
@@ -76,7 +76,7 @@ export default async function AboutPage() {
       <JsonLd
         data={schema.graph(
           schema.profilePage("/about", "About MathFlex"),
-          schema.person({ name: names.full, jobTitle: instructor.jobTitle, degree: "B.Tech in Civil Engineering", image: instructor.photo }),
+          schema.person({ name: names.full, jobTitle: instructor.jobTitle, degree: "B.Tech", image: instructor.photo }),
         )}
       />
       <WashHero>
@@ -200,7 +200,7 @@ export default async function AboutPage() {
       </section>
 
       <div>
-        <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} videoId={settings.siteVideos.mentor.videoId || null} poster={settings.siteVideos.mentor.poster} videoTitle={`Meet ${names.full.split(" ")[0]} — what MathFlex is and how it helps you`} />
+        <MentorSection profile={mentorProfile(settings)} mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} videoId={settings.siteVideos.mentor.videoId || null} poster={settings.siteVideos.mentor.poster} videoTitle={`Meet ${names.full.split(" ")[0]} — what MathFlex is and how it helps you`} />
       </div>
 
       <CtaBand>

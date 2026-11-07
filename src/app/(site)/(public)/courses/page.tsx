@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { inr, validity } from "@/lib/format";
-import { courseFaqs, fillFaq, instructorNames } from "@/lib/site-content";
+import { courseFaqs, fillFaq, instructorNames, mentorProfile } from "@/lib/site-content";
 import { Caret, Eyebrow, Mark } from "@/components/site/web/primitives";
 import { WashHero, heroH1, heroLead } from "@/components/site/web/WashHero";
 import { FaqList } from "@/components/site/web/FaqList";
@@ -109,7 +109,7 @@ export default async function Courses() {
       )}
 
       <div>
-        <MentorSection mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} />
+        <MentorSection profile={mentorProfile(settings)} mentorship={settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null} names={names} />
       </div>
 
       <section className="py-12 tablet:py-20">

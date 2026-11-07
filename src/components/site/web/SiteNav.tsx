@@ -12,7 +12,7 @@ import { useCartDrawer } from "./CartDrawer";
 import { button, cx, tone } from "./ui";
 
 export type SiteNavUser = { name: string; email: string; avatarColor: string; isStaff: boolean; xp: number; streak: number; planSummary: string | null } | null;
-type Features = { leaderboard: boolean; practice: boolean; referAndEarn: boolean };
+type Features = { leaderboard: boolean; practice: boolean; referAndEarn: boolean; bookCall?: boolean };
 type Contact = { whatsapp: string; email: string };
 
 // Pages whose hero has no wash (design.md §3.1): the nav sits on white there.
@@ -75,14 +75,14 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
       )}
     >
       <nav
-        className={cx("mx-auto grid max-w-[1240px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 px-5 sm:px-8", stuck ? "py-3" : "py-5.5")}
+        className={cx("mx-auto grid max-w-[1240px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 px-5 sm:px-8", features.bookCall && "lg:grid-cols-[auto_minmax(0,1fr)_auto]", stuck ? "py-3" : "py-5.5")}
         aria-label="Main"
       >
         <Link href="/" className="tap relative col-start-1 justify-self-start" aria-label="Mathflex home">
           <SiteLogo />
         </Link>
 
-        <div className="col-start-2 hidden gap-0.5 whitespace-nowrap rounded-lg bg-foreground p-1 lg:flex">
+        <div className="col-start-2 hidden gap-0.5 justify-self-center whitespace-nowrap rounded-lg bg-foreground p-1 lg:flex">
           {links.map((l) => (
             <Link
               key={l.href}
@@ -121,6 +121,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
           </button>
 
           <div className="hidden items-center gap-2 lg:flex">
+            {features.bookCall && <BookCallLink className={button.sm} />}
             {user ? (
               <>
                 <Link href="/my-learning" aria-label={`${user.streak}-day streak, ${user.xp} XP`} className={cx("hidden h-11 items-center gap-3 rounded-lg px-3.5 text-sm font-extrabold xl:flex", secondary)}>
@@ -153,6 +154,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
             )}
           </div>
 
+          {features.bookCall && <BookCallLink short className="h-11 px-3 text-[13px] max-[479px]:w-11 max-[479px]:px-0 lg:hidden" />}
           {/* Phones: account button (the rest lives in the bottom bar's More sheet). */}
           {user ? (
             <button type="button" onClick={() => setMoreOpen(true)} aria-label="Account menu" className="grid size-11 place-items-center rounded-full text-sm font-bold text-white ring-2 ring-white tablet:hidden" style={{ background: user.avatarColor }}>
@@ -375,4 +377,14 @@ function MoreSheet({ user, features, contact, onClose }: { user: SiteNavUser; fe
 function CartCount() {
   const n = useCart().length;
   return n ? <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-white">{n} item{n === 1 ? "" : "s"}</span> : <span className="text-sm font-semibold text-muted-foreground">Empty</span>;
+}
+
+// "Book a call" next to Log in (Admin → Home page switches it). Phones get the shorter label.
+function BookCallLink({ className, short = false }: { className?: string; short?: boolean }) {
+  return (
+    <Link href="/book-a-call" aria-label="Book a 1:1 call" data-track="Header book a call" className={cx("inline-flex items-center justify-center gap-1.5 rounded-lg border-2 border-primary bg-card font-bold text-primary transition hover:bg-primary hover:text-primary-foreground", className)}>
+      <CalendarClock className="size-4 shrink-0" aria-hidden />
+      {short ? <span className="max-[479px]:hidden">Book a call</span> : "Book a call"}
+    </Link>
+  );
 }

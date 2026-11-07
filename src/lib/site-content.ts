@@ -42,8 +42,8 @@ export const socials = {
 export const instructor = {
   shortName: "Karan bhaiya",
   fullName: "Karan Mittal",
-  // Confirmed facts only: B.Tech in Civil Engineering, IIT Delhi, graduated June 2023.
-  title: "B.Tech, Civil Engineering, IIT Delhi (2023)",
+  // Confirmed facts only: B.Tech, IIT Delhi, graduated June 2023. Karan asked for the branch to be left out.
+  title: "B.Tech, IIT Delhi (2023)",
   jobTitle: "JEE Maths Mentor",
   credentialShort: "IIT Delhi alumnus", // bylines, hero proof row, metadata
   introVideoId: null as string | null, // Bunny video ID; null shows "Video coming soon"
@@ -51,10 +51,10 @@ export const instructor = {
   // Portrait for the Book a call card, e.g. "/brand/karan.jpg" in public/. null shows a placeholder.
   photo: null as string | null,
   studentsGuided: "1,000+", // real figure from the founder
-  // Predicate: always rendered as "{name} {bio}". Confirmed facts only (IIT Delhi B.Tech Civil 2023, cracked JEE, project manager since, 1,000+ mentored).
-  bio: "is an IIT Delhi alumnus (B.Tech, Civil Engineering, 2023). After cracking JEE himself, he has mentored 1,000+ students and has worked as a project manager building products. At Mathflex, he teaches JEE maths chapter by chapter, the way he wishes he had learned it.",
+  // Predicate: always rendered as "{name} {bio}". Confirmed facts only (IIT Delhi B.Tech 2023, cracked JEE, product manager since, 1,000+ mentored).
+  bio: "is an IIT Delhi alumnus (B.Tech, 2023). After cracking JEE himself, he has mentored 1,000+ students and has worked as a Product Manager building learning products. At Mathflex, he teaches JEE maths chapter by chapter, the way he wishes he had learned it.",
   // Only the education credential is shown on the site (employers are left out by request).
-  credentials: [{ org: "B.Tech, Civil Engineering, IIT Delhi (2023)", role: "Indian Institute of Technology (IIT) Delhi" }],
+  credentials: [{ org: "B.Tech, IIT Delhi (2023)", role: "Indian Institute of Technology (IIT) Delhi" }],
 };
 
 // Short line for the instructor block on chapter pages.
@@ -90,19 +90,6 @@ export function instructorNames(settings: Pick<Settings, "mentorName">) {
   return { short: custom ?? instructor.shortName, full: custom ?? instructor.fullName };
 }
 
-// ---- The problem (home "JEE maths shouldn't cost a lakh") -----------------------------
-// Competitor rows are approximate market prices, labelled as such on the page.
-// Our own rows (full-syllabus course, cheapest chapter) are filled from the database.
-export const problem = {
-  lead: "Most students are stuck on three or four chapters, not the whole syllabus. So why pay for all of it?",
-  competitors: [
-    // Offline coaching typically costs ₹1.15L–₹2.41L per year, varying by city. The bar uses the lower bound.
-    { name: "Big coaching institute", note: "Typically ₹1.15L–₹2.41L per year, varying by city. Fixed batches, fixed pace, a long commute.", price: 115000, unit: "per year, approx. (lower end)" },
-  ],
-  courseNote: "Every chapter in both classes, with every part, DPPs, PYQs and notes.",
-  chapterNote: "Just the chapter you're stuck on.",
-};
-
 // ---- How a chapter works ----------------------------------------------------------------
 // Matches the real unlock rule: practice opens after watching most of a part (threshold
 // set per part in admin); the next part opens after video + practice.
@@ -126,16 +113,21 @@ export const chapterIncludes = [
 // true = ✓, false = ✕, string = text. "{fullPrice}" / "{callPrice}" are filled from live
 // data; a row whose live value is missing is hidden.
 export const comparison = {
-  columns: ["Big coaching", "Online giants", "Free YouTube"],
+  // Each column and row can be switched off on Admin → Home page (keys match settings.home).
+  columns: [
+    { key: "coaching", label: "Big coaching" },
+    { key: "online", label: "Online courses" },
+    { key: "youtube", label: "Free YouTube" },
+  ],
   rows: [
-    { label: "Full syllabus cost", cells: ["{fullPrice}", "₹1.15L–₹2.41L / year", "Often tens of thousands", "Free"] },
-    { label: "Buy a single chapter", cells: [true, false, false, "—"] },
-    { label: "Watch before you pay", cells: [true, false, "Limited", true] },
-    { label: "Practice after every part", cells: [true, true, "Varies", false] },
-    { label: "Learn at your own pace", cells: [true, false, true, true] },
-    { label: "Taught by an IIT Delhi alumnus", cells: [true, "Varies", "Varies", "Varies"] },
-    { label: "1:1 call with your mentor", cells: ["{callPrice}", "Rare", false, false] },
-  ] as { label: string; cells: (string | boolean)[] }[],
+    { key: "fullSyllabus", label: "Full syllabus cost", cells: ["{fullPrice}", "₹1.15L–₹2.41L / year", "Often tens of thousands", "Free"] },
+    { key: "singleChapter", label: "Buy a single chapter", cells: [true, false, false, "—"] },
+    { key: "watchFirst", label: "Watch before you pay", cells: [true, false, "Limited", true] },
+    { key: "practice", label: "Practice after every part", cells: [true, true, "Varies", false] },
+    { key: "ownPace", label: "Learn at your own pace", cells: [true, false, true, true] },
+    { key: "iitMentor", label: "Taught by an IIT Delhi alumnus", cells: [true, "Varies", "Varies", "Varies"] },
+    { key: "mentorCall", label: "1:1 call with your mentor", cells: [true, "Rare", false, false] },
+  ] as { key: string; label: string; cells: (string | boolean)[] }[],
 };
 
 // ---- Dashboard mock-ups ------------------------------------------------------------------
@@ -168,8 +160,7 @@ export const faqGroups: FaqGroup[] = [
     title: "Chapters & courses",
     items: [
       { q: "Should I buy chapters or a full course?", a: "Buy chapters if you only need a few. If you need most of a class, the full course usually works out cheaper. Compare the prices on the [Courses page](/courses)." },
-      { q: "Why are parts locked?", a: "Inside a chapter you own, each part unlocks after you watch most of the previous one and clear its practice set. It keeps you from skipping the bits that cost marks later." },
-      { q: "How long do I get access?", a: "Single chapters: 3 months. Class 11 or Class 12 Complete: 1 year. Class 11 + 12 combo: 2 years. Access is counted from the date you buy, and each page shows its own period. When a chapter or course expires it locks, your progress is saved, and you can buy it again to continue. You can also renew early from your Profile page once it's within 30 days of expiring." },
+      { q: "How long do I get access?", a: "It depends on what you buy, counted from the day you buy it:\n- **Single chapter:** 3 months\n- **Class 11 or Class 12 Complete:** 1 year\n- **Class 11 + 12 Combo:** 2 years\n\nWhen access ends, your progress stays saved. Renew from your Profile page to pick up where you left off." },
       { q: "Does it work on my phone?", a: "Yes. Videos adjust to your connection, and {notesKind} open right on your phone." },
     ],
   },
@@ -177,7 +168,7 @@ export const faqGroups: FaqGroup[] = [
     id: "pay",
     title: "Payments & refunds",
     items: [
-      { q: "How can I pay?", a: "UPI, debit or credit card, or netbanking, through Cashfree, our payment partner." },
+      { q: "How can I pay?", a: "UPI (Google Pay, PhonePe, Paytm and more), debit or credit card, or netbanking. Every payment is secure and your chapters open as soon as it goes through." },
       { q: "Are there any discounts?", a: "When an offer is running, you can enter its coupon code at checkout. Only one coupon can be used per order." },
       { q: "Money was deducted but my chapter didn't unlock.", a: "UPI payments can take a minute to confirm, so please don't pay again. If it still hasn't unlocked, email {supportEmail} with your order number and we'll unlock it or refund you." },
       { q: "Can I get a refund?", a: "Refunds are available for duplicate payments, payments where you didn't get access, technical faults on our side, or a wrong purchase reported within 7 days before you've used the content beyond a small preview. See the [refund policy](/refund-policy)." },
@@ -205,7 +196,7 @@ export const faqGroups: FaqGroup[] = [
 
 // Which FAQs the home page shows: [group id, question index].
 export const homeFaqs: [string, number][] = [
-  ["start", 1], ["start", 2], ["buy", 1], ["buy", 2], ["buy", 3], ["pay", 0], ["pay", 3],
+  ["start", 1], ["start", 2], ["buy", 1], ["buy", 2], ["pay", 0], ["pay", 3],
 ];
 
 export type FaqVars = Record<string, string>;
@@ -268,7 +259,7 @@ export const bookCall = {
   ],
   steps: [
     { t: "Add the call at checkout", d: "It's {price}. Add a chapter or a course too if you like, or book the call on its own." },
-    { t: "Pay securely", d: "UPI, cards or netbanking through Cashfree. Your call is confirmed as soon as the payment goes through." },
+    { t: "Pay securely", d: "UPI, cards or netbanking. Your call is confirmed as soon as the payment goes through." },
     { t: "Pick a time on WhatsApp", d: "Our team messages you to fix a time. Once it's set, the call link shows on your Profile page." },
   ],
   faqs: [
@@ -314,3 +305,8 @@ export const supportEmail = "support@mathflex.in";
 // Conic sections are taken together: each one recommends the other two. Matched by chapter slug
 // (the slugs are database values: if one is renamed in admin, update this list).
 export const conicSlugs = ["parabola", "ellipse", "hyperbola"] as const;
+
+// Mentor credential and bio: the Admin → Home page values, falling back to the copy above.
+export function mentorProfile(settings: Pick<Settings, "home">) {
+  return { title: settings.home?.mentorTitle || instructor.title, bio: settings.home?.mentorBio || instructor.bio };
+}

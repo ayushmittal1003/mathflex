@@ -1,6 +1,6 @@
 "use client";
 import { PosterImage } from "@/components/site/web/PosterImage";
-import { formatPhone, mentorshipCall, mentorshipPlan, supportEmail, supportPhone } from "@/lib/site-content";
+import { formatPhone, mentorshipCall, supportEmail, supportPhone } from "@/lib/site-content";
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -29,8 +29,9 @@ export type CheckoutMeta = {
 };
 
 export function CartView(props: {
-  mentorship: { enabled: boolean; price: number; title: string; blurb: string; mentor: string };
+  mentorship: { enabled: boolean; price: number; title: string; blurb: string; mentor: string; preticked: boolean };
   couponsEnabled: boolean;
+  suggestedCoupon: { code: string; description: string } | null; // the live public offer, one tap to apply
   initialMentorship: boolean | null; // from ?mentorship=1 / 0; null = default
   loggedIn: boolean;
   meta: CheckoutMeta;
@@ -40,9 +41,10 @@ export function CartView(props: {
   const router = useRouter();
   const [quote, setQuote] = useState<Quote | null>(null);
   const [coupon, setCoupon] = useState<string | null>(null);
-  // The 1:1 call is pre-ticked once the cart has a chapter or course; an explicit choice wins.
+  // The 1:1 call is opt-in: ticked only when the student came to book it (?mentorship=1) or the
+  // admin turned pre-ticking on. An explicit choice always wins.
   const [mentorChoice, setMentorChoice] = useState<boolean | null>(props.initialMentorship);
-  const mentor = props.mentorship.enabled && (mentorChoice ?? items.length > 0);
+  const mentor = props.mentorship.enabled && (mentorChoice ?? (props.mentorship.preticked && items.length > 0));
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -241,34 +243,6 @@ export function CartView(props: {
               {!empty && <BundleUpsell meta={props.cartMeta} className="mx-5.5 my-4.5" />}
             </section>
 
-            {/* 1:1 intro call: pre-ticked once the cart has an item. Sits above sign-in and payment. */}
-            {props.mentorship.enabled && !empty && (
-              <section className={cx(card, "border-[1.5px]", mentor ? "border-primary" : "border-border")} aria-labelledby="mentor-title">
-                <label className="flex cursor-pointer items-start gap-3.5 px-5.5 py-5">
-                  <input
-                    type="checkbox"
-                    checked={mentor}
-                    onChange={(e) => setMentorChoice(e.target.checked)}
-                    className="mt-0.5 size-6 shrink-0 cursor-pointer accent-primary"
-                  />
-                  <span className="min-w-0 flex-1">
-                    <span id="mentor-title" className="block text-base font-extrabold leading-[1.35] tracking-[-0.015em]">
-                      {mentorshipCall.minutes}-minute 1:1 call with {props.mentorship.mentor} (IIT Delhi alumnus) <span className="whitespace-nowrap">· {inr(props.mentorship.price)}</span>
-                    </span>
-                    <span className="mt-1 block text-sm leading-[1.5] text-secondary-foreground">{mentorshipCall.pitch}</span>
-                    <span className="mt-1 block text-[13px] leading-[1.5] text-muted-foreground">{mentorshipCall.contactNote}</span>
-                  </span>
-                </label>
-                <p className="border-t border-border px-5.5 py-3.5 text-[13px] leading-[1.5] text-secondary-foreground">
-                  Want ongoing help? {mentorshipPlan.sessions} monthly sessions of {mentorshipPlan.minutes} minutes each for {inr(mentorshipPlan.price)}: {mentorshipCall.monthly}{" "}
-                  <Link href="/book-a-call" className="font-bold text-primary underline underline-offset-[3px]">Learn more</Link>
-                </p>
-              </section>
-            )}
-
-            {/* Upsell: related chapters (server prices) */}
-            {!empty && <Recommendations meta={props.cartMeta} max={3} className="rounded-xl border border-border bg-card px-5.5 py-5" />}
-
             {/* 2 · Contact details. No login needed to pay or to start learning. */}
             <section className={cx(card, step === 1 && "border-foreground")}>
               <div className="flex items-center gap-3 border-b border-border px-5.5 py-5">
@@ -287,7 +261,7 @@ export function CartView(props: {
               )}
               {(askEmail || askPhone) && (
                 <div className="grid gap-4 px-5.5 pb-5.5 pt-5">
-                  {!signedIn && <p className="text-sm leading-[1.5] text-secondary-foreground">No account or password needed. Your chapters open as soon as your payment is confirmed. Use details you can access: they let you log back in later.</p>}
+                  {!signedIn && <p className="text-sm leading-[1.5] text-secondary-foreground">No account needed. Your chapters open the moment you pay, and these details let you log back in later.</p>}
                   {askEmail && (
                     <label className="grid gap-1.5">
                       <span className="text-[13px] font-bold">Email</span>
@@ -331,37 +305,41 @@ export function CartView(props: {
                   )}
                 </div>
               )}
+              {/* Phones: coupon and errors here (the summary with them is collapsed on phones). */}
+              {props.couponsEnabled && !empty && (
+                <div className="border-t border-border px-5.5 py-3 min-[900px]:hidden">
+                  <CouponField idPrefix="pay-" suggested={props.suggestedCoupon} applied={quote?.coupon ?? null} error={quote?.couponError ?? null} onApply={(code) => setCoupon(code)} onRemove={() => setCoupon(null)} />
+                </div>
+              )}
+              {error && (
+                <p role="alert" className="mx-5.5 mb-5 flex items-start gap-2 rounded-lg bg-bad/10 p-3 text-sm font-medium text-bad min-[900px]:hidden"><CircleAlert className="mt-0.5 size-4 shrink-0" />{error}</p>
+              )}
             </section>
 
-            {/* 3 · Payment */}
-            <section className={card}>
-              <div className="flex items-center gap-3 px-5.5 py-5">
-                {stepDot(3, false, step === 2)}
-                <h2 className="text-[19px] font-extrabold tracking-[-0.02em]">Payment</h2>
-              </div>
-              <div className="px-5.5 pb-5.5">
-                {props.couponsEnabled && !empty && (
-                  <div className="mb-4 border-b border-border pb-3 min-[900px]:hidden">
-                    <CouponField
-                      idPrefix="pay-"
-                      applied={quote?.coupon ?? null}
-                      error={quote?.couponError ?? null}
-                      onApply={(code) => setCoupon(code)}
-                      onRemove={() => setCoupon(null)}
-                    />
-                  </div>
-                )}
-                <p className="text-sm leading-[1.5] text-secondary-foreground">
-                  You&apos;ll pay on Cashfree&apos;s secure page and come straight back here.
-                </p>
-                <div className="mt-3.5 flex flex-wrap gap-2">
-                  {["UPI", "Debit / credit card", "Netbanking"].map((m) => <span key={m} className="rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-bold">{m}</span>)}
-                </div>
-                {error && (
-                  <p role="alert" className="mt-4 flex items-start gap-2 rounded-lg bg-bad/10 p-3 text-sm font-medium text-bad min-[900px]:hidden"><CircleAlert className="mt-0.5 size-4 shrink-0" />{error}</p>
-                )}
-              </div>
-            </section>
+            {/* Optional 1:1 call: one line, never ticked unless the student asked for it (?mentorship=1) or
+                Admin → Home page turns pre-ticking on. */}
+            {props.mentorship.enabled && !empty && (
+              <section className={cx(card, "border-[1.5px]", mentor ? "border-primary" : "border-border")} aria-labelledby="mentor-title">
+                <label className="flex cursor-pointer items-start gap-3.5 px-5.5 py-4.5">
+                  <input
+                    type="checkbox"
+                    checked={mentor}
+                    onChange={(e) => setMentorChoice(e.target.checked)}
+                    className="mt-0.5 size-6 shrink-0 cursor-pointer accent-primary"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span id="mentor-title" className="block text-[15px] font-extrabold leading-[1.35] tracking-[-0.015em]">
+                      Add a {mentorshipCall.minutes}-min 1:1 call with {props.mentorship.mentor} <span className="whitespace-nowrap text-primary">+{inr(props.mentorship.price)}</span>
+                    </span>
+                    <span className="mt-0.5 block text-[13px] leading-[1.5] text-muted-foreground">{mentorshipCall.pitch} Pick your slot right after paying.</span>
+                  </span>
+                </label>
+              </section>
+            )}
+
+            {/* Upsell: related chapters (server prices) */}
+            {!empty && <Recommendations meta={props.cartMeta} max={2} className="rounded-xl border border-border bg-card px-5.5 py-5" />}
+
           </div>
 
           {/* Order summary */}
@@ -405,6 +383,7 @@ export function CartView(props: {
                 <div className="mx-5.5 mt-4 hidden border-t border-border pt-4 min-[900px]:block">
                   <CouponField
                     idPrefix="side-"
+                    suggested={props.suggestedCoupon}
                     applied={quote?.coupon ?? null}
                     error={quote?.couponError ?? null}
                     onApply={(code) => setCoupon(code)}
@@ -433,7 +412,7 @@ export function CartView(props: {
                   {payLabel}
                 </button>
                 <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                  <LockIcon className="size-3" /> Payments secured by Cashfree ·{" "}
+                  <LockIcon className="size-3" /> Secure payment · UPI, cards, netbanking ·{" "}
                   <Link href="/refund-policy" className="inline-flex min-h-11 items-center underline underline-offset-[3px]">Refund policy</Link>
                 </div>
                 <div className="mt-4.5 grid gap-3 px-1">
@@ -456,7 +435,7 @@ export function CartView(props: {
         </div>
         {!empty && (
           <p className="mt-6 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-xs leading-[1.5] text-secondary-foreground min-[900px]:hidden">
-            <LockIcon className="size-3 text-ok" /> Secure payment via Cashfree{accessParts.map((p) => ` · ${p}`).join("")} · Support{" "}
+            <LockIcon className="size-3 text-ok" /> Secure payment · UPI, cards, netbanking{accessParts.map((p) => ` · ${p}`).join("")} · Support{" "}
             <a href={supportPhone.href} className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]">{supportPhone.display}</a> ·{" "}
             <a href={`mailto:${supportEmail}`} className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]">{supportEmail}</a>
           </p>

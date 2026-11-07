@@ -17,7 +17,7 @@ export function PricingSection({ chapters, courses, coupon }: { chapters: HomeCh
   const cta = "flex justify-center rounded-lg p-3 text-[15px] font-bold transition duration-200 hover:brightness-97";
 
   return (
-    <section id="pricing" className="scroll-mt-6 py-12 tablet:py-22">
+    <section id="pricing" className="scroll-mt-6 py-9 tablet:py-14">
       <SectionHead
         eyebrow="Pricing"
         title={<>Pocket-money pricing for <Mark>IIT-level</Mark> prep.</>}
@@ -84,16 +84,15 @@ export function PricingSection({ chapters, courses, coupon }: { chapters: HomeCh
           </div>
         )}
       </div>
-      <p className="mx-6 mt-7 text-center text-sm text-muted-foreground">
-        Pay with UPI, cards or netbanking.
-        {coupon && (
-          <>
-            {" "}New here? Use{" "}
-            <span className="rounded bg-muted px-1.5 py-0.5 font-mono font-bold text-foreground">{coupon.code}</span>
-            {coupon.description && <> · {coupon.description}</>}
-          </>
-        )}
-      </p>
+      {coupon && (
+        // The live offer, as a ticket: the code and what it gives, read from the coupon itself.
+        <div className="mx-auto mt-8 flex w-[min(560px,calc(100%-var(--gutter)*2))] flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-xl border-2 border-dashed border-primary/45 bg-primary/5 px-5 py-3.5 text-center">
+          <span className="text-[15px] font-bold">New here? Use code</span>
+          <span className="rounded-md bg-foreground px-2.5 py-1 font-mono text-[15px] font-extrabold tracking-[0.06em] text-card">{coupon.code}</span>
+          <span className="text-[15px] font-extrabold text-primary">{coupon.description}</span>
+        </div>
+      )}
+      <p className="mx-6 mt-4 text-center text-sm text-muted-foreground">Pay with UPI, cards or netbanking. Access starts the moment your payment goes through.</p>
     </section>
   );
 }

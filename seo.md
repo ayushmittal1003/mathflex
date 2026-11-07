@@ -12,6 +12,7 @@ Every new or changed public page must follow this file. It describes what the co
 | `/courses/[slug]` | yes, only when published | yes | Course (+ breadcrumb) | |
 | `/pricing`, `/about`, `/contact`, `/faq`, `/jee-exam`, `/book-a-call`, `/privacy`, `/terms`, `/refund-policy` | yes | yes | none | |
 | `/blog`, `/blog/[slug]` | **only real posts** | real posts only | BreadcrumbList on real posts | Posts with `placeholder: true` in `src/lib/blog.ts` are `noindex` and out of the sitemap automatically |
+| `/enquiry` | no (`noindex, follow`) | no | none | Landing page for paid ads (lead form). Set with `buildMetadata({ noindex: true })` |
 | `/free-practice` | **no, for now** | no | none | Hard-coded `noindex: true` in its `page.tsx` |
 | `/leaderboard`, `/login`, `/signup`, `/my-learning`, `/profile`, `/plans`, `/practice*`, `/learn/*`, `/checkout`, `/cart`, `/payment/*`, `/invite/*` | no (`noindex, follow`) | no | none | Use `privateMetadata()`. **Never block these in robots.txt**: a blocked page can't show its noindex |
 | `/admin` | no | no | none | `robots.txt` disallows it. The `X-Robots-Tag` header still has to be added in config (Ayush list) |
@@ -33,7 +34,7 @@ Use `buildMetadata()` from `src/lib/seo/metadata.ts`. Do not hand-write `<title>
 - **Canonical:** absolute, self-referencing, from `APP_URL` (`SITE_URL` in `config.ts`). The canonical site address is **`https://mathflex.in`** (no `www`, no trailing slash); `APP_URL` must be set to exactly that in Vercel Production and Preview, and `www.mathflex.in` redirects to it. Never include tracking parameters (`utm_*`, `ref`), filters or invite codes. Internal links must point to canonical URLs.
 - **Open Graph / Twitter:** set by the helper. The site default image is `src/app/opengraph-image.tsx`. Chapter and course pages have their own `opengraph-image.tsx`, and pass `defaultImage: false` so the default is not added twice. A child page's `openGraph` replaces the parent's, so always go through the helper.
 - **Do not add:** `<meta name="keywords">`, `changeFrequency`/`priority` in the sitemap, `lastModified = now`.
-- **Credential wording:** the mentor is Karan Mittal, B.Tech in Civil Engineering, IIT Delhi (graduated June 2023). Short form for bylines, hero proof row and metadata: "IIT Delhi alumnus". On the About page / mentor section: "Karan Mittal · B.Tech, Civil Engineering, IIT Delhi (2023)". Do not add other credentials or employers until the owner confirms them. Never mention NIT Jalandhar.
+- **Credential wording:** the mentor is Karan Mittal, B.Tech, IIT Delhi (graduated June 2023). Karan asked for the branch not to be shown. Short form for bylines, hero proof row and metadata: "IIT Delhi alumnus". On the About page / mentor section: "B.Tech, IIT Delhi (2023)", edited on Admin → Home page. Do not add other credentials or employers until the owner confirms them. Never mention NIT Jalandhar.
 
 ## 3. JSON-LD per template
 
@@ -43,7 +44,7 @@ Rendered by `<JsonLd />` (server component, escapes `<`). Only on indexable page
 |---|---|
 | Home | Organization (name, logo, contact, `sameAs`) + WebSite (no SearchAction) |
 | `/chapters`, `/courses` | ItemList |
-| `/about` | ProfilePage + Person (name, jobTitle "JEE Maths Mentor", `alumniOf` IIT Delhi, `hasCredential` B.Tech in Civil Engineering, `sameAs`); values must match the visible mentor section. `image` is added automatically once `instructor.photo` is set |
+| `/about` | ProfilePage + Person (name, jobTitle "JEE Maths Mentor", `alumniOf` IIT Delhi, `hasCredential` B.Tech, `sameAs`); values must match the visible mentor section. `image` is added automatically once `instructor.photo` is set |
 | Chapter, course | Course (provider, Offer in INR, `hasCourseInstance` online, `inLanguage` en-IN, `teaches` from real topics, instructor on `hasCourseInstance` = the same Person `@id`) + BreadcrumbList |
 | Real blog post | BreadcrumbList (add Article only with a real author and dates) |
 

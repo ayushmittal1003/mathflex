@@ -4,6 +4,7 @@ export const META_PIXEL_ID = "1117851897637769";
 
 // The same id is sent by the browser and the server for one purchase, so Meta counts it once.
 export const purchaseEventId = (orderNo: string) => `purchase-${orderNo}`;
+export const leadEventId = (leadId: string) => `lead-${leadId}`;
 
 type Fbq = (...args: unknown[]) => void;
 

@@ -1,28 +1,37 @@
 "use client";
 import { PosterImage } from "@/components/site/web/PosterImage";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { howSteps } from "@/lib/site-content";
-import { CheckIcon, LockIcon, Mark, PlayIcon, SectionHead, posterBg } from "../primitives";
+import { CheckIcon, LockIcon, Marked, PlayIcon, SectionHead, posterBg } from "../primitives";
 import { cx } from "../ui";
 import { clock, type HomeChapter } from "./types";
 
-// 05 How a chapter works: steps on the left, a sticky framed demo on the right that follows
-// the step in view. The demo uses a real chapter's parts and question counts; progress,
-// XP and streak numbers are illustrative.
-export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null; practice: { dpp: number; pyq: number } | null }) {
+// 05 How a chapter works: four clickable steps beside a framed demo of the step. While the
+// section is on screen the steps advance by themselves; tapping one stops that. The demo uses a
+// real chapter's parts and question counts; progress, XP and streak numbers are illustrative.
+const STEP_MS = 4500;
+
+export function HowItWorks({ chapter, practice, title = "Every chapter plays like a *series*.", lead }: { chapter: HomeChapter | null; practice: { dpp: number; pyq: number } | null; title?: string; lead?: string }) {
   const [step, setStep] = useState(0);
+  const [auto, setAuto] = useState(true);
+  const [inView, setInView] = useState(false);
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const onScroll = () => {
-      const mid = window.innerHeight * 0.5;
-      let a = 0;
-      document.querySelectorAll<HTMLElement>("[data-how-step]").forEach((n, i) => { if (n.getBoundingClientRect().top < mid) a = i; });
-      setStep(a);
-    };
-    onScroll();
-    document.addEventListener("scroll", onScroll, { passive: true, capture: true });
-    return () => document.removeEventListener("scroll", onScroll, true);
+    const el = ref.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.35 });
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!auto || !inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t = setTimeout(() => setStep((s) => (s + 1) % howSteps.length), STEP_MS);
+    return () => clearTimeout(t);
+  }, [auto, inView, step]);
+
+  const pick = (i: number) => { setAuto(false); setStep(i); };
 
   if (!chapter || chapter.parts.length === 0) return null;
   const [p1, p2, p3] = chapter.parts;
@@ -30,36 +39,40 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
   const bg = posterBg(chapter.coverFrom, chapter.coverTo);
 
   return (
-    <section id="how" className="py-12 tablet:py-22">
-      <SectionHead
-        eyebrow="How a chapter works"
-        dot="xp"
-        title={<>Every chapter plays like a <Mark>series</Mark>.</>}
-        lead="Each chapter is split into short parts. Finish a part, clear its practice, and the next one unlocks. You always know what to do next."
-      />
-      <div className="mx-auto mt-14 flex w-[min(1120px,calc(100%-var(--gutter)*2))] flex-wrap-reverse items-end gap-x-10 gap-y-8">
-        <div className="min-w-0 flex-[1_1_300px]">
-          {howSteps.map((s, i) => (
-            <div
-              key={s.kicker}
-              data-how-step={i}
-              onClick={() => setStep(i)}
-              className={"cursor-pointer pb-8 pt-2 tablet:min-h-[58vh] tablet:pb-10"}
-            >
-              <div className="flex items-center gap-3">
-                <span className={cx("rounded-md px-2 py-1 font-mono text-[13px] font-bold transition-colors duration-300", i === step ? "bg-foreground text-card" : "bg-muted text-muted-foreground")}>
-                  0{i + 1}
-                </span>
-                <span className="text-[13px] font-bold uppercase tracking-[0.08em] text-muted-foreground">{s.kicker}</span>
-              </div>
-              <h3 className={cx("mt-4.5 text-[clamp(26px,3vw,38px)] font-extrabold leading-[1.08] tracking-[-0.035em] transition-colors duration-400", i !== step && "tablet:text-foreground/55")}>{s.title}</h3>
-              <p className="mt-3 max-w-[440px] text-[17px] leading-[1.6] text-muted-foreground text-pretty">{s.body}</p>
-            </div>
-          ))}
-        </div>
+    <section ref={ref} id="how" className="py-9 tablet:py-14">
+      <SectionHead eyebrow="How a chapter works" dot="xp" title={<Marked text={title} />} lead={lead} />
+      <div className="mx-auto mt-10 grid w-[min(1120px,calc(100%-var(--gutter)*2))] items-center gap-x-10 gap-y-6 tablet:mt-12 min-[900px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)]">
+        <ol className="grid gap-2" role="tablist" aria-label="How a chapter works">
+          {howSteps.map((s, i) => {
+            const on = i === step;
+            return (
+              <li key={s.kicker}>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={on}
+                  onClick={() => pick(i)}
+                  className={cx("relative w-full overflow-hidden rounded-xl border px-4.5 py-4 text-left transition-colors duration-300", on ? "border-foreground/15 bg-card shadow-[0_14px_34px_-24px_rgb(80_20_0/0.55)]" : "border-transparent hover:bg-muted/60")}
+                >
+                  <span className="flex items-center gap-3">
+                    <span className={cx("rounded-md px-2 py-1 font-mono text-[13px] font-bold transition-colors duration-300", on ? "bg-foreground text-card" : "bg-muted text-muted-foreground")}>0{i + 1}</span>
+                    <span className={cx("text-[clamp(18px,1.8vw,22px)] font-extrabold leading-tight tracking-[-0.025em]", !on && "text-foreground/60")}>{s.title}</span>
+                  </span>
+                  <span className={cx("grid transition-[grid-template-rows] duration-400 ease-mf", on ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
+                    <span className="overflow-hidden">
+                      <span className="block pl-[46px] pt-2 text-[15px] leading-[1.55] text-muted-foreground text-pretty">{s.body}</span>
+                    </span>
+                  </span>
+                  {/* Time until the next step while it plays by itself. */}
+                  {on && auto && inView && <span key={step} aria-hidden className="absolute inset-x-0 bottom-0 h-[3px] origin-left animate-[mf-grow_4.5s_linear_forwards] bg-primary" />}
+                </button>
+              </li>
+            );
+          })}
+        </ol>
 
-        <div className="z-[2] min-w-0 flex-[1.15_1_380px] tablet:sticky tablet:top-[max(24px,calc(50vh-260px))]">
-          <div className="min-h-[480px] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-frame tablet:h-[520px]">
+        <div className="min-w-0">
+          <div className="overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-frame min-[900px]:min-h-[520px]">
             <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5">
               <span className="truncate text-[13px] font-bold">My Learning · {chapter.title}</span>
               <div className="flex gap-1" aria-hidden>
@@ -70,7 +83,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
             {step === 0 && (
               <div key="s0" className="animate-mf-rise p-5">
                 <div className="relative">
-                  <div className="relative h-[270px] overflow-hidden rounded-lg text-white" style={bg}>
+                  <div className="relative aspect-video overflow-hidden rounded-lg text-white" style={bg}>
                     {chapter.coverImage ? <PosterImage src={chapter.coverImage} sizes="(max-width: 860px) 100vw, 520px" /> : <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 text-[160px] font-black leading-none tracking-[-0.05em] text-white/16 tablet:text-[216px]">{chapter.symbol}</div>}
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent from-45% to-black/60" />
                     <div className="absolute inset-x-4 bottom-3.5">
@@ -113,7 +126,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
             {step === 1 && (
               <div key="s1" className="relative animate-mf-rise p-5">
                 <div className="opacity-45">
-                  <div className="relative h-[270px] overflow-hidden rounded-lg text-white" style={bg}>
+                  <div className="relative aspect-video overflow-hidden rounded-lg text-white" style={bg}>
                     {chapter.coverImage ? <PosterImage src={chapter.coverImage} sizes="(max-width: 860px) 100vw, 520px" /> : <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 text-[160px] font-black leading-none tracking-[-0.05em] text-white/16 tablet:text-[216px]">{chapter.symbol}</div>}
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent from-45% to-black/60" />
                     <div className="absolute inset-x-4 bottom-3.5">
@@ -123,7 +136,7 @@ export function HowItWorks({ chapter, practice }: { chapter: HomeChapter | null;
                     </div>
                   </div>
                 </div>
-                <div className="absolute inset-x-6 top-[150px] animate-mf-pop rounded-xl bg-card p-5.5 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.35)] [animation-delay:150ms] tablet:inset-x-11">
+                <div className="absolute inset-x-6 top-[22%] animate-mf-pop rounded-xl bg-card p-5.5 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.35)] [animation-delay:150ms] tablet:inset-x-11">
                   <div className="flex items-center gap-3.5">
                     <span className="grid size-12 shrink-0 place-items-center rounded-full bg-ok/15 text-ok"><CheckIcon className="size-5.5" /></span>
                     <div>

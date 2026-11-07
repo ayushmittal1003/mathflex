@@ -14,7 +14,7 @@ export function PromoPopup({ promo }: { promo: Promo | null }) {
   const [show, setShow] = useState(false);
   const pathname = usePathname();
   // Never over checkout, payment, sign-in or the player: it would cover the pay button and form fields.
-  const quiet = /^\/(checkout|cart|payment|login|signup|learn|invite)(\/|$)/.test(pathname);
+  const quiet = /^\/(checkout|cart|payment|login|signup|learn|invite|enquiry)(\/|$)/.test(pathname);
   useEffect(() => {
     if (!promo || quiet) return;
     let seen = false;

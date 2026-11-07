@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { formatPostDate, getPost, getPosts, type BlogBlock } from "@/lib/blog";
-import { instructor } from "@/lib/site-content";
+import { instructor, mentorProfile } from "@/lib/site-content";
 import { BlogCard, BlogCover } from "@/components/site/web/blog/BlogCard";
 import { ReadingProgress, ShareButtons, Toc } from "@/components/site/web/blog/ArticleChrome";
 import { button, container, cx, tone } from "@/components/site/web/ui";
@@ -102,7 +102,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
               <div className="text-xs font-extrabold uppercase tracking-[0.1em] text-muted-foreground">Written by</div>
               <div className="mt-1 text-lg font-extrabold tracking-[-0.02em] text-foreground">{post.author.name}</div>
               <p className="mt-1 text-[15px] leading-[1.6]">
-                {byKaran ? `${instructor.shortName} ${instructor.bio}` : "Study guides and exam updates from the people who build Mathflex."}
+                {byKaran ? `${instructor.shortName} ${mentorProfile(settings).bio}` : "Study guides and exam updates from the people who build Mathflex."}
               </p>
             </div>
             {byKaran && <Link href="/book-a-call" className={cx(button.sm, tone.dark, "min-h-11 self-start tablet:self-center")}>Book a 1:1 call</Link>}

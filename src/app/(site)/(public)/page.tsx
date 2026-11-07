@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { getInsideData, getPublicCoupon } from "@/components/site/web/data";
 import { inr } from "@/lib/format";
-import { faqGroups, fillFaq, homeFaqs, instructorNames, supportPhone } from "@/lib/site-content";
+import { fillFaq, instructorNames, mentorProfile, supportPhone } from "@/lib/site-content";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from "@/lib/seo/config";
 import { HomeHero } from "@/components/site/web/home/HomeHero";
@@ -57,8 +57,10 @@ export default async function Home() {
   }));
   const courses: HomeCourse[] = courseRows.map((c) => ({ ...c, chapterCount: c._count.chapters }));
 
-  // A course that contains every published chapter is the "full syllabus" one.
-  const fullCourse = [...courses].sort((a, b) => b.chapterCount - a.chapterCount).find((c) => chapters.length > 0 && c.chapterCount >= chapters.length) ?? null;
+  // The "full syllabus" course: one that contains every published chapter, else the course with the
+  // most chapters (the Class 11 + 12 combo), as long as it covers both classes' worth.
+  const byChapters = [...courses].sort((a, b) => b.chapterCount - a.chapterCount || b.price - a.price);
+  const fullCourse = byChapters.find((c) => chapters.length > 0 && c.chapterCount >= chapters.length) ?? (byChapters[0] && byChapters[0].chapterCount >= chapters.length * 0.8 ? byChapters[0] : null);
   const minChapterPrice = chapters.length ? Math.min(...chapters.map((c) => c.price)) : null;
   const names = instructorNames(settings);
   const mentorship = settings.features.mentorshipUpsell ? { price: settings.mentorshipPrice } : null;
@@ -80,25 +82,24 @@ export default async function Home() {
     mentorshipPrice: inr(settings.mentorshipPrice),
     notesKind: mindMaps > 0 ? "notes and mind maps" : "notes",
   };
-  const faqs = homeFaqs
-    .map(([g, i]) => faqGroups.find((x) => x.id === g)?.items[i])
-    .filter((f): f is NonNullable<typeof f> => !!f)
-    .map((f) => ({ q: fillFaq(f.q, faqVars), a: fillFaq(f.a, faqVars) }));
+  const home = settings.home;
+  const show = home.sections;
+  const faqs = home.faqs.filter((f) => f.q.trim() && f.a.trim()).map((f) => ({ q: fillFaq(f.q, faqVars), a: fillFaq(f.a, faqVars) }));
 
 
   return (
     <>
       <JsonLd data={schema.graph(schema.organization({ phone: supportPhone.e164, email: settings.supportEmail }), schema.website())} />
       <HomeHero chapters={chapters} chapterCount={chapters.length} minPrice={minChapterPrice} />
-      {chapters.length > 0 && <PreviewExplorer chapters={chapters} chapterCount={chapters.length} mentorShort={names.short} />}
-      <CostCompare fullCourse={fullCourse} minChapterPrice={minChapterPrice} />
-      <HowItWorks chapter={demoChapter} practice={practice} />
-      <InsideMathflex chapters={inside.chapters} leaders={inside.leaders} resources={inside.resources} />
-      <MentorSection mentorship={mentorship} names={names} videoId={settings.siteVideos.mentor.videoId || null} poster={settings.siteVideos.mentor.poster} videoTitle={`Meet ${names.full.split(" ")[0]} — what MathFlex is and how it helps you`} />
-      <CompareTable fullPrice={fullCourse?.price ?? null} callPrice={mentorship?.price ?? null} />
-      <PricingSection chapters={chapters} courses={courses} coupon={coupon} />
-      <HomeFaq faqs={faqs} whatsapp={settings.whatsappNumber} />
-      <FinalCta chapters={chapters} minPrice={minChapterPrice} />
+      {show.previews && chapters.length > 0 && <PreviewExplorer chapters={chapters} chapterCount={chapters.length} mentorShort={names.short} />}
+      {show.problem && <CostCompare fullCourse={fullCourse} minChapterPrice={minChapterPrice} copy={home} />}
+      {show.how && <HowItWorks chapter={demoChapter} practice={practice} title={home.howTitle} lead={home.howLead} />}
+      {show.inside && <InsideMathflex chapters={inside.chapters} leaders={inside.leaders} resources={inside.resources} />}
+      {show.mentor && <MentorSection mentorship={mentorship} names={names} profile={mentorProfile(settings)} videoId={settings.siteVideos.mentor.videoId || null} poster={settings.siteVideos.mentor.poster} videoTitle={`Meet ${names.full.split(" ")[0]} — what MathFlex is and how it helps you`} />}
+      {show.compare && <CompareTable fullPrice={fullCourse?.price ?? null} hasCall={!!mentorship} copy={home} />}
+      {show.pricing && <PricingSection chapters={chapters} courses={courses} coupon={coupon} />}
+      {show.faq && faqs.length > 0 && <HomeFaq faqs={faqs} whatsapp={settings.whatsappNumber} />}
+      {show.finalCta && <FinalCta chapters={chapters} minPrice={minChapterPrice} />}
     </>
   );
 }

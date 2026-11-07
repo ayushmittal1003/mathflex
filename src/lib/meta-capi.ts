@@ -2,7 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { db } from "./db";
-import { META_PIXEL_ID, purchaseEventId } from "./meta-pixel";
+import { META_PIXEL_ID, leadEventId, purchaseEventId } from "./meta-pixel";
 
 // Meta Conversions API: reports confirmed purchases from the server, so they count even when an
 // ad blocker or iPhone privacy settings stop the browser pixel. Off until META_CAPI_TOKEN is set
@@ -70,5 +70,47 @@ export async function sendMetaPurchase(orderId: string) {
     else console.info(`[meta-capi] ${order.orderNo} purchase sent (₹${order.total})`);
   } catch (e) {
     console.error("[meta-capi] send failed:", (e as Error).message);
+  }
+}
+
+// Sends one enquiry to Meta as a Lead (same event id as the browser's, so it is counted once).
+export async function sendMetaLead(leadId: string) {
+  const token = process.env.META_CAPI_TOKEN;
+  if (!token) return;
+  try {
+    const lead = await db.lead.findUnique({ where: { id: leadId } });
+    if (!lead) return;
+    const match = (lead.metaMatch ?? {}) as MetaMatch;
+    const [first, ...rest] = lead.name.trim().toLowerCase().split(/\s+/);
+    const event = {
+      event_name: "Lead",
+      event_time: Math.floor(lead.createdAt.getTime() / 1000),
+      event_id: leadEventId(lead.id),
+      action_source: "website",
+      ...(match.url ? { event_source_url: match.url } : {}),
+      user_data: {
+        em: [sha(lead.email)],
+        ph: [sha(lead.phone.replace(/\D/g, ""))],
+        ...(first ? { fn: [sha(first)] } : {}),
+        ...(rest.length ? { ln: [sha(rest[rest.length - 1])] } : {}),
+        external_id: [sha(`lead-${lead.id}`)],
+        country: [sha("in")],
+        ...(match.ip ? { client_ip_address: match.ip } : {}),
+        ...(match.ua ? { client_user_agent: match.ua } : {}),
+        ...(match.fbp ? { fbp: match.fbp } : {}),
+        // The _fbc cookie, or built from the ad click id on the landing URL (Meta's documented format).
+        ...(match.fbc ? { fbc: match.fbc } : lead.fbclid ? { fbc: `fb.1.${lead.createdAt.getTime()}.${lead.fbclid}` } : {}),
+      },
+      custom_data: { content_name: "Enquiry form", content_category: lead.classLevel === "DROPPER" ? "dropper" : `class-${lead.classLevel}` },
+    };
+    const res = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${META_PIXEL_ID}/events`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: [event], access_token: token, ...(process.env.META_TEST_EVENT_CODE ? { test_event_code: process.env.META_TEST_EVENT_CODE } : {}) }),
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) console.error(`[meta-capi] lead ${lead.id} not accepted: ${res.status} ${(await res.text()).slice(0, 300)}`);
+  } catch (e) {
+    console.error("[meta-capi] lead send failed:", (e as Error).message);
   }
 }

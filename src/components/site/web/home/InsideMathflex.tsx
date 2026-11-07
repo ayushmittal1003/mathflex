@@ -31,7 +31,7 @@ export function InsideMathflex({ chapters, leaders, resources, eyebrow = "Inside
     : [{ tag: "PDF", title: "Short notes", map: false }, { tag: "PDF", title: "Formula sheet", map: false }];
 
   return (
-    <section id="inside" className="py-12 tablet:py-22">
+    <section id="inside" className="py-9 tablet:py-14">
       <SectionHead
         eyebrow={eyebrow}
         dot="gold"

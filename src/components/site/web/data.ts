@@ -1,5 +1,5 @@
-import { accountContact } from "@/lib/format";
 import "server-only";
+import { accountContact, inr } from "@/lib/format";
 import { cache } from "react";
 import { db } from "@/lib/db";
 import { requestNow } from "@/lib/time";
@@ -14,11 +14,21 @@ import type { CartMeta } from "./cart-meta";
 export async function getPublicCoupon(settings: Settings) {
   if (!settings.features.coupons) return null;
   const now = new Date(requestNow());
-  return db.coupon.findFirst({
-    where: { isPublic: true, isActive: true, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }] },
-    orderBy: { createdAt: "asc" },
-    select: { code: true, description: true },
-  });
+  const live = { isActive: true, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }] };
+  const select = { code: true, type: true, value: true, maxDiscount: true, minAmount: true, usageLimit: true, usedCount: true } as const;
+  // The coupon picked on Admin → Home page, else the newest public offer (so a new offer replaces an old one).
+  const picked = settings.home.featuredCoupon.trim().toUpperCase();
+  const c =
+    (picked ? await db.coupon.findFirst({ where: { code: picked, ...live }, select }) : null) ??
+    (await db.coupon.findFirst({ where: { isPublic: true, ...live }, orderBy: { createdAt: "desc" }, select }));
+  if (!c || (c.usageLimit !== null && c.usedCount >= c.usageLimit)) return null;
+  return { code: c.code, description: couponOffer(c) };
+}
+
+// "10% off (up to ₹200) on orders above ₹499", built from the coupon itself so it is always right.
+export function couponOffer(c: { type: "PERCENT" | "FLAT"; value: number; maxDiscount: number | null; minAmount: number }) {
+  const off = c.type === "PERCENT" ? `${c.value}% off${c.maxDiscount ? ` (up to ${inr(c.maxDiscount)})` : ""}` : `${inr(c.value)} off`;
+  return `${off}${c.minAmount > 0 ? ` on orders above ${inr(c.minAmount)}` : ""}`;
 }
 
 // Weekly XP ranking (same query as the leaderboard page), first name + initial.
@@ -85,7 +95,7 @@ export async function getSiteNavProps(
   const f = settings.features;
   return {
     user: user ? { name: user.name, email: accountContact(user.email), avatarColor: user.avatarColor, isStaff: isStaff(user.role), xp: user.xp, streak: user.streak, planSummary } : null,
-    features: { leaderboard: f.leaderboard, practice: f.practice, referAndEarn: f.referAndEarn },
+    features: { leaderboard: f.leaderboard, practice: f.practice, referAndEarn: f.referAndEarn, bookCall: f.mentorshipUpsell && settings.home.bookCallInHeader },
     contact: { whatsapp: settings.whatsappNumber, email: settings.supportEmail },
   };
 }

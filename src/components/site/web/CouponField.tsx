@@ -10,8 +10,9 @@ export function couponMessage(error: string) {
 }
 
 // "Have a coupon?" expander: collapsed until tapped; stays open while a code is applied or being fixed.
-export function CouponField({ applied, error, onApply, onRemove, idPrefix = "" }: {
+export function CouponField({ applied, error, onApply, onRemove, idPrefix = "", suggested = null }: {
   idPrefix?: string; // keeps ids unique when the field is rendered twice (phone and desktop slots)
+  suggested?: { code: string; description: string } | null; // the live public offer, applied in one tap
   applied: { code: string; message: string } | null;
   error: string | null;
   onApply: (code: string) => void;
@@ -33,6 +34,13 @@ export function CouponField({ applied, error, onApply, onRemove, idPrefix = "" }
   const expanded = open || !!error;
   return (
     <div>
+      {suggested && !expanded && (
+        <button type="button" onClick={() => onApply(suggested.code)} className="mb-1 flex w-full items-center gap-2.5 rounded-lg border-[1.5px] border-dashed border-primary/50 bg-primary/5 px-3 py-2.5 text-left hover:bg-primary/10">
+          <span className="rounded bg-foreground px-1.5 py-0.5 font-mono text-xs font-extrabold tracking-[0.05em] text-card">{suggested.code}</span>
+          <span className="min-w-0 flex-1 text-[13px] font-semibold">{suggested.description}</span>
+          <span className="shrink-0 text-[13px] font-extrabold text-primary">Apply</span>
+        </button>
+      )}
       <button type="button" onClick={() => setOpen(!expanded)} aria-expanded={expanded} aria-controls={`${idPrefix}coupon-panel`} className="inline-flex min-h-11 items-center text-sm font-bold text-primary">
         Have a coupon?
         <svg className={`ml-1.5 size-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m6 9 6 6 6-6" /></svg>

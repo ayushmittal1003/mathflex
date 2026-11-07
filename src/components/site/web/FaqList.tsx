@@ -38,9 +38,9 @@ export function FaqList({ items, initialOpen = 0 }: { items: { q: string; a: str
             </button>
             <div id={id} className={cx("grid transition-[grid-template-rows] duration-[400ms] ease-mf", isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
               <div className="overflow-hidden">
-                <p className="pb-5.5 pl-[52px] pr-4 text-base leading-[1.6] text-muted-foreground text-pretty sm:pr-[50px]">
-                  <RichText text={item.a} />
-                </p>
+                <div className="space-y-2.5 pb-5.5 pl-[52px] pr-4 text-base leading-[1.6] text-muted-foreground text-pretty sm:pr-[50px]">
+                  <Answer text={item.a} />
+                </div>
               </div>
             </div>
           </div>
@@ -50,13 +50,42 @@ export function FaqList({ items, initialOpen = 0 }: { items: { q: string; a: str
   );
 }
 
-// Turns [label](/path) in FAQ copy into links; everything else is plain text.
+// An answer is paragraphs separated by blank lines; lines starting "- " become a bullet list.
+function Answer({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/\n\s*\n/).map((block, i) => {
+        const lines = block.split("\n");
+        const bullets = lines.filter((l) => l.startsWith("- "));
+        const lead = lines.filter((l) => !l.startsWith("- ")).join(" ");
+        return (
+          <div key={i}>
+            {lead && <p><RichText text={lead} /></p>}
+            {bullets.length > 0 && (
+              <ul className="mt-2 space-y-1.5">
+                {bullets.map((l) => (
+                  <li key={l} className="flex gap-2.5">
+                    <span aria-hidden className="mt-[9px] size-1.5 shrink-0 rounded-full bg-primary" />
+                    <span><RichText text={l.slice(2)} /></span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+// Turns [label](/path) into links and **text** into bold; everything else is plain text.
 function RichText({ text }: { text: string }) {
-  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*)/g);
   return (
     <>
       {parts.map((p, i) => {
         const m = p.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+        if (/^\*\*[^*]+\*\*$/.test(p)) return <strong key={i} className="font-bold text-foreground">{p.slice(2, -2)}</strong>;
         return m ? (
           <Link key={i} href={m[2]} className="font-semibold text-primary underline-offset-2 hover:underline">
             {m[1]}

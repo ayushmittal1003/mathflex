@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { db } from "./db";
+import { faqGroups, homeFaqs, instructor } from "./site-content";
 
 // Every admin-tunable knob with its default. The admin Settings page edits these;
 // anything not yet saved in the DB falls back to the value here.
@@ -69,6 +70,50 @@ export const DEFAULT_SETTINGS = {
     ],
   },
 
+  // Home page content, edited on Admin → Home page. Text wrapped in *stars* gets the highlighter
+  // mark. Hiding a section only hides it on the home page.
+  home: {
+    sections: { previews: true, problem: true, how: true, inside: true, mentor: true, compare: true, pricing: true, faq: true, finalCta: true },
+    // "Book a call" button next to Log in (needs the Mentorship upsell feature on).
+    bookCallInHeader: true,
+    // Coupon shown under the pricing cards and offered in one tap at checkout ("" = the newest active public coupon).
+    featuredCoupon: "",
+    // Tick the 1:1 call by default at checkout. Off: students add it themselves (no surprise charge).
+    callPreticked: false,
+    // Mentor credential and bio (the bio follows his name: "Karan Mittal is ...").
+    mentorTitle: instructor.title,
+    mentorBio: instructor.bio,
+    // "The problem": coaching price against Mathflex.
+    problemEyebrow: "The real cost",
+    problemTitle: "JEE maths shouldn't cost *a lakh a year*.",
+    problemLead: "Most students are stuck on three or four chapters, not the whole syllabus. So why pay for all of it?",
+    coachingName: "Big coaching institute",
+    coachingPrice: 115000,
+    coachingNote: "₹1.15L–₹2.41L a year depending on the city. Fixed batches, fixed pace, a long commute.",
+    // {percent} = full Mathflex syllabus as a share of one coaching year; {fullPrice}, {minPrice} also work.
+    problemConclusion: "The complete Mathflex syllabus costs less than *{percent}* of one year at a big coaching institute.",
+    // "How a chapter works"
+    howTitle: "Every chapter plays like a *series*.",
+    howLead: "Short parts, practice after each one, and the next part unlocks. You always know what to do next.",
+    // "Why Mathflex" comparison table.
+    compareKicker: "Same goal.",
+    compareTitle: "A *fraction* of the price.",
+    compareColumns: { coaching: true, online: true, youtube: false },
+    compareRows: { fullSyllabus: true, singleChapter: true, watchFirst: true, practice: false, ownPace: true, iitMentor: true, mentorCall: true },
+    // Home FAQs. {supportEmail}, {mentorShort}, {mentorshipPrice} and {notesKind} are filled in;
+    // "- " lines become bullets, **text** is bold and [label](/path) is a link.
+    faqs: homeFaqs.map(([g, i]) => faqGroups.find((x) => x.id === g)!.items[i]).filter(Boolean) as { q: string; a: string }[],
+  },
+
+  // The /enquiry page for ad traffic: a short form that becomes a lead on Admin → Leads.
+  enquiry: {
+    enabled: true,
+    eyebrow: "Free 1:1 guidance",
+    title: "Find your *weak chapters* and fix them fast.",
+    subtitle: "Tell us where you are in your JEE prep. Karan bhaiya's team will call you with a chapter-wise plan, free.",
+    promise: "We'll call you within 24 hours",
+  },
+
   // Gamification rules
   xp: {
     perCorrect: 10,
@@ -107,14 +152,20 @@ function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
 }
 
+// Saved values win at every level, so a default added later still shows up inside an older saved
+// group (e.g. a new home section switch). Arrays and plain values are replaced as a whole.
+function mergeDeep(base: unknown, value: unknown): unknown {
+  if (!isObject(base) || !isObject(value)) return value;
+  const out: Record<string, unknown> = { ...base };
+  for (const [k, v] of Object.entries(value)) out[k] = k in base ? mergeDeep(base[k], v) : v;
+  return out;
+}
+
 // Cached per request so every component can call it freely.
 export const getSettings = cache(async (): Promise<Settings> => {
   const rows = await db.setting.findMany();
   const merged: Record<string, unknown> = structuredClone(DEFAULT_SETTINGS);
-  for (const { key, value } of rows) {
-    const base = merged[key];
-    merged[key] = isObject(base) && isObject(value) ? { ...base, ...value } : value;
-  }
+  for (const { key, value } of rows) merged[key] = key in merged ? mergeDeep(merged[key], value) : value;
   // The bot used to be called FlexCare; a name saved under that label now reads as MathMate.
   const bot = merged.chatbot as Settings["chatbot"];
   if (bot.name === "FlexCare") bot.name = "MathMate";

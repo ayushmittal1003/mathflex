@@ -881,3 +881,73 @@ export async function saveSettings(form: FormData) {
   refreshSite();
   redirect(mentorVideo.failed || callVideo.failed ? "/admin/settings?error=thumbnail" : "/admin/settings?saved=1");
 }
+
+// Admin → Home page: section switches, the header call button, the featured coupon and the home
+// copy. Saved as one "home" setting; live as soon as it's saved.
+export async function saveHomeContent(form: FormData) {
+  const me = await requireStaff("banners");
+  const cur = (await getSettings()).home;
+  const flags = <T extends Record<string, boolean>>(prefix: string, obj: T) => Object.fromEntries(Object.keys(obj).map((k) => [k, bool(form, `${prefix}.${k}`)])) as T;
+  const text = (k: keyof Settings["home"], max = 600) => str(form, k).slice(0, max) || (cur[k] as string);
+  const faqs: Settings["home"]["faqs"] = [];
+  for (let i = 0; i < 12; i++) {
+    const q = str(form, `faq.${i}.q`).slice(0, 200);
+    const a = String(form.get(`faq.${i}.a`) ?? "").replace(/\r/g, "").trim().slice(0, 1500);
+    if (q && a) faqs.push({ q, a });
+  }
+  const home: Settings["home"] = {
+    sections: flags("sections", cur.sections),
+    bookCallInHeader: bool(form, "bookCallInHeader"),
+    callPreticked: bool(form, "callPreticked"),
+    featuredCoupon: str(form, "featuredCoupon").toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 40),
+    mentorTitle: text("mentorTitle", 120),
+    mentorBio: text("mentorBio", 800),
+    problemEyebrow: text("problemEyebrow", 40),
+    problemTitle: text("problemTitle", 120),
+    problemLead: str(form, "problemLead").slice(0, 300),
+    coachingName: text("coachingName", 60),
+    coachingPrice: Math.max(1, int(form, "coachingPrice", cur.coachingPrice)),
+    coachingNote: str(form, "coachingNote").slice(0, 200),
+    problemConclusion: text("problemConclusion", 200),
+    howTitle: text("howTitle", 120),
+    howLead: str(form, "howLead").slice(0, 300),
+    compareKicker: str(form, "compareKicker").slice(0, 60),
+    compareTitle: text("compareTitle", 120),
+    compareColumns: flags("compareColumns", cur.compareColumns),
+    compareRows: flags("compareRows", cur.compareRows),
+    faqs: faqs.length ? faqs : cur.faqs,
+  };
+  await saveSetting("home", home);
+  const hidden = Object.entries(home.sections).filter(([, on]) => !on).map(([k]) => k);
+  await audit(me, "settings.update", `Saved the home page${hidden.length ? ` (hidden: ${hidden.join(", ")})` : ""}`, { entity: "settings" });
+  refreshSite();
+  redirect("/admin/home?saved=1");
+}
+
+const LEAD_STATUSES = ["NEW", "CONTACTED", "INTERESTED", "CONVERTED", "NOT_INTERESTED"] as const;
+
+// Admin → Leads: status and call notes for one enquiry.
+export async function updateLead(id: string, form: FormData) {
+  const me = await requireStaff("leads");
+  const status = str(form, "status") as (typeof LEAD_STATUSES)[number];
+  if (!LEAD_STATUSES.includes(status)) return;
+  const cur = await db.lead.findUnique({ where: { id }, select: { status: true, contactedAt: true, name: true } });
+  if (!cur) return;
+  await db.lead.update({
+    where: { id },
+    data: { status, notes: String(form.get("notes") ?? "").slice(0, 2000), ...(status !== "NEW" && !cur.contactedAt ? { contactedAt: new Date() } : {}) },
+  });
+  if (status !== cur.status) await audit(me, "lead.update", `Lead ${cur.name}: ${cur.status} → ${status}`, { entity: "lead", id });
+  revalidatePath("/admin/leads");
+}
+
+// Admin → Leads: the /enquiry page's switch and wording.
+export async function saveEnquirySettings(form: FormData) {
+  const me = await requireStaff("leads");
+  const cur = (await getSettings()).enquiry;
+  const t = (k: keyof Settings["enquiry"], max: number) => str(form, k).slice(0, max) || (cur[k] as string);
+  await saveSetting("enquiry", { enabled: bool(form, "enabled"), eyebrow: t("eyebrow", 40), title: t("title", 120), subtitle: t("subtitle", 300), promise: t("promise", 80) });
+  await audit(me, "settings.update", `Saved the enquiry page (${bool(form, "enabled") ? "on" : "off"})`, { entity: "settings" });
+  refreshSite();
+  redirect("/admin/leads?saved=1");
+}

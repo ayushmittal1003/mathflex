@@ -9,7 +9,7 @@ import { getSettings } from "@/lib/settings";
 import { computePartStates, hasChapterAccess } from "@/lib/access";
 import { getCatalog } from "@/lib/catalog";
 import { duration, inr, pctOff, validity } from "@/lib/format";
-import { chapterFaqs, instructor, instructorChapterLine, instructorNames } from "@/lib/site-content";
+import { chapterFaqs, instructor, instructorChapterLine, instructorNames, mentorProfile } from "@/lib/site-content";
 import { getPublicCoupon } from "@/components/site/web/data";
 import { WashHero } from "@/components/site/web/WashHero";
 import { CheckIcon, LockIcon, PlayIcon, posterBg } from "@/components/site/web/primitives";
@@ -379,7 +379,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
               <VideoFrame videoId={instructor.introVideoId} className="aspect-[16/10] w-full max-w-[360px] shrink-0 !border-4 tablet:w-[200px] [&_span]:!text-xs" />
               <div className="min-w-0 flex-[1_1_260px]">
                 <div className="text-xl font-extrabold tracking-[-0.02em]">{names.full}</div>
-                <div className="mt-0.5 text-sm text-muted-foreground">{instructor.title} · {instructor.studentsGuided} JEE aspirants mentored</div>
+                <div className="mt-0.5 text-sm text-muted-foreground">{mentorProfile(settings).title} · {instructor.studentsGuided} JEE aspirants mentored</div>
                 <p className="mt-2.5 text-[15px] leading-[1.6] text-secondary-foreground">{names.short} {instructorChapterLine}</p>
                 <Link href="/about" className="mt-1 inline-flex min-h-11 items-center tablet:pointer-fine:min-h-0 text-sm font-bold text-primary">More about {names.short} →</Link>
               </div>

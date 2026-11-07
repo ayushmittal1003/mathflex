@@ -5,6 +5,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, BookOpen, ListChecks, Layers, Ticket, Megaphone, Receipt, Users, PhoneCall, Bot, Settings, Menu, X, ExternalLink, Video,
   KeyRound, ShieldCheck, ScrollText, UserCog, Gift, BarChart3,
+  LayoutTemplate, Inbox,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
@@ -27,9 +28,11 @@ const NAV: { group: string; items: Item[] }[] = [
     { href: "/admin/flexcare", label: "MathMate chatbot", icon: Bot, perm: "flexcare" },
   ] },
   { group: "Commerce & marketing", items: [
+    { href: "/admin/leads", label: "Leads & enquiries", icon: Inbox, perm: "leads" },
     { href: "/admin/orders", label: "Orders & payments", icon: Receipt, perm: "orders" },
     { href: "/admin/coupons", label: "Coupons", icon: Ticket, perm: "coupons" },
     { href: "/admin/banners", label: "Banners & popups", icon: Megaphone, perm: "banners" },
+    { href: "/admin/home", label: "Home page", icon: LayoutTemplate, perm: "banners" },
   ] },
   { group: "Team & audit", items: [
     { href: "/admin/team", label: "Team & roles", icon: ShieldCheck, perm: "team" },

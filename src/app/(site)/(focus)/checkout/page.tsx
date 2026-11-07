@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { getCurrentUser } from "@/lib/auth";
 import { CartView, type CheckoutMeta } from "@/components/site/CartView";
-import { getCartMeta } from "@/components/site/web/data";
+import { getCartMeta, getPublicCoupon } from "@/components/site/web/data";
 import { instructorNames } from "@/lib/site-content";
 import { privateMetadata } from "@/lib/seo/metadata";
 
@@ -22,7 +22,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     }),
     db.course.findMany({ where: { isPublished: true }, orderBy: { sortOrder: "asc" }, select: { id: true, title: true, price: true, chapters: { select: { chapterId: true } } } }),
   ]);
-  const cartMeta = await getCartMeta();
+  const [cartMeta, suggestedCoupon] = await Promise.all([getCartMeta(), getPublicCoupon(s)]);
   const meta: CheckoutMeta = {
     chapters: Object.fromEntries(chapters.map((c) => [c.id, { title: c.title, symbol: c.symbol, coverFrom: c.coverFrom, coverTo: c.coverTo, coverImage: c.coverImage, classLevel: c.classLevel, parts: c._count.parts, price: c.price, mrp: c.mrp }])),
     courses: courses.map((c) => ({ id: c.id, title: c.title, price: c.price, chapterIds: c.chapters.map((x) => x.chapterId), count: c.chapters.length })),
@@ -31,8 +31,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   };
   return (
     <CartView
-      mentorship={{ enabled: s.features.mentorshipUpsell, price: s.mentorshipPrice, title: s.mentorshipTitle, blurb: s.mentorshipBlurb, mentor: instructorNames(s).full }}
+      mentorship={{ enabled: s.features.mentorshipUpsell, price: s.mentorshipPrice, title: s.mentorshipTitle, blurb: s.mentorshipBlurb, mentor: instructorNames(s).full, preticked: s.home.callPreticked }}
       couponsEnabled={s.features.coupons}
+      suggestedCoupon={suggestedCoupon}
       initialMentorship={mentorship === "1" ? true : mentorship === "0" ? false : null}
       loggedIn={!!user}
       meta={meta}
