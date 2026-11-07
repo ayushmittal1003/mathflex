@@ -17,8 +17,9 @@ const Lead = z.object({
   callTime: z.enum(["MORNING", "AFTERNOON", "EVENING", ""]).default(""),
   message: z.string().max(500).default(""),
   consent: z.literal(true, { error: "Please allow us to call you." }),
-  // Hidden from people; bots fill it in.
-  website: z.string().max(0).optional(),
+  // Milliseconds from opening the form to sending it. People take several seconds over four
+  // steps; scripts post instantly. (A hidden trap field was dropped: browser autofill filled it.)
+  elapsedMs: z.number().int().nonnegative().max(86_400_000).optional(),
   source: z.object({
     utmSource: z.string().max(100).optional(),
     utmMedium: z.string().max(100).optional(),
@@ -38,11 +39,12 @@ export async function submitEnquiry(input: unknown): Promise<EnquiryResult> {
   if (!settings.enquiry.enabled) return { ok: false, error: "Enquiries are closed right now. Please WhatsApp us instead." };
   const parsed = Lead.safeParse(input);
   if (!parsed.success) {
-    const issue = parsed.error.issues[0];
-    return { ok: false, error: issue?.message ?? "Please check the form.", field: String(issue?.path[0] ?? "") };
+    // Only our own messages reach the student; anything else gets a plain one.
+    const issue = parsed.error.issues.find((i) => ["name", "phone", "email", "consent"].includes(String(i.path[0])));
+    return issue ? { ok: false, error: issue.message, field: String(issue.path[0]) } : { ok: false, error: "Something went wrong. Please try again." };
   }
   const d = parsed.data;
-  if (d.website) return { ok: true, leadId: "ok" }; // quietly drop bots
+  if (d.elapsedMs !== undefined && d.elapsedMs < 2500) return { ok: true, leadId: "ok" }; // quietly drop bots
   if (!(await allow(`enquiry:ip:${await clientIp()}`, 8, 3600))) return { ok: false, error: "Too many enquiries from this network. Please try again later or WhatsApp us." };
 
   const phone = `+91${d.phone}`;

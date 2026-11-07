@@ -61,15 +61,15 @@ export function EnquiryForm({ promise, whatsapp }: { promise: string; whatsapp: 
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [callTime, setCallTime] = useState<CallTime>("");
-  const [website, setWebsite] = useState(""); // honeypot
   const [error, setError] = useState<{ text: string; field?: string } | null>(null);
   const [done, setDone] = useState(false);
   const [sending, start] = useTransition();
   const source = useRef<ReturnType<typeof readSource>>({});
   const heading = useRef<HTMLHeadingElement>(null);
   const started = useRef(false);
+  const openedAt = useRef(0);
 
-  useEffect(() => { source.current = readSource(); }, []);
+  useEffect(() => { source.current = readSource(); openedAt.current = Date.now(); }, []);
   // Move focus to each new question so keyboard and screen-reader users follow along.
   useEffect(() => { if (started.current) heading.current?.focus({ preventScroll: true }); }, [step, done]);
 
@@ -92,7 +92,7 @@ export function EnquiryForm({ promise, whatsapp }: { promise: string; whatsapp: 
     if (!emailOk) return setError({ text: "Enter a valid email address.", field: "email" });
     setError(null);
     start(async () => {
-      const res = await submitEnquiry({ name, phone, email, classLevel, goal, weakAreas: areas, callTime, consent: true, website, source: source.current }).catch(() => null);
+      const res = await submitEnquiry({ name, phone, email, classLevel, goal, weakAreas: areas, callTime, consent: true, elapsedMs: Math.max(0, Date.now() - openedAt.current), source: source.current }).catch(() => null);
       if (!res) return setError({ text: "Couldn't send. Check your connection and try again." });
       if (!res.ok) return setError({ text: res.error, field: res.field });
       metaTrack("Lead", { content_name: "Enquiry form", content_category: classLevel }, leadEventId(res.leadId));
@@ -252,8 +252,6 @@ export function EnquiryForm({ promise, whatsapp }: { promise: string; whatsapp: 
                   ))}
                 </div>
               </div>
-              {/* Bots fill this in; people never see it. */}
-              <input value={website} onChange={(e) => setWebsite(e.target.value)} name="website" tabIndex={-1} autoComplete="off" aria-hidden className="absolute -left-[9999px] size-px opacity-0" />
             </div>
             {error && <p role="alert" className="mt-4 rounded-lg bg-bad/10 p-3 text-sm font-semibold text-bad">{error.text}</p>}
             <button type="submit" disabled={sending} className="mt-6 flex h-[54px] w-full items-center justify-center gap-2 rounded-lg bg-primary text-base font-bold text-primary-foreground shadow-cta transition hover:brightness-106 disabled:opacity-70">
