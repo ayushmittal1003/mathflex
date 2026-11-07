@@ -6,16 +6,47 @@ import { CheckIcon, LockIcon, Marked, PlayIcon, SectionHead, posterBg } from "..
 import { cx } from "../ui";
 import { clock, type HomeChapter } from "./types";
 
-// 05 How a chapter works: four clickable steps beside a framed demo of the step. While the
-// section is on screen the steps advance by themselves; tapping one stops that. The demo uses a
-// real chapter's parts and question counts; progress, XP and streak numbers are illustrative.
+// 05 How a chapter works: four steps beside a framed demo of the step.
+// Desktop: the block pins in place and scrolling moves through the steps (each step is 30% of a
+// screen of scrolling, so there are no empty gaps); clicking a step scrolls to it.
+// Phones (no room to pin both): the steps advance by themselves while on screen; a tap stops that.
+// The demo uses a real chapter's parts and question counts; progress, XP and streak are illustrative.
 const STEP_MS = 4500;
+const PIN = "(min-width: 900px)";
 
 export function HowItWorks({ chapter, practice, title = "Every chapter plays like a *series*.", lead }: { chapter: HomeChapter | null; practice: { dpp: number; pyq: number } | null; title?: string; lead?: string }) {
   const [step, setStep] = useState(0);
   const [auto, setAuto] = useState(true);
   const [inView, setInView] = useState(false);
+  const [pinned, setPinned] = useState(false);
   const ref = useRef<HTMLElement>(null);
+  const track = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia(PIN);
+    const on = () => setPinned(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+
+  // Pinned: the step follows how far the page has scrolled through the track.
+  useEffect(() => {
+    if (!pinned) return;
+    const onScroll = () => {
+      const el = track.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const total = r.height - window.innerHeight;
+      if (total <= 0) return;
+      const progress = Math.min(0.999, Math.max(0, -r.top / total));
+      setStep(Math.floor(progress * howSteps.length));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+  }, [pinned]);
 
   useEffect(() => {
     const el = ref.current;
@@ -25,13 +56,24 @@ export function HowItWorks({ chapter, practice, title = "Every chapter plays lik
     return () => io.disconnect();
   }, []);
 
+  // Phones: play through the steps by themselves.
   useEffect(() => {
-    if (!auto || !inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (pinned || !auto || !inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const t = setTimeout(() => setStep((s) => (s + 1) % howSteps.length), STEP_MS);
     return () => clearTimeout(t);
-  }, [auto, inView, step]);
+  }, [pinned, auto, inView, step]);
 
-  const pick = (i: number) => { setAuto(false); setStep(i); };
+  const pick = (i: number) => {
+    const el = track.current;
+    if (pinned && el) {
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      const total = el.offsetHeight - window.innerHeight;
+      window.scrollTo({ top: top + ((i + 0.5) / howSteps.length) * total, behavior: "smooth" });
+      return;
+    }
+    setAuto(false);
+    setStep(i);
+  };
 
   if (!chapter || chapter.parts.length === 0) return null;
   const [p1, p2, p3] = chapter.parts;
@@ -41,7 +83,9 @@ export function HowItWorks({ chapter, practice, title = "Every chapter plays lik
   return (
     <section ref={ref} id="how" className="py-9 tablet:py-14">
       <SectionHead eyebrow="How a chapter works" dot="xp" title={<Marked text={title} />} lead={lead} />
-      <div className="mx-auto mt-10 grid w-[min(1120px,calc(100%-var(--gutter)*2))] items-center gap-x-10 gap-y-6 tablet:mt-12 min-[900px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)]">
+      <div ref={track} className="mt-10 tablet:mt-12 min-[900px]:h-[calc(100vh+120vh)]">
+      <div className="min-[900px]:sticky min-[900px]:top-[max(84px,calc(50vh-290px))]">
+      <div className="mx-auto grid w-[min(1120px,calc(100%-var(--gutter)*2))] items-center gap-x-10 gap-y-6 min-[900px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)]">
         <ol className="grid gap-2" role="tablist" aria-label="How a chapter works">
           {howSteps.map((s, i) => {
             const on = i === step;
@@ -64,7 +108,7 @@ export function HowItWorks({ chapter, practice, title = "Every chapter plays lik
                     </span>
                   </span>
                   {/* Time until the next step while it plays by itself. */}
-                  {on && auto && inView && <span key={step} aria-hidden className="absolute inset-x-0 bottom-0 h-[3px] origin-left animate-[mf-grow_4.5s_linear_forwards] bg-primary" />}
+                  {on && !pinned && auto && inView && <span key={step} aria-hidden className="absolute inset-x-0 bottom-0 h-[3px] origin-left animate-[mf-grow_4.5s_linear_forwards] bg-primary" />}
                 </button>
               </li>
             );
@@ -229,6 +273,8 @@ export function HowItWorks({ chapter, practice, title = "Every chapter plays lik
             )}
           </div>
         </div>
+      </div>
+      </div>
       </div>
     </section>
   );

@@ -121,9 +121,9 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
           </button>
 
           <div className="hidden items-center gap-2 lg:flex">
-            {features.bookCall && <BookCallLink className={button.sm} />}
             {user ? (
               <>
+                {features.bookCall && <BookCallLink className={button.sm} />}
                 <Link href="/my-learning" aria-label={`${user.streak}-day streak, ${user.xp} XP`} className={cx("hidden h-11 items-center gap-3 rounded-lg px-3.5 text-sm font-extrabold xl:flex", secondary)}>
                   <span className="text-brand-2">🔥 {user.streak}</span>
                   <span className="text-xp">⚡ {user.xp.toLocaleString("en-IN")}</span>
@@ -149,12 +149,11 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
             ) : (
               <>
                 <Link href="/login" data-tour="login" className={cx(button.sm, secondary)}>Log in</Link>
-                <Link href="/signup" className={cx(button.sm, tone.primary)}>Start free</Link>
+                {features.bookCall && <BookCallLink className={button.sm} />}
               </>
             )}
           </div>
 
-          {features.bookCall && <BookCallLink short className="h-11 px-3 text-[13px] max-[479px]:w-11 max-[479px]:px-0 lg:hidden" />}
           {/* Phones: account button (the rest lives in the bottom bar's More sheet). */}
           {user ? (
             <button type="button" onClick={() => setMoreOpen(true)} aria-label="Account menu" className="grid size-11 place-items-center rounded-full text-sm font-bold text-white ring-2 ring-white tablet:hidden" style={{ background: user.avatarColor }}>
@@ -163,6 +162,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
           ) : (
             <Link href="/login" data-tour="login" className={cx(button.sm, secondary, "h-11 tablet:hidden")}>Log in</Link>
           )}
+          {features.bookCall && <BookCallLink short className="h-11 px-3 text-[13px] max-[479px]:w-11 max-[479px]:px-0 lg:hidden" />}
 
           <button
             type="button"
@@ -199,7 +199,7 @@ export function SiteNav({ user, features, contact }: { user: SiteNavUser; featur
           {!user && (
             <div className="flex gap-2 px-0.5 pb-0.5 pt-2.5">
               <Link href="/login" className="flex-1 rounded-lg bg-white/12 p-3.5 text-center font-bold">Log in</Link>
-              <Link href="/signup" className="flex-1 rounded-lg bg-primary p-3.5 text-center font-bold text-primary-foreground">Start free</Link>
+              {features.bookCall && <Link href="/book-a-call" className="flex-1 rounded-lg bg-primary p-3.5 text-center font-bold text-primary-foreground">Book 1:1 call</Link>}
             </div>
           )}
         </div>
@@ -348,7 +348,7 @@ function MoreSheet({ user, features, contact, onClose }: { user: SiteNavUser; fe
             <div className="text-lg font-extrabold tracking-[-0.02em]">Learn JEE maths, chapter by chapter</div>
             <div className="mt-3 flex gap-2">
               <Link href="/login" className={cx(button.md, "flex-1 border border-border bg-card text-foreground")}>Log in</Link>
-              <Link href="/signup" className={cx(button.md, tone.primary, "flex-1")}>Start free</Link>
+              {features.bookCall && <Link href="/book-a-call" className={cx(button.md, tone.primary, "flex-1")}>Book 1:1 call</Link>}
             </div>
           </div>
         )}
@@ -379,12 +379,13 @@ function CartCount() {
   return n ? <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-white">{n} item{n === 1 ? "" : "s"}</span> : <span className="text-sm font-semibold text-muted-foreground">Empty</span>;
 }
 
-// "Book a call" next to Log in (Admin → Home page switches it). Phones get the shorter label.
+// "Book 1:1 call" next to Log in, as the header's one solid brand button (Admin → Home page
+// switches it). On narrow phones it shrinks to its icon.
 function BookCallLink({ className, short = false }: { className?: string; short?: boolean }) {
   return (
-    <Link href="/book-a-call" aria-label="Book a 1:1 call" data-track="Header book a call" className={cx("inline-flex items-center justify-center gap-1.5 rounded-lg border-2 border-primary bg-card font-bold text-primary transition hover:bg-primary hover:text-primary-foreground", className)}>
+    <Link href="/book-a-call" aria-label="Book a 1:1 call" data-track="Header book a call" className={cx("inline-flex items-center justify-center gap-1.5 rounded-lg font-bold transition", tone.primary, className)}>
       <CalendarClock className="size-4 shrink-0" aria-hidden />
-      {short ? <span className="max-[479px]:hidden">Book a call</span> : "Book a call"}
+      {short ? <span className="max-[479px]:hidden">Book 1:1 call</span> : "Book 1:1 call"}
     </Link>
   );
 }
