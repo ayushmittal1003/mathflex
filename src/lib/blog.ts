@@ -31,6 +31,7 @@ export type BlogBlock =
   | { _type: "list"; items: string[]; ordered?: boolean; itemSpans?: Span[][] }
   | { _type: "image"; url: string; alt: string; caption?: string; width?: number; height?: number }
   | { _type: "code"; code: string; language?: string; filename?: string }
+  | { _type: "table"; head: string[]; rows: string[][]; caption?: string }
   | { _type: "math"; latex: string }
   | { _type: "tip"; title: string; text: string }
   | { _type: "steps"; items: { label: string; title: string; text: string }[] }

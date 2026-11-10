@@ -16,7 +16,8 @@ type PtBlock = {
 type PtImage = { _type: "image"; url?: string | null; alt?: string; caption?: string; width?: number | null; height?: number | null };
 type PtCode = { _type: "code"; code?: string; language?: string; filename?: string };
 type PtMath = { _type: "math"; latex?: string };
-export type PtNode = PtBlock | PtImage | PtCode | PtMath | { _type: string };
+type PtTable = { _type: "table"; caption?: string; rows?: { cells?: string[] }[] };
+export type PtNode = PtBlock | PtImage | PtCode | PtMath | PtTable | { _type: string };
 
 const SAFE_HREF = /^(https?:\/\/|mailto:|\/(?!\/))/i;
 
@@ -87,6 +88,10 @@ export function portableTextToBlocks(nodes: PtNode[] | null | undefined): BlogBl
     } else if (node._type === "code") {
       const c = node as PtCode;
       if (c.code) blocks.push({ _type: "code", code: c.code, language: c.language, filename: c.filename });
+    } else if (node._type === "table") {
+      const t = node as PtTable;
+      const [head, ...rows] = (t.rows ?? []).map((r) => (r.cells ?? []).map((c) => c ?? ""));
+      if (head?.length && rows.length) blocks.push({ _type: "table", head, rows, caption: t.caption });
     } else if (node._type === "math") {
       const m = node as PtMath;
       if (m.latex) blocks.push({ _type: "math", latex: m.latex });

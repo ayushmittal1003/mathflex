@@ -75,6 +75,34 @@ export const blockContent = defineType({
       preview: { select: { title: "filename", subtitle: "language", code: "code" }, prepare: ({ title, subtitle, code }) => ({ title: title || code?.split("\n")[0] || "Code", subtitle }) },
     }),
     defineArrayMember({
+      name: "table",
+      title: "Table",
+      type: "object",
+      fields: [
+        defineField({ name: "caption", type: "string", description: "Optional. Short description shown under the table and read by screen readers." }),
+        defineField({
+          name: "rows",
+          type: "array",
+          description: "The first row is the header. Every row should have the same number of cells.",
+          of: [
+            defineArrayMember({
+              name: "tableRow",
+              type: "object",
+              fields: [defineField({ name: "cells", type: "array", of: [{ type: "string" }], validation: (r) => r.required().min(1) })],
+              preview: { select: { cells: "cells" }, prepare: ({ cells }) => ({ title: (cells ?? []).join("  |  ") }) },
+            }),
+          ],
+          validation: (r) =>
+            r.required().min(2).custom((value) => {
+              const rows = (value ?? []) as { cells?: string[] }[];
+              const widths = new Set(rows.map((row) => row.cells?.length ?? 0));
+              return widths.size <= 1 ? true : "Every row needs the same number of cells.";
+            }),
+        }),
+      ],
+      preview: { select: { rows: "rows", caption: "caption" }, prepare: ({ rows, caption }) => ({ title: caption || "Table", subtitle: `${rows?.length ?? 0} rows` }) },
+    }),
+    defineArrayMember({
       name: "math",
       title: "Maths block",
       type: "object",

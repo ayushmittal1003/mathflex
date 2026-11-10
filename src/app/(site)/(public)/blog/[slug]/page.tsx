@@ -233,6 +233,27 @@ function Block({ b, chapters }: { b: BlogBlock; chapters: Map<string, InlineChap
           <pre className="overflow-x-auto p-4 text-[15px] leading-[1.6] text-foreground"><code className="font-mono">{b.code}</code></pre>
         </figure>
       );
+    case "table":
+      // Scrolls inside its own box on narrow screens, so the page itself never scrolls sideways.
+      return (
+        <figure className="mt-8">
+          <div role="region" aria-label={b.caption || "Table"} tabIndex={0} className="overflow-x-auto rounded-xl border border-border focus-visible:outline-2 focus-visible:outline-ring">
+            <table className="w-full min-w-[560px] border-collapse text-left text-[15px] leading-[1.5]">
+              <thead className="bg-muted text-foreground">
+                <tr>{b.head.map((h, i) => <th key={i} scope="col" className="px-4 py-3 font-extrabold">{h || <span className="sr-only">Topic</span>}</th>)}</tr>
+              </thead>
+              <tbody>
+                {b.rows.map((r, i) => (
+                  <tr key={i} className="border-t border-border align-top">
+                    {r.map((c, j) => (j === 0 ? <th key={j} scope="row" className="px-4 py-3 font-bold text-foreground">{c}</th> : <td key={j} className="px-4 py-3">{c}</td>))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {b.caption && <figcaption className="mt-2 text-sm text-muted-foreground">{b.caption}</figcaption>}
+        </figure>
+      );
     case "math":
       return <div className="mt-8 overflow-x-auto text-foreground" dangerouslySetInnerHTML={{ __html: renderMath(b.latex, true) }} />;
     case "tip":
