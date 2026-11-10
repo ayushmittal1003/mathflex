@@ -11,7 +11,8 @@ Every new or changed public page must follow this file. It describes what the co
 | `/chapter/[slug]` | yes, only when published | yes (`lastModified` = `updatedAt`) | Course + BreadcrumbList | Unpublished: 404 for the public |
 | `/courses/[slug]` | yes, only when published | yes | Course (+ breadcrumb) | |
 | `/pricing`, `/about`, `/contact`, `/faq`, `/book-a-call`, `/privacy`, `/terms`, `/refund-policy` | yes | yes | none | |
-| `/blog`, `/blog/[slug]` | **only real posts** | real posts only | BreadcrumbList on real posts | Posts with `placeholder: true` in `src/lib/blog.ts` are `noindex` and out of the sitemap automatically |
+| `/blog`, `/blog/[slug]` | **only real posts** | real posts only (`lastModified` = `updatedAt`, else `publishedAt`) | BreadcrumbList + BlogPosting on real posts | Real posts come from Sanity (`getPosts()` / `getPost()` in `src/lib/blog.ts`). Sample posts (`placeholder: true`) are `noindex`, out of the sitemap and only shown while Sanity has no published posts. `/blog` is `noindex` until one real post exists |
+| `/studio` | no | no | none | Sanity Studio. Outside the public layout, `noindex` (from `next-sanity/studio`) **and** `Disallow: /studio` in `robots.ts`. Deliberate exception to the "never block and noindex together" rule below: it is a private tool that is never linked, so there is nothing to un-index |
 | `/free-practice` | **no, for now** | no | none | Hard-coded `noindex: true` in its `page.tsx` |
 | `/leaderboard`, `/login`, `/signup`, `/my-learning`, `/profile`, `/plans`, `/practice*`, `/learn/*`, `/checkout`, `/cart`, `/payment/*`, `/invite/*` | no (`noindex, follow`) | no | none | Use `privateMetadata()`. **Never block these in robots.txt**: a blocked page can't show its noindex |
 | `/admin` | no | no | none | `robots.txt` disallows it. The `X-Robots-Tag` header still has to be added in config (Ayush list) |
@@ -45,14 +46,14 @@ Rendered by `<JsonLd />` (server component, escapes `<`). Only on indexable page
 | `/chapters`, `/courses` | ItemList |
 | `/about` | ProfilePage + Person (name, jobTitle "JEE Maths Mentor", `alumniOf` IIT Delhi, `hasCredential` B.Tech in Civil Engineering, `sameAs`); values must match the visible mentor section. `image` is added automatically once `instructor.photo` is set |
 | Chapter, course | Course (provider, Offer in INR, `hasCourseInstance` online, `inLanguage` en-IN, `teaches` from real topics, instructor on `hasCourseInstance` = the same Person `@id`) + BreadcrumbList |
-| Real blog post | BreadcrumbList (add Article only with a real author and dates) |
+| Real blog post | BreadcrumbList + BlogPosting (headline, description, cover image, `datePublished`, `dateModified` = `updatedAt` or `publishedAt`, the post's real author as Person, publisher = the Organization). Sample posts get neither |
 
 Not used, on purpose: FAQPage / HowTo / Course-info rich-result markup (retired or restricted by Google), self-serving `AggregateRating` or reviews, markup on `noindex` pages, any claim not shown on the page. Validate new markup with the Rich Results Test and the Schema.org validator.
 
 ## 4. Sitemap logic (`src/app/sitemap.ts`)
 
 - `force-dynamic`: one small DB read per request, always fresh.
-- Static paths + published chapters + published courses + non-placeholder blog posts (`/blog` itself only when at least one real post exists).
+- Static paths + published chapters + published courses + non-placeholder blog posts (`/blog` itself only when at least one real post exists). `lastModified` for a post is its Sanity `updatedAt`, falling back to `publishedAt`.
 - `lastModified` is the real `updatedAt` of the item. If a model has no `updatedAt`, omit the field.
 - Same publish filters as the public pages. Unpublished, draft and placeholder items never appear.
 - Add new static public pages to the static list. Add new dynamic page types as a new query, with the same filter as the page itself.
@@ -82,10 +83,11 @@ For whoever publishes chapters, courses and blog posts in admin:
 - [ ] Credential wording is exactly "IIT Delhi alumnus" (see section 2); no unconfirmed claims, results or ratings
 - [ ] Prices, validity and what's included are accurate
 - [ ] Publish only when the page is complete: unpublished items stay out of the site and the sitemap
-- [ ] Cover images have meaningful alt text (when the field exists)
+- [ ] Cover and body images have meaningful alt text (Sanity requires it)
 - [ ] Changing a slug breaks old links: do not rename a live slug without a redirect (slug history is on the Ayush list)
 - [ ] Banner and marquee text uses the current wording ("free 3–4 minute preview")
-- [ ] **Blog and free practice:** real posts and the real free-practice set must be switched on when they go live (see section 8)
+- [ ] **Blog posts (Sanity Studio, `/studio`):** pick a real author with a confirmed credential, fill the excerpt (plain sentences), set `updatedAt` when you change a post meaningfully, keep `seoTitle` ≤ 60 and `seoDescription` ≤ 160 (or leave empty), never edit a live slug
+- [ ] **Free practice:** the real free-practice set must be switched on when it goes live (see section 8)
 
 ## 7. Deprecated and avoided tactics
 
@@ -93,7 +95,7 @@ Do not add or reintroduce: meta keywords; FAQPage, HowTo or Course-info rich-res
 
 ## 8. Reminder: placeholders must be switched on when real content goes live
 
-- **Blog:** all current posts in `src/lib/blog.ts` are sample content flagged `placeholder: true`, so they are `noindex` and not in the sitemap. When the real posts come from Sanity, remove the flag post by post (or replace the data source). The listing, sitemap and breadcrumb schema switch on automatically once a real post exists.
+- **Blog:** the posts in `PLACEHOLDER_POSTS` (`src/lib/blog.ts`) are sample content flagged `placeholder: true`, so they are `noindex` and not in the sitemap. They show only while Sanity has no published posts. As soon as one real post is published in Sanity, the blog shows real posts only, the `/blog` listing turns indexable (`noindex: posts.every(p => p.placeholder)`), and the sitemap, breadcrumb and BlogPosting schema switch on automatically. Delete `PLACEHOLDER_POSTS` once the blog is established.
 - **/free-practice:** hard-coded `noindex: true` in `src/app/(site)/(public)/free-practice/page.tsx`. When the real question set is live, remove it and add the page to `sitemap.ts`.
 - Check both in the next SEO review after launch.
 

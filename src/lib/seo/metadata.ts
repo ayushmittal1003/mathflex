@@ -22,20 +22,28 @@ type Input = {
   absoluteTitle?: boolean;
   // false when the route has its own opengraph-image file (chapter, course).
   defaultImage?: boolean;
+  // Article pages: the post's own cover (absolute or root-relative URL) replaces the default image.
+  image?: string | null;
+  publishedTime?: string;
+  modifiedTime?: string;
 };
 
 // Metadata for a public page. The canonical never carries a query string, so filtered or
 // sorted listing URLs all point back at the clean one. Setting openGraph here replaces the
 // site-wide one, so the default social image is added explicitly unless the route has its own.
-export function buildMetadata({ title, description, path, type = "website", noindex, absoluteTitle, defaultImage = true }: Input): Metadata {
+export function buildMetadata({ title, description, path, type = "website", noindex, absoluteTitle, defaultImage = true, image, publishedTime, modifiedTime }: Input): Metadata {
   const t = truncate(title, 60);
   const d = truncate(description || DEFAULT_DESCRIPTION, 160);
   return {
     title: absoluteTitle ? { absolute: t } : t,
     description: d,
     alternates: { canonical: path },
-    openGraph: { title: t, description: d, url: path, siteName: SITE_NAME, locale: LOCALE, type, ...(defaultImage ? { images: ["/opengraph-image"] } : {}) },
-    twitter: { card: "summary_large_image", title: t, description: d },
+    openGraph: {
+      title: t, description: d, url: path, siteName: SITE_NAME, locale: LOCALE, type,
+      ...(type === "article" ? { ...(publishedTime ? { publishedTime } : {}), ...(modifiedTime ? { modifiedTime } : {}) } : {}),
+      ...(image ? { images: [image] } : defaultImage ? { images: ["/opengraph-image"] } : {}),
+    },
+    twitter: { card: "summary_large_image", title: t, description: d, ...(image ? { images: [image] } : {}) },
     ...(noindex ? { robots: { index: false, follow: true } } : {}),
   };
 }

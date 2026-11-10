@@ -24,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...courses.map((c) => ({ url: absoluteUrl(`/courses/${c.slug}`) })),
     // Sample posts (placeholder: true) are noindexed, so they are left out. /blog and
     // /free-practice join once real content exists.
-    ...posts.filter((p) => !p.placeholder).map((p) => ({ url: absoluteUrl(`/blog/${p.slug}`), lastModified: p.publishedAt })),
+    ...posts.filter((p) => !p.placeholder).map((p) => ({ url: absoluteUrl(`/blog/${p.slug}`), lastModified: p.updatedAt ?? p.publishedAt })),
     ...(posts.some((p) => !p.placeholder) ? [{ url: absoluteUrl("/blog") }] : []),
   ];
 }

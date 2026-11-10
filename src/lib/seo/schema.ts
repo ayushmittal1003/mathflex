@@ -95,3 +95,36 @@ export function breadcrumbs(items: { name: string; path: string }[]): Json {
     itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, item: absoluteUrl(it.path) })),
   };
 }
+
+// A real blog post. Only for posts that come from Sanity with a real author and dates; every value
+// is visible on the page (headline, byline, dates, cover).
+export function blogPosting(p: {
+  path: string;
+  headline: string;
+  description: string;
+  image?: string | null;
+  datePublished: string;
+  dateModified?: string;
+  author: { name: string; jobTitle?: string; url?: string; image?: string | null; sameAs?: string[] };
+}): Json {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    mainEntityOfPage: { "@type": "WebPage", "@id": absoluteUrl(p.path) },
+    headline: p.headline,
+    description: p.description,
+    ...(p.image ? { image: [p.image] } : {}),
+    datePublished: p.datePublished,
+    dateModified: p.dateModified ?? p.datePublished,
+    inLanguage: "en-IN",
+    author: {
+      "@type": "Person",
+      name: p.author.name,
+      ...(p.author.jobTitle ? { jobTitle: p.author.jobTitle } : {}),
+      ...(p.author.url ? { url: p.author.url } : {}),
+      ...(p.author.image ? { image: p.author.image } : {}),
+      ...(p.author.sameAs?.length ? { sameAs: p.author.sameAs } : {}),
+    },
+    publisher: { "@type": "Organization", "@id": ORG_ID, name: SITE_NAME },
+  };
+}

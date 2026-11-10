@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { BLOG_CATEGORIES, type BlogPost } from "@/lib/blog";
+import { categoriesOf, type BlogPost } from "@/lib/blog";
 import { BlogCard } from "./BlogCard";
 import { button, container, cx, tone } from "../ui";
 
@@ -10,7 +10,7 @@ export function BlogBrowser({ posts }: { posts: BlogPost[] }) {
   const [cat, setCat] = useState("all");
   const [q, setQ] = useState("");
 
-  const cats = BLOG_CATEGORIES.filter((c) => posts.some((p) => p.category === c.slug));
+  const cats = useMemo(() => categoriesOf(posts), [posts]);
   const query = q.trim().toLowerCase();
   const filtered = useMemo(
     () =>
