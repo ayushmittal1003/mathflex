@@ -1,0 +1,75 @@
+import { defineField, defineType } from "sanity";
+
+export const post = defineType({
+  name: "post",
+  title: "Post",
+  type: "document",
+  fields: [
+    defineField({ name: "title", type: "string", validation: (r) => r.required().max(110) }),
+    defineField({
+      name: "slug",
+      type: "slug",
+      options: { source: "title", maxLength: 80 },
+      description: "Part of the post's URL. Do not change it after publishing: the old link would break.",
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: "excerpt",
+      type: "text",
+      rows: 3,
+      description: "One or two plain sentences shown on cards and under the title.",
+      validation: (r) => r.required().max(220),
+    }),
+    defineField({
+      name: "coverImage",
+      title: "Cover image",
+      type: "image",
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alt text",
+          type: "string",
+          description: "Describe the image for screen readers and search.",
+          validation: (r) => r.required(),
+        }),
+      ],
+      validation: (r) => r.required(),
+    }),
+    defineField({ name: "author", type: "reference", to: [{ type: "author" }], validation: (r) => r.required() }),
+    defineField({
+      name: "categories",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "category" }] }],
+      description: "The first category is the one shown on the card.",
+      validation: (r) => r.required().min(1).unique(),
+    }),
+    defineField({
+      name: "publishedAt",
+      title: "Published at",
+      type: "datetime",
+      description: "A future date keeps the post hidden until then.",
+      initialValue: () => new Date().toISOString(),
+      validation: (r) => r.required(),
+    }),
+    defineField({ name: "updatedAt", title: "Updated at", type: "datetime", description: "Set when you make a meaningful change. Shown as the page's last-updated date." }),
+    defineField({ name: "body", type: "blockContent", validation: (r) => r.required() }),
+    defineField({
+      name: "seoTitle",
+      title: "SEO title",
+      type: "string",
+      description: "Optional. Up to 60 characters. Leave empty to use the post title.",
+      validation: (r) => r.max(60).warning("Titles over 60 characters get cut off in search results."),
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "SEO description",
+      type: "text",
+      rows: 2,
+      description: "Optional. Up to 160 characters. Leave empty to use the excerpt.",
+      validation: (r) => r.max(160).warning("Descriptions over 160 characters get cut off in search results."),
+    }),
+  ],
+  orderings: [{ title: "Newest first", name: "publishedAtDesc", by: [{ field: "publishedAt", direction: "desc" }] }],
+  preview: { select: { title: "title", subtitle: "author.name", media: "coverImage" } },
+});

@@ -1,9 +1,13 @@
 // Blog content source.
 //
-// PLACEHOLDER: every post below is sample content so the blog design can be reviewed. The
-// plan is to publish posts from Sanity Studio; when that's connected, replace the bodies of
-// getPosts() and getPost() with Sanity queries that return the same BlogPost shape, and
-// delete PLACEHOLDER_POSTS. The pages don't need to change.
+// Real posts are published in Sanity Studio (/studio) and read by getPosts() / getPost().
+// PLACEHOLDER_POSTS below are sample content (placeholder: true): they are noindex and out of
+// the sitemap, and are only shown while Sanity is unconfigured, unreachable or has no
+// published posts. Delete them once the real blog is established.
+import { sanityConfigured } from "@/lib/sanity/env";
+import { sanityClient } from "@/lib/sanity/client";
+import { POSTS_QUERY, POST_QUERY } from "@/lib/sanity/queries";
+import { portableTextToBlocks, readMinutes, type PtNode } from "@/lib/sanity/portable-text";
 
 export type BlogCategory = { slug: string; title: string };
 
@@ -15,11 +19,20 @@ export const BLOG_CATEGORIES: BlogCategory[] = [
   { slug: "mathflex-news", title: "Mathflex news" },
 ];
 
-// Body blocks (maps to Sanity Portable Text plus a few custom block types).
+// Inline formatting for Sanity posts. `math` is inline LaTeX.
+export type Span = { text: string; strong?: boolean; em?: boolean; code?: boolean; href?: string; math?: string };
+
+// Body blocks. Sanity Portable Text is converted to these in lib/sanity/portable-text.ts.
 export type BlogBlock =
-  | { _type: "p"; text: string } // supports **bold**
+  | { _type: "p"; text: string; spans?: Span[] } // text supports **bold**; spans (Sanity) take precedence
   | { _type: "h2"; id: string; text: string }
-  | { _type: "list"; items: string[] }
+  | { _type: "h3"; id: string; text: string }
+  | { _type: "quote"; text: string; spans?: Span[] }
+  | { _type: "list"; items: string[]; ordered?: boolean; itemSpans?: Span[][] }
+  | { _type: "image"; url: string; alt: string; caption?: string; width?: number; height?: number }
+  | { _type: "code"; code: string; language?: string; filename?: string }
+  | { _type: "table"; head: string[]; rows: string[][]; caption?: string }
+  | { _type: "math"; latex: string }
   | { _type: "tip"; title: string; text: string }
   | { _type: "steps"; items: { label: string; title: string; text: string }[] }
   | { _type: "chapter"; slug: string }; // inline card for a real chapter (hidden if not found)
@@ -30,11 +43,15 @@ export type BlogPost = {
   excerpt: string;
   category: string; // BlogCategory.slug
   tags: string[];
+  categories?: BlogCategory[]; // Sanity posts: all categories; `category` is the first
   publishedAt: string; // ISO date
+  updatedAt?: string; // ISO date; sitemap and BlogPosting dateModified
   readMinutes: number;
-  author: { name: string; role: string };
-  cover: { from: string; to: string; symbol: string; image?: string | null };
+  author: { name: string; role: string; slug?: string; photo?: { url: string; alt: string } | null; bio?: string | null; sameAs?: string[] };
+  cover: { from: string; to: string; symbol: string; image?: string | null; alt?: string };
   body: BlogBlock[];
+  seoTitle?: string;
+  seoDescription?: string;
   placeholder?: boolean;
 };
 
@@ -255,15 +272,98 @@ const PLACEHOLDER_POSTS: BlogPost[] = [
   },
 ];
 
-// Newest first. Swap for a Sanity query when connected.
+// ---- Sanity ---------------------------------------------------------------------------
+
+type SanityPost = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  publishedAt: string;
+  updatedAt: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  cover: { url: string | null; alt: string | null } | null;
+  categories: { slug: string; title: string }[] | null;
+  author: { name: string; slug: string; credential: string | null; bio: string | null; sameAs: string[] | null; photo: { url: string | null; alt: string | null } | null } | null;
+  body: PtNode[] | null;
+};
+
+// Cards without a cover image use this gradient; the post's own cover replaces it.
+const FALLBACK_COVER = { from: "#FF2E63", to: "#FF8A3D" };
+const imageUrl = (url: string, w: number) => `${url}?w=${w}&auto=format`;
+
+function fromSanity(p: SanityPost): BlogPost {
+  const body = portableTextToBlocks(p.body).map((b) => (b._type === "image" ? { ...b, url: imageUrl(b.url, 1400) } : b));
+  const categories = p.categories?.filter((c) => c.slug) ?? [];
+  const a = p.author;
+  return {
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt,
+    category: categories[0]?.slug ?? "",
+    categories,
+    tags: [],
+    publishedAt: p.publishedAt,
+    updatedAt: p.updatedAt ?? undefined,
+    readMinutes: readMinutes(body),
+    author: {
+      name: a?.name ?? TEAM.name,
+      role: a?.credential ?? TEAM.role,
+      slug: a?.slug,
+      photo: a?.photo?.url ? { url: imageUrl(a.photo.url, 160), alt: a.photo.alt ?? a.name } : null,
+      bio: a?.bio,
+      sameAs: a?.sameAs ?? [],
+    },
+    cover: { ...FALLBACK_COVER, symbol: p.title[0]?.toUpperCase() ?? "M", image: p.cover?.url ? imageUrl(p.cover.url, 1600) : null, alt: p.cover?.alt ?? "" },
+    body,
+    seoTitle: p.seoTitle ?? undefined,
+    seoDescription: p.seoDescription ?? undefined,
+  };
+}
+
+// Cached by tag; the Sanity webhook (/api/revalidate) refreshes it as soon as content changes,
+// and the hourly revalidate is the safety net if a webhook is missed.
+const cacheOptions = (tags: string[]) => ({ next: { revalidate: 3600, tags } });
+
+// Any failure (not configured, network, bad query) falls back to the sample posts so the
+// blog page never breaks; it is logged so it does not go unnoticed.
+async function fromSanityOrNull<T>(run: () => Promise<T>): Promise<T | null> {
+  if (!sanityConfigured) return null;
+  try {
+    return await run();
+  } catch (err) {
+    console.error("[blog] Sanity fetch failed, using sample posts:", err);
+    return null;
+  }
+}
+
+// Newest first.
 export async function getPosts(): Promise<BlogPost[]> {
+  const rows = await fromSanityOrNull(() => sanityClient.fetch<SanityPost[]>(POSTS_QUERY, {}, cacheOptions(["blog"])));
+  if (rows?.length) return rows.map(fromSanity);
   return [...PLACEHOLDER_POSTS].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
 }
 
 export async function getPost(slug: string): Promise<BlogPost | null> {
+  const row = await fromSanityOrNull(() => sanityClient.fetch<SanityPost | null>(POST_QUERY, { slug }, cacheOptions(["blog", `blog:${slug}`])));
+  if (row) return fromSanity(row);
+  // Sample posts only appear while Sanity has no real posts, so a real blog never links to one.
+  const realPosts = await fromSanityOrNull(() => sanityClient.fetch<SanityPost[]>(POSTS_QUERY, {}, cacheOptions(["blog"])));
+  if (realPosts?.length) return null;
   return PLACEHOLDER_POSTS.find((p) => p.slug === slug) ?? null;
 }
 
 export const categoryTitle = (slug: string) => BLOG_CATEGORIES.find((c) => c.slug === slug)?.title ?? slug;
+
+// Title for a post's main category (Sanity posts carry their own titles).
+export const postCategoryTitle = (p: BlogPost) => p.categories?.[0]?.title ?? categoryTitle(p.category);
+
+// Categories that appear in `posts`, sample categories first in their usual order.
+export function categoriesOf(posts: BlogPost[]): BlogCategory[] {
+  const seen = new Map<string, BlogCategory>();
+  for (const p of posts) for (const c of p.categories ?? [{ slug: p.category, title: categoryTitle(p.category) }]) if (c.slug) seen.set(c.slug, c);
+  const known = BLOG_CATEGORIES.filter((c) => seen.has(c.slug)).map((c) => seen.get(c.slug)!);
+  return [...known, ...[...seen.values()].filter((c) => !BLOG_CATEGORIES.some((k) => k.slug === c.slug))];
+}
 
 export const formatPostDate = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });

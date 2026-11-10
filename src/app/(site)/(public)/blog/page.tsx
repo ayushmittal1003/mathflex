@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { categoryTitle, formatPostDate, getPosts } from "@/lib/blog";
+import { formatPostDate, getPosts, postCategoryTitle } from "@/lib/blog";
 import { Eyebrow, Mark } from "@/components/site/web/primitives";
 import { BlogCover } from "@/components/site/web/blog/BlogCard";
 import { BlogBrowser } from "@/components/site/web/blog/BlogBrowser";
@@ -20,7 +20,7 @@ export async function generateMetadata() {
 
 // Blog listing (dipankar-design/designs/Blog.dc.html): the latest post as a big banner, then
 // older posts by category with tag chips and search. Posts come from lib/blog (placeholder
-// content until Sanity is connected).
+// content only while Sanity has no published posts).
 export default async function BlogPage() {
   const [latest, ...older] = await getPosts();
 
@@ -47,7 +47,7 @@ export default async function BlogPage() {
                 <BlogCover post={latest} big className="aspect-[16/10] transition-transform duration-700 ease-mf group-hover:scale-[1.03]" />
                 <span className="absolute left-4 top-4 flex gap-2">
                   <span className="rounded-full bg-primary px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-primary-foreground">Latest</span>
-                  <span className="rounded-full bg-white/92 px-3 py-1 text-xs font-bold text-foreground">{categoryTitle(latest.category)}</span>
+                  <span className="rounded-full bg-white/92 px-3 py-1 text-xs font-bold text-foreground">{postCategoryTitle(latest)}</span>
                 </span>
                 <span className="absolute inset-x-4 bottom-4 flex gap-2 text-xs font-bold text-white">
                   <span className="rounded-md bg-black/35 px-2 py-1 backdrop-blur-md">{formatPostDate(latest.publishedAt)}</span>
