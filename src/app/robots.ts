@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo/config";
 
-// Only /admin and /api are blocked. Private pages (account, checkout, learn…) are NOT
+// Only /admin, /studio (Sanity Studio) and /api are blocked. Private pages (account, checkout, learn…) are NOT
 // disallowed here on purpose: they carry a noindex tag, and Google can only see a noindex
 // on a page it is allowed to crawl.
 //
@@ -15,7 +15,7 @@ import { SITE_URL } from "@/lib/seo/config";
 // - CCBot          Common Crawl, feeds many training sets. Business decision.
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/api/"] }],
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/studio", "/api/"] }],
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

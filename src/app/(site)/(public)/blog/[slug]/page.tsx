@@ -1,25 +1,55 @@
 import { PosterImage } from "@/components/site/web/PosterImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
-import { formatPostDate, getPost, getPosts, type BlogBlock } from "@/lib/blog";
+import { formatPostDate, getPost, getPosts, type BlogBlock, type Span } from "@/lib/blog";
 import { instructor, mentorProfile } from "@/lib/site-content";
 import { BlogCard, BlogCover } from "@/components/site/web/blog/BlogCard";
 import { ReadingProgress, ShareButtons, Toc } from "@/components/site/web/blog/ArticleChrome";
 import { button, container, cx, tone } from "@/components/site/web/ui";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import * as schema from "@/lib/seo/schema";
+import { absoluteUrl } from "@/lib/seo/config";
 import { Breadcrumbs } from "@/components/site/web/Breadcrumbs";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const post = await getPost((await params).slug);
   if (!post) return {};
   // Sample posts stay out of search results until they are replaced with real articles.
-  return buildMetadata({ title: post.title, description: post.excerpt, path: `/blog/${post.slug}`, type: "article", noindex: !!post.placeholder });
+  return buildMetadata({
+    title: post.seoTitle || post.title,
+    description: post.seoDescription || post.excerpt,
+    path: `/blog/${post.slug}`,
+    type: "article",
+    noindex: !!post.placeholder,
+    image: post.cover.image,
+    publishedTime: post.publishedAt,
+    modifiedTime: post.updatedAt ?? post.publishedAt,
+  });
 }
 
-// "**bold**" -> <strong>. Stands in for Portable Text marks until Sanity is connected.
-function Rich({ text }: { text: string }) {
+const renderMath = (latex: string, displayMode: boolean) => katex.renderToString(latex, { displayMode, throwOnError: false, output: "htmlAndMathml" });
+
+function SpanView({ s }: { s: Span }) {
+  if (s.math) return <span dangerouslySetInnerHTML={{ __html: renderMath(s.math, false) }} />;
+  let node: React.ReactNode = s.text;
+  if (s.code) node = <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.9em] text-foreground">{node}</code>;
+  if (s.strong) node = <strong className="font-bold text-foreground">{node}</strong>;
+  if (s.em) node = <em>{node}</em>;
+  if (s.href) {
+    const cls = "font-semibold text-primary underline underline-offset-2 hover:no-underline";
+    node = s.href.startsWith("/") ? <Link href={s.href} className={cls}>{node}</Link> : <a href={s.href} className={cls} rel="noopener">{node}</a>;
+  }
+  return <>{node}</>;
+}
+
+// Sanity posts pass `spans`; the sample posts use "**bold**" in plain text.
+function Rich({ text, spans }: { text: string; spans?: Span[] }) {
+  if (spans) return <>{spans.map((s, i) => <SpanView key={i} s={s} />)}</>;
   return <>{text.split(/(\*\*[^*]+\*\*)/g).map((s, i) => (s.startsWith("**") ? <strong key={i} className="font-bold text-foreground">{s.slice(2, -2)}</strong> : s))}</>;
 }
 
@@ -51,10 +81,33 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
   const sameCat = all.filter((p) => p.slug !== post.slug && p.category === post.category);
   const related = [...sameCat, ...all.filter((p) => p.slug !== post.slug && p.category !== post.category)].slice(0, 3);
   const byKaran = post.author.name === instructor.fullName;
+  const authorPhoto = post.author.photo?.url ?? (byKaran ? instructor.photo : null);
+  const authorPhotoAlt = post.author.photo?.alt ?? "";
+  const authorBio = post.author.bio || (byKaran ? `${instructor.shortName} ${mentorProfile(settings).bio}` : "Study guides and exam updates from the people who build Mathflex.");
 
   return (
     <article>
       <ReadingProgress />
+      {!post.placeholder && (
+        <JsonLd
+          data={schema.blogPosting({
+            path: `/blog/${post.slug}`,
+            headline: post.title,
+            description: post.seoDescription || post.excerpt,
+            image: post.cover.image,
+            datePublished: post.publishedAt,
+            dateModified: post.updatedAt,
+            author: {
+              name: post.author.name,
+              // Karan's byline links to the About page (his confirmed job title); other authors have no page.
+              jobTitle: byKaran ? instructor.jobTitle : undefined,
+              url: byKaran ? absoluteUrl("/about") : undefined,
+              image: authorPhoto ? (authorPhoto.startsWith("/") ? absoluteUrl(authorPhoto) : authorPhoto) : null,
+              sameAs: post.author.sameAs,
+            },
+          })}
+        />
+      )}
 
       <header className={cx(container.listing, "pt-[calc(86px+40px)]")}>
         <Breadcrumbs
@@ -65,10 +118,14 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
         <p className="mt-5 max-w-[720px] text-[19px] leading-[1.55] text-secondary-foreground text-pretty">{post.excerpt}</p>
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-y border-border py-5">
           <div className="flex items-center gap-3">
-            <Avatar name={post.author.name} photo={byKaran ? instructor.photo : null} />
+            <Avatar name={post.author.name} photo={authorPhoto} alt={authorPhotoAlt} />
             <div className="text-sm">
               <div className="font-bold">{post.author.name} · <span className="font-semibold text-muted-foreground">{post.author.role}</span></div>
-              <div className="text-muted-foreground">{formatPostDate(post.publishedAt)} · {post.readMinutes} min read</div>
+              <div className="text-muted-foreground">
+                {formatPostDate(post.publishedAt)}
+                {post.updatedAt && post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10) && <> · Updated {formatPostDate(post.updatedAt)}</>}
+                {" "}· {post.readMinutes} min read
+              </div>
             </div>
           </div>
           <ShareButtons title={post.title} />
@@ -77,7 +134,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
 
       <div className={cx(container.listing, "mt-10")}>
         <div className="overflow-hidden rounded-2xl shadow-[0_30px_60px_-40px_rgb(80_20_0/0.5)]">
-          <BlogCover post={post} big className="aspect-[16/9] rounded-xl min-[760px]:aspect-[21/8]" />
+          <BlogCover post={post} big alt={post.cover.alt} className="aspect-[16/9] rounded-xl min-[760px]:aspect-[21/8]" />
         </div>
       </div>
 
@@ -97,13 +154,11 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           )}
 
           <div className="mt-12 flex flex-col gap-5 rounded-xl bg-muted p-6 tablet:flex-row tablet:items-center">
-            <Avatar name={post.author.name} photo={byKaran ? instructor.photo : null} size="lg" />
+            <Avatar name={post.author.name} photo={authorPhoto} alt={authorPhotoAlt} size="lg" />
             <div className="min-w-0 flex-1">
               <div className="text-xs font-extrabold uppercase tracking-[0.1em] text-muted-foreground">Written by</div>
               <div className="mt-1 text-lg font-extrabold tracking-[-0.02em] text-foreground">{post.author.name}</div>
-              <p className="mt-1 text-[15px] leading-[1.6]">
-                {byKaran ? `${instructor.shortName} ${mentorProfile(settings).bio}` : "Study guides and exam updates from the people who build Mathflex."}
-              </p>
+              <p className="mt-1 text-[15px] leading-[1.6]">{authorBio}</p>
             </div>
             {byKaran && <Link href="/book-a-call" className={cx(button.sm, tone.dark, "min-h-11 self-start tablet:self-center")}>Book a 1:1 call</Link>}
           </div>
@@ -125,11 +180,11 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
   );
 }
 
-function Avatar({ name, photo, size = "md" }: { name: string; photo: string | null; size?: "md" | "lg" }) {
+function Avatar({ name, photo, alt = "", size = "md" }: { name: string; photo: string | null; alt?: string; size?: "md" | "lg" }) {
   const cls = cx("grid flex-none place-items-center overflow-hidden rounded-full bg-gradient-to-br from-primary to-brand-2 font-extrabold text-white", size === "lg" ? "size-16 text-xl" : "size-11 text-base");
   return photo ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={photo} alt="" className={cx(cls, "object-cover")} />
+    <img src={photo} alt={alt} className={cx(cls, "object-cover")} />
   ) : (
     <span aria-hidden className={cls}>{name[0]}</span>
   );
@@ -138,20 +193,70 @@ function Avatar({ name, photo, size = "md" }: { name: string; photo: string | nu
 function Block({ b, chapters }: { b: BlogBlock; chapters: Map<string, InlineChapter> }) {
   switch (b._type) {
     case "p":
-      return <p className="mt-6 first:mt-0"><Rich text={b.text} /></p>;
+      return <p className="mt-6 first:mt-0"><Rich text={b.text} spans={b.spans} /></p>;
     case "h2":
       return <h2 id={b.id} className="mt-14 scroll-mt-24 text-[clamp(26px,3vw,32px)] font-extrabold leading-[1.2] tracking-[-0.035em] text-foreground">{b.text}</h2>;
-    case "list":
+    case "h3":
+      return <h3 id={b.id} className="mt-10 scroll-mt-24 text-[clamp(21px,2.4vw,24px)] font-extrabold leading-[1.25] tracking-[-0.03em] text-foreground">{b.text}</h3>;
+    case "quote":
+      return <blockquote className="mt-8 border-l-4 border-primary pl-5 text-[19px] italic leading-[1.6] text-foreground"><Rich text={b.text} spans={b.spans} /></blockquote>;
+    case "list": {
+      const Tag = b.ordered ? "ol" : "ul";
       return (
-        <ul className="mt-6 space-y-3">
+        <Tag className="mt-6 space-y-3">
           {b.items.map((t, i) => (
             <li key={i} className="relative pl-7">
-              <span aria-hidden className="absolute left-1 top-[0.7em] size-2 rounded-full bg-primary" />
-              <Rich text={t} />
+              {b.ordered ? (
+                <span aria-hidden className="absolute left-0 top-0 font-mono text-[0.9em] font-bold text-primary">{i + 1}.</span>
+              ) : (
+                <span aria-hidden className="absolute left-1 top-[0.7em] size-2 rounded-full bg-primary" />
+              )}
+              <Rich text={t} spans={b.itemSpans?.[i]} />
             </li>
           ))}
-        </ul>
+        </Tag>
       );
+    }
+    case "image":
+      return (
+        <figure className="mt-8">
+          {/* eslint-disable-next-line @next/next/no-img-element -- Sanity CDN image, sized by its own dimensions */}
+          <img src={b.url} alt={b.alt} width={b.width} height={b.height} loading="lazy" className="h-auto w-full rounded-xl" />
+          {b.caption && <figcaption className="mt-2 text-sm text-muted-foreground">{b.caption}</figcaption>}
+        </figure>
+      );
+    case "code":
+      return (
+        <figure className="mt-8 overflow-hidden rounded-xl border border-border bg-card">
+          {(b.filename || b.language) && (
+            <figcaption className="border-b border-border px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">{b.filename || b.language}</figcaption>
+          )}
+          <pre className="overflow-x-auto p-4 text-[15px] leading-[1.6] text-foreground"><code className="font-mono">{b.code}</code></pre>
+        </figure>
+      );
+    case "table":
+      // Scrolls inside its own box on narrow screens, so the page itself never scrolls sideways.
+      return (
+        <figure className="mt-8">
+          <div role="region" aria-label={b.caption || "Table"} tabIndex={0} className="overflow-x-auto rounded-xl border border-border focus-visible:outline-2 focus-visible:outline-ring">
+            <table className="w-full min-w-[560px] border-collapse text-left text-[15px] leading-[1.5]">
+              <thead className="bg-muted text-foreground">
+                <tr>{b.head.map((h, i) => <th key={i} scope="col" className="px-4 py-3 font-extrabold">{h || <span className="sr-only">Topic</span>}</th>)}</tr>
+              </thead>
+              <tbody>
+                {b.rows.map((r, i) => (
+                  <tr key={i} className="border-t border-border align-top">
+                    {r.map((c, j) => (j === 0 ? <th key={j} scope="row" className="px-4 py-3 font-bold text-foreground">{c}</th> : <td key={j} className="px-4 py-3">{c}</td>))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {b.caption && <figcaption className="mt-2 text-sm text-muted-foreground">{b.caption}</figcaption>}
+        </figure>
+      );
+    case "math":
+      return <div className="mt-8 overflow-x-auto text-foreground" dangerouslySetInnerHTML={{ __html: renderMath(b.latex, true) }} />;
     case "tip":
       return (
         <aside className="mt-8 rounded-xl bg-[color-mix(in_oklab,var(--brand-2)_10%,transparent)] p-6">

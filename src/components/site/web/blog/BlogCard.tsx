@@ -1,16 +1,17 @@
 import Link from "next/link";
-import { categoryTitle, formatPostDate, type BlogPost } from "@/lib/blog";
+import { formatPostDate, postCategoryTitle, type BlogPost } from "@/lib/blog";
 import { cx } from "../ui";
 
 // Blog card (design.md §4): 16:10 cover with category chip, date and read time on the
 // thumbnail, then the title and a 2-line excerpt.
-export function BlogCover({ post, className, big = false }: { post: BlogPost; className?: string; big?: boolean }) {
+// `alt` is for the article header; cards sit inside a link that already has the title, so they use "".
+export function BlogCover({ post, className, big = false, alt = "" }: { post: BlogPost; className?: string; big?: boolean; alt?: string }) {
   const sym = post.cover.symbol;
   return (
     <span className={cx("relative block overflow-hidden", className)} style={{ background: `linear-gradient(155deg, ${post.cover.from}, ${post.cover.to})` }}>
       {post.cover.image ? (
-        // eslint-disable-next-line @next/next/no-img-element -- CMS image (Sanity CDN later)
-        <img src={post.cover.image} alt="" className="absolute inset-0 size-full object-cover" />
+        // eslint-disable-next-line @next/next/no-img-element -- Sanity CDN image
+        <img src={post.cover.image} alt={alt} className="absolute inset-0 size-full object-cover" />
       ) : (
         <span
           aria-hidden
@@ -32,7 +33,7 @@ export function BlogCard({ post, index = 0 }: { post: BlogPost; index?: number }
     <Link href={`/blog/${post.slug}`} className="group flex animate-mf-rise flex-col text-foreground" style={{ animationDelay: `${Math.min(index, 9) * 40}ms` }}>
       <span className="relative block overflow-hidden rounded-xl shadow-[0_14px_30px_-22px_rgb(0_0_0/0.5)] transition-transform duration-300 ease-mf group-hover:-translate-y-1">
         <BlogCover post={post} className="aspect-[16/10]" />
-        <span className="absolute left-3 top-3 rounded-full bg-white/92 px-2.5 py-1 text-xs font-bold text-foreground">{categoryTitle(post.category)}</span>
+        <span className="absolute left-3 top-3 rounded-full bg-white/92 px-2.5 py-1 text-xs font-bold text-foreground">{postCategoryTitle(post)}</span>
         <span className="absolute inset-x-3 bottom-3 flex items-center gap-2 text-xs font-bold text-white">
           <span className="rounded-md bg-black/35 px-2 py-1 backdrop-blur-md">{formatPostDate(post.publishedAt)}</span>
           <span className="rounded-md bg-black/35 px-2 py-1 backdrop-blur-md">{post.readMinutes} min read</span>

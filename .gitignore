@@ -47,3 +47,6 @@ next-env.d.ts
 /src/generated
 
 /storage
+
+# Locally installed Claude skill (not part of the app)
+/.claude/skills/ui-ux-pro-max/
