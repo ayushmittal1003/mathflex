@@ -85,7 +85,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
           {leads.map((l) => {
             const digits = l.phone.replace(/\D/g, "");
             const first = l.name.trim().split(/\s+/)[0];
-            const wa = `Hi ${first}, this is the Mathflex team. Thanks for your enquiry! ${mentor} has a few ideas for your ${LEAD_GOAL_LABEL[l.goal] ?? "JEE"} prep${l.weakAreas.length && l.weakAreas[0] !== "Not sure yet" ? `, especially ${l.weakAreas.slice(0, 2).join(" and ")}` : ""}. Is now a good time for a quick call?`;
+            const wa = `Hi ${first}, this is the Mathflex team. Thanks for your enquiry! ${mentor} has a few ideas for your ${LEAD_GOAL_LABEL[l.goal] || "JEE"} prep${l.weakAreas.length && l.weakAreas[0] !== "Not sure yet" ? `, especially ${l.weakAreas.slice(0, 2).join(" and ")}` : ""}. Is now a good time for a quick call?`;
             const mail = `mailto:${l.email}?subject=${encodeURIComponent("Your Mathflex enquiry")}&body=${encodeURIComponent(`Hi ${first},\n\nThanks for your enquiry. We tried calling you about your JEE maths plan. When is a good time to talk?\n\nTeam Mathflex`)}`;
             return (
               <div key={l.id} className={`rounded-2xl border bg-card p-4 ${l.status === "NEW" ? "border-gold/60" : "border-border"}`}>
@@ -94,11 +94,12 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-base font-bold">{l.name}</span>
                       <Badge tone={TONE[l.status]}>{LEAD_STATUS_LABEL[l.status]}</Badge>
+                      {l.channel === "meta_form" && <Badge tone="brand">{l.utmSource === "fb" ? "Facebook" : "Instagram"} lead form</Badge>}
                       {l.userId && <Badge tone="brand">Has an account</Badge>}
                     </div>
-                    <p className="mt-1 text-sm">{l.phone} · {l.email}</p>
+                    <p className="mt-1 text-sm">{l.phone}{l.email && ` · ${l.email}`}</p>
                     <p className="mt-1 text-xs text-muted">
-                      {LEAD_CLASS_LABEL[l.classLevel] ?? l.classLevel} · {LEAD_GOAL_LABEL[l.goal] ?? l.goal} · Call: {LEAD_TIME_LABEL[l.callTime] ?? "Any time"}
+                      {[LEAD_CLASS_LABEL[l.classLevel] ?? l.classLevel, LEAD_GOAL_LABEL[l.goal] ?? l.goal].filter(Boolean).join(" · ") || "Class not asked"} · Call: {LEAD_TIME_LABEL[l.callTime] ?? "Any time"}
                     </p>
                     {l.weakAreas.length > 0 && <p className="mt-1 text-xs"><span className="text-muted">Weak areas:</span> {l.weakAreas.join(", ")}</p>}
                     <p className="mt-1 text-xs text-muted">
@@ -108,7 +109,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                   <div className="flex flex-wrap gap-2">
                     <a href={`tel:${l.phone}`} className="rounded-xl bg-foreground px-3.5 py-2 text-sm font-semibold text-background">Call</a>
                     <a href={`https://wa.me/${digits}?text=${encodeURIComponent(wa)}`} target="_blank" rel="noreferrer" className="rounded-xl bg-ok/15 px-3.5 py-2 text-sm font-semibold text-ok">WhatsApp</a>
-                    <a href={mail} className="rounded-xl border border-border px-3.5 py-2 text-sm font-semibold">Email</a>
+                    {l.email && <a href={mail} className="rounded-xl border border-border px-3.5 py-2 text-sm font-semibold">Email</a>}
                   </div>
                 </div>
                 <form action={updateLead.bind(null, l.id)} className="mt-3 flex flex-wrap items-end gap-2 border-t border-border pt-3">

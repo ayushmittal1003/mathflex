@@ -911,6 +911,8 @@ export async function saveHomeContent(form: FormData) {
     problemConclusion: text("problemConclusion", 200),
     howTitle: text("howTitle", 120),
     howLead: str(form, "howLead").slice(0, 300),
+    adTitle: text("adTitle", 120),
+    adSubtitle: text("adSubtitle", 300),
     compareKicker: str(form, "compareKicker").slice(0, 60),
     compareTitle: text("compareTitle", 120),
     compareColumns: flags("compareColumns", cur.compareColumns),
@@ -950,4 +952,14 @@ export async function saveEnquirySettings(form: FormData) {
   await audit(me, "settings.update", `Saved the enquiry page (${bool(form, "enabled") ? "on" : "off"})`, { entity: "settings" });
   refreshSite();
   redirect("/admin/leads?saved=1");
+}
+
+// Admin → MathMate chatbot: one button to take the chat bubble off the website (or bring it back).
+export async function setChatbotOn(on: boolean) {
+  const me = await requireStaff("flexcare");
+  const cur = await getSettings();
+  await saveSetting("features", { ...cur.features, chatbot: on });
+  await audit(me, "settings.update", `MathMate chatbot ${on ? "shown on" : "hidden from"} the website`, { entity: "settings" });
+  refreshSite();
+  revalidatePath("/admin/flexcare");
 }

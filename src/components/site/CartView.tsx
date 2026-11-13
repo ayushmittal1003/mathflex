@@ -32,6 +32,7 @@ export function CartView(props: {
   mentorship: { enabled: boolean; price: number; title: string; blurb: string; mentor: string; preticked: boolean };
   couponsEnabled: boolean;
   suggestedCoupon: { code: string; description: string } | null; // the live public offer, one tap to apply
+  initialCoupon?: string | null;
   initialMentorship: boolean | null; // from ?mentorship=1 / 0; null = default
   loggedIn: boolean;
   meta: CheckoutMeta;
@@ -40,7 +41,9 @@ export function CartView(props: {
   const items = useCart();
   const router = useRouter();
   const [quote, setQuote] = useState<Quote | null>(null);
-  const [coupon, setCoupon] = useState<string | null>(null);
+  // A coupon in the link (?coupon=CODE, e.g. from the Instagram landing page) starts applied;
+  // the server quote still checks it, and the student can remove it.
+  const [coupon, setCoupon] = useState<string | null>(props.initialCoupon ?? null);
   // The 1:1 call is opt-in: ticked only when the student came to book it (?mentorship=1) or the
   // admin turned pre-ticking on. An explicit choice always wins.
   const [mentorChoice, setMentorChoice] = useState<boolean | null>(props.initialMentorship);

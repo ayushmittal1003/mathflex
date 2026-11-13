@@ -12,8 +12,8 @@ export const metadata = privateMetadata("Checkout");
 // Checkout: the existing CartView (getQuote / placeOrder / Cashfree SDK, unchanged) with the
 // redesigned layout. Chapter and course details here are display-only; every price shown in
 // the summary comes from the server quote.
-export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ mentorship?: string }> }) {
-  const [{ mentorship }, s, user] = await Promise.all([searchParams, getSettings(), getCurrentUser()]);
+export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ mentorship?: string; coupon?: string }> }) {
+  const [{ mentorship, coupon }, s, user] = await Promise.all([searchParams, getSettings(), getCurrentUser()]);
   const [chapters, courses] = await Promise.all([
     db.chapter.findMany({
       where: { isPublished: true },
@@ -34,6 +34,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       mentorship={{ enabled: s.features.mentorshipUpsell, price: s.mentorshipPrice, title: s.mentorshipTitle, blurb: s.mentorshipBlurb, mentor: instructorNames(s).full, preticked: s.home.callPreticked }}
       couponsEnabled={s.features.coupons}
       suggestedCoupon={suggestedCoupon}
+      initialCoupon={s.features.coupons && coupon && /^[A-Za-z0-9_-]{3,40}$/.test(coupon) ? coupon.toUpperCase() : null}
       initialMentorship={mentorship === "1" ? true : mentorship === "0" ? false : null}
       loggedIn={!!user}
       meta={meta}

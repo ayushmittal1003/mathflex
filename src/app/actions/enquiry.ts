@@ -6,6 +6,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { allow, clientIp } from "@/lib/rate-limit";
 import { captureMetaMatch, sendMetaLead } from "@/lib/meta-capi";
+import { alertNewLead } from "@/lib/lead-alerts";
+import { siteUrl } from "@/lib/app-url";
 
 const Lead = z.object({
   name: z.string().trim().min(2, "Enter your name.").max(80),
@@ -64,7 +66,10 @@ export async function submitEnquiry(input: unknown): Promise<EnquiryResult> {
   };
   const recent = await db.lead.findFirst({ where: { phone, createdAt: { gt: new Date(Date.now() - 86_400_000) } }, select: { id: true } });
   const lead = recent ? await db.lead.update({ where: { id: recent.id }, data }) : await db.lead.create({ data });
-  if (!recent) after(() => sendMetaLead(lead.id));
+  if (!recent) {
+    const base = await siteUrl();
+    after(() => Promise.all([sendMetaLead(lead.id), alertNewLead(lead, base)]));
+  }
   console.info(`[enquiry] lead ${lead.id} (${d.classLevel}, ${d.goal}) from ${d.source.utmSource ?? "direct"}`);
   return { ok: true, leadId: lead.id };
 }

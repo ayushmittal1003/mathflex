@@ -588,6 +588,10 @@ model Lead {
   utmContent  String?
   fbclid      String?
   landingPath String?
+  // "website" (the /enquiry form) or "meta_form" (an Instagram/Facebook Instant Form).
+  channel     String     @default("website")
+  // Meta's leadgen id for Instant Form leads, so a webhook retry never adds the lead twice.
+  externalId  String?    @unique
   // Browser details for Meta's Conversions API (same shape as Order.metaMatch).
   metaMatch   Json?
   userId      String?

@@ -100,6 +100,9 @@ export const DEFAULT_SETTINGS = {
     compareTitle: "A *fraction* of the price.",
     compareColumns: { coaching: true, online: true, youtube: false },
     compareRows: { fullSyllabus: true, singleChapter: true, watchFirst: true, practice: false, ownPace: true, iitMentor: true, mentorCall: true },
+    // /start: the landing page for Instagram ads (one screen: hook, preview, buy).
+    adTitle: "Stuck on one chapter? *Fix it* this week.",
+    adSubtitle: "Short video lessons by an IIT Delhi alumnus, with PYQs after every part. Buy only the chapter you need.",
     // Home FAQs. {supportEmail}, {mentorShort}, {mentorshipPrice} and {notesKind} are filled in;
     // "- " lines become bullets, **text** is bold and [label](/path) is a link.
     faqs: homeFaqs.map(([g, i]) => faqGroups.find((x) => x.id === g)!.items[i]).filter(Boolean) as { q: string; a: string }[],

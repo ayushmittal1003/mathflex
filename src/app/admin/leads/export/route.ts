@@ -17,8 +17,8 @@ export async function GET(req: Request) {
   const s = new URL(req.url).searchParams.get("status") ?? "";
   const status = s in LEAD_STATUS_LABEL ? (s as LeadStatus) : undefined;
   const leads = await db.lead.findMany({ where: status ? { status } : {}, orderBy: { createdAt: "desc" }, take: 10000 });
-  const head = ["Received (IST)", "Name", "Mobile", "Email", "Class", "Goal", "Weak areas", "Best time", "Status", "Notes", "First contacted (IST)", "Source", "Medium", "Campaign", "Ad", "Landing page"];
-  const rows = leads.map((l) => [when(l.createdAt), l.name, l.phone, l.email, LEAD_CLASS_LABEL[l.classLevel] ?? l.classLevel, LEAD_GOAL_LABEL[l.goal] ?? l.goal, l.weakAreas.join("; "), LEAD_TIME_LABEL[l.callTime] ?? l.callTime, LEAD_STATUS_LABEL[l.status], l.notes, when(l.contactedAt), l.utmSource, l.utmMedium, l.utmCampaign, l.utmContent, l.landingPath]);
+  const head = ["Received (IST)", "Channel", "Name", "Mobile", "Email", "Class", "Goal", "Weak areas", "Best time", "Status", "Notes", "First contacted (IST)", "Source", "Medium", "Campaign", "Ad", "Landing page"];
+  const rows = leads.map((l) => [when(l.createdAt), l.channel === "meta_form" ? "Meta lead form" : "Website form", l.name, l.phone, l.email, LEAD_CLASS_LABEL[l.classLevel] ?? l.classLevel, LEAD_GOAL_LABEL[l.goal] ?? l.goal, l.weakAreas.join("; "), LEAD_TIME_LABEL[l.callTime] ?? l.callTime, LEAD_STATUS_LABEL[l.status], l.notes, when(l.contactedAt), l.utmSource, l.utmMedium, l.utmCampaign, l.utmContent, l.landingPath]);
   await audit(me, "lead.export", `Exported ${leads.length} leads to CSV`, { entity: "lead", meta: { status: status ?? "all" } });
   const csv = [head, ...rows].map((r) => r.map(cell).join(",")).join("\r\n");
   return new Response(`﻿${csv}`, { headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="mathflex-leads.csv"`, "Cache-Control": "no-store" } });

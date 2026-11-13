@@ -60,6 +60,13 @@ export default async function HomeContentPage({ searchParams }: { searchParams: 
         </div>
       </Card>
 
+      <Card title="Instagram ad page (/start)" action={<Link href="/start" target="_blank" className="text-sm font-semibold text-brand">Open ↗</Link>}>
+        <div className="grid gap-4">
+          <Field label="Headline" hint="Wrap words in *stars* to highlight them"><input name="adTitle" defaultValue={h.adTitle} className="input" /></Field>
+          <Field label="Line under the headline"><textarea name="adSubtitle" rows={2} defaultValue={h.adSubtitle} className="input" /></Field>
+        </div>
+      </Card>
+
       <Card title="Your mentor">
         <div className="grid gap-4">
           <Field label="Credential" hint="Shown on the credential card and under Karan's name across the site"><input name="mentorTitle" defaultValue={h.mentorTitle} className="input" /></Field>

@@ -14,7 +14,7 @@ export function PromoPopup({ promo }: { promo: Promo | null }) {
   const [show, setShow] = useState(false);
   const pathname = usePathname();
   // Never over checkout, payment, sign-in or the player: it would cover the pay button and form fields.
-  const quiet = /^\/(checkout|cart|payment|login|signup|learn|invite|enquiry)(\/|$)/.test(pathname);
+  const quiet = /^\/(checkout|cart|payment|login|signup|learn|invite|enquiry|start)(\/|$)/.test(pathname);
   useEffect(() => {
     if (!promo || quiet) return;
     let seen = false;
@@ -32,20 +32,11 @@ export function PromoPopup({ promo }: { promo: Promo | null }) {
     } catch {}
     if (seen) return;
     let t: ReturnType<typeof setTimeout> | undefined;
-    // Never over the home page walkthrough (HomeTour): while it runs, or before a first-time visitor
-    // has seen it, wait until it's finished or skipped.
-    const tourPending = () => {
-      if (document.documentElement.dataset.tour === "on") return true;
-      try { return pathname === "/" && localStorage.getItem("mf-tour-done") !== "1"; } catch { return false; }
-    };
-    const open = () => {
-      if (tourPending()) window.addEventListener("mf-tour-end", open, { once: true });
-      else t = setTimeout(() => setShow(true), 900);
-    };
-    if (views >= 2) { open(); return () => { window.removeEventListener("mf-tour-end", open); clearTimeout(t); }; }
+    const open = () => { t = setTimeout(() => setShow(true), 900); };
+    if (views >= 2) { open(); return () => clearTimeout(t); }
     const onScroll = () => { if (window.scrollY > 80) { window.removeEventListener("scroll", onScroll); open(); } };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("mf-tour-end", open); clearTimeout(t); };
+    return () => { window.removeEventListener("scroll", onScroll); clearTimeout(t); };
   }, [promo, pathname, quiet]);
 
   const close = () => {

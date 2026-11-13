@@ -6,7 +6,6 @@ import { instructor, mockLabels } from "@/lib/site-content";
 import { Caret, CheckIcon, Eyebrow, Mark, PlayIcon, posterBg } from "../primitives";
 import { button, cx, tone } from "../ui";
 import type { HomeChapter } from "./types";
-import { HomeTour, StartTourButton } from "./HomeTour";
 
 // 01 Hero: framed wash, headline, proof points, CTAs and a dashboard peek that overlaps
 // into the next section. Peek rows are real chapters; progress numbers are illustrative.
@@ -54,7 +53,7 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
 
           <div className="mt-8.5 cta-row">
             {chapterCount > 0 && (
-              <a href="#previews" data-tour="preview" className={cx(button.lg, tone.primary)}>
+              <a href="#previews" className={cx(button.lg, tone.primary)}>
                 <PlayIcon /> Watch a preview
               </a>
             )}
@@ -63,8 +62,6 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
             </Link>
           </div>
 
-          <HomeTour />
-          <StartTourButton />
 
           <div className="mt-7 flex items-center justify-center gap-3">
             <div className="flex" aria-hidden>
@@ -82,8 +79,9 @@ export function HomeHero({ chapters, chapterCount, minPrice }: { chapters: HomeC
           </div>
         </div>
 
-        {/* Dashboard peek (dark-framed product UI). */}
-        <div className="relative mx-auto mb-6 mt-12 grid w-[min(1000px,calc(100%-var(--gutter)*2))] tablet:mt-18 tablet:-mb-40 tablet:h-[420px] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[190px_minmax(0,1fr)_250px]">
+        {/* Dashboard peek (dark-framed product UI). Tablets and up only: on a phone it reads like someone
+            else's account and pushes the chapters a screen further down. */}
+        <div className="relative mx-auto mb-6 mt-12 hidden w-[min(1000px,calc(100%-var(--gutter)*2))] tablet:mt-18 tablet:-mb-40 tablet:grid tablet:h-[420px] overflow-hidden rounded-xl border-[6px] border-foreground bg-card shadow-[0_40px_80px_-30px_rgb(80_20_0/0.45)] tablet:grid-cols-[190px_minmax(0,1fr)_250px]">
           <div className="hidden content-start gap-1 border-r border-border px-3 py-4 text-[13px] tablet:grid">
             <div className="px-2 py-1 text-xs font-bold tracking-[0.12em] text-muted-foreground">MENU</div>
             <div className="rounded-md bg-primary/10 p-2 font-bold text-[color-mix(in_oklab,var(--primary)_75%,black)]">My Learning</div>

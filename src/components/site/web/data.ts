@@ -22,7 +22,7 @@ export async function getPublicCoupon(settings: Settings) {
     (picked ? await db.coupon.findFirst({ where: { code: picked, ...live }, select }) : null) ??
     (await db.coupon.findFirst({ where: { isPublic: true, ...live }, orderBy: { createdAt: "desc" }, select }));
   if (!c || (c.usageLimit !== null && c.usedCount >= c.usageLimit)) return null;
-  return { code: c.code, description: couponOffer(c) };
+  return { code: c.code, description: couponOffer(c), minAmount: c.minAmount };
 }
 
 // "10% off (up to ₹200) on orders above ₹499", built from the coupon itself so it is always right.

@@ -8,7 +8,7 @@ import { BotStudio } from "@/components/admin/BotStudio";
 import { getSettings, BOT_PROMPT_MAX, BOT_KNOWLEDGE_MAX } from "@/lib/settings";
 import { Card, Field, PageHeader, Toggle, SubmitButton, Badge } from "@/components/admin/ui";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
-import { saveKnowledge, deleteKnowledge, saveBotBrain, saveBotWidget } from "../actions";
+import { saveKnowledge, deleteKnowledge, saveBotBrain, saveBotWidget, setChatbotOn } from "../actions";
 import { StatusForm } from "@/components/admin/StatusForm";
 
 export const metadata = { title: "MathMate" };
@@ -29,6 +29,17 @@ export default async function MathMateAdmin() {
   return (
     <div className="max-w-5xl space-y-6">
       <PageHeader title={`${settings.chatbot.name} chatbot`} subtitle="What the bottom-right assistant knows, and what students are asking it." />
+      {/* The quickest way to take the bubble off the website (same switch as Settings → Features). */}
+      <div className={`flex flex-wrap items-center gap-3 rounded-2xl border p-4 ${settings.features.chatbot ? "border-ok/40 bg-ok/8" : "border-border bg-surface-2"}`}>
+        <span className={`size-3 rounded-full ${settings.features.chatbot ? "bg-ok" : "bg-muted"}`} />
+        <p className="flex-1 text-sm">
+          <b>{settings.features.chatbot ? "Live on the website." : "Hidden from the website."}</b>{" "}
+          {settings.features.chatbot ? "Students see the chat bubble at the bottom-right of every page." : "No chat bubble anywhere, and the chat service is switched off. Everything below is kept for when you turn it back on."}
+        </p>
+        <form action={setChatbotOn.bind(null, !settings.features.chatbot)}>
+          <SubmitButton danger={settings.features.chatbot}>{settings.features.chatbot ? "Hide from website" : "Show on website"}</SubmitButton>
+        </form>
+      </div>
       <Card>
         <div className="flex flex-wrap items-center gap-3">
           <span className={`size-3 rounded-full ${ai ? "bg-ok" : "bg-gold"}`} />
