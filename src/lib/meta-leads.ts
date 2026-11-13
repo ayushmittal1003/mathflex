@@ -69,3 +69,39 @@ export async function saveMetaLead(leadgenId: string) {
     console.error(`[meta-leads] ${leadgenId} not saved:`, (e as Error).message);
   }
 }
+
+// ---- Linking the Facebook Page to the app (Admin → Leads → Connect Facebook Page) ----
+// Meta only sends a Page's leads to apps that the Page has "subscribed". The system-user token
+// lists the Pages it manages (with each Page's own token); each Page then subscribes the app to
+// the leadgen field. Safe to run again: it just re-confirms the link.
+export type PageLink = { id: string; name: string; linked: boolean; error?: string };
+
+async function graph<T>(path: string, init?: RequestInit): Promise<{ ok: true; data: T } | { ok: false; error: string }> {
+  try {
+    const res = await fetch(`${GRAPH}${path}`, { ...init, signal: AbortSignal.timeout(10000) });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok: false, error: (json as { error?: { message?: string } }).error?.message ?? `HTTP ${res.status}` };
+    return { ok: true, data: json as T };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+export async function metaPageLinks(subscribe: boolean): Promise<{ pages: PageLink[]; error?: string }> {
+  const token = process.env.META_PAGE_TOKEN;
+  if (!token) return { pages: [], error: "META_PAGE_TOKEN isn't set in Vercel." };
+  const list = await graph<{ data: { id: string; name: string; access_token?: string }[] }>(`/me/accounts?fields=id,name,access_token&limit=50&access_token=${encodeURIComponent(token)}`);
+  if (!list.ok) return { pages: [], error: list.error };
+  const pages: PageLink[] = [];
+  for (const p of list.data.data) {
+    const pageToken = p.access_token ?? token;
+    if (subscribe) {
+      const sub = await graph<{ success?: boolean }>(`/${p.id}/subscribed_apps?subscribed_fields=leadgen&access_token=${encodeURIComponent(pageToken)}`, { method: "POST" });
+      if (!sub.ok) { pages.push({ id: p.id, name: p.name, linked: false, error: sub.error }); continue; }
+    }
+    const subs = await graph<{ data: { subscribed_fields?: string[] }[] }>(`/${p.id}/subscribed_apps?access_token=${encodeURIComponent(pageToken)}`);
+    pages.push({ id: p.id, name: p.name, linked: subs.ok && subs.data.data.some((a) => a.subscribed_fields?.includes("leadgen")), error: subs.ok ? undefined : subs.error });
+  }
+  if (!pages.length) return { pages, error: "The token can't see any Facebook Page. In Business settings → System users, assign the Mathflex Page to the system user and generate the token again." };
+  return { pages };
+}

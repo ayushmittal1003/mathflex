@@ -8,7 +8,7 @@ import { LEAD_CLASS_LABEL, LEAD_GOAL_LABEL, LEAD_STATUS_LABEL, LEAD_TIME_LABEL }
 import { instructorNames } from "@/lib/site-content";
 import { Badge, Card, Field, PageHeader, Stat, SubmitButton, Toggle } from "@/components/admin/ui";
 import type { LeadStatus } from "@/generated/prisma/enums";
-import { saveEnquirySettings, updateLead } from "../actions";
+import { connectMetaPages, saveEnquirySettings, updateLead } from "../actions";
 
 export const metadata = { title: "Leads" };
 
@@ -20,9 +20,9 @@ const ago = (d: Date, now: number) => {
 };
 
 // Enquiries from /enquiry (mostly ads): call them back, note what happened, export for the sales sheet.
-export default async function LeadsPage({ searchParams }: { searchParams: Promise<{ status?: string; q?: string; saved?: string }> }) {
+export default async function LeadsPage({ searchParams }: { searchParams: Promise<{ status?: string; q?: string; saved?: string; meta?: string }> }) {
   await requireStaff("leads");
-  const { status: rawStatus, q = "", saved } = await searchParams;
+  const { status: rawStatus, q = "", saved, meta } = await searchParams;
   const status = rawStatus && rawStatus in LEAD_STATUS_LABEL ? (rawStatus as LeadStatus) : undefined;
   const [settings, base] = await Promise.all([getSettings(), siteUrl()]);
   const now = requestNow();
@@ -41,6 +41,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
   const mentor = instructorNames(settings).short;
   const e = settings.enquiry;
   const link = `${base}/enquiry`;
+  const metaReady = !!(process.env.META_APP_SECRET && process.env.META_PAGE_TOKEN && process.env.META_LEADS_VERIFY_TOKEN);
 
   return (
     <div className="max-w-5xl space-y-6">
@@ -62,6 +63,22 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
         <p className="text-sm">Use this as the website link in your Meta ads. Add tags to see which ad each lead came from:</p>
         <code className="mt-2 block break-all rounded-lg bg-surface-2 p-3 text-xs">{link}?utm_source=meta&amp;utm_medium=paid&amp;utm_campaign=your-campaign-name</code>
         <p className="mt-2 text-xs text-muted">Each form sent also reaches Meta as a <b>Lead</b>, so you can pick “Leads” as the ad goal.{!e.enabled && " The form is switched off below, so visitors see a WhatsApp button instead."}</p>
+      </Card>
+
+      <Card title="Instagram & Facebook lead forms" action={<form action={connectMetaPages}><SubmitButton>{metaReady ? "Connect Facebook Page" : "Not set up"}</SubmitButton></form>}>
+        {!metaReady ? (
+          <p className="text-sm text-muted">Add META_APP_SECRET, META_PAGE_TOKEN and META_LEADS_VERIFY_TOKEN in Vercel, redeploy, then press Connect.</p>
+        ) : !meta ? (
+          <p className="text-sm text-muted">Press <b>Connect Facebook Page</b> once (and again any time you&apos;re unsure). It links your Page to the lead webhook, so every Instant Form lead lands here and in Telegram.</p>
+        ) : meta.startsWith("error:") ? (
+          <p className="rounded-xl bg-bad/10 p-3 text-sm font-semibold text-bad">Couldn&apos;t connect: {meta.slice(6)}</p>
+        ) : (
+          <ul className="space-y-1 text-sm">
+            {meta.split("|").map((m) => (
+              <li key={m} className={m.startsWith("ok:") ? "font-semibold text-ok" : "font-semibold text-bad"}>{m.startsWith("ok:") ? "✓ Linked: " : "✗ Not linked: "}{m.slice(3)}</li>
+            ))}
+          </ul>
+        )}
       </Card>
 
       <form className="flex flex-wrap items-center gap-2">

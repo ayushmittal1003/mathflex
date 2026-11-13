@@ -963,3 +963,13 @@ export async function setChatbotOn(on: boolean) {
   refreshSite();
   revalidatePath("/admin/flexcare");
 }
+
+// Admin → Leads: subscribe the Facebook Page(s) to the app so Instant Form leads reach /api/meta/leads.
+export async function connectMetaPages() {
+  const me = await requireStaff("leads");
+  const { metaPageLinks } = await import("@/lib/meta-leads");
+  const r = await metaPageLinks(true);
+  await audit(me, "settings.update", `Connected Facebook Page lead forms: ${r.pages.map((p) => `${p.name} ${p.linked ? "linked" : "not linked"}`).join(", ") || r.error}`, { entity: "settings" });
+  const q = new URLSearchParams({ meta: r.error ? `error:${r.error}` : r.pages.map((p) => `${p.linked ? "ok" : "no"}:${p.name}${p.error ? ` (${p.error})` : ""}`).join("|") });
+  redirect(`/admin/leads?${q}`);
+}
